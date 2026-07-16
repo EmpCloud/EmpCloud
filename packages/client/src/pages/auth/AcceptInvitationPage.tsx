@@ -142,36 +142,36 @@ export default function AcceptInvitationPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="absolute top-4 right-4">
         <LanguageSwitcher />
       </div>
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <img src="/empcloud-logo.png" alt={t("acceptInvitation.logoAlt")} className="h-12 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900">{t("acceptInvitation.heading")}</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-foreground">{t("acceptInvitation.heading")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">
             {t("acceptInvitation.subheading")}
           </p>
         </div>
 
         <form
           onSubmit={onSubmit}
-          className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 space-y-5"
+          className="bg-card rounded-xl shadow-sm border border-border p-8 space-y-5"
         >
           {error && (
-            <div className="bg-red-50 text-red-700 text-sm px-4 py-3 rounded-lg">{error}</div>
+            <div className="bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 text-sm px-4 py-3 rounded-lg">{error}</div>
           )}
 
           {infoLoading && (
-            <p className="text-xs text-gray-400 flex items-center gap-2">
+            <p className="text-xs text-muted-foreground flex items-center gap-2">
               <Loader2 className="h-3 w-3 animate-spin" /> {t("acceptInvitation.loadingInvitation")}
             </p>
           )}
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("acceptInvitation.form.firstNameLabel")}</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("acceptInvitation.form.firstNameLabel")}</label>
               <input
                 type="text"
                 value={firstName}
@@ -179,24 +179,24 @@ export default function AcceptInvitationPage() {
                 autoComplete="given-name"
                 autoFocus={!namesLocked}
                 disabled={namesLocked}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed"
                 placeholder={t("acceptInvitation.form.firstNamePlaceholder")}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("acceptInvitation.form.lastNameLabel")}</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("acceptInvitation.form.lastNameLabel")}</label>
               <input
                 type="text"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 autoComplete="family-name"
                 disabled={lastNameLocked}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed"
               />
             </div>
           </div>
           {namesLocked && (
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted-foreground">
               {t("acceptInvitation.form.namesLockedNote", {
                 org: info?.org_name || t("acceptInvitation.form.orgFallback"),
               })}
@@ -204,20 +204,20 @@ export default function AcceptInvitationPage() {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t("acceptInvitation.form.passwordLabel")}</label>
+            <label className="block text-sm font-medium text-muted-foreground mb-1">{t("acceptInvitation.form.passwordLabel")}</label>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="new-password"
-                className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                className="bg-card text-foreground w-full px-3 py-2 pr-10 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
                 placeholder={t("acceptInvitation.form.passwordPlaceholder", { count: PASSWORD_MIN })}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((s) => !s)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600"
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-muted-foreground"
                 aria-label={showPassword ? t("acceptInvitation.form.hidePasswordAria") : t("acceptInvitation.form.showPasswordAria")}
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -226,13 +226,13 @@ export default function AcceptInvitationPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t("acceptInvitation.form.confirmPasswordLabel")}</label>
+            <label className="block text-sm font-medium text-muted-foreground mb-1">{t("acceptInvitation.form.confirmPasswordLabel")}</label>
             <input
               type={showPassword ? "text" : "password"}
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
               autoComplete="new-password"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+              className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
               placeholder={t("acceptInvitation.form.confirmPasswordPlaceholder")}
             />
           </div>
@@ -246,8 +246,8 @@ export default function AcceptInvitationPage() {
             {submitting ? t("acceptInvitation.form.submitting") : t("acceptInvitation.form.submit")}
           </button>
 
-          <p className="text-xs text-gray-500 text-center">
-            {t("acceptInvitation.form.alreadyHaveAccount")} <Link to="/login" className="text-brand-600 hover:underline">{t("acceptInvitation.form.signInLink")}</Link>
+          <p className="text-xs text-muted-foreground text-center">
+            {t("acceptInvitation.form.alreadyHaveAccount")} <Link to="/login" className="text-brand-600 dark:text-brand-400 hover:underline">{t("acceptInvitation.form.signInLink")}</Link>
           </p>
         </form>
       </div>

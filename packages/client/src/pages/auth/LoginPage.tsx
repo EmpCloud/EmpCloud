@@ -80,7 +80,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="absolute top-4 right-4">
         <LanguageSwitcher />
       </div>
@@ -91,49 +91,49 @@ export default function LoginPage() {
             alt="EmpCloud"
             className="h-20 w-auto mx-auto mb-6 object-contain"
           />
-          <h1 className="text-2xl font-bold text-gray-900">{t('auth.signIn')}</h1>
-          <p className="text-sm text-gray-500 mt-1">{t('auth.enterprisePlatform')}</p>
+          <h1 className="text-2xl font-bold text-foreground">{t('auth.signIn')}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t('auth.enterprisePlatform')}</p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 space-y-5">
+        <form onSubmit={handleSubmit(onSubmit)} className="bg-card rounded-xl shadow-sm border border-border p-8 space-y-5">
           {sessionState === "expired" && !error && (
-            <div className="bg-amber-50 text-amber-800 text-sm px-4 py-3 rounded-lg border border-amber-200">
+            <div className="bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200 text-sm px-4 py-3 rounded-lg border border-amber-200 dark:border-amber-900">
               Your session has expired. Please sign in again.
             </div>
           )}
           {justReset && !error && (
-            <div className="bg-green-50 text-green-800 text-sm px-4 py-3 rounded-lg border border-green-200">
+            <div className="bg-green-50 dark:bg-green-950/40 text-green-800 dark:text-green-200 text-sm px-4 py-3 rounded-lg border border-green-200 dark:border-green-900">
               Password updated. Sign in with your new password.
             </div>
           )}
           {error && (
-            <div className="bg-red-50 text-red-700 text-sm px-4 py-3 rounded-lg">{error}</div>
+            <div className="bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 text-sm px-4 py-3 rounded-lg">{error}</div>
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t('auth.email')}</label>
+            <label className="block text-sm font-medium text-muted-foreground mb-1">{t('auth.email')}</label>
             <input
               type="email"
               {...register("email")}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+              className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
               placeholder="you@company.com"
             />
             {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t('auth.password')}</label>
+            <label className="block text-sm font-medium text-muted-foreground mb-1">{t('auth.password')}</label>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
                 {...register("password")}
-                className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                className="bg-card text-foreground w-full px-3 py-2 pr-10 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
                 placeholder={t('auth.password')}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground"
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
@@ -144,7 +144,7 @@ export default function LoginPage() {
           <div className="flex justify-end">
             <Link
               to="/forgot-password"
-              className="text-sm text-brand-600 hover:text-brand-700 font-medium"
+              className="text-sm text-brand-600 dark:text-brand-400 hover:text-brand-700 font-medium"
             >
               {t('auth.forgotPassword')}
             </Link>
@@ -158,9 +158,9 @@ export default function LoginPage() {
             {isSubmitting ? t('auth.signingIn') : t('auth.signIn')}
           </button>
 
-          <p className="text-center text-sm text-gray-500">
+          <p className="text-center text-sm text-muted-foreground">
             {t('auth.noAccount')}{" "}
-            <Link to="/register" className="text-brand-600 hover:text-brand-700 font-medium">
+            <Link to="/register" className="text-brand-600 dark:text-brand-400 hover:text-brand-700 font-medium">
               {t('auth.registerOrg')}
             </Link>
           </p>

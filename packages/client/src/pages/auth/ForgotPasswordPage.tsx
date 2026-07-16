@@ -37,30 +37,30 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="absolute top-4 right-4">
         <LanguageSwitcher />
       </div>
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <img src="/empcloud-logo.png" alt="EmpCloud" className="h-12 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-foreground">
             {t("auth.forgotPasswordTitle")}
           </h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             {t("auth.forgotPasswordDescription")}
           </p>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 space-y-5">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-8 space-y-5">
           {submitted ? (
             <div className="space-y-5">
-              <div className="bg-green-50 text-green-700 text-sm px-4 py-3 rounded-lg">
+              <div className="bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300 text-sm px-4 py-3 rounded-lg">
                 {t("auth.resetLinkSent")}
               </div>
               <Link
                 to="/login"
-                className="inline-flex items-center gap-1.5 text-sm text-brand-600 hover:text-brand-700 font-medium"
+                className="inline-flex items-center gap-1.5 text-sm text-brand-600 dark:text-brand-400 hover:text-brand-700 font-medium"
               >
                 <ArrowLeft className="h-4 w-4" /> {t("auth.backToLogin")}
               </Link>
@@ -68,19 +68,19 @@ export default function ForgotPasswordPage() {
           ) : (
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
               {error && (
-                <div className="bg-red-50 text-red-700 text-sm px-4 py-3 rounded-lg">
+                <div className="bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 text-sm px-4 py-3 rounded-lg">
                   {error}
                 </div>
               )}
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-muted-foreground mb-1">
                   {t("auth.email")}
                 </label>
                 <input
                   type="email"
                   {...register("email")}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
                   placeholder="you@company.com"
                   autoFocus
                 />
@@ -101,7 +101,7 @@ export default function ForgotPasswordPage() {
 
               <Link
                 to="/login"
-                className="flex items-center justify-center gap-1.5 text-sm text-gray-500 hover:text-gray-700"
+                className="flex items-center justify-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
               >
                 <ArrowLeft className="h-4 w-4" /> {t("auth.backToLogin")}
               </Link>
