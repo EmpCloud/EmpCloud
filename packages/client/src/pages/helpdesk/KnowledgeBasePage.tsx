@@ -43,14 +43,14 @@ function categoryLabel(c: string, t: TFn): string {
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
-  leave: "bg-blue-100 text-blue-700",
-  payroll: "bg-green-100 text-green-700",
-  benefits: "bg-purple-100 text-purple-700",
-  it: "bg-orange-100 text-orange-700",
-  facilities: "bg-yellow-100 text-yellow-700",
-  onboarding: "bg-teal-100 text-teal-700",
-  policy: "bg-indigo-100 text-indigo-700",
-  general: "bg-gray-100 text-gray-700",
+  leave: "bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300",
+  payroll: "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300",
+  benefits: "bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300",
+  it: "bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300",
+  facilities: "bg-yellow-100 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300",
+  onboarding: "bg-teal-100 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300",
+  policy: "bg-indigo-100 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300",
+  general: "bg-muted text-muted-foreground",
 };
 
 export default function KnowledgeBasePage() {
@@ -211,7 +211,7 @@ export default function KnowledgeBasePage() {
         <div className="flex items-center justify-between mb-6 max-w-3xl">
           <button
             onClick={() => setSelectedArticle(null)}
-            className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
+            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="h-4 w-4" /> {t("kb.backToKb")}
           </button>
@@ -219,7 +219,7 @@ export default function KnowledgeBasePage() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => startEdit(selectedArticle)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-border rounded-lg text-muted-foreground hover:bg-muted"
               >
                 <Pencil className="h-3.5 w-3.5" /> {t("kb.edit")}
               </button>
@@ -228,7 +228,7 @@ export default function KnowledgeBasePage() {
                   setDeleteTarget({ id: selectedArticle.id, title: selectedArticle.title });
                   setDeleteError(null);
                 }}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-red-200 rounded-lg text-red-600 hover:bg-red-50"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-red-200 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40"
               >
                 <Trash2 className="h-3.5 w-3.5" /> {t("kb.delete")}
               </button>
@@ -236,27 +236,27 @@ export default function KnowledgeBasePage() {
           )}
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-200 p-8 max-w-3xl">
+        <div className="bg-card rounded-xl border border-border p-8 max-w-3xl">
           <div className="flex items-center gap-2 mb-3">
             <span
               className={`text-xs font-medium px-2 py-0.5 rounded ${
-                CATEGORY_COLORS[selectedArticle.category] || "bg-gray-100 text-gray-600"
+                CATEGORY_COLORS[selectedArticle.category] || "bg-muted text-muted-foreground"
               }`}
             >
               {categoryLabel(selectedArticle.category, t)}
             </span>
             {Boolean(selectedArticle.is_featured) && (
-              <span className="flex items-center gap-1 text-xs font-medium text-yellow-700 bg-yellow-100 px-2 py-0.5 rounded">
+              <span className="flex items-center gap-1 text-xs font-medium text-yellow-700 dark:text-yellow-300 bg-yellow-100 dark:bg-yellow-950/40 px-2 py-0.5 rounded">
                 <Star className="h-3 w-3" /> {t("kb.featured")}
               </span>
             )}
           </div>
 
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          <h1 className="text-2xl font-bold text-foreground mb-2">
             {selectedArticle.title}
           </h1>
 
-          <div className="flex items-center gap-4 text-xs text-gray-500 mb-6">
+          <div className="flex items-center gap-4 text-xs text-muted-foreground mb-6">
             <span>{t("kb.byAuthor", { author: selectedArticle.author_name })}</span>
             <span>
               {new Date(selectedArticle.created_at).toLocaleDateString()}
@@ -270,16 +270,16 @@ export default function KnowledgeBasePage() {
               markup doesn't leak as literal <p>...</p> tags to readers
               (#1634). whitespace-pre-wrap stays for legacy plaintext. */}
           <div
-            className="prose prose-sm max-w-none text-gray-700 whitespace-pre-wrap mb-8"
+            className="prose prose-sm dark:prose-invert max-w-none text-muted-foreground whitespace-pre-wrap mb-8"
             dangerouslySetInnerHTML={{ __html: selectedArticle.content || "" }}
           />
 
-          <div className="border-t border-gray-200 pt-6">
-            <p className="text-sm font-medium text-gray-700 mb-3">
+          <div className="border-t border-border pt-6">
+            <p className="text-sm font-medium text-muted-foreground mb-3">
               {t("kb.wasHelpful")}
             </p>
             {hasVoted && (
-              <p className="text-xs text-gray-500 mb-2">
+              <p className="text-xs text-muted-foreground mb-2">
                 {currentVote ? t("kb.ratedHelpful") : t("kb.ratedNotHelpful")}
               </p>
             )}
@@ -294,8 +294,8 @@ export default function KnowledgeBasePage() {
                 disabled={rateArticle.isPending}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-medium disabled:opacity-50 ${
                   currentVote === true
-                    ? "border-green-500 bg-green-50 text-green-800"
-                    : "border-green-200 text-green-700 hover:bg-green-50"
+                    ? "border-green-500 bg-green-50 dark:bg-green-950/40 text-green-800 dark:text-green-200"
+                    : "border-green-200 dark:border-green-900 text-green-700 dark:text-green-300 hover:bg-green-50 dark:hover:bg-green-950/40"
                 }`}
               >
                 <ThumbsUp className="h-4 w-4" /> {t("kb.yes")} (
@@ -311,8 +311,8 @@ export default function KnowledgeBasePage() {
                 disabled={rateArticle.isPending}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-medium disabled:opacity-50 ${
                   currentVote === false
-                    ? "border-red-500 bg-red-50 text-red-800"
-                    : "border-red-200 text-red-700 hover:bg-red-50"
+                    ? "border-red-500 bg-red-50 dark:bg-red-950/40 text-red-800 dark:text-red-200"
+                    : "border-red-200 dark:border-red-900 text-red-700 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/40"
                 }`}
               >
                 <ThumbsDown className="h-4 w-4" /> {t("kb.no")} (
@@ -329,8 +329,8 @@ export default function KnowledgeBasePage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t("kb.title")}</h1>
-          <p className="text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-foreground">{t("kb.title")}</h1>
+          <p className="text-muted-foreground mt-1">
             {t("kb.subtitle")}
           </p>
         </div>
@@ -354,28 +354,28 @@ export default function KnowledgeBasePage() {
 
       {/* Create / Edit Article Form */}
       {showForm && isHR && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+        <div className="bg-card rounded-xl border border-border p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold text-foreground">
               {editingId ? t("kb.editArticle") : t("kb.newKbArticle")}
             </h2>
             <button
               onClick={() => { setShowForm(false); resetForm(); }}
-              className="p-1 rounded-lg text-gray-400 hover:bg-gray-100"
+              className="p-1 rounded-lg text-muted-foreground hover:bg-muted"
             >
               <X className="h-5 w-5" />
             </button>
           </div>
           <form onSubmit={handleSubmitForm} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
                 {t("kb.titleLabel")}
               </label>
               <input
                 type="text"
                 value={formTitle}
                 onChange={(e) => setFormTitle(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                 placeholder={t("kb.titlePlaceholder")}
                 required
               />
@@ -383,13 +383,13 @@ export default function KnowledgeBasePage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-muted-foreground mb-1">
                   {t("kb.categoryLabel")}
                 </label>
                 <select
                   value={formCategory}
                   onChange={(e) => setFormCategory(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                 >
                   {CATEGORIES.map((c) => (
                     <option key={c} value={c}>
@@ -399,21 +399,21 @@ export default function KnowledgeBasePage() {
                 </select>
               </div>
               <div className="flex items-end gap-4">
-                <label className="flex items-center gap-2 text-sm text-gray-600">
+                <label className="flex items-center gap-2 text-sm text-muted-foreground">
                   <input
                     type="checkbox"
                     checked={formPublished}
                     onChange={(e) => setFormPublished(e.target.checked)}
-                    className="rounded border-gray-300"
+                    className="rounded border-border"
                   />
                   {t("kb.published")}
                 </label>
-                <label className="flex items-center gap-2 text-sm text-gray-600">
+                <label className="flex items-center gap-2 text-sm text-muted-foreground">
                   <input
                     type="checkbox"
                     checked={formFeatured}
                     onChange={(e) => setFormFeatured(e.target.checked)}
-                    className="rounded border-gray-300"
+                    className="rounded border-border"
                   />
                   {t("kb.featured")}
                 </label>
@@ -421,7 +421,7 @@ export default function KnowledgeBasePage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
                 {t("kb.contentLabel")}
               </label>
               <RichTextEditor
@@ -435,7 +435,7 @@ export default function KnowledgeBasePage() {
               <button
                 type="button"
                 onClick={() => { setShowForm(false); resetForm(); }}
-                className="px-4 py-2 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                className="px-4 py-2 text-sm border border-border rounded-lg text-muted-foreground hover:bg-muted"
               >
                 {t("kb.cancel")}
               </button>
@@ -464,20 +464,20 @@ export default function KnowledgeBasePage() {
       )}
 
       {/* Search + Category Filter */}
-      <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
+      <div className="bg-card rounded-xl border border-border p-4 mb-6">
         <div className="flex flex-wrap items-center gap-3">
           <form
             onSubmit={handleSearch}
             className="flex items-center gap-2 flex-1 min-w-[200px]"
           >
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <input
                 type="text"
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 placeholder={t("kb.searchPlaceholder")}
-                className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm"
               />
             </div>
             <button
@@ -496,8 +496,8 @@ export default function KnowledgeBasePage() {
             }}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
               !category
-                ? "bg-brand-50 text-brand-700"
-                : "text-gray-600 hover:bg-gray-100"
+                ? "bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300"
+                : "text-muted-foreground hover:bg-muted"
             }`}
           >
             {t("kb.all")}
@@ -511,8 +511,8 @@ export default function KnowledgeBasePage() {
               }}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 category === c
-                  ? "bg-brand-50 text-brand-700"
-                  : "text-gray-600 hover:bg-gray-100"
+                  ? "bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300"
+                  : "text-muted-foreground hover:bg-muted"
               }`}
             >
               {categoryLabel(c, t)}
@@ -523,13 +523,13 @@ export default function KnowledgeBasePage() {
 
       {/* Articles Grid */}
       {isLoading ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
+        <div className="bg-card rounded-xl border border-border p-8 text-center text-muted-foreground">
           {t("kb.loading")}
         </div>
       ) : articles.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
-          <BookMarked className="h-12 w-12 mx-auto mb-3 text-gray-300" />
-          <p className="text-lg font-medium text-gray-500 mb-1">
+        <div className="bg-card rounded-xl border border-border p-8 text-center text-muted-foreground">
+          <BookMarked className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
+          <p className="text-lg font-medium text-muted-foreground mb-1">
             {t("kb.noArticles")}
           </p>
           <p className="text-sm">
@@ -552,7 +552,7 @@ export default function KnowledgeBasePage() {
                   handleViewArticle(a.slug || a.id);
                 }
               }}
-              className="relative text-left bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-shadow cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="relative text-left bg-card rounded-xl border border-border p-5 hover:shadow-md transition-shadow cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-500"
             >
               {isHR && (
                 <div className="absolute top-3 right-3 flex items-center gap-1">
@@ -562,7 +562,7 @@ export default function KnowledgeBasePage() {
                       e.stopPropagation();
                       startEdit(a);
                     }}
-                    className="p-1.5 rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-700"
+                    className="p-1.5 rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
                     title={t("kb.editArticleTooltip")}
                   >
                     <Pencil className="h-3.5 w-3.5" />
@@ -574,7 +574,7 @@ export default function KnowledgeBasePage() {
                       setDeleteTarget({ id: a.id, title: a.title });
                       setDeleteError(null);
                     }}
-                    className="p-1.5 rounded-md text-gray-400 hover:bg-red-50 hover:text-red-600"
+                    className="p-1.5 rounded-md text-muted-foreground hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-600"
                     title={t("kb.deleteArticleTooltip")}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -584,7 +584,7 @@ export default function KnowledgeBasePage() {
               <div className={`flex items-center gap-2 mb-2 ${isHR ? "pr-16" : ""}`}>
                 <span
                   className={`text-xs font-medium px-2 py-0.5 rounded ${
-                    CATEGORY_COLORS[a.category] || "bg-gray-100 text-gray-600"
+                    CATEGORY_COLORS[a.category] || "bg-muted text-muted-foreground"
                   }`}
                 >
                   {categoryLabel(a.category, t)}
@@ -593,17 +593,17 @@ export default function KnowledgeBasePage() {
                   <Star className="h-3.5 w-3.5 text-yellow-400 fill-yellow-400" />
                 )}
               </div>
-              <h3 className="text-sm font-semibold text-gray-900 mb-1 line-clamp-2">
+              <h3 className="text-sm font-semibold text-foreground mb-1 line-clamp-2">
                 {a.title}
               </h3>
               {/* Card previews strip HTML so the snippet stays readable
                   even when authors saved their content with markup
                   (#1634). The detail view above still renders the
                   sanitized HTML. */}
-              <p className="text-xs text-gray-500 line-clamp-3 mb-3">
+              <p className="text-xs text-muted-foreground line-clamp-3 mb-3">
                 {(a.content || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()}
               </p>
-              <div className="flex items-center gap-3 text-xs text-gray-400">
+              <div className="flex items-center gap-3 text-xs text-muted-foreground">
                 {a.view_count > 0 && (
                   <span className="flex items-center gap-1">
                     <Eye className="h-3 w-3" /> {a.view_count}
@@ -629,21 +629,21 @@ export default function KnowledgeBasePage() {
       {/* Pagination */}
       {meta && meta.total_pages > 1 && (
         <div className="flex items-center justify-between mt-6">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             {t("kb.pageOf", { page: meta.page, total_pages: meta.total_pages, total: meta.total })}
           </p>
           <div className="flex gap-2">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="flex items-center gap-1 px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
+              className="bg-card text-foreground flex items-center gap-1 px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50"
             >
               <ChevronLeft className="h-4 w-4" /> {t("kb.previous")}
             </button>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={page >= meta.total_pages}
-              className="flex items-center gap-1 px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
+              className="bg-card text-foreground flex items-center gap-1 px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50"
             >
               {t("kb.next")} <ChevronRight className="h-4 w-4" />
             </button>
@@ -658,33 +658,33 @@ export default function KnowledgeBasePage() {
           onClick={() => !deleteArticle.isPending && setDeleteTarget(null)}
         >
           <div
-            className="w-full max-w-md rounded-xl bg-white shadow-xl"
+            className="w-full max-w-md rounded-xl bg-card shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="px-6 py-5">
               <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-50">
-                  <Trash2 className="h-5 w-5 text-red-600" />
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-50 dark:bg-red-950/40">
+                  <Trash2 className="h-5 w-5 text-red-600 dark:text-red-400" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900">{t("kb.deleteTitle")}</h3>
-                  <p className="mt-1 text-sm text-gray-500">
-                    <Trans i18nKey="kb.deleteBody" values={{ title: deleteTarget.title }} components={{ strong: <span className="font-medium text-gray-700" /> }} />
+                  <h3 className="text-lg font-semibold text-foreground">{t("kb.deleteTitle")}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    <Trans i18nKey="kb.deleteBody" values={{ title: deleteTarget.title }} components={{ strong: <span className="font-medium text-muted-foreground" /> }} />
                   </p>
                 </div>
               </div>
             </div>
             {deleteError && (
-              <div className="mx-6 mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+              <div className="mx-6 mb-4 rounded-lg bg-red-50 dark:bg-red-950/40 p-3 text-sm text-red-700 dark:text-red-300">
                 {deleteError}
               </div>
             )}
-            <div className="flex justify-end gap-3 rounded-b-xl border-t border-gray-100 bg-gray-50 px-6 py-4">
+            <div className="flex justify-end gap-3 rounded-b-xl border-t border-border bg-muted px-6 py-4">
               <button
                 type="button"
                 onClick={() => setDeleteTarget(null)}
                 disabled={deleteArticle.isPending}
-                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-white disabled:opacity-50"
+                className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-card disabled:opacity-50"
               >
                 {t("kb.cancel")}
               </button>
