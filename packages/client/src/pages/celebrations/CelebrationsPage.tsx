@@ -147,7 +147,7 @@ const KIND_STYLE: Record<
     Icon: Gift,
     ring: "ring-amber-100 dark:ring-amber-900/40",
     chip: "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300",
-    softGrad: "from-amber-50 to-white dark:from-amber-950/40 dark:to-slate-900",
+    softGrad: "from-amber-50 to-white dark:from-amber-950/40 dark:to-gray-900",
     accent: "text-amber-600 dark:text-amber-400",
     bar: "bg-amber-400",
   },
@@ -155,7 +155,7 @@ const KIND_STYLE: Record<
     Icon: Award,
     ring: "ring-brand-100 dark:ring-brand-900/40",
     chip: "bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300",
-    softGrad: "from-brand-50 to-white dark:from-brand-950/40 dark:to-slate-900",
+    softGrad: "from-brand-50 to-white dark:from-brand-950/40 dark:to-gray-900",
     accent: "text-brand-600 dark:text-brand-400",
     bar: "bg-brand-500",
   },
@@ -269,7 +269,7 @@ export default function CelebrationsPage() {
             </section>
           ) : (
             // No one celebrating today — a warm anchor instead of a bare list.
-            <div className="flex items-center gap-3 rounded-xl border border-border bg-gradient-to-r from-brand-50 to-white dark:from-brand-950/40 dark:to-slate-900 p-4">
+            <div className="flex items-center gap-3 rounded-xl border border-border bg-gradient-to-r from-brand-50 to-white dark:from-brand-950/40 dark:to-gray-900 p-4">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-card text-brand-600 dark:text-brand-400 shadow-sm">
                 <Sparkles className="h-5 w-5" />
               </div>

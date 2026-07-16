@@ -25,17 +25,20 @@
 }
 
 .dark {
-  --background: 222 47% 11%;        /* slate-900-ish canvas */
-  --foreground: 210 40% 98%;        /* near-white text */
-  --card: 217 33% 17%;             /* slate-800 — surfaces */
-  --card-foreground: 210 40% 98%;
-  --popover: 217 33% 17%;
-  --popover-foreground: 210 40% 98%;
-  --muted: 217 33% 20%;            /* slate-700-ish subtle bg */
-  --muted-foreground: 215 20% 65%; /* muted secondary text */
-  --border: 217 24% 27%;           /* slate-700 border */
-  --input: 217 24% 27%;
-  --ring: 217 91% 60%;
+  /* Matched to EMP Payroll's dark palette: a deeper, true-neutral gray
+     (gray-950/900/800) rather than a blue-tinted slate, so the two apps
+     feel consistent in dark mode. Brand accent stays EmpCloud blue. */
+  --background: 224 71% 4%;         /* gray-950 — deepest canvas */
+  --foreground: 220 14% 96%;        /* gray-100 — primary text */
+  --card: 221 39% 11%;             /* gray-900 — surfaces/cards */
+  --card-foreground: 220 14% 96%;
+  --popover: 221 39% 11%;          /* gray-900 */
+  --popover-foreground: 220 14% 96%;
+  --muted: 215 28% 17%;            /* gray-800 — subtle bg / hover */
+  --muted-foreground: 218 11% 65%; /* gray-400 — secondary text */
+  --border: 215 28% 17%;           /* gray-800 border */
+  --input: 215 28% 17%;
+  --ring: 217 91% 60%;             /* brand-500 (blue) */
 }
 
 @layer base {
