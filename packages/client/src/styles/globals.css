@@ -76,6 +76,27 @@
     @apply bg-background text-foreground antialiased;
   }
 
+  /* Browser autofill in dark mode. Chrome/Safari force their own light-yellow
+     `-webkit-autofill` background on autofilled fields, which overrides
+     `bg-card` and leaves a bright white/yellow box (e.g. the login email
+     field once the browser fills it) sitting on the dark card. You can't set
+     `background` on an autofilled input directly, so paint over it with a
+     large inset box-shadow tinted to --card and force the text color to
+     --foreground. Long transition-delay stops the brief flash of the native
+     colour on focus. Scoped to .dark so light mode keeps native autofill. */
+  .dark input:-webkit-autofill,
+  .dark input:-webkit-autofill:hover,
+  .dark input:-webkit-autofill:focus,
+  .dark input:-webkit-autofill:active,
+  .dark textarea:-webkit-autofill,
+  .dark select:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px hsl(var(--card)) inset !important;
+    box-shadow: 0 0 0 1000px hsl(var(--card)) inset !important;
+    -webkit-text-fill-color: hsl(var(--foreground)) !important;
+    caret-color: hsl(var(--foreground));
+    transition: background-color 9999s ease-in-out 0s;
+  }
+
   /* RTL (Arabic) layout support — flip directional properties */
   [dir="rtl"] {
     direction: rtl;
