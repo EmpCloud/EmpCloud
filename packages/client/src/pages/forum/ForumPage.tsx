@@ -24,10 +24,10 @@ const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
 
 // Post type → colour + icon. Label text comes from i18n (forum.page.postType.*).
 const POST_TYPE_CONFIG: Record<string, { color: string; icon: typeof MessageCircle }> = {
-  discussion: { color: "bg-blue-100 text-blue-700", icon: MessagesSquare },
-  question: { color: "bg-purple-100 text-purple-700", icon: HelpCircle },
-  idea: { color: "bg-amber-100 text-amber-700", icon: Lightbulb },
-  poll: { color: "bg-green-100 text-green-700", icon: BarChart3 },
+  discussion: { color: "bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300", icon: MessagesSquare },
+  question: { color: "bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300", icon: HelpCircle },
+  idea: { color: "bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300", icon: Lightbulb },
+  poll: { color: "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300", icon: BarChart3 },
 };
 
 function useCategories() {
@@ -86,14 +86,14 @@ export default function ForumPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t("forum.page.title")}</h1>
-          <p className="text-gray-500 mt-1">{t("forum.page.subtitle")}</p>
+          <h1 className="text-2xl font-bold text-foreground">{t("forum.page.title")}</h1>
+          <p className="text-muted-foreground mt-1">{t("forum.page.subtitle")}</p>
         </div>
         <div className="flex gap-3">
           {isHR && (
             <Link
               to="/forum/dashboard"
-              className="flex items-center gap-2 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50"
+              className="flex items-center gap-2 border border-border text-muted-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-muted"
             >
               <TrendingUp className="h-4 w-4" /> {t("forum.page.dashboard")}
             </Link>
@@ -109,15 +109,15 @@ export default function ForumPage() {
 
       {/* Category Grid */}
       <div className="mb-8">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("forum.page.categories")}</h2>
+        <h2 className="text-lg font-semibold text-foreground mb-4">{t("forum.page.categories")}</h2>
         {loadingCats ? (
-          <div className="text-gray-400 text-sm">{t("forum.page.loadingCategories")}</div>
+          <div className="text-muted-foreground text-sm">{t("forum.page.loadingCategories")}</div>
         ) : catsError ? (
-          <div className="bg-white rounded-xl border border-red-200 p-6 text-center text-red-500 text-sm">
+          <div className="bg-card rounded-xl border border-red-200 dark:border-red-900 p-6 text-center text-red-500 dark:text-red-400 text-sm">
             {t("forum.page.categoriesError")}
           </div>
         ) : !categories || categories.length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-200 p-6 text-center text-gray-400 text-sm">
+          <div className="bg-card rounded-xl border border-border p-6 text-center text-muted-foreground text-sm">
             {t("forum.page.noCategories")} {isHR ? t("forum.page.noCategoriesHr") : t("forum.page.noCategoriesEmployee")}
           </div>
         ) : (
@@ -126,19 +126,19 @@ export default function ForumPage() {
               <Link
                 key={cat.id}
                 to={`/forum/category/${cat.id}`}
-                className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md hover:border-brand-200 transition-all group"
+                className="bg-card rounded-xl border border-border p-4 hover:shadow-md hover:border-brand-200 dark:hover:border-brand-900 transition-all group"
               >
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="h-10 w-10 rounded-lg bg-brand-50 flex items-center justify-center text-brand-600 group-hover:bg-brand-100 transition-colors">
+                  <div className="h-10 w-10 rounded-lg bg-brand-50 dark:bg-brand-950/40 flex items-center justify-center text-brand-600 dark:text-brand-400 group-hover:bg-brand-100 dark:group-hover:bg-brand-950/40 transition-colors">
                     <span className="text-lg">{cat.icon || "#"}</span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-semibold text-gray-900 truncate">{cat.name}</h3>
-                    <p className="text-xs text-gray-400">{t("forum.page.postsCount", { count: cat.post_count || 0 })}</p>
+                    <h3 className="text-sm font-semibold text-foreground truncate">{cat.name}</h3>
+                    <p className="text-xs text-muted-foreground">{t("forum.page.postsCount", { count: cat.post_count || 0 })}</p>
                   </div>
                 </div>
                 {cat.description && (
-                  <p className="text-xs text-gray-500 line-clamp-2">{cat.description}</p>
+                  <p className="text-xs text-muted-foreground line-clamp-2">{cat.description}</p>
                 )}
               </Link>
             ))}
@@ -149,16 +149,16 @@ export default function ForumPage() {
       {/* Search and Sort */}
       <div className="flex items-center gap-4 mb-6">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t("forum.page.searchPlaceholder")}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+            className="bg-card text-foreground w-full pl-10 pr-4 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent"
           />
         </div>
-        <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
+        <div className="flex gap-1 bg-muted rounded-lg p-1">
           {[
             { key: "recent", label: t("forum.page.sortRecent") },
             { key: "popular", label: t("forum.page.sortPopular") },
@@ -169,8 +169,8 @@ export default function ForumPage() {
               onClick={() => setSortBy(s.key)}
               className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                 sortBy === s.key
-                  ? "bg-white text-gray-900 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700"
+                  ? "bg-card text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               {s.label}
@@ -184,32 +184,32 @@ export default function ForumPage() {
         {loadingPosts ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white rounded-xl border border-gray-200 p-5 animate-pulse">
+              <div key={i} className="bg-card rounded-xl border border-border p-5 animate-pulse">
                 <div className="flex items-start gap-4">
-                  <div className="h-10 w-10 rounded-full bg-gray-200 flex-shrink-0" />
+                  <div className="h-10 w-10 rounded-full bg-muted flex-shrink-0" />
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <div className="h-4 w-16 bg-gray-200 rounded-full" />
-                      <div className="h-3 w-20 bg-gray-200 rounded" />
+                      <div className="h-4 w-16 bg-muted rounded-full" />
+                      <div className="h-3 w-20 bg-muted rounded" />
                     </div>
-                    <div className="h-4 w-2/3 bg-gray-200 rounded mb-2" />
-                    <div className="h-3 w-full bg-gray-200 rounded" />
+                    <div className="h-4 w-2/3 bg-muted rounded mb-2" />
+                    <div className="h-3 w-full bg-muted rounded" />
                   </div>
                 </div>
               </div>
             ))}
           </div>
         ) : postsError ? (
-          <div className="bg-white rounded-xl border border-red-200 p-8 text-center">
+          <div className="bg-card rounded-xl border border-red-200 dark:border-red-900 p-8 text-center">
             <AlertCircle className="h-10 w-10 text-red-400 mx-auto mb-3" />
-            <p className="text-sm text-red-600 font-medium mb-1">{t("forum.page.postsError")}</p>
-            <p className="text-sm text-red-500">{t("forum.page.tryRefresh")}</p>
+            <p className="text-sm text-red-600 dark:text-red-400 font-medium mb-1">{t("forum.page.postsError")}</p>
+            <p className="text-sm text-red-500 dark:text-red-400">{t("forum.page.tryRefresh")}</p>
           </div>
         ) : posts.length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-            <MessagesSquare className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-lg font-medium text-gray-500 mb-1">{t("forum.page.noPosts")}</p>
-            <p className="text-sm text-gray-400 mb-4">{t("forum.page.beFirst")}</p>
+          <div className="bg-card rounded-xl border border-border p-12 text-center">
+            <MessagesSquare className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
+            <p className="text-lg font-medium text-muted-foreground mb-1">{t("forum.page.noPosts")}</p>
+            <p className="text-sm text-muted-foreground mb-4">{t("forum.page.beFirst")}</p>
             <Link
               to="/forum/new"
               className="inline-flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
@@ -225,12 +225,12 @@ export default function ForumPage() {
               <Link
                 key={post.id}
                 to={`/forum/post/${post.id}`}
-                className="block bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md hover:border-brand-200 transition-all"
+                className="block bg-card rounded-xl border border-border p-5 hover:shadow-md hover:border-brand-200 dark:hover:border-brand-900 transition-all"
               >
                 <div className="flex items-start gap-4">
                   {/* Author avatar */}
-                  <div className="h-10 w-10 rounded-full bg-brand-100 flex items-center justify-center flex-shrink-0">
-                    <span className="text-sm font-semibold text-brand-700">
+                  <div className="h-10 w-10 rounded-full bg-brand-100 dark:bg-brand-950/40 flex items-center justify-center flex-shrink-0">
+                    <span className="text-sm font-semibold text-brand-700 dark:text-brand-300">
                       {post.author_first_name?.[0]}
                       {post.author_last_name?.[0]}
                     </span>
@@ -243,25 +243,25 @@ export default function ForumPage() {
                         {t(`forum.page.postType.${post.post_type}`, { defaultValue: post.post_type })}
                       </span>
                       {Boolean(post.is_pinned) && (
-                        <span className="inline-flex items-center gap-1 text-xs text-amber-600">
+                        <span className="inline-flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
                           <Pin className="h-3 w-3" /> {t("forum.page.pinned")}
                         </span>
                       )}
                       {Boolean(post.is_locked) && (
-                        <span className="inline-flex items-center gap-1 text-xs text-gray-400">
+                        <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
                           <Lock className="h-3 w-3" /> {t("forum.page.locked")}
                         </span>
                       )}
-                      <span className="text-xs text-gray-400">{post.category_name}</span>
+                      <span className="text-xs text-muted-foreground">{post.category_name}</span>
                     </div>
 
-                    <h3 className="text-sm font-semibold text-gray-900 mb-1">{post.title}</h3>
+                    <h3 className="text-sm font-semibold text-foreground mb-1">{post.title}</h3>
 
-                    <p className="text-xs text-gray-500 line-clamp-2 mb-2">
+                    <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
                       {post.content?.replace(/<[^>]*>/g, "").slice(0, 200)}
                     </p>
 
-                    <div className="flex items-center gap-4 text-xs text-gray-400">
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
                       <span>
                         {post.author_first_name} {post.author_last_name}
                       </span>
@@ -288,7 +288,7 @@ export default function ForumPage() {
                             .map((tag: string) => (
                               <span
                                 key={tag}
-                                className="bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded text-xs"
+                                className="bg-muted text-muted-foreground px-1.5 py-0.5 rounded text-xs"
                               >
                                 #{tag}
                               </span>
