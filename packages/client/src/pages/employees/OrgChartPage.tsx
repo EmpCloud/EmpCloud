@@ -781,7 +781,7 @@ export default function OrgChartPage() {
           {/* ====== Desktop: pannable / zoomable viewport ====== */}
           <div
             ref={containerRef}
-            className="hidden lg:block relative flex-1 h-[calc(100vh-16rem)] overflow-hidden rounded-xl border border-border bg-gradient-to-br from-muted to-background dark:from-slate-900 dark:to-slate-800"
+            className="hidden lg:block relative flex-1 h-[calc(100vh-16rem)] overflow-hidden rounded-xl border border-border bg-gradient-to-br from-muted to-background dark:from-gray-900 dark:to-gray-800"
             style={{
               cursor: isDragging ? "grabbing" : "grab",
               backgroundImage:

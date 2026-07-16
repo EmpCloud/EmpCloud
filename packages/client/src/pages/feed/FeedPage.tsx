@@ -97,7 +97,7 @@ export default function FeedPage() {
     <div className={isHR ? "" : "mx-auto max-w-2xl"}>
       <div ref={topAnchorRef} aria-hidden="true" />
       {/* ───────────────────── Hero header ───────────────────── */}
-      <header className="relative mb-6 overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-brand-50 via-white to-purple-50 dark:from-brand-950/40 dark:via-slate-900 dark:to-purple-950/40 p-6">
+      <header className="relative mb-6 overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-brand-50 via-white to-purple-50 dark:from-brand-950/40 dark:via-gray-900 dark:to-purple-950/40 p-6">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-3 min-w-0">
             <button
