@@ -86,7 +86,7 @@ export function NotificationDropdown() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setOpen(!open)}
-        className="relative p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+        className="relative p-2 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
       >
         <Bell className="h-5 w-5" />
         {unreadCount > 0 && (
@@ -97,13 +97,13 @@ export function NotificationDropdown() {
       </button>
 
       {open && (
-        <div className="fixed right-4 top-14 w-96 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden" style={{ zIndex: 9999 }}>
-          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
-            <h3 className="text-sm font-semibold text-gray-900">{t('common.notifications')}</h3>
+        <div className="fixed right-4 top-14 w-96 bg-card border border-border rounded-xl shadow-lg overflow-hidden" style={{ zIndex: 9999 }}>
+          <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+            <h3 className="text-sm font-semibold text-foreground">{t('common.notifications')}</h3>
             {unreadCount > 0 && (
               <button
                 onClick={() => markAllRead.mutate()}
-                className="text-xs text-brand-600 hover:underline"
+                className="text-xs text-brand-600 dark:text-brand-400 hover:underline"
               >
                 {t('common.markAllRead')}
               </button>
@@ -115,21 +115,21 @@ export function NotificationDropdown() {
           {notifPerm === "default" && (
             <button
               onClick={enableDesktopAlerts}
-              className="flex w-full items-center gap-2 px-4 py-2.5 border-b border-gray-100 bg-brand-50/50 text-left text-xs text-brand-700 hover:bg-brand-50"
+              className="flex w-full items-center gap-2 px-4 py-2.5 border-b border-border bg-brand-50/50 dark:bg-brand-950/30 text-left text-xs text-brand-700 dark:text-brand-300 hover:bg-brand-50 dark:hover:bg-brand-950/50"
             >
               <BellRing className="h-4 w-4 flex-shrink-0" />
               <span>Enable desktop alerts for new messages</span>
             </button>
           )}
           {notifPerm === "denied" && (
-            <div className="flex items-center gap-2 px-4 py-2.5 border-b border-gray-100 bg-amber-50 text-xs text-amber-700">
+            <div className="flex items-center gap-2 px-4 py-2.5 border-b border-border bg-amber-50 dark:bg-amber-950/40 text-xs text-amber-700 dark:text-amber-300">
               <BellRing className="h-4 w-4 flex-shrink-0" />
               <span>Desktop alerts are blocked. Enable them in your browser's site settings.</span>
             </div>
           )}
           <div className="max-h-96 overflow-y-auto">
             {notifications.length === 0 ? (
-              <div className="px-4 py-8 text-center text-sm text-gray-400">
+              <div className="px-4 py-8 text-center text-sm text-muted-foreground">
                 {t('common.noNotifications')}
               </div>
             ) : (
@@ -137,8 +137,8 @@ export function NotificationDropdown() {
                 <button
                   key={n.id}
                   onClick={() => handleNotificationClick(n)}
-                  className={`w-full text-left px-4 py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors ${
-                    !n.is_read ? "bg-brand-50/50" : ""
+                  className={`w-full text-left px-4 py-3 border-b border-border last:border-0 hover:bg-muted transition-colors ${
+                    !n.is_read ? "bg-brand-50/50 dark:bg-brand-950/30" : ""
                   }`}
                 >
                   <div className="flex items-start gap-2">
@@ -146,11 +146,11 @@ export function NotificationDropdown() {
                       <div className="h-2 w-2 rounded-full bg-brand-500 mt-1.5 shrink-0" />
                     )}
                     <div className={!n.is_read ? "" : "ml-4"}>
-                      <p className="text-sm font-medium text-gray-900">{n.title}</p>
+                      <p className="text-sm font-medium text-foreground">{n.title}</p>
                       {n.body && (
-                        <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{n.body}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{n.body}</p>
                       )}
-                      <p className="text-xs text-gray-400 mt-1">
+                      <p className="text-xs text-muted-foreground mt-1">
                         {new Date(n.created_at).toLocaleString()}
                       </p>
                     </div>
