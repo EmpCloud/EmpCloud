@@ -7,19 +7,19 @@ import { Plus, Trash2, Play, Square, Eye, Edit } from "lucide-react";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 const STATUS_BADGE: Record<string, string> = {
-  draft: "bg-gray-100 text-gray-600",
-  active: "bg-green-100 text-green-700",
-  closed: "bg-blue-100 text-blue-700",
-  archived: "bg-gray-100 text-gray-500",
+  draft: "bg-muted text-muted-foreground",
+  active: "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300",
+  closed: "bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300",
+  archived: "bg-muted text-muted-foreground",
 };
 
 const TYPE_BADGE: Record<string, string> = {
-  pulse: "bg-purple-100 text-purple-700",
-  enps: "bg-indigo-100 text-indigo-700",
-  engagement: "bg-teal-100 text-teal-700",
-  custom: "bg-gray-100 text-gray-700",
-  onboarding: "bg-orange-100 text-orange-700",
-  exit_survey: "bg-red-100 text-red-700",
+  pulse: "bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300",
+  enps: "bg-indigo-100 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300",
+  engagement: "bg-teal-100 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300",
+  custom: "bg-muted text-muted-foreground",
+  onboarding: "bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300",
+  exit_survey: "bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300",
 };
 
 export default function SurveyListPage() {
@@ -83,8 +83,8 @@ export default function SurveyListPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t("surveys.list.title")}</h1>
-          <p className="text-gray-500 mt-1">{t("surveys.list.subtitle")}</p>
+          <h1 className="text-2xl font-bold text-foreground">{t("surveys.list.title")}</h1>
+          <p className="text-muted-foreground mt-1">{t("surveys.list.subtitle")}</p>
         </div>
         <Link
           to="/surveys/builder"
@@ -99,7 +99,7 @@ export default function SurveyListPage() {
         <select
           value={statusFilter}
           onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-          className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+          className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm"
         >
           <option value="">{t("surveys.list.allStatuses")}</option>
           <option value="draft">{t("surveys.list.status.draft")}</option>
@@ -110,7 +110,7 @@ export default function SurveyListPage() {
         <select
           value={typeFilter}
           onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }}
-          className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+          className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm"
         >
           <option value="">{t("surveys.list.allTypes")}</option>
           <option value="pulse">{t("surveys.list.type.pulse")}</option>
@@ -123,38 +123,38 @@ export default function SurveyListPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div className="bg-card rounded-xl border border-border overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-200 bg-gray-50">
-                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">{t("surveys.list.colTitle")}</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">{t("surveys.list.colType")}</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">{t("surveys.list.colStatus")}</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">{t("surveys.list.colAnonymous")}</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">{t("surveys.list.colResponses")}</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">{t("surveys.list.colDates")}</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">{t("surveys.list.colActions")}</th>
+              <tr className="border-b border-border bg-muted">
+                <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase">{t("surveys.list.colTitle")}</th>
+                <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase">{t("surveys.list.colType")}</th>
+                <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase">{t("surveys.list.colStatus")}</th>
+                <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase">{t("surveys.list.colAnonymous")}</th>
+                <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase">{t("surveys.list.colResponses")}</th>
+                <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase">{t("surveys.list.colDates")}</th>
+                <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase">{t("surveys.list.colActions")}</th>
               </tr>
             </thead>
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-8 text-center text-gray-400">{t("surveys.list.loading")}</td>
+                  <td colSpan={7} className="px-6 py-8 text-center text-muted-foreground">{t("surveys.list.loading")}</td>
                 </tr>
               ) : surveys.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-8 text-center text-gray-400">
+                  <td colSpan={7} className="px-6 py-8 text-center text-muted-foreground">
                     {t("surveys.list.empty")}
                   </td>
                 </tr>
               ) : (
                 surveys.map((s: any) => (
-                  <tr key={s.id} className="border-b border-gray-50 hover:bg-gray-50">
+                  <tr key={s.id} className="border-b border-border hover:bg-muted">
                     <td className="px-6 py-4">
-                      <p className="font-medium text-gray-900">{s.title}</p>
+                      <p className="font-medium text-foreground">{s.title}</p>
                       {s.description && (
-                        <p className="text-xs text-gray-400 mt-0.5 line-clamp-1">{s.description}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{s.description}</p>
                       )}
                     </td>
                     <td className="px-6 py-4">
@@ -167,11 +167,11 @@ export default function SurveyListPage() {
                         {t(`surveys.list.status.${s.status}`, { defaultValue: s.status })}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-gray-600">
+                    <td className="px-6 py-4 text-muted-foreground">
                       {s.is_anonymous ? t("surveys.list.yes") : t("surveys.list.no")}
                     </td>
-                    <td className="px-6 py-4 text-gray-600">{s.response_count}</td>
-                    <td className="px-6 py-4 text-xs text-gray-400">
+                    <td className="px-6 py-4 text-muted-foreground">{s.response_count}</td>
+                    <td className="px-6 py-4 text-xs text-muted-foreground">
                       {s.start_date && <div>{t("surveys.list.start", { date: new Date(s.start_date).toLocaleDateString() })}</div>}
                       {s.end_date && <div>{t("surveys.list.end", { date: new Date(s.end_date).toLocaleDateString() })}</div>}
                       {!s.start_date && !s.end_date && <span>-</span>}
@@ -182,7 +182,7 @@ export default function SurveyListPage() {
                           <>
                             <Link
                               to={`/surveys/builder?id=${s.id}`}
-                              className="p-1.5 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-700"
+                              className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
                               title={t("surveys.list.titleEdit")}
                             >
                               <Edit className="h-4 w-4" />
@@ -190,7 +190,7 @@ export default function SurveyListPage() {
                             <button
                               onClick={() => publishMutation.mutate(s.id)}
                               disabled={publishMutation.isPending}
-                              className="p-1.5 rounded hover:bg-green-50 text-green-600 hover:text-green-700"
+                              className="p-1.5 rounded hover:bg-green-50 dark:hover:bg-green-950/40 text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300"
                               title={t("surveys.list.titlePublish")}
                             >
                               <Play className="h-4 w-4" />
@@ -198,7 +198,7 @@ export default function SurveyListPage() {
                             <button
                               onClick={() => setDeleteSurveyId(s.id)}
                               disabled={deleteMutation.isPending}
-                              className="p-1.5 rounded hover:bg-red-50 text-red-500 hover:text-red-700"
+                              className="p-1.5 rounded hover:bg-red-50 dark:hover:bg-red-950/40 text-red-500 hover:text-red-700 dark:hover:text-red-300"
                               title={t("surveys.list.titleDelete")}
                             >
                               <Trash2 className="h-4 w-4" />
@@ -209,7 +209,7 @@ export default function SurveyListPage() {
                           <>
                             <Link
                               to={`/surveys/${s.id}/results`}
-                              className="p-1.5 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-700"
+                              className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
                               title={t("surveys.list.titleViewResults")}
                             >
                               <Eye className="h-4 w-4" />
@@ -217,7 +217,7 @@ export default function SurveyListPage() {
                             <button
                               onClick={() => closeMutation.mutate(s.id)}
                               disabled={closeMutation.isPending}
-                              className="p-1.5 rounded hover:bg-orange-50 text-orange-500 hover:text-orange-700"
+                              className="p-1.5 rounded hover:bg-orange-50 dark:hover:bg-orange-950/40 text-orange-500 hover:text-orange-700 dark:hover:text-orange-300"
                               title={t("surveys.list.titleClose")}
                             >
                               <Square className="h-4 w-4" />
@@ -228,7 +228,7 @@ export default function SurveyListPage() {
                           <>
                             <Link
                               to={`/surveys/${s.id}/results`}
-                              className="p-1.5 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-700"
+                              className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
                               title={t("surveys.list.titleViewResults")}
                             >
                               <Eye className="h-4 w-4" />
@@ -236,7 +236,7 @@ export default function SurveyListPage() {
                             <button
                               onClick={() => publishMutation.mutate(s.id)}
                               disabled={publishMutation.isPending}
-                              className="p-1.5 rounded hover:bg-green-50 text-green-600 hover:text-green-700"
+                              className="p-1.5 rounded hover:bg-green-50 dark:hover:bg-green-950/40 text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300"
                               title={t("surveys.list.titleRepublish")}
                             >
                               <Play className="h-4 w-4" />
@@ -258,21 +258,21 @@ export default function SurveyListPage() {
         <div className="flex items-center justify-between mt-6">
           {/* #1533 — Show the per-page count alongside the total so admins can
               tell at a glance how many surveys are in view, not just the total. */}
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             {t("surveys.list.showing", { shown: surveys.length, total: meta.total, page: meta.page, total_pages: meta.total_pages })}
           </p>
           <div className="flex gap-2">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
+              className="bg-card text-foreground px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50"
             >
               {t("surveys.list.previous")}
             </button>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={page >= meta.total_pages}
-              className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
+              className="bg-card text-foreground px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50"
             >
               {t("surveys.list.next")}
             </button>
