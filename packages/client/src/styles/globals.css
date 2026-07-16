@@ -172,4 +172,23 @@
   .rich-text > :last-child {
     @apply mb-0;
   }
+
+  /* react-day-picker (DateRangePicker calendar) renders from its own
+     bundled style.css with hardcoded light colors. In dark mode the popover
+     would show as a light island, so remap the rdp CSS variables + a couple
+     of element colors to the dark theme. Scoped to .rdp-wrap so it only
+     affects our calendars. Applies wherever DateRangePicker is used
+     (audit, attendance, etc.). */
+  .dark .rdp-wrap {
+    --rdp-accent-color: theme("colors.brand.500");
+    --rdp-accent-background-color: theme("colors.brand.950");
+    --rdp-range_middle-background-color: theme("colors.brand.950");
+    --rdp-today-color: theme("colors.brand.400");
+  }
+  .dark .rdp-wrap .rdp-day_button:hover:not([disabled]):not(.rdp-selected .rdp-day_button) {
+    background-color: hsl(var(--muted));
+  }
+  .dark .rdp-wrap .rdp-chevron {
+    fill: hsl(var(--muted-foreground));
+  }
 }
