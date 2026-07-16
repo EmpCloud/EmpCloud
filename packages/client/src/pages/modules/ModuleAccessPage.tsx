@@ -179,10 +179,10 @@ export default function ModuleAccessPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t('modulesAccess.title')}</h1>
-          <p className="text-gray-500 mt-1">{t('modulesAccess.subtitle')}</p>
+          <h1 className="text-2xl font-bold text-foreground">{t('modulesAccess.title')}</h1>
+          <p className="text-muted-foreground mt-1">{t('modulesAccess.subtitle')}</p>
         </div>
-        <div className="flex items-center gap-4 text-sm text-gray-500">
+        <div className="flex items-center gap-4 text-sm text-muted-foreground">
           <span className="flex items-center gap-1.5"><Package className="h-4 w-4" /> {t('modulesAccess.modulesCount', { count: subscribedModules.length })}</span>
           <span>{t('modulesAccess.employeesCount', { count: users.length })}</span>
           <span>{t('modulesAccess.seatsAssignedCount', { count: totalEnabled })}</span>
@@ -201,8 +201,8 @@ export default function ModuleAccessPage() {
             return (
               <div
                 key={m.id}
-                className={`bg-white rounded-xl border p-3 ${
-                  isFilteredOnThis ? "border-brand-400 ring-1 ring-brand-200" : "border-gray-200"
+                className={`bg-card rounded-xl border p-3 ${
+                  isFilteredOnThis ? "border-brand-400 ring-1 ring-brand-200" : "border-border"
                 }`}
               >
                 {/* #1537 — Card header is a button that filters the employee
@@ -217,14 +217,14 @@ export default function ModuleAccessPage() {
                     ? `Clear filter for ${m.name}`
                     : `Show employees enabled for ${m.name}`}
                   aria-pressed={isFilteredOnThis}
-                  className="w-full text-left rounded-md -m-1 p-1 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-colors"
+                  className="w-full text-left rounded-md -m-1 p-1 hover:bg-muted focus:outline-none focus:ring-2 focus:ring-brand-500 transition-colors"
                 >
                   <div className="flex items-center gap-2 mb-2">
-                    <span className={`w-2 h-2 rounded-full ${used > 0 ? "bg-green-500" : "bg-gray-300"}`} />
-                    <span className="text-xs font-medium text-gray-700 truncate">{m.name.replace(/^EMP\s+/i, "")}</span>
+                    <span className={`w-2 h-2 rounded-full ${used > 0 ? "bg-green-500" : "bg-muted"}`} />
+                    <span className="text-xs font-medium text-muted-foreground truncate">{m.name.replace(/^EMP\s+/i, "")}</span>
                   </div>
-                  <div className="text-lg font-bold text-gray-900">{used}<span className="text-sm font-normal text-gray-400">/{total}</span></div>
-                  <div className="w-full bg-gray-100 rounded-full h-1.5 mt-1">
+                  <div className="text-lg font-bold text-foreground">{used}<span className="text-sm font-normal text-muted-foreground">/{total}</span></div>
+                  <div className="w-full bg-muted rounded-full h-1.5 mt-1">
                     <div className="bg-brand-500 h-1.5 rounded-full transition-all" style={{ width: `${pct}%` }} />
                   </div>
                 </button>
@@ -232,7 +232,7 @@ export default function ModuleAccessPage() {
                   <button
                     onClick={() => setConfirmAllAction({ moduleId: m.id, moduleName: m.name, action: "enable" })}
                     disabled={enableModuleAll.isPending || disableModuleAll.isPending}
-                    className="flex-1 text-xs py-1.5 px-2 rounded bg-brand-50 text-brand-700 hover:bg-brand-100 font-medium disabled:opacity-50 transition-colors"
+                    className="flex-1 text-xs py-1.5 px-2 rounded bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300 hover:bg-brand-100 dark:hover:bg-brand-900/50 font-medium disabled:opacity-50 transition-colors"
                   >
                     Enable All
                   </button>
@@ -244,7 +244,7 @@ export default function ModuleAccessPage() {
                         ? "Payroll is enabled for every employee by default. To remove it, cancel the subscription in Settings → Subscriptions."
                         : undefined
                     }
-                    className={`flex-1 text-xs py-1.5 px-2 rounded bg-red-50 text-red-600 hover:bg-red-100 font-medium disabled:opacity-50 transition-colors ${
+                    className={`flex-1 text-xs py-1.5 px-2 rounded bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 font-medium disabled:opacity-50 transition-colors ${
                       m.slug === "emp-payroll" ? "cursor-not-allowed" : ""
                     }`}
                   >
@@ -260,9 +260,9 @@ export default function ModuleAccessPage() {
       {/* Sync Alert */}
       {syncAlert && (
         <div className={`mb-4 px-4 py-3 rounded-lg text-sm flex items-center gap-2 ${
-          syncAlert.type === "success" ? "bg-green-50 text-green-800 border border-green-200"
-            : syncAlert.type === "warning" ? "bg-amber-50 text-amber-800 border border-amber-200"
-            : "bg-red-50 text-red-800 border border-red-200"
+          syncAlert.type === "success" ? "bg-green-50 dark:bg-green-950/40 text-green-800 dark:text-green-200 border border-green-200 dark:border-green-900"
+            : syncAlert.type === "warning" ? "bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200 border border-amber-200 dark:border-amber-900"
+            : "bg-red-50 dark:bg-red-950/40 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-900"
         }`}>
           {syncAlert.type === "success" ? <Check className="h-4 w-4" /> : <AlertTriangle className="h-4 w-4" />}
           {syncAlert.message}
@@ -273,21 +273,21 @@ export default function ModuleAccessPage() {
       {/* Filters Row */}
       <div className="flex flex-col sm:flex-row gap-3 mb-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
             type="text"
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+            className="bg-card text-foreground w-full pl-10 pr-4 py-2.5 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
             placeholder={t('modulesAccess.searchPlaceholder')}
           />
         </div>
         <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-gray-400" />
+          <Filter className="h-4 w-4 text-muted-foreground" />
           <select
             value={filterModule}
             onChange={(e) => { setFilterModule(e.target.value); setPage(1); }}
-            className="px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+            className="bg-card text-foreground px-3 py-2.5 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
           >
             <option value="all">{t('modulesAccess.allEmployees')}</option>
             <optgroup label={t('modulesAccess.enabledFor')}>
@@ -307,23 +307,23 @@ export default function ModuleAccessPage() {
       {/* Confirm Disable Modal */}
       {confirmAction && confirmAction.action === "disable" && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6">
+          <div className="bg-card rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
-                <AlertTriangle className="h-5 w-5 text-red-600" />
+              <div className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-950/40 flex items-center justify-center">
+                <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">{t('modulesAccess.confirm.title')}</h3>
-                <p className="text-xs text-gray-400">{t('modulesAccess.confirm.subtitle')}</p>
+                <h3 className="text-lg font-semibold text-foreground">{t('modulesAccess.confirm.title')}</h3>
+                <p className="text-xs text-muted-foreground">{t('modulesAccess.confirm.subtitle')}</p>
               </div>
             </div>
-            <p className="text-sm text-gray-600 mb-6"
+            <p className="text-sm text-muted-foreground mb-6"
                dangerouslySetInnerHTML={{
                  __html: t('modulesAccess.confirm.message', { user: confirmAction.userName, module: confirmAction.moduleName })
                }}
             />
             <div className="flex justify-end gap-3">
-              <button onClick={() => setConfirmAction(null)} className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100">{t('modulesAccess.confirm.cancel')}</button>
+              <button onClick={() => setConfirmAction(null)} className="px-4 py-2 text-sm font-medium text-muted-foreground border border-border rounded-lg hover:bg-muted">{t('modulesAccess.confirm.cancel')}</button>
               <button
                 onClick={() => disableModule.mutate({ module_id: confirmAction.moduleId, user_id: confirmAction.userId })}
                 disabled={disableModule.isPending}
@@ -339,26 +339,26 @@ export default function ModuleAccessPage() {
       {/* Confirm All Action Modal */}
       {confirmAllAction && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6">
+          <div className="bg-card rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${confirmAllAction.action === "enable" ? "bg-brand-50" : "bg-red-50"}`}>
-                <AlertTriangle className={`h-5 w-5 ${confirmAllAction.action === "enable" ? "text-brand-600" : "text-red-600"}`} />
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${confirmAllAction.action === "enable" ? "bg-brand-50 dark:bg-brand-950/40" : "bg-red-50 dark:bg-red-950/40"}`}>
+                <AlertTriangle className={`h-5 w-5 ${confirmAllAction.action === "enable" ? "text-brand-600 dark:text-brand-400" : "text-red-600 dark:text-red-400"}`} />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-semibold text-foreground">
                   {confirmAllAction.action === "enable" ? "Enable for All Employees" : "Disable for All Employees"}
                 </h3>
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-muted-foreground">
                   {confirmAllAction.action === "enable" ? "This will enable access for all employees" : "This will remove access from all employees"}
                 </p>
               </div>
             </div>
-            <p className="text-sm text-gray-600 mb-6">
+            <p className="text-sm text-muted-foreground mb-6">
               Are you sure you want to <strong>{confirmAllAction.action}</strong> <strong>{confirmAllAction.moduleName}</strong> for{" "}
               <strong>all employees</strong>?
             </p>
             <div className="flex justify-end gap-3">
-              <button onClick={() => setConfirmAllAction(null)} className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100">Cancel</button>
+              <button onClick={() => setConfirmAllAction(null)} className="px-4 py-2 text-sm font-medium text-muted-foreground border border-border rounded-lg hover:bg-muted">Cancel</button>
               <button
                 onClick={() => {
                   if (confirmAllAction.action === "enable") {
@@ -384,33 +384,33 @@ export default function ModuleAccessPage() {
       )}
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto">
+      <div className="bg-card rounded-xl border border-border overflow-x-auto">
         <table className="min-w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
+          <thead className="bg-muted border-b border-border">
             <tr>
               {/* #1416 — z-index keeps the sticky Employee column above
                    horizontally scrolled toggle cells so they don't overlap. */}
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3 sticky left-0 z-20 bg-gray-50 min-w-[220px] shadow-[1px_0_0_0_rgba(0,0,0,0.05)]">{t('modulesAccess.table.employee')}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-3">{t('modulesAccess.table.role')}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-3">{t('modulesAccess.table.designation')}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3 sticky left-0 z-20 bg-muted min-w-[220px] shadow-[1px_0_0_0_rgba(0,0,0,0.05)]">{t('modulesAccess.table.employee')}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-4 py-3">{t('modulesAccess.table.role')}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-4 py-3">{t('modulesAccess.table.designation')}</th>
               {subscribedModules.map((m: any) => (
-                <th key={m.id} className="text-center text-xs font-medium text-gray-500 uppercase px-3 py-3 min-w-[90px]">
+                <th key={m.id} className="text-center text-xs font-medium text-muted-foreground uppercase px-3 py-3 min-w-[90px]">
                   {m.slug.replace("emp-", "").charAt(0).toUpperCase() + m.slug.replace("emp-", "").slice(1)}
                 </th>
               ))}
-              <th className="text-center text-xs font-medium text-gray-500 uppercase px-4 py-3">{t('modulesAccess.table.modules')}</th>
+              <th className="text-center text-xs font-medium text-muted-foreground uppercase px-4 py-3">{t('modulesAccess.table.modules')}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border">
             {isLoading ? (
               <tr>
-                <td colSpan={4 + subscribedModules.length} className="px-6 py-12 text-center text-gray-400">
+                <td colSpan={4 + subscribedModules.length} className="px-6 py-12 text-center text-muted-foreground">
                   <Loader2 className="h-5 w-5 animate-spin mx-auto mb-2" /> {t('modulesAccess.loading')}
                 </td>
               </tr>
             ) : pagedUsers.length === 0 ? (
               <tr>
-                <td colSpan={4 + subscribedModules.length} className="px-6 py-12 text-center text-gray-400">
+                <td colSpan={4 + subscribedModules.length} className="px-6 py-12 text-center text-muted-foreground">
                   {t('modulesAccess.noEmployees')} {search && t('modulesAccess.matchingSearch')} {filterModule !== "all" && t('modulesAccess.withFilter')}
                 </td>
               </tr>
@@ -418,22 +418,22 @@ export default function ModuleAccessPage() {
               pagedUsers.map((user: any) => {
                 const enabledCount = user.modules?.length || 0;
                 return (
-                  <tr key={user.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-3 sticky left-0 z-10 bg-white shadow-[1px_0_0_0_rgba(0,0,0,0.05)]">
+                  <tr key={user.id} className="hover:bg-muted">
+                    <td className="px-6 py-3 sticky left-0 z-10 bg-card shadow-[1px_0_0_0_rgba(0,0,0,0.05)]">
                       <div className="flex items-center gap-3">
-                        <div className="h-8 w-8 rounded-full bg-brand-100 flex items-center justify-center text-xs font-semibold text-brand-700 flex-shrink-0">
+                        <div className="h-8 w-8 rounded-full bg-brand-100 dark:bg-brand-950/40 flex items-center justify-center text-xs font-semibold text-brand-700 dark:text-brand-300 flex-shrink-0">
                           {user.first_name?.[0]}{user.last_name?.[0]}
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-medium text-gray-900 truncate">{user.first_name} {user.last_name}</p>
-                          <p className="text-xs text-gray-400 truncate">{user.email}</p>
+                          <p className="text-sm font-medium text-foreground truncate">{user.first_name} {user.last_name}</p>
+                          <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 font-medium">{user.role ? (t(`roles.${user.role}`) !== `roles.${user.role}` ? t(`roles.${user.role}`) : user.role.replace(/_/g, " ")) : ""}</span>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-medium">{user.role ? (t(`roles.${user.role}`) !== `roles.${user.role}` ? t(`roles.${user.role}`) : user.role.replace(/_/g, " ")) : ""}</span>
                     </td>
-                    <td className="px-4 py-3 text-xs text-gray-500 truncate max-w-[120px]">{user.designation || "-"}</td>
+                    <td className="px-4 py-3 text-xs text-muted-foreground truncate max-w-[120px]">{user.designation || "-"}</td>
                     {subscribedModules.map((m: any) => {
                       const isEnabled = user.modules?.some((um: any) => um.module_id === m.id);
                       // Policy: once EmpMonitor is enabled for an org_admin,
@@ -478,7 +478,7 @@ export default function ModuleAccessPage() {
                                 : undefined
                             }
                             className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                              isEnabled ? "bg-brand-600" : "bg-gray-200 hover:bg-gray-300"
+                              isEnabled ? "bg-brand-600" : "bg-muted hover:bg-muted"
                             } ${
                               isLocked
                                 ? "cursor-not-allowed opacity-60"
@@ -493,7 +493,7 @@ export default function ModuleAccessPage() {
                       );
                     })}
                     <td className="px-4 py-3 text-center">
-                      <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${enabledCount > 0 ? "bg-brand-50 text-brand-700" : "bg-gray-100 text-gray-400"}`}>
+                      <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${enabledCount > 0 ? "bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300" : "bg-muted text-muted-foreground"}`}>
                         {enabledCount}/{subscribedModules.length}
                       </span>
                     </td>
@@ -506,22 +506,22 @@ export default function ModuleAccessPage() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-6 py-3 border-t border-gray-200 bg-gray-50">
-            <p className="text-sm text-gray-500">
+          <div className="flex items-center justify-between px-6 py-3 border-t border-border bg-muted">
+            <p className="text-sm text-muted-foreground">
               {t('modulesAccess.pagination.showing', { from: (page - 1) * PAGE_SIZE + 1, to: Math.min(page * PAGE_SIZE, totalUsers), total: totalUsers })}
             </p>
             <div className="flex gap-2">
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="flex items-center gap-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg disabled:opacity-50 hover:bg-white"
+                className="flex items-center gap-1 px-3 py-1.5 text-sm border border-border rounded-lg disabled:opacity-50 hover:bg-card"
               >
                 <ChevronLeft className="h-4 w-4" /> {t('modulesAccess.pagination.previous')}
               </button>
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page >= totalPages}
-                className="flex items-center gap-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg disabled:opacity-50 hover:bg-white"
+                className="flex items-center gap-1 px-3 py-1.5 text-sm border border-border rounded-lg disabled:opacity-50 hover:bg-card"
               >
                 {t('modulesAccess.pagination.next')} <ChevronRight className="h-4 w-4" />
               </button>
