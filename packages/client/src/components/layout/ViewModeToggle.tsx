@@ -24,14 +24,14 @@ export function ViewModeToggle() {
   };
 
   return (
-    <div className="inline-flex items-center rounded-md bg-gray-100 p-0.5 text-xs">
+    <div className="inline-flex items-center rounded-md bg-muted p-0.5 text-xs">
       <button
         type="button"
         onClick={() => switchTo("self")}
         className={`flex items-center gap-1 px-2.5 py-1 rounded transition-colors ${
           viewMode === "self"
-            ? "bg-white text-gray-900 shadow-sm"
-            : "text-gray-500 hover:text-gray-700"
+            ? "bg-card text-foreground shadow-sm"
+            : "text-muted-foreground hover:text-foreground"
         }`}
         title={t("viewModeToggle.myViewTitle")}
       >
@@ -44,7 +44,7 @@ export function ViewModeToggle() {
         className={`flex items-center gap-1 px-2.5 py-1 rounded transition-colors ${
           viewMode === "admin"
             ? "bg-brand-600 text-white shadow-sm"
-            : "text-gray-500 hover:text-gray-700"
+            : "text-muted-foreground hover:text-foreground"
         }`}
         title={t("viewModeToggle.adminViewTitle")}
       >

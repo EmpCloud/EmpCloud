@@ -209,7 +209,7 @@ export default function DashboardLayout() {
             items={platformAdminNavItems}
             location={location}
             t={t}
-            activeClass="bg-amber-50 text-amber-700"
+            activeClass="bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300"
           />
         )}
       </nav>

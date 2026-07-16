@@ -138,7 +138,7 @@ function EmployeePoliciesView() {
       </div>
 
       {pendingIds.size > 0 && (
-        <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 rounded-xl p-4 mb-6 text-sm text-amber-800">
+        <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 rounded-xl p-4 mb-6 text-sm text-amber-800 dark:text-amber-200">
           {t("policies.page.pendingBanner", { count: pendingIds.size })}
         </div>
       )}
