@@ -554,7 +554,7 @@ export default function EmployeeDirectoryPage() {
               onClick={() => setShowBulkInviteConfirm(true)}
               disabled={bulkInvite.isPending}
               title={tx("inviteAllTooltip") as string}
-              className="flex items-center gap-2 px-4 py-2 border border-brand-300 bg-brand-50 dark:bg-brand-950/40 text-brand-800 rounded-lg text-sm font-medium hover:bg-brand-100 dark:hover:bg-brand-950/40 disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2 border border-brand-300 dark:border-brand-800 bg-brand-50 dark:bg-brand-950/40 text-brand-800 dark:text-brand-200 rounded-lg text-sm font-medium hover:bg-brand-100 dark:hover:bg-brand-900/50 disabled:opacity-50"
             >
               <Users className="h-4 w-4" /> {tx("inviteAll")}
             </button>
@@ -620,7 +620,7 @@ export default function EmployeeDirectoryPage() {
             </label>
 
             {bulkInviteIncludeActivated && (
-              <div className="mb-2 rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-950/40 px-3 py-2 text-xs text-amber-800">
+              <div className="mb-2 rounded-lg border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/40 px-3 py-2 text-xs text-amber-800 dark:text-amber-200">
                 <strong>Heads-up:</strong> every active employee will receive a fresh invitation email.
                 Their current password will be overwritten when they click the link.
               </div>
@@ -887,7 +887,7 @@ export default function EmployeeDirectoryPage() {
 
             {/* Result Banner */}
             {uploadResult && (
-              <div className={`mx-6 mt-4 p-3 rounded-lg text-sm ${uploadResult.errors > 0 ? "bg-amber-50 dark:bg-amber-950/40 text-amber-800" : "bg-green-50 dark:bg-green-950/40 text-green-800"}`}>
+              <div className={`mx-6 mt-4 p-3 rounded-lg text-sm ${uploadResult.errors > 0 ? "bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200" : "bg-green-50 dark:bg-green-950/40 text-green-800 dark:text-green-200"}`}>
                 <div className="flex items-center gap-2">
                   {uploadResult.errors > 0 ? <AlertTriangle className="h-4 w-4" /> : <CheckCircle2 className="h-4 w-4" />}
                   <span className="font-medium">
