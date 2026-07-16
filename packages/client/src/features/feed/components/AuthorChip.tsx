@@ -40,14 +40,14 @@ export function AuthorChip({
         size={compact ? "sm" : "md"}
       />
       <div className="min-w-0">
-        <p className={`font-medium text-gray-900 truncate ${compact ? "text-sm" : "text-sm"}`}>
+        <p className={`font-medium text-foreground truncate ${compact ? "text-sm" : "text-sm"}`}>
           {firstName} {lastName}
         </p>
-        <p className="text-xs text-gray-500 truncate">
+        <p className="text-xs text-muted-foreground truncate">
           {title && <span>{title}</span>}
-          {title && timestamp && <span className="mx-1.5 text-gray-300">·</span>}
+          {title && timestamp && <span className="mx-1.5 text-muted-foreground/50">·</span>}
           {timestamp && <span>{timestamp}</span>}
-          {edited && <span className="ml-1.5 text-gray-400 italic">(edited)</span>}
+          {edited && <span className="ml-1.5 text-muted-foreground italic">(edited)</span>}
         </p>
       </div>
     </div>

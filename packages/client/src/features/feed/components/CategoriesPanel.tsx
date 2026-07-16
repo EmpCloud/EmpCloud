@@ -98,17 +98,17 @@ export function CategoriesPanel() {
   const isPending = createCategory.isPending || updateCategory.isPending;
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-4">
+    <div className="rounded-xl border border-border bg-card p-4">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
-          <Folder className="h-4 w-4 text-brand-600" />
+        <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+          <Folder className="h-4 w-4 text-brand-600 dark:text-brand-400" />
           Categories
         </h3>
         {!adding && !editing && (
           <button
             type="button"
             onClick={startAdd}
-            className="inline-flex items-center gap-1 rounded-md bg-brand-50 px-2 py-1 text-xs font-medium text-brand-700 hover:bg-brand-100 transition-colors"
+            className="inline-flex items-center gap-1 rounded-md bg-brand-50 dark:bg-brand-950/40 px-2 py-1 text-xs font-medium text-brand-700 dark:text-brand-300 hover:bg-brand-100 dark:hover:bg-brand-900/50 transition-colors"
           >
             <Plus className="h-3 w-3" /> Add
           </button>
@@ -117,7 +117,7 @@ export function CategoriesPanel() {
 
       {/* Inline form — appears when adding or editing */}
       {(adding || editing) && (
-        <form onSubmit={handleSubmit} className="mb-3 rounded-lg bg-gray-50 p-3 space-y-2">
+        <form onSubmit={handleSubmit} className="mb-3 rounded-lg bg-muted p-3 space-y-2">
           <div className="flex items-center gap-2">
             <input
               type="text"
@@ -125,7 +125,7 @@ export function CategoriesPanel() {
               onChange={(e) => setIcon(e.target.value)}
               placeholder="🎯"
               maxLength={4}
-              className="w-12 rounded-md border border-gray-200 bg-white px-2 py-1.5 text-center text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-12 rounded-md border border-border bg-card px-2 py-1.5 text-center text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
             <input
               type="text"
@@ -134,14 +134,14 @@ export function CategoriesPanel() {
               placeholder="Category name"
               required
               autoFocus
-              className="flex-1 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="flex-1 rounded-md border border-border bg-card px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
           <div className="flex items-center justify-end gap-1">
             <button
               type="button"
               onClick={reset}
-              className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-gray-600 hover:bg-gray-100"
+              className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-muted-foreground hover:bg-muted"
             >
               <X className="h-3 w-3" /> Cancel
             </button>
@@ -163,18 +163,18 @@ export function CategoriesPanel() {
 
       {/* List */}
       {!categories || categories.length === 0 ? (
-        <p className="text-xs text-gray-400">No categories yet.</p>
+        <p className="text-xs text-muted-foreground">No categories yet.</p>
       ) : (
         <ul className="space-y-1">
           {categories.map((c) => (
             <li
               key={c.id}
-              className="group flex items-center gap-2 rounded-md p-2 -m-1 hover:bg-gray-50 transition-colors"
+              className="group flex items-center gap-2 rounded-md p-2 -m-1 hover:bg-muted transition-colors"
             >
               <span className="w-6 text-center text-base">{c.icon || "#"}</span>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-800 truncate">{c.name}</p>
-                <p className="text-[11px] text-gray-400">
+                <p className="text-sm font-medium text-foreground truncate">{c.name}</p>
+                <p className="text-[11px] text-muted-foreground">
                   {c.post_count} {c.post_count === 1 ? "post" : "posts"}
                 </p>
               </div>
@@ -183,7 +183,7 @@ export function CategoriesPanel() {
                   type="button"
                   onClick={() => startEdit(c)}
                   aria-label={`Edit ${c.name}`}
-                  className="inline-flex h-7 w-7 items-center justify-center rounded text-gray-400 hover:bg-gray-100 hover:text-gray-700"
+                  className="inline-flex h-7 w-7 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground"
                 >
                   <Pencil className="h-3.5 w-3.5" />
                 </button>
@@ -194,7 +194,7 @@ export function CategoriesPanel() {
                     setDeleteError(null);
                   }}
                   aria-label={`Delete ${c.name}`}
-                  className="inline-flex h-7 w-7 items-center justify-center rounded text-gray-400 hover:bg-red-50 hover:text-red-600"
+                  className="inline-flex h-7 w-7 items-center justify-center rounded text-muted-foreground hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-600"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
@@ -211,18 +211,18 @@ export function CategoriesPanel() {
           onClick={() => !deleteCategory.isPending && setDeleteTarget(null)}
         >
           <div
-            className="w-full max-w-md rounded-xl bg-white shadow-xl"
+            className="w-full max-w-md rounded-xl bg-card shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="px-6 py-5">
               <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-50">
-                  <Trash2 className="h-5 w-5 text-red-600" />
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-50 dark:bg-red-950/40">
+                  <Trash2 className="h-5 w-5 text-red-600 dark:text-red-400" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900">Delete category?</h3>
-                  <p className="mt-1 text-sm text-gray-500">
-                    Delete <span className="font-medium text-gray-700">{deleteTarget.name}</span>?
+                  <h3 className="text-lg font-semibold text-foreground">Delete category?</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Delete <span className="font-medium text-muted-foreground">{deleteTarget.name}</span>?
                     {deleteTarget.post_count > 0 ? (
                       <>
                         {" "}The {deleteTarget.post_count} existing post
@@ -237,16 +237,16 @@ export function CategoriesPanel() {
               </div>
             </div>
             {deleteError && (
-              <div className="mx-6 mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+              <div className="mx-6 mb-4 rounded-lg bg-red-50 dark:bg-red-950/40 p-3 text-sm text-red-700 dark:text-red-300">
                 {deleteError}
               </div>
             )}
-            <div className="flex justify-end gap-3 rounded-b-xl border-t border-gray-100 bg-gray-50 px-6 py-4">
+            <div className="flex justify-end gap-3 rounded-b-xl border-t border-border bg-muted px-6 py-4">
               <button
                 type="button"
                 onClick={() => setDeleteTarget(null)}
                 disabled={deleteCategory.isPending}
-                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-white disabled:opacity-50"
+                className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-card disabled:opacity-50"
               >
                 Cancel
               </button>

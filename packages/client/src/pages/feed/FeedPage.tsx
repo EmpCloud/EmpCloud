@@ -97,7 +97,7 @@ export default function FeedPage() {
     <div className={isHR ? "" : "mx-auto max-w-2xl"}>
       <div ref={topAnchorRef} aria-hidden="true" />
       {/* ───────────────────── Hero header ───────────────────── */}
-      <header className="relative mb-6 overflow-hidden rounded-2xl border border-gray-200 bg-gradient-to-br from-brand-50 via-white to-purple-50 p-6">
+      <header className="relative mb-6 overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-brand-50 via-white to-purple-50 dark:from-brand-950/40 dark:via-slate-900 dark:to-purple-950/40 p-6">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-3 min-w-0">
             <button
@@ -105,20 +105,20 @@ export default function FeedPage() {
               onClick={() => navigate(homePath)}
               aria-label={t("feed.page.backToDashboard")}
               title={t("feed.page.backToDashboard")}
-              className="mt-1 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white/70 text-gray-600 backdrop-blur hover:bg-white hover:text-gray-900 transition-all"
+              className="mt-1 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-card/70 text-muted-foreground backdrop-blur hover:bg-card hover:text-foreground transition-all"
             >
               <ArrowLeft className="h-5 w-5" />
             </button>
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-bold text-gray-900">{t("feed.page.title")}</h1>
+                <h1 className="text-2xl font-bold text-foreground">{t("feed.page.title")}</h1>
                 {isHR && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-brand-100 px-2 py-0.5 text-[11px] font-medium text-brand-700">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-brand-100 dark:bg-brand-950/40 px-2 py-0.5 text-[11px] font-medium text-brand-700 dark:text-brand-300">
                     <Sparkles className="h-3 w-3" /> {t("feed.page.admin")}
                   </span>
                 )}
               </div>
-              <p className="text-gray-600 mt-1 text-sm">
+              <p className="text-muted-foreground mt-1 text-sm">
                 {isHR ? t("feed.page.subtitleHr") : t("feed.page.subtitleEmployee")}
               </p>
             </div>
@@ -129,7 +129,7 @@ export default function FeedPage() {
               onClick={refresh}
               aria-label={t("feed.page.refresh")}
               disabled={isFetching}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white/70 text-gray-600 backdrop-blur hover:bg-white hover:text-brand-700 disabled:opacity-50 transition-all"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-card/70 text-muted-foreground backdrop-blur hover:bg-card hover:text-brand-700 disabled:opacity-50 transition-all"
             >
               <RefreshCw className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`} />
             </button>
@@ -148,25 +148,25 @@ export default function FeedPage() {
         {/* Main column — reserve 1/3 + gap on the right for the sidebar */}
         <div className={isHR ? "space-y-4 lg:pr-[calc(33.333%+1.5rem)]" : "space-y-4"}>
           {/* Search + filter chips */}
-          <div className="rounded-xl border border-gray-200 bg-white p-3 space-y-3">
+          <div className="rounded-xl border border-border bg-card p-3 space-y-3">
             <form
               onSubmit={(e) => { e.preventDefault(); setSearch(searchInput.trim() || undefined); }}
               className="relative"
             >
-              <Search className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <input
                 type="text"
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 placeholder={t("feed.page.searchPlaceholder")}
-                className="w-full rounded-full border border-gray-200 bg-gray-50 pl-10 pr-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white focus:border-transparent transition-all"
+                className="w-full rounded-full border border-border bg-muted pl-10 pr-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-card focus:border-transparent transition-all"
               />
               {(searchInput || search) && (
                 <button
                   type="button"
                   onClick={() => { setSearchInput(""); setSearch(undefined); }}
                   aria-label={t("feed.page.clearSearch")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -186,10 +186,10 @@ export default function FeedPage() {
                   posts re-rendering, which was easy to miss when scrolled
                   down or when both tabs returned similar content. */}
               {isFetching && !isFetchingNextPage && (
-                <Loader2 className="h-3.5 w-3.5 animate-spin text-gray-400" />
+                <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
               )}
               {(search || filter !== "all") && !isFetching && (
-                <span className="ml-auto text-xs text-gray-400">
+                <span className="ml-auto text-xs text-muted-foreground">
                   {t("feed.page.results", { count: posts.length })}
                 </span>
               )}
@@ -215,7 +215,7 @@ export default function FeedPage() {
           <div ref={sentinelRef} />
 
           {isFetchingNextPage && (
-            <div className="mt-4 flex items-center justify-center gap-2 text-xs text-gray-400">
+            <div className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">
               <Loader2 className="h-3 w-3 animate-spin" /> {t("feed.page.loadingMore")}
             </div>
           )}
@@ -266,21 +266,21 @@ export default function FeedPage() {
 
             {/* Top contributors */}
             {stats?.top_contributors && stats.top_contributors.length > 0 && (
-              <div className="rounded-xl border border-gray-200 bg-white p-4">
+              <div className="rounded-xl border border-border bg-card p-4">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
-                    <Users className="h-4 w-4 text-brand-600" />
+                  <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                    <Users className="h-4 w-4 text-brand-600 dark:text-brand-400" />
                     {t("feed.page.topContributors")}
                   </h3>
-                  <span className="text-[11px] text-gray-400">{t("feed.page.last30d")}</span>
+                  <span className="text-[11px] text-muted-foreground">{t("feed.page.last30d")}</span>
                 </div>
                 <ul className="space-y-2">
                   {stats.top_contributors.slice(0, 5).map((u: any, i: number) => (
                     <li
                       key={u.id}
-                      className="flex items-center gap-3 rounded-lg p-1.5 -m-1.5 hover:bg-gray-50 transition-colors"
+                      className="flex items-center gap-3 rounded-lg p-1.5 -m-1.5 hover:bg-muted transition-colors"
                     >
-                      <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 text-[10px] font-bold text-gray-500">
+                      <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-muted text-[10px] font-bold text-muted-foreground">
                         {i + 1}
                       </span>
                       <EmployeeAvatar
@@ -291,11 +291,11 @@ export default function FeedPage() {
                         size="sm"
                       />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">
+                        <p className="text-sm font-medium text-foreground truncate">
                           {u.first_name} {u.last_name}
                         </p>
                       </div>
-                      <span className="text-xs font-semibold text-brand-600">
+                      <span className="text-xs font-semibold text-brand-600 dark:text-brand-400">
                         {u.contribution_count}
                       </span>
                     </li>
@@ -306,16 +306,16 @@ export default function FeedPage() {
 
             {/* Trending posts */}
             {stats?.trending_posts && stats.trending_posts.length > 0 && (
-              <div className="rounded-xl border border-gray-200 bg-white p-4">
-                <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2 mb-3">
-                  <TrendingUp className="h-4 w-4 text-amber-600" />
+              <div className="rounded-xl border border-border bg-card p-4">
+                <h3 className="text-sm font-semibold text-foreground flex items-center gap-2 mb-3">
+                  <TrendingUp className="h-4 w-4 text-amber-600 dark:text-amber-400" />
                   {t("feed.page.trendingWeek")}
                 </h3>
                 <ul className="space-y-2.5">
                   {stats.trending_posts.slice(0, 4).map((p: any) => (
                     <li key={p.id} className="text-sm">
-                      <p className="font-medium text-gray-800 line-clamp-2">{p.title}</p>
-                      <div className="mt-1 flex items-center gap-3 text-[11px] text-gray-400">
+                      <p className="font-medium text-foreground line-clamp-2">{p.title}</p>
+                      <div className="mt-1 flex items-center gap-3 text-[11px] text-muted-foreground">
                         <span>{p.author_first_name} {p.author_last_name}</span>
                         <span className="inline-flex items-center gap-1">
                           <MessageCircle className="h-3 w-3" /> {p.reply_count}
@@ -352,7 +352,7 @@ function FilterChip({
       className={`rounded-full px-3 py-1 text-xs font-medium transition-all ${
         active
           ? "bg-brand-600 text-white shadow-sm"
-          : "bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900"
+          : "bg-muted text-muted-foreground hover:bg-muted/70 hover:text-foreground"
       }`}
     >
       {children}
@@ -372,19 +372,19 @@ function StatCard({
   tone: "blue" | "green" | "amber" | "purple";
 }) {
   const toneClasses: Record<string, { bg: string; text: string; ring: string }> = {
-    blue:   { bg: "bg-blue-50",   text: "text-blue-700",   ring: "group-hover:ring-blue-200" },
-    green:  { bg: "bg-green-50",  text: "text-green-700",  ring: "group-hover:ring-green-200" },
-    amber:  { bg: "bg-amber-50",  text: "text-amber-700",  ring: "group-hover:ring-amber-200" },
-    purple: { bg: "bg-purple-50", text: "text-purple-700", ring: "group-hover:ring-purple-200" },
+    blue:   { bg: "bg-blue-50 dark:bg-blue-950/40",   text: "text-blue-700 dark:text-blue-300",   ring: "group-hover:ring-blue-200" },
+    green:  { bg: "bg-green-50 dark:bg-green-950/40",  text: "text-green-700 dark:text-green-300",  ring: "group-hover:ring-green-200" },
+    amber:  { bg: "bg-amber-50 dark:bg-amber-950/40",  text: "text-amber-700 dark:text-amber-300",  ring: "group-hover:ring-amber-200" },
+    purple: { bg: "bg-purple-50 dark:bg-purple-950/40", text: "text-purple-700 dark:text-purple-300", ring: "group-hover:ring-purple-200" },
   };
   const t = toneClasses[tone];
   return (
-    <div className={`group rounded-xl border border-gray-200 bg-white p-3 transition-all hover:shadow-sm hover:-translate-y-0.5 ring-1 ring-transparent ${t.ring}`}>
+    <div className={`group rounded-xl border border-border bg-card p-3 transition-all hover:shadow-sm hover:-translate-y-0.5 ring-1 ring-transparent ${t.ring}`}>
       <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${t.bg} ${t.text}`}>
         {icon}
       </div>
-      <p className="mt-2 text-2xl font-bold text-gray-900 leading-none">{value}</p>
-      <p className="mt-1 text-[11px] text-gray-500">{label}</p>
+      <p className="mt-2 text-2xl font-bold text-foreground leading-none">{value}</p>
+      <p className="mt-1 text-[11px] text-muted-foreground">{label}</p>
     </div>
   );
 }
@@ -393,17 +393,17 @@ function FeedSkeleton() {
   return (
     <div className="space-y-4">
       {[0, 1, 2].map((i) => (
-        <div key={i} className="rounded-xl border border-gray-200 bg-white p-5 animate-pulse">
+        <div key={i} className="rounded-xl border border-border bg-card p-5 animate-pulse">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-gray-200" />
+            <div className="h-10 w-10 rounded-full bg-muted" />
             <div className="space-y-2 flex-1">
-              <div className="h-3 w-32 bg-gray-200 rounded" />
-              <div className="h-2.5 w-20 bg-gray-100 rounded" />
+              <div className="h-3 w-32 bg-muted rounded" />
+              <div className="h-2.5 w-20 bg-muted rounded" />
             </div>
           </div>
           <div className="mt-4 space-y-2">
-            <div className="h-3 w-full bg-gray-100 rounded" />
-            <div className="h-3 w-5/6 bg-gray-100 rounded" />
+            <div className="h-3 w-full bg-muted rounded" />
+            <div className="h-3 w-5/6 bg-muted rounded" />
           </div>
         </div>
       ))}
@@ -414,18 +414,18 @@ function FeedSkeleton() {
 function EmptyState({ search, filter }: { search?: string; filter: FeedFilter }) {
   const { t } = useTranslation();
   return (
-    <div className="rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center">
-      <div className="mx-auto h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 mb-3">
+    <div className="rounded-xl border border-dashed border-border bg-card p-10 text-center">
+      <div className="mx-auto h-12 w-12 rounded-full bg-muted flex items-center justify-center text-muted-foreground mb-3">
         <MessagesSquare className="h-6 w-6" />
       </div>
-      <p className="text-sm font-medium text-gray-700">
+      <p className="text-sm font-medium text-muted-foreground">
         {search
           ? t("feed.page.emptySearch")
           : filter === "mine"
             ? t("feed.page.emptyMine")
             : t("feed.page.emptyAll")}
       </p>
-      <p className="mt-1 text-xs text-gray-400">
+      <p className="mt-1 text-xs text-muted-foreground">
         {search ? t("feed.page.emptySearchHint") : t("feed.page.emptyHint")}
       </p>
     </div>

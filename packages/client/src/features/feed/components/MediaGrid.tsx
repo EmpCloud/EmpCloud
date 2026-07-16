@@ -26,7 +26,7 @@ export function MediaGrid({ media }: Props) {
               href={f.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-xs bg-gray-100 text-gray-700 px-3 py-1.5 rounded-full hover:bg-gray-200"
+              className="inline-flex items-center gap-1.5 text-xs bg-muted text-muted-foreground px-3 py-1.5 rounded-full hover:bg-muted"
             >
               <FileText className="h-3.5 w-3.5" />
               {f.name || "Attachment"}
@@ -53,11 +53,11 @@ function ImageMosaic({ images }: { images: MediaAttachment[] }) {
           : "grid grid-cols-2";
 
   return (
-    <div className={`${cls} gap-1 rounded-lg overflow-hidden border border-gray-100`}>
+    <div className={`${cls} gap-1 rounded-lg overflow-hidden border border-border`}>
       {visible.map((img, i) => (
         <div
           key={i}
-          className="relative bg-gray-50 aspect-[4/3]"
+          className="relative bg-muted aspect-[4/3]"
           style={visible.length === 1 ? { aspectRatio: "16/9" } : undefined}
         >
           <img src={img.url} alt="" className="h-full w-full object-cover" />
