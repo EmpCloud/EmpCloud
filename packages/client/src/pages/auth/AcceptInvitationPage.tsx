@@ -17,6 +17,7 @@ import axios from "axios";
 import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { showToast } from "@/components/ui/Toast";
 
 const PASSWORD_MIN = 8;
@@ -143,7 +144,8 @@ export default function AcceptInvitationPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <div className="absolute top-4 right-4">
+      <div className="absolute top-4 right-4 flex items-center gap-2">
+        <ThemeToggle />
         <LanguageSwitcher />
       </div>
       <div className="w-full max-w-md">

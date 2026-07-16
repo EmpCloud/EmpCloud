@@ -7,6 +7,7 @@ import { forgotPasswordSchema, type ForgotPasswordInput } from "@empcloud/shared
 import { useForgotPassword } from "@/api/hooks";
 import { ArrowLeft } from "lucide-react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
 export default function ForgotPasswordPage() {
   const { t } = useTranslation();
@@ -38,7 +39,8 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <div className="absolute top-4 right-4">
+      <div className="absolute top-4 right-4 flex items-center gap-2">
+        <ThemeToggle />
         <LanguageSwitcher />
       </div>
       <div className="w-full max-w-md">

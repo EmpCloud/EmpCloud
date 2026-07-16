@@ -8,6 +8,7 @@ import { useLogin } from "@/api/hooks";
 import { useAuthStore } from "@/lib/auth-store";
 import { Eye, EyeOff } from "lucide-react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
 export default function LoginPage() {
   const { t } = useTranslation();
@@ -81,7 +82,8 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <div className="absolute top-4 right-4">
+      <div className="absolute top-4 right-4 flex items-center gap-2">
+        <ThemeToggle />
         <LanguageSwitcher />
       </div>
       <div className="w-full max-w-md">
