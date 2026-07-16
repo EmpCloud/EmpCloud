@@ -15,8 +15,8 @@ export default function ChangePasswordPage() {
   return (
     <div className="max-w-3xl">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">{t("accountSecurity.title")}</h1>
-        <p className="text-gray-500 mt-1">{t("accountSecurity.subtitle")}</p>
+        <h1 className="text-2xl font-bold text-foreground">{t("accountSecurity.title")}</h1>
+        <p className="text-muted-foreground mt-1">{t("accountSecurity.subtitle")}</p>
       </div>
       <ChangePasswordCard />
     </div>
