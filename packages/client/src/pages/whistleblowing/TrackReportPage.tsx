@@ -7,19 +7,19 @@ import { Search, Clock, CheckCircle, AlertTriangle, XCircle, ArrowUpRight, FileT
 // Status → colour + icon. The label text comes from i18n
 // (whistleblowing.reports.status.*), reused from the reports list.
 const STATUS_CONFIG: Record<string, { color: string; icon: typeof Clock }> = {
-  submitted: { color: "bg-blue-100 text-blue-700", icon: Clock },
-  under_investigation: { color: "bg-yellow-100 text-yellow-700", icon: Search },
-  escalated: { color: "bg-orange-100 text-orange-700", icon: ArrowUpRight },
-  resolved: { color: "bg-green-100 text-green-700", icon: CheckCircle },
-  dismissed: { color: "bg-gray-100 text-gray-600", icon: XCircle },
-  closed: { color: "bg-gray-100 text-gray-500", icon: CheckCircle },
+  submitted: { color: "bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300", icon: Clock },
+  under_investigation: { color: "bg-yellow-100 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300", icon: Search },
+  escalated: { color: "bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300", icon: ArrowUpRight },
+  resolved: { color: "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300", icon: CheckCircle },
+  dismissed: { color: "bg-muted text-muted-foreground", icon: XCircle },
+  closed: { color: "bg-muted text-muted-foreground", icon: CheckCircle },
 };
 
 const SEVERITY_BADGE: Record<string, string> = {
-  low: "bg-blue-100 text-blue-700",
-  medium: "bg-yellow-100 text-yellow-700",
-  high: "bg-orange-100 text-orange-700",
-  critical: "bg-red-100 text-red-700",
+  low: "bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300",
+  medium: "bg-yellow-100 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300",
+  high: "bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300",
+  critical: "bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300",
 };
 
 export default function TrackReportPage() {
@@ -43,16 +43,16 @@ export default function TrackReportPage() {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
-        <FileText className="h-7 w-7 text-brand-600" />
+        <FileText className="h-7 w-7 text-brand-600 dark:text-brand-400" />
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t("whistleblowing.track.title")}</h1>
-          <p className="text-sm text-gray-500">{t("whistleblowing.track.subtitle")}</p>
+          <h1 className="text-2xl font-bold text-foreground">{t("whistleblowing.track.title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("whistleblowing.track.subtitle")}</p>
         </div>
       </div>
 
       {/* Search Box */}
-      <div className="bg-white rounded-xl shadow-sm border p-6 mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">{t("whistleblowing.track.caseNumber")}</label>
+      <div className="bg-card rounded-xl shadow-sm border p-6 mb-6">
+        <label className="block text-sm font-medium text-muted-foreground mb-2">{t("whistleblowing.track.caseNumber")}</label>
         <div className="flex gap-3">
           <input
             type="text"
@@ -60,7 +60,7 @@ export default function TrackReportPage() {
             onChange={(e) => setCaseNumber(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             placeholder={t("whistleblowing.track.placeholder")}
-            className="flex-1 border border-gray-300 rounded-lg px-4 py-2.5 font-mono text-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+            className="flex-1 border border-border rounded-lg px-4 py-2.5 font-mono text-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-card text-foreground"
           />
           <button
             onClick={handleSearch}
@@ -75,18 +75,18 @@ export default function TrackReportPage() {
 
       {/* Loading */}
       {isLoading && (
-        <div className="bg-white rounded-xl shadow-sm border p-12 text-center">
+        <div className="bg-card rounded-xl shadow-sm border p-12 text-center">
           <div className="animate-spin h-8 w-8 border-4 border-brand-600 border-t-transparent rounded-full mx-auto mb-3" />
-          <p className="text-gray-500">{t("whistleblowing.track.lookingUp")}</p>
+          <p className="text-muted-foreground">{t("whistleblowing.track.lookingUp")}</p>
         </div>
       )}
 
       {/* Error */}
       {isError && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+        <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-xl p-6 text-center">
           <AlertTriangle className="h-8 w-8 text-red-400 mx-auto mb-2" />
-          <p className="text-red-700 font-medium">{t("whistleblowing.track.notFound")}</p>
-          <p className="text-sm text-red-600 mt-1">
+          <p className="text-red-700 dark:text-red-300 font-medium">{t("whistleblowing.track.notFound")}</p>
+          <p className="text-sm text-red-600 dark:text-red-400 mt-1">
             {t("whistleblowing.track.notFoundDetail", { caseNumber: searchCase })}
           </p>
         </div>
@@ -94,12 +94,12 @@ export default function TrackReportPage() {
 
       {/* Report Details */}
       {data && (
-        <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-          <div className="p-6 border-b bg-gray-50">
+        <div className="bg-card rounded-xl shadow-sm border overflow-hidden">
+          <div className="p-6 border-b bg-muted">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500">{t("whistleblowing.track.caseNumber")}</p>
-                <p className="text-xl font-mono font-bold text-gray-900">{data.case_number}</p>
+                <p className="text-sm text-muted-foreground">{t("whistleblowing.track.caseNumber")}</p>
+                <p className="text-xl font-mono font-bold text-foreground">{data.case_number}</p>
               </div>
               <div className="flex items-center gap-3">
                 <span className={`px-3 py-1 rounded-full text-xs font-medium ${SEVERITY_BADGE[data.severity] || ""}`}>
@@ -122,24 +122,24 @@ export default function TrackReportPage() {
 
           <div className="p-6 space-y-4">
             <div>
-              <p className="text-sm text-gray-500">{t("whistleblowing.track.category")}</p>
-              <p className="font-medium text-gray-900 capitalize">
+              <p className="text-sm text-muted-foreground">{t("whistleblowing.track.category")}</p>
+              <p className="font-medium text-foreground capitalize">
                 {t(`whistleblowing.reports.category.${data.category}`, { defaultValue: data.category?.replace(/_/g, " ") })}
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">{t("whistleblowing.track.subject")}</p>
-              <p className="font-medium text-gray-900">{data.subject}</p>
+              <p className="text-sm text-muted-foreground">{t("whistleblowing.track.subject")}</p>
+              <p className="font-medium text-foreground">{data.subject}</p>
             </div>
             <div className="flex gap-6">
               <div>
-                <p className="text-sm text-gray-500">{t("whistleblowing.track.submitted")}</p>
-                <p className="text-gray-900">{new Date(data.created_at).toLocaleDateString()}</p>
+                <p className="text-sm text-muted-foreground">{t("whistleblowing.track.submitted")}</p>
+                <p className="text-foreground">{new Date(data.created_at).toLocaleDateString()}</p>
               </div>
               {data.resolved_at && (
                 <div>
-                  <p className="text-sm text-gray-500">{t("whistleblowing.track.resolved")}</p>
-                  <p className="text-gray-900">{new Date(data.resolved_at).toLocaleDateString()}</p>
+                  <p className="text-sm text-muted-foreground">{t("whistleblowing.track.resolved")}</p>
+                  <p className="text-foreground">{new Date(data.resolved_at).toLocaleDateString()}</p>
                 </div>
               )}
             </div>
@@ -148,7 +148,7 @@ export default function TrackReportPage() {
           {/* Updates Timeline */}
           {data.updates && data.updates.length > 0 && (
             <div className="p-6 border-t">
-              <h3 className="text-sm font-semibold text-gray-700 uppercase mb-4">{t("whistleblowing.track.updates")}</h3>
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase mb-4">{t("whistleblowing.track.updates")}</h3>
               <div className="space-y-4">
                 {data.updates.map((update: { id: number; update_type: string; content: string; created_at: string }) => (
                   <div key={update.id} className="flex gap-3">
@@ -156,8 +156,8 @@ export default function TrackReportPage() {
                       <div className="h-2.5 w-2.5 rounded-full bg-brand-400" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-sm text-gray-900">{update.content}</p>
-                      <p className="text-xs text-gray-400 mt-1">
+                      <p className="text-sm text-foreground">{update.content}</p>
+                      <p className="text-xs text-muted-foreground mt-1">
                         {new Date(update.created_at).toLocaleString()} &middot;{" "}
                         <span className="capitalize">{update.update_type.replace(/_/g, " ")}</span>
                       </p>
