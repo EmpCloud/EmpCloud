@@ -9,19 +9,19 @@ import {
 } from "lucide-react";
 
 const STATUS_CONFIG: Record<string, { color: string }> = {
-  submitted: { color: "bg-blue-100 text-blue-700" },
-  under_investigation: { color: "bg-yellow-100 text-yellow-700" },
-  escalated: { color: "bg-orange-100 text-orange-700" },
-  resolved: { color: "bg-green-100 text-green-700" },
-  dismissed: { color: "bg-gray-100 text-gray-600" },
-  closed: { color: "bg-gray-100 text-gray-500" },
+  submitted: { color: "bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300" },
+  under_investigation: { color: "bg-yellow-100 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300" },
+  escalated: { color: "bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300" },
+  resolved: { color: "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300" },
+  dismissed: { color: "bg-muted text-muted-foreground" },
+  closed: { color: "bg-muted text-muted-foreground" },
 };
 
 const SEVERITY_BADGE: Record<string, string> = {
-  low: "bg-blue-100 text-blue-700",
-  medium: "bg-yellow-100 text-yellow-700",
-  high: "bg-orange-100 text-orange-700",
-  critical: "bg-red-100 text-red-700",
+  low: "bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300",
+  medium: "bg-yellow-100 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300",
+  high: "bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300",
+  critical: "bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300",
 };
 
 const STATUSES = ["submitted", "under_investigation", "escalated", "resolved", "dismissed", "closed"];
@@ -116,20 +116,20 @@ export default function ReportDetailPage() {
 
   if (!data) return null;
 
-  const statusCfg = STATUS_CONFIG[data.status] || { color: "bg-gray-100 text-gray-600" };
+  const statusCfg = STATUS_CONFIG[data.status] || { color: "bg-muted text-muted-foreground" };
   const statusLabel = t(`reportDetail.status.${data.status}`, { defaultValue: data.status });
 
   return (
     <div className="max-w-4xl mx-auto">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <Link to="/whistleblowing/reports" className="p-1 hover:bg-gray-100 rounded-lg transition">
-          <ArrowLeft className="h-5 w-5 text-gray-500" />
+        <Link to="/whistleblowing/reports" className="p-1 hover:bg-muted rounded-lg transition">
+          <ArrowLeft className="h-5 w-5 text-muted-foreground" />
         </Link>
-        <ShieldAlert className="h-6 w-6 text-brand-600" />
+        <ShieldAlert className="h-6 w-6 text-brand-600 dark:text-brand-400" />
         <div className="flex-1">
           <div className="flex items-center gap-3">
-            <h1 className="text-xl font-bold text-gray-900 font-mono">{data.case_number}</h1>
+            <h1 className="text-xl font-bold text-foreground font-mono">{data.case_number}</h1>
             <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${statusCfg.color}`}>
               {statusLabel}
             </span>
@@ -144,35 +144,35 @@ export default function ReportDetailPage() {
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
           {/* Report Info */}
-          <div className="bg-white rounded-xl shadow-sm border p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">{data.subject}</h2>
+          <div className="bg-card rounded-xl shadow-sm border p-6">
+            <h2 className="text-lg font-semibold text-foreground mb-4">{data.subject}</h2>
             <div className="flex gap-4 mb-4 text-sm">
               <div>
-                <span className="text-gray-500">{t("reportDetail.reportInfo.categoryLabel")}</span>{" "}
+                <span className="text-muted-foreground">{t("reportDetail.reportInfo.categoryLabel")}</span>{" "}
                 <span className="font-medium capitalize">{data.category?.replace(/_/g, " ")}</span>
               </div>
               <div>
-                <span className="text-gray-500">{t("reportDetail.reportInfo.anonymousLabel")}</span>{" "}
-                <span className={`font-medium ${data.is_anonymous ? "text-green-600" : "text-gray-700"}`}>
+                <span className="text-muted-foreground">{t("reportDetail.reportInfo.anonymousLabel")}</span>{" "}
+                <span className={`font-medium ${data.is_anonymous ? "text-green-600 dark:text-green-400" : "text-muted-foreground"}`}>
                   {data.is_anonymous ? t("reportDetail.reportInfo.anonymousYes") : t("reportDetail.reportInfo.anonymousNo")}
                 </span>
               </div>
               {!data.is_anonymous && data.reporter_name && (
                 <div>
-                  <span className="text-gray-500">{t("reportDetail.reportInfo.reporterLabel")}</span>{" "}
+                  <span className="text-muted-foreground">{t("reportDetail.reportInfo.reporterLabel")}</span>{" "}
                   <span className="font-medium">{data.reporter_name}</span>
                 </div>
               )}
             </div>
-            <div className="bg-gray-50 rounded-lg p-4 text-sm text-gray-700 whitespace-pre-wrap">
+            <div className="bg-muted rounded-lg p-4 text-sm text-muted-foreground whitespace-pre-wrap">
               {data.description}
             </div>
             {data.evidence_paths && data.evidence_paths.length > 0 && (
               <div className="mt-4">
-                <p className="text-sm font-medium text-gray-700 mb-2">{t("reportDetail.reportInfo.evidenceFilesLabel")}</p>
+                <p className="text-sm font-medium text-muted-foreground mb-2">{t("reportDetail.reportInfo.evidenceFilesLabel")}</p>
                 <div className="flex flex-wrap gap-2">
                   {data.evidence_paths.map((path: string, idx: number) => (
-                    <span key={idx} className="px-3 py-1 bg-gray-100 rounded-lg text-sm text-gray-600">
+                    <span key={idx} className="px-3 py-1 bg-muted rounded-lg text-sm text-muted-foreground">
                       {path.split("/").pop()}
                     </span>
                   ))}
@@ -182,25 +182,25 @@ export default function ReportDetailPage() {
           </div>
 
           {/* Investigation Timeline */}
-          <div className="bg-white rounded-xl shadow-sm border p-6">
-            <h3 className="text-sm font-semibold text-gray-700 uppercase mb-4">{t("reportDetail.timeline.heading")}</h3>
+          <div className="bg-card rounded-xl shadow-sm border p-6">
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase mb-4">{t("reportDetail.timeline.heading")}</h3>
             {data.updates && data.updates.length > 0 ? (
               <div className="space-y-4">
                 {data.updates.map((u: any) => (
-                  <div key={u.id} className="flex gap-3 border-l-2 border-gray-200 pl-4 pb-2">
+                  <div key={u.id} className="flex gap-3 border-l-2 border-border pl-4 pb-2">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-medium px-2 py-0.5 rounded bg-gray-100 text-gray-600 capitalize">
+                        <span className="text-xs font-medium px-2 py-0.5 rounded bg-muted text-muted-foreground capitalize">
                           {u.update_type.replace(/_/g, " ")}
                         </span>
                         {u.is_visible_to_reporter && (
-                          <span className="text-xs px-2 py-0.5 rounded bg-green-100 text-green-700">
+                          <span className="text-xs px-2 py-0.5 rounded bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300">
                             {t("reportDetail.timeline.visibleToReporterBadge")}
                           </span>
                         )}
                       </div>
-                      <p className="text-sm text-gray-800">{u.content}</p>
-                      <p className="text-xs text-gray-400 mt-1">
+                      <p className="text-sm text-foreground">{u.content}</p>
+                      <p className="text-xs text-muted-foreground mt-1">
                         {u.created_by_name || t("reportDetail.timeline.systemAuthor")} &middot; {new Date(u.created_at).toLocaleString()}
                       </p>
                     </div>
@@ -208,30 +208,30 @@ export default function ReportDetailPage() {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-gray-400">{t("reportDetail.timeline.empty")}</p>
+              <p className="text-sm text-muted-foreground">{t("reportDetail.timeline.empty")}</p>
             )}
           </div>
 
           {/* Add Update */}
-          <div className="bg-white rounded-xl shadow-sm border p-6">
-            <h3 className="text-sm font-semibold text-gray-700 uppercase mb-4">{t("reportDetail.addUpdate.heading")}</h3>
+          <div className="bg-card rounded-xl shadow-sm border p-6">
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase mb-4">{t("reportDetail.addUpdate.heading")}</h3>
             <div className="space-y-3">
               <div className="flex gap-3">
                 <select
                   value={updateType}
                   onChange={(e) => setUpdateType(e.target.value)}
-                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                  className="border border-border rounded-lg px-3 py-2 text-sm bg-card text-foreground"
                 >
                   <option value="note">{t("reportDetail.addUpdate.typeNote")}</option>
                   <option value="response_to_reporter">{t("reportDetail.addUpdate.typeResponseToReporter")}</option>
                   <option value="status_change">{t("reportDetail.addUpdate.typeStatusChange")}</option>
                 </select>
-                <label className="flex items-center gap-2 text-sm text-gray-600">
+                <label className="flex items-center gap-2 text-sm text-muted-foreground">
                   <input
                     type="checkbox"
                     checked={visibleToReporter}
                     onChange={(e) => setVisibleToReporter(e.target.checked)}
-                    className="rounded border-gray-300"
+                    className="rounded border-border"
                   />
                   {t("reportDetail.addUpdate.visibleToReporterCheckbox")}
                 </label>
@@ -241,7 +241,7 @@ export default function ReportDetailPage() {
                 onChange={(e) => setUpdateContent(e.target.value)}
                 rows={3}
                 placeholder={t("reportDetail.addUpdate.contentPlaceholder")}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-card text-foreground"
               />
               <button
                 onClick={() => updateMutation.mutate()}
@@ -258,35 +258,35 @@ export default function ReportDetailPage() {
         {/* Sidebar Actions */}
         <div className="space-y-4">
           {/* Info Card */}
-          <div className="bg-white rounded-xl shadow-sm border p-5 space-y-3">
+          <div className="bg-card rounded-xl shadow-sm border p-5 space-y-3">
             <div className="flex items-center gap-2 text-sm">
-              <Clock className="h-4 w-4 text-gray-400" />
-              <span className="text-gray-500">{t("reportDetail.info.submittedLabel")}</span>
-              <span className="text-gray-900">{new Date(data.created_at).toLocaleDateString()}</span>
+              <Clock className="h-4 w-4 text-muted-foreground" />
+              <span className="text-muted-foreground">{t("reportDetail.info.submittedLabel")}</span>
+              <span className="text-foreground">{new Date(data.created_at).toLocaleDateString()}</span>
             </div>
             {data.investigator_name && (
               <div className="flex items-center gap-2 text-sm">
-                <User className="h-4 w-4 text-gray-400" />
-                <span className="text-gray-500">{t("reportDetail.info.investigatorLabel")}</span>
-                <span className="text-gray-900">{data.investigator_name}</span>
+                <User className="h-4 w-4 text-muted-foreground" />
+                <span className="text-muted-foreground">{t("reportDetail.info.investigatorLabel")}</span>
+                <span className="text-foreground">{data.investigator_name}</span>
               </div>
             )}
             {data.escalated_to && (
               <div className="flex items-center gap-2 text-sm">
                 <ArrowUpRight className="h-4 w-4 text-orange-500" />
-                <span className="text-gray-500">{t("reportDetail.info.escalatedToLabel")}</span>
-                <span className="text-gray-900">{data.escalated_to}</span>
+                <span className="text-muted-foreground">{t("reportDetail.info.escalatedToLabel")}</span>
+                <span className="text-foreground">{data.escalated_to}</span>
               </div>
             )}
             {data.resolved_at && (
               <div className="flex items-center gap-2 text-sm">
                 <CheckCircle className="h-4 w-4 text-green-500" />
-                <span className="text-gray-500">{t("reportDetail.info.resolvedLabel")}</span>
-                <span className="text-gray-900">{new Date(data.resolved_at).toLocaleDateString()}</span>
+                <span className="text-muted-foreground">{t("reportDetail.info.resolvedLabel")}</span>
+                <span className="text-foreground">{new Date(data.resolved_at).toLocaleDateString()}</span>
               </div>
             )}
             {data.resolution && (
-              <div className="mt-2 p-3 bg-green-50 rounded-lg text-sm text-green-800">
+              <div className="mt-2 p-3 bg-green-50 dark:bg-green-950/40 rounded-lg text-sm text-green-800 dark:text-green-200">
                 <p className="font-medium mb-1">{t("reportDetail.info.resolutionLabel")}</p>
                 <p>{data.resolution}</p>
               </div>
@@ -294,17 +294,17 @@ export default function ReportDetailPage() {
           </div>
 
           {/* Assign Investigator */}
-          <div className="bg-white rounded-xl shadow-sm border p-5">
-            <h4 className="text-sm font-semibold text-gray-700 mb-3">{t("reportDetail.assign.heading")}</h4>
+          <div className="bg-card rounded-xl shadow-sm border p-5">
+            <h4 className="text-sm font-semibold text-muted-foreground mb-3">{t("reportDetail.assign.heading")}</h4>
             {usersError && (
-              <p className="text-xs text-red-600 mb-2">{t("reportDetail.assign.loadUsersError")}</p>
+              <p className="text-xs text-red-600 dark:text-red-400 mb-2">{t("reportDetail.assign.loadUsersError")}</p>
             )}
             <div className="flex items-center gap-2">
               <select
                 value={investigatorId}
                 onChange={(e) => setInvestigatorId(e.target.value)}
                 disabled={usersLoading || !!usersError}
-                className="flex-1 min-w-0 border border-gray-300 rounded-lg px-3 py-2 text-sm disabled:opacity-50"
+                className="flex-1 min-w-0 border border-border rounded-lg px-3 py-2 text-sm disabled:opacity-50 bg-card text-foreground"
               >
                 <option value="">
                   {usersLoading
@@ -332,23 +332,23 @@ export default function ReportDetailPage() {
               </button>
             </div>
             {assignMutation.isError && (
-              <p className="text-xs text-red-600 mt-2">
+              <p className="text-xs text-red-600 dark:text-red-400 mt-2">
                 {(assignMutation.error as any)?.response?.data?.error?.message || t("reportDetail.assign.error")}
               </p>
             )}
             {assignMutation.isSuccess && (
-              <p className="text-xs text-green-600 mt-2">{t("reportDetail.assign.success")}</p>
+              <p className="text-xs text-green-600 dark:text-green-400 mt-2">{t("reportDetail.assign.success")}</p>
             )}
           </div>
 
           {/* Change Status */}
-          <div className="bg-white rounded-xl shadow-sm border p-5">
-            <h4 className="text-sm font-semibold text-gray-700 mb-3">{t("reportDetail.changeStatus.heading")}</h4>
+          <div className="bg-card rounded-xl shadow-sm border p-5">
+            <h4 className="text-sm font-semibold text-muted-foreground mb-3">{t("reportDetail.changeStatus.heading")}</h4>
             <div className="space-y-2">
               <select
                 value={newStatus}
                 onChange={(e) => setNewStatus(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-card text-foreground"
               >
                 <option value="">{t("reportDetail.changeStatus.optionSelect")}</option>
                 {STATUSES.filter((s) => s !== data.status).map((s) => (
@@ -361,7 +361,7 @@ export default function ReportDetailPage() {
                   onChange={(e) => setResolution(e.target.value)}
                   rows={2}
                   placeholder={t("reportDetail.changeStatus.resolutionPlaceholder")}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                  className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-card text-foreground"
                 />
               )}
               <button
@@ -375,8 +375,8 @@ export default function ReportDetailPage() {
           </div>
 
           {/* Escalate */}
-          <div className="bg-white rounded-xl shadow-sm border p-5">
-            <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+          <div className="bg-card rounded-xl shadow-sm border p-5">
+            <h4 className="text-sm font-semibold text-muted-foreground mb-3 flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-orange-500" />
               {t("reportDetail.escalate.heading")}
             </h4>
@@ -386,7 +386,7 @@ export default function ReportDetailPage() {
                 value={escalateTo}
                 onChange={(e) => setEscalateTo(e.target.value)}
                 placeholder={t("reportDetail.escalate.placeholder")}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-card text-foreground"
               />
               <button
                 onClick={() => escalateMutation.mutate()}
