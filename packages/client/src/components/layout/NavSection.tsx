@@ -37,14 +37,14 @@ function isItemActive(item: NavItem, pathname: string, allItems: NavItem[]): boo
     : isExact || (isPrefix && !hasMoreSpecificMatch);
 }
 
-export function NavSection({ label, items, location, activeClass = "bg-brand-50 text-brand-700", unreadByPath }: NavSectionProps) {
+export function NavSection({ label, items, location, activeClass = "bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300", unreadByPath }: NavSectionProps) {
   // Track the running section so a divider+label renders before the first
   // surviving item of each new group (resilient to permission-filtered items).
   let currentSection: string | undefined;
   return (
     <>
       {label && (
-        <div className="text-xs uppercase text-gray-400 mt-6 mb-2 px-3">{label}</div>
+        <div className="text-xs uppercase text-muted-foreground mt-6 mb-2 px-3">{label}</div>
       )}
       {items.map((item) => {
         let header: string | null = null;
@@ -55,7 +55,7 @@ export function NavSection({ label, items, location, activeClass = "bg-brand-50 
         return (
           <Fragment key={item.path}>
             {header && (
-              <div className="mx-3 mt-4 mb-1 border-t border-gray-100 pt-3 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+              <div className="mx-3 mt-4 mb-1 border-t border-border pt-3 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                 {header}
               </div>
             )}
@@ -101,7 +101,7 @@ function NavLink({
       className={`flex items-center gap-3 ${indent ? "pl-9 pr-3" : "px-3"} py-2 rounded-lg text-sm font-medium transition-colors ${
         isActive
           ? activeClass
-          : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+          : "text-muted-foreground hover:bg-muted hover:text-foreground"
       }`}
     >
       <Icon className={`${indent ? "h-4 w-4" : "h-5 w-5"} flex-shrink-0`} />
@@ -138,7 +138,7 @@ function NestedNavItem({
         className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors w-full ${
           childActive
             ? activeClass
-            : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+            : "text-muted-foreground hover:bg-muted hover:text-foreground"
         }`}
       >
         <Icon className="h-5 w-5 flex-shrink-0" />
