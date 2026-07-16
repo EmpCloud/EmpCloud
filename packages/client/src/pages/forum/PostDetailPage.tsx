@@ -25,10 +25,10 @@ import ConfirmDialog from "@/components/ui/ConfirmDialog";
 const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
 
 const POST_TYPE_CONFIG: Record<string, { labelKey: string; color: string; icon: typeof MessageCircle }> = {
-  discussion: { labelKey: "postType.discussion", color: "bg-blue-100 text-blue-700", icon: MessagesSquare },
-  question: { labelKey: "postType.question", color: "bg-purple-100 text-purple-700", icon: HelpCircle },
-  idea: { labelKey: "postType.idea", color: "bg-amber-100 text-amber-700", icon: Lightbulb },
-  poll: { labelKey: "postType.poll", color: "bg-green-100 text-green-700", icon: BarChart3 },
+  discussion: { labelKey: "postType.discussion", color: "bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300", icon: MessagesSquare },
+  question: { labelKey: "postType.question", color: "bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300", icon: HelpCircle },
+  idea: { labelKey: "postType.idea", color: "bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300", icon: Lightbulb },
+  poll: { labelKey: "postType.poll", color: "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300", icon: BarChart3 },
 };
 
 function timeAgo(dateStr: string, t: (key: string, opts?: Record<string, unknown>) => string) {
@@ -132,7 +132,7 @@ export default function PostDetailPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="text-gray-400">{t("postDetail.loading")}</div>
+        <div className="text-muted-foreground">{t("postDetail.loading")}</div>
       </div>
     );
   }
@@ -140,7 +140,7 @@ export default function PostDetailPage() {
   if (!post) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="text-gray-400">{t("postDetail.notFound")}</div>
+        <div className="text-muted-foreground">{t("postDetail.notFound")}</div>
       </div>
     );
   }
@@ -157,29 +157,29 @@ export default function PostDetailPage() {
     const canDeleteReply = user?.id === reply.author_id || isHR;
 
     return (
-      <div className={`${depth > 0 ? "ml-8 border-l-2 border-gray-100 pl-4" : ""}`}>
-        <div className={`py-4 ${depth === 0 ? "border-t border-gray-100" : ""}`}>
+      <div className={`${depth > 0 ? "ml-8 border-l-2 border-border pl-4" : ""}`}>
+        <div className={`py-4 ${depth === 0 ? "border-t border-border" : ""}`}>
           <div className="flex items-start gap-3">
-            <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
-              <span className="text-xs font-semibold text-gray-600">
+            <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+              <span className="text-xs font-semibold text-muted-foreground">
                 {reply.author_first_name?.[0]}
                 {reply.author_last_name?.[0]}
               </span>
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-sm font-medium text-gray-900">
+                <span className="text-sm font-medium text-foreground">
                   {reply.author_first_name} {reply.author_last_name}
                 </span>
-                <span className="text-xs text-gray-400">{timeAgo(reply.created_at, t)}</span>
+                <span className="text-xs text-muted-foreground">{timeAgo(reply.created_at, t)}</span>
                 {Boolean(reply.is_accepted) && (
-                  <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
+                  <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-950/40 px-2 py-0.5 rounded-full">
                     <CheckCircle2 className="h-3 w-3" /> {t("postDetail.reply.acceptedAnswer")}
                   </span>
                 )}
               </div>
 
-              <div className="text-sm text-gray-700 whitespace-pre-wrap mb-2">
+              <div className="text-sm text-muted-foreground whitespace-pre-wrap mb-2">
                 {reply.content}
               </div>
 
@@ -191,7 +191,7 @@ export default function PostDetailPage() {
                   className={`flex items-center gap-1 text-xs transition-colors ${
                     reply.user_liked
                       ? "text-red-500 hover:text-red-600"
-                      : "text-gray-400 hover:text-red-500"
+                      : "text-muted-foreground hover:text-red-500"
                   }`}
                 >
                   <Heart className={`h-3.5 w-3.5 ${reply.user_liked ? "fill-current" : ""}`} />
@@ -204,7 +204,7 @@ export default function PostDetailPage() {
                       setReplyingTo(reply.id);
                       setReplyingToName(`${reply.author_first_name} ${reply.author_last_name}`);
                     }}
-                    className="flex items-center gap-1 text-xs text-gray-400 hover:text-brand-600 transition-colors"
+                    className="flex items-center gap-1 text-xs text-muted-foreground hover:text-brand-600 transition-colors"
                   >
                     <CornerDownRight className="h-3.5 w-3.5" /> {t("postDetail.reply.replyAction")}
                   </button>
@@ -213,7 +213,7 @@ export default function PostDetailPage() {
                 {canAcceptAnswers && !reply.is_accepted && (
                   <button
                     onClick={() => acceptReply.mutate(reply.id)}
-                    className="flex items-center gap-1 text-xs text-gray-400 hover:text-green-600 transition-colors"
+                    className="flex items-center gap-1 text-xs text-muted-foreground hover:text-green-600 transition-colors"
                   >
                     <CheckCircle2 className="h-3.5 w-3.5" /> {t("postDetail.reply.acceptAnswer")}
                   </button>
@@ -222,7 +222,7 @@ export default function PostDetailPage() {
                 {canDeleteReply && (
                   <button
                     onClick={() => setDeleteReplyId(reply.id)}
-                    className="flex items-center gap-1 text-xs text-gray-400 hover:text-red-500 transition-colors"
+                    className="flex items-center gap-1 text-xs text-muted-foreground hover:text-red-500 transition-colors"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -246,23 +246,23 @@ export default function PostDetailPage() {
       <div className="flex items-center gap-3 mb-6">
         <button
           onClick={() => navigate(-1)}
-          className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+          className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-muted-foreground transition-colors"
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
         <Link
           to={`/forum/category/${post.category_id}`}
-          className="text-sm text-brand-600 hover:text-brand-700"
+          className="text-sm text-brand-600 dark:text-brand-400 hover:text-brand-700"
         >
           {post.category_name}
         </Link>
       </div>
 
       {/* Post */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+      <div className="bg-card rounded-xl border border-border p-6 mb-6">
         <div className="flex items-start gap-4">
-          <div className="h-12 w-12 rounded-full bg-brand-100 flex items-center justify-center flex-shrink-0">
-            <span className="text-base font-semibold text-brand-700">
+          <div className="h-12 w-12 rounded-full bg-brand-100 dark:bg-brand-950/40 flex items-center justify-center flex-shrink-0">
+            <span className="text-base font-semibold text-brand-700 dark:text-brand-300">
               {post.author_first_name?.[0]}
               {post.author_last_name?.[0]}
             </span>
@@ -275,28 +275,28 @@ export default function PostDetailPage() {
                 {t(`postDetail.${typeConfig.labelKey}`)}
               </span>
               {Boolean(post.is_pinned) && (
-                <span className="inline-flex items-center gap-1 text-xs text-amber-600">
+                <span className="inline-flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
                   <Pin className="h-3 w-3" /> {t("postDetail.badge.pinned")}
                 </span>
               )}
               {Boolean(post.is_locked) && (
-                <span className="inline-flex items-center gap-1 text-xs text-gray-400">
+                <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
                   <Lock className="h-3 w-3" /> {t("postDetail.badge.locked")}
                 </span>
               )}
             </div>
 
-            <h1 className="text-xl font-bold text-gray-900 mb-1">{post.title}</h1>
+            <h1 className="text-xl font-bold text-foreground mb-1">{post.title}</h1>
 
-            <div className="flex items-center gap-3 text-xs text-gray-400 mb-4">
-              <span className="font-medium text-gray-600">
+            <div className="flex items-center gap-3 text-xs text-muted-foreground mb-4">
+              <span className="font-medium text-muted-foreground">
                 {post.author_first_name} {post.author_last_name}
               </span>
               <span>{timeAgo(post.created_at, t)}</span>
               <span className="flex items-center gap-1"><Eye className="h-3 w-3" /> {post.view_count}</span>
             </div>
 
-            <div className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed mb-4">
+            <div className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed mb-4">
               {post.content}
             </div>
 
@@ -308,7 +308,7 @@ export default function PostDetailPage() {
                   return (
                     <div className="flex items-center gap-2 mb-4">
                       {parsed.map((tag: string) => (
-                        <span key={tag} className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs">
+                        <span key={tag} className="bg-muted text-muted-foreground px-2 py-0.5 rounded text-xs">
                           #{tag}
                         </span>
                       ))}
@@ -320,20 +320,20 @@ export default function PostDetailPage() {
             })()}
 
             {/* Actions */}
-            <div className="flex items-center gap-4 pt-3 border-t border-gray-100">
+            <div className="flex items-center gap-4 pt-3 border-t border-border">
               <button
                 onClick={() => toggleLike.mutate({ target_type: "post", target_id: post.id })}
                 className={`flex items-center gap-1.5 text-sm font-medium transition-colors ${
                   post.user_liked
                     ? "text-red-500 hover:text-red-600"
-                    : "text-gray-500 hover:text-red-500"
+                    : "text-muted-foreground hover:text-red-500"
                 }`}
               >
                 <Heart className={`h-4 w-4 ${post.user_liked ? "fill-current" : ""}`} />
                 {post.like_count > 0 ? post.like_count : t("postDetail.action.like")}
               </button>
 
-              <span className="flex items-center gap-1.5 text-sm text-gray-500">
+              <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
                 <MessageCircle className="h-4 w-4" />
                 {t("postDetail.replyCount", { count: post.reply_count })}
               </span>
@@ -343,14 +343,14 @@ export default function PostDetailPage() {
                 <>
                   <button
                     onClick={() => pinPost.mutate()}
-                    className="flex items-center gap-1 text-xs text-gray-400 hover:text-amber-600 transition-colors ml-auto"
+                    className="flex items-center gap-1 text-xs text-muted-foreground hover:text-amber-600 transition-colors ml-auto"
                   >
                     <Pin className="h-3.5 w-3.5" />
                     {post.is_pinned ? t("postDetail.action.unpin") : t("postDetail.action.pin")}
                   </button>
                   <button
                     onClick={() => lockPost.mutate()}
-                    className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+                    className="flex items-center gap-1 text-xs text-muted-foreground hover:text-muted-foreground transition-colors"
                   >
                     <Lock className="h-3.5 w-3.5" />
                     {post.is_locked ? t("postDetail.action.unlock") : t("postDetail.action.lock")}
@@ -361,7 +361,7 @@ export default function PostDetailPage() {
               {canDelete && (
                 <button
                   onClick={() => setShowDeletePost(true)}
-                  className="flex items-center gap-1 text-xs text-gray-400 hover:text-red-500 transition-colors"
+                  className="flex items-center gap-1 text-xs text-muted-foreground hover:text-red-500 transition-colors"
                 >
                   <Trash2 className="h-3.5 w-3.5" /> {t("postDetail.action.delete")}
                 </button>
@@ -372,13 +372,13 @@ export default function PostDetailPage() {
       </div>
 
       {/* Replies */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">
+      <div className="bg-card rounded-xl border border-border p-6">
+        <h2 className="text-lg font-semibold text-foreground mb-2">
           {t("postDetail.replies.heading", { count: replies.length })}
         </h2>
 
         {topLevelReplies.length === 0 ? (
-          <p className="text-sm text-gray-400 py-4">{t("postDetail.replies.empty")}</p>
+          <p className="text-sm text-muted-foreground py-4">{t("postDetail.replies.empty")}</p>
         ) : (
           topLevelReplies.map((reply: any) => (
             <ReplyCard key={reply.id} reply={reply} />
@@ -387,9 +387,9 @@ export default function PostDetailPage() {
 
         {/* Reply form */}
         {!post.is_locked ? (
-          <form onSubmit={handleReply} className="mt-6 pt-4 border-t border-gray-100">
+          <form onSubmit={handleReply} className="mt-6 pt-4 border-t border-border">
             {replyingTo && (
-              <div className="flex items-center gap-2 mb-2 text-xs text-gray-500">
+              <div className="flex items-center gap-2 mb-2 text-xs text-muted-foreground">
                 <CornerDownRight className="h-3 w-3" />
                 {t("postDetail.form.replyingTo", { name: replyingToName })}
                 <button
@@ -398,15 +398,15 @@ export default function PostDetailPage() {
                     setReplyingTo(null);
                     setReplyingToName("");
                   }}
-                  className="text-brand-600 hover:text-brand-700"
+                  className="text-brand-600 dark:text-brand-400 hover:text-brand-700"
                 >
                   {t("postDetail.form.cancel")}
                 </button>
               </div>
             )}
             <div className="flex gap-3">
-              <div className="h-8 w-8 rounded-full bg-brand-100 flex items-center justify-center flex-shrink-0">
-                <span className="text-xs font-semibold text-brand-700">
+              <div className="h-8 w-8 rounded-full bg-brand-100 dark:bg-brand-950/40 flex items-center justify-center flex-shrink-0">
+                <span className="text-xs font-semibold text-brand-700 dark:text-brand-300">
                   {user?.first_name?.[0]}
                   {user?.last_name?.[0]}
                 </span>
@@ -416,7 +416,7 @@ export default function PostDetailPage() {
                   value={replyContent}
                   onChange={(e) => setReplyContent(e.target.value)}
                   placeholder={t("postDetail.form.placeholder")}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm min-h-[80px] focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-y"
+                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm min-h-[80px] focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-y"
                   required
                 />
                 <div className="flex justify-end mt-2">
@@ -433,7 +433,7 @@ export default function PostDetailPage() {
             </div>
           </form>
         ) : (
-          <div className="mt-6 pt-4 border-t border-gray-100 text-center text-sm text-gray-400">
+          <div className="mt-6 pt-4 border-t border-border text-center text-sm text-muted-foreground">
             <Lock className="h-4 w-4 inline mr-1" />
             {t("postDetail.locked.message")}
           </div>
