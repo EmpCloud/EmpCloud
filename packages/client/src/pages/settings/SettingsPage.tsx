@@ -62,28 +62,28 @@ export default function SettingsPage() {
   const { data: locations } = useLocations();
   const [editingOrg, setEditingOrg] = useState(false);
 
-  if (isLoading) return <div className="text-gray-500">{t("settingsPage.loading")}</div>;
+  if (isLoading) return <div className="text-muted-foreground">{t("settingsPage.loading")}</div>;
 
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">{t("settingsPage.header.title")}</h1>
-        <p className="text-gray-500 mt-1">{t("settingsPage.header.subtitle")}</p>
+        <h1 className="text-2xl font-bold text-foreground">{t("settingsPage.header.title")}</h1>
+        <p className="text-muted-foreground mt-1">{t("settingsPage.header.subtitle")}</p>
       </div>
 
       {/* Organization info */}
       {editingOrg ? (
         <OrgEditForm org={org} onClose={() => setEditingOrg(false)} />
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+        <div className="bg-card rounded-xl border border-border p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <Building2 className="h-5 w-5 text-brand-600" />
-              <h2 className="font-semibold text-gray-900">{t("settingsPage.company.title")}</h2>
+              <Building2 className="h-5 w-5 text-brand-600 dark:text-brand-400" />
+              <h2 className="font-semibold text-foreground">{t("settingsPage.company.title")}</h2>
             </div>
             <button
               onClick={() => setEditingOrg(true)}
-              className="flex items-center gap-1.5 text-sm text-brand-600 hover:text-brand-700 font-medium"
+              className="flex items-center gap-1.5 text-sm text-brand-600 dark:text-brand-400 hover:text-brand-700 font-medium"
             >
               <Pencil className="h-3.5 w-3.5" /> {t("settingsPage.actions.edit")}
             </button>
@@ -101,8 +101,8 @@ export default function SettingsPage() {
               ["fields.language", org?.language],
             ].map(([labelKey, value]) => (
               <div key={labelKey as string}>
-                <p className="text-xs text-gray-500">{t(`settingsPage.${labelKey}`)}</p>
-                <p className="text-sm font-medium text-gray-900">{value || "\u2014"}</p>
+                <p className="text-xs text-muted-foreground">{t(`settingsPage.${labelKey}`)}</p>
+                <p className="text-sm font-medium text-foreground">{value || "\u2014"}</p>
               </div>
             ))}
           </div>
@@ -194,25 +194,25 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
   ];
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+    <form onSubmit={handleSubmit} className="bg-card rounded-xl border border-border p-6 mb-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <Building2 className="h-5 w-5 text-brand-600" />
-          <h2 className="font-semibold text-gray-900">{t("settingsPage.company.editTitle")}</h2>
+          <Building2 className="h-5 w-5 text-brand-600 dark:text-brand-400" />
+          <h2 className="font-semibold text-foreground">{t("settingsPage.company.editTitle")}</h2>
         </div>
-        <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600">
+        <button type="button" onClick={onClose} className="text-muted-foreground hover:text-muted-foreground">
           <X className="h-5 w-5" />
         </button>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {fields.map(([labelKey, key]) => (
           <div key={key}>
-            <label className="block text-xs text-gray-500 mb-1">{t(`settingsPage.${labelKey}`)}</label>
+            <label className="block text-xs text-muted-foreground mb-1">{t(`settingsPage.${labelKey}`)}</label>
             {key === "timezone" ? (
               <select
                 value={form[key]}
                 onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+                className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-card"
               >
                 <option value="">{t("settingsPage.form.selectTimezone")}</option>
                 {TIMEZONES.map((tz) => (
@@ -223,7 +223,7 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
               <select
                 value={form[key]}
                 onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+                className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-card"
               >
                 <option value="">{t("settingsPage.form.selectCountry")}</option>
                 {COUNTRIES.map((c) => (
@@ -241,7 +241,7 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
                       setValidationErrors((prev) => { const next = { ...prev }; delete next[key]; return next; });
                     }
                   }}
-                  className={`w-full px-3 py-2 border rounded-lg text-sm ${validationErrors[key] ? "border-red-400" : "border-gray-300"}`}
+                  className={`w-full px-3 py-2 border rounded-lg text-sm ${validationErrors[key] ? "border-red-400" : "border-border"}`}
                 />
                 {validationErrors[key] && (
                   <p className="text-xs text-red-500 mt-1">{validationErrors[key]}</p>
@@ -255,7 +255,7 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
         <button
           type="button"
           onClick={onClose}
-          className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+          className="px-4 py-2 text-sm text-muted-foreground border border-border rounded-lg hover:bg-muted"
         >
           {t("settingsPage.actions.cancel")}
         </button>
@@ -268,7 +268,7 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
         </button>
       </div>
       {updateOrg.isError && (
-        <p className="mt-3 text-sm text-red-600">{t("settingsPage.errors.updateOrg")}</p>
+        <p className="mt-3 text-sm text-red-600 dark:text-red-400">{t("settingsPage.errors.updateOrg")}</p>
       )}
     </form>
   );
@@ -351,15 +351,15 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6">
+    <div className="bg-card rounded-xl border border-border p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <Briefcase className="h-5 w-5 text-brand-600" />
-          <h2 className="font-semibold text-gray-900">{t("settingsPage.departments.title", { count: departments.length })}</h2>
+          <Briefcase className="h-5 w-5 text-brand-600 dark:text-brand-400" />
+          <h2 className="font-semibold text-foreground">{t("settingsPage.departments.title", { count: departments.length })}</h2>
         </div>
         <button
           onClick={() => setShowAdd(!showAdd)}
-          className="flex items-center gap-1 text-sm text-brand-600 hover:text-brand-700 font-medium"
+          className="flex items-center gap-1 text-sm text-brand-600 dark:text-brand-400 hover:text-brand-700 font-medium"
         >
           <Plus className="h-3.5 w-3.5" /> {t("settingsPage.actions.add")}
         </button>
@@ -379,7 +379,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
               value={newName}
               onChange={(e) => { setNewName(e.target.value); setAddError(""); }}
               placeholder={t("settingsPage.departments.namePlaceholder")}
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              className="bg-card text-foreground flex-1 px-3 py-2 border border-border rounded-lg text-sm"
               required
             />
             <button
@@ -397,7 +397,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
         {departments.map((d: any) => (
           <li
             key={d.id}
-            className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-lg text-sm"
+            className="flex items-center justify-between px-3 py-2 bg-muted rounded-lg text-sm"
           >
             {editId === d.id ? (
               <form
@@ -415,13 +415,13 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
                     setEditError("");
                   }}
                   autoFocus
-                  className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm"
+                  className="bg-card text-foreground flex-1 px-2 py-1 border border-border rounded text-sm"
                   required
                 />
                 <button
                   type="submit"
                   disabled={updateDept.isPending || !editName.trim()}
-                  className="text-green-600 hover:text-green-700 disabled:opacity-50"
+                  className="text-green-600 dark:text-green-400 hover:text-green-700 disabled:opacity-50"
                   title={t("settingsPage.rowActions.save")}
                 >
                   <Save className="h-3.5 w-3.5" />
@@ -429,7 +429,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
                 <button
                   type="button"
                   onClick={cancelEdit}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-muted-foreground hover:text-muted-foreground"
                   title={t("settingsPage.rowActions.cancel")}
                 >
                   <X className="h-3.5 w-3.5" />
@@ -441,7 +441,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => startEdit(d)}
-                    className="text-gray-400 hover:text-brand-600"
+                    className="text-muted-foreground hover:text-brand-600"
                     title={t("settingsPage.departments.renameTitle")}
                   >
                     <Pencil className="h-3.5 w-3.5" />
@@ -451,7 +451,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
                       setDeleteError("");
                       deleteDept.mutate(d.id);
                     }}
-                    className="text-gray-400 hover:text-red-500"
+                    className="text-muted-foreground hover:text-red-500"
                     title={t("settingsPage.departments.deleteTitle")}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -547,15 +547,15 @@ function LocationsCard({ locations }: { locations: any[] }) {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6">
+    <div className="bg-card rounded-xl border border-border p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <MapPin className="h-5 w-5 text-brand-600" />
-          <h2 className="font-semibold text-gray-900">{t("settingsPage.locations.title", { count: locations.length })}</h2>
+          <MapPin className="h-5 w-5 text-brand-600 dark:text-brand-400" />
+          <h2 className="font-semibold text-foreground">{t("settingsPage.locations.title", { count: locations.length })}</h2>
         </div>
         <button
           onClick={() => setShowAdd(!showAdd)}
-          className="flex items-center gap-1 text-sm text-brand-600 hover:text-brand-700 font-medium"
+          className="flex items-center gap-1 text-sm text-brand-600 dark:text-brand-400 hover:text-brand-700 font-medium"
         >
           <Plus className="h-3.5 w-3.5" /> {t("settingsPage.actions.add")}
         </button>
@@ -582,13 +582,13 @@ function LocationsCard({ locations }: { locations: any[] }) {
             value={locForm.name}
             onChange={(e) => { setLocForm({ ...locForm, name: e.target.value }); setAddError(""); }}
             placeholder={t("settingsPage.locations.namePlaceholder")}
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            className="bg-card text-foreground flex-1 px-3 py-2 border border-border rounded-lg text-sm"
             required
           />
           <select
             value={locForm.timezone}
             onChange={(e) => { setLocForm({ ...locForm, timezone: e.target.value }); setAddError(""); }}
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+            className="flex-1 px-3 py-2 border border-border rounded-lg text-sm bg-card"
             required
             aria-required="true"
           >
@@ -612,7 +612,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
         {locations.map((l: any) => (
           <li
             key={l.id}
-            className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-lg text-sm"
+            className="flex items-center justify-between px-3 py-2 bg-muted rounded-lg text-sm"
           >
             {editId === l.id ? (
               <form
@@ -631,13 +631,13 @@ function LocationsCard({ locations }: { locations: any[] }) {
                   }}
                   autoFocus
                   placeholder={t("settingsPage.locations.namePlaceholder")}
-                  className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm"
+                  className="bg-card text-foreground flex-1 px-2 py-1 border border-border rounded text-sm"
                   required
                 />
                 <select
                   value={editForm.timezone}
                   onChange={(e) => setEditForm({ ...editForm, timezone: e.target.value })}
-                  className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm bg-white"
+                  className="flex-1 px-2 py-1 border border-border rounded text-sm bg-card"
                 >
                   <option value="">{t("settingsPage.form.noTimezone")}</option>
                   {TIMEZONES.map((tz) => (
@@ -649,7 +649,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
                 <button
                   type="submit"
                   disabled={updateLoc.isPending || !editForm.name.trim()}
-                  className="text-green-600 hover:text-green-700 disabled:opacity-50"
+                  className="text-green-600 dark:text-green-400 hover:text-green-700 disabled:opacity-50"
                   title={t("settingsPage.rowActions.save")}
                 >
                   <Save className="h-3.5 w-3.5" />
@@ -657,7 +657,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
                 <button
                   type="button"
                   onClick={cancelEdit}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-muted-foreground hover:text-muted-foreground"
                   title={t("settingsPage.rowActions.cancel")}
                 >
                   <X className="h-3.5 w-3.5" />
@@ -667,10 +667,10 @@ function LocationsCard({ locations }: { locations: any[] }) {
               <>
                 <span>{l.name}</span>
                 <div className="flex items-center gap-2">
-                  {l.timezone && <span className="text-xs text-gray-400">{l.timezone}</span>}
+                  {l.timezone && <span className="text-xs text-muted-foreground">{l.timezone}</span>}
                   <button
                     onClick={() => startEdit(l)}
-                    className="text-gray-400 hover:text-brand-600"
+                    className="text-muted-foreground hover:text-brand-600"
                     title={t("settingsPage.locations.editTitle")}
                   >
                     <Pencil className="h-3.5 w-3.5" />
@@ -680,7 +680,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
                       setDeleteError("");
                       deleteLoc.mutate(l.id);
                     }}
-                    className="text-gray-400 hover:text-red-500"
+                    className="text-muted-foreground hover:text-red-500"
                     title={t("settingsPage.locations.deleteTitle")}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
