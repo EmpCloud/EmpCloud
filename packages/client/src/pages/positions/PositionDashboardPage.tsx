@@ -16,7 +16,7 @@ export default function PositionDashboardPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-400">{tx("loadingDashboard")}</div>
+        <div className="text-muted-foreground">{tx("loadingDashboard")}</div>
       </div>
     );
   }
@@ -27,8 +27,8 @@ export default function PositionDashboardPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{tx("title")}</h1>
-          <p className="text-gray-500 mt-1">{tx("subtitle")}</p>
+          <h1 className="text-2xl font-bold text-foreground">{tx("title")}</h1>
+          <p className="text-muted-foreground mt-1">{tx("subtitle")}</p>
         </div>
         <Link
           to="/positions/list"
@@ -41,72 +41,72 @@ export default function PositionDashboardPage() {
 
       {/* Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <Link to="/positions/list" className="block text-left w-full bg-white rounded-xl border border-gray-200 p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+        <Link to="/positions/list" className="block text-left w-full bg-card rounded-xl border border-border p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div className="flex items-center gap-3 mb-3">
-            <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center">
-              <Briefcase className="h-5 w-5 text-blue-600" />
+            <div className="h-10 w-10 rounded-lg bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center">
+              <Briefcase className="h-5 w-5 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
-              <p className="text-xs text-gray-500 uppercase font-medium">{tx("totalPositions")}</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.total_positions || 0}</p>
+              <p className="text-xs text-muted-foreground uppercase font-medium">{tx("totalPositions")}</p>
+              <p className="text-2xl font-bold text-foreground">{stats.total_positions || 0}</p>
             </div>
           </div>
-          <p className="text-xs text-gray-400">{tx("budgetHeadcount", { count: stats.total_budget || 0 })}</p>
+          <p className="text-xs text-muted-foreground">{tx("budgetHeadcount", { count: stats.total_budget || 0 })}</p>
         </Link>
 
         {/* #1553 — Filled card deep-links to the list filtered to status=filled
             so users actually see filled positions, not every position. The
             Total Positions card above stays unfiltered (that's the point). */}
-        <Link to="/positions/list?status=filled" className="block text-left w-full bg-white rounded-xl border border-gray-200 p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+        <Link to="/positions/list?status=filled" className="block text-left w-full bg-card rounded-xl border border-border p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div className="flex items-center gap-3 mb-3">
-            <div className="h-10 w-10 rounded-lg bg-green-50 flex items-center justify-center">
-              <Users className="h-5 w-5 text-green-600" />
+            <div className="h-10 w-10 rounded-lg bg-green-50 dark:bg-green-950/40 flex items-center justify-center">
+              <Users className="h-5 w-5 text-green-600 dark:text-green-400" />
             </div>
             <div>
-              <p className="text-xs text-gray-500 uppercase font-medium">{tx("filled")}</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.total_filled || 0}</p>
+              <p className="text-xs text-muted-foreground uppercase font-medium">{tx("filled")}</p>
+              <p className="text-2xl font-bold text-foreground">{stats.total_filled || 0}</p>
             </div>
           </div>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-muted-foreground">
             {stats.total_budget > 0
               ? tx("fillRate", { pct: Math.round((stats.total_filled / stats.total_budget) * 100) })
               : tx("noBudget")}
           </p>
         </Link>
 
-        <Link to="/positions/vacancies" className="block text-left w-full bg-white rounded-xl border border-gray-200 p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+        <Link to="/positions/vacancies" className="block text-left w-full bg-card rounded-xl border border-border p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div className="flex items-center gap-3 mb-3">
-            <div className="h-10 w-10 rounded-lg bg-amber-50 flex items-center justify-center">
-              <TrendingUp className="h-5 w-5 text-amber-600" />
+            <div className="h-10 w-10 rounded-lg bg-amber-50 dark:bg-amber-950/40 flex items-center justify-center">
+              <TrendingUp className="h-5 w-5 text-amber-600 dark:text-amber-400" />
             </div>
             <div>
-              <p className="text-xs text-gray-500 uppercase font-medium">{tx("vacant")}</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.total_vacant || 0}</p>
+              <p className="text-xs text-muted-foreground uppercase font-medium">{tx("vacant")}</p>
+              <p className="text-2xl font-bold text-foreground">{stats.total_vacant || 0}</p>
             </div>
           </div>
-          <span className="text-xs text-brand-600">{tx("viewVacancies")}</span>
+          <span className="text-xs text-brand-600 dark:text-brand-400">{tx("viewVacancies")}</span>
         </Link>
 
-        <Link to="/positions/vacancies" className="block text-left w-full bg-white rounded-xl border border-gray-200 p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+        <Link to="/positions/vacancies" className="block text-left w-full bg-card rounded-xl border border-border p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div className="flex items-center gap-3 mb-3">
-            <div className="h-10 w-10 rounded-lg bg-red-50 flex items-center justify-center">
-              <AlertTriangle className="h-5 w-5 text-red-600" />
+            <div className="h-10 w-10 rounded-lg bg-red-50 dark:bg-red-950/40 flex items-center justify-center">
+              <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400" />
             </div>
             <div>
-              <p className="text-xs text-gray-500 uppercase font-medium">{tx("criticalVacancies")}</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.critical_vacancies || 0}</p>
+              <p className="text-xs text-muted-foreground uppercase font-medium">{tx("criticalVacancies")}</p>
+              <p className="text-2xl font-bold text-foreground">{stats.critical_vacancies || 0}</p>
             </div>
           </div>
-          <p className="text-xs text-gray-400">{tx("unfilledCritical")}</p>
+          <p className="text-xs text-muted-foreground">{tx("unfilledCritical")}</p>
         </Link>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Department Breakdown */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">{tx("departmentBreakdown")}</h2>
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">{tx("departmentBreakdown")}</h2>
           {(stats.department_breakdown || []).length === 0 ? (
-            <p className="text-sm text-gray-400">{tx("noData")}</p>
+            <p className="text-sm text-muted-foreground">{tx("noData")}</p>
           ) : (
             <div className="space-y-3">
               {(stats.department_breakdown || []).map((dept: any, i: number) => {
@@ -114,12 +114,12 @@ export default function PositionDashboardPage() {
                 return (
                   <div key={i}>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium text-gray-700">{dept.department}</span>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-sm font-medium text-muted-foreground">{dept.department}</span>
+                      <span className="text-xs text-muted-foreground">
                         {tx("filledVacantRatio", { filled: dept.filled, budget: dept.budget, vacant: dept.vacant })}
                       </span>
                     </div>
-                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-2 bg-muted rounded-full overflow-hidden">
                       <div
                         className={`h-full rounded-full transition-all ${
                           fillPct >= 90 ? "bg-green-500" : fillPct >= 60 ? "bg-amber-500" : "bg-red-500"
@@ -135,37 +135,37 @@ export default function PositionDashboardPage() {
         </div>
 
         {/* Headcount Plan Summary */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <div className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">{tx("headcountPlanning")}</h2>
-            <Link to="/positions/headcount-plans" className="text-xs text-brand-600 hover:underline flex items-center gap-1">
+            <h2 className="text-lg font-semibold text-foreground">{tx("headcountPlanning")}</h2>
+            <Link to="/positions/headcount-plans" className="text-xs text-brand-600 dark:text-brand-400 hover:underline flex items-center gap-1">
               {tx("viewPlans")} <ChevronRight className="h-3 w-3" />
             </Link>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-gray-50 rounded-lg p-4 text-center">
-              <p className="text-2xl font-bold text-gray-900">
+            <div className="bg-muted rounded-lg p-4 text-center">
+              <p className="text-2xl font-bold text-foreground">
                 {stats.headcount_plan_summary?.total_planned || 0}
               </p>
-              <p className="text-xs text-gray-500 mt-1">{tx("planned")}</p>
+              <p className="text-xs text-muted-foreground mt-1">{tx("planned")}</p>
             </div>
-            <div className="bg-gray-50 rounded-lg p-4 text-center">
-              <p className="text-2xl font-bold text-gray-900">
+            <div className="bg-muted rounded-lg p-4 text-center">
+              <p className="text-2xl font-bold text-foreground">
                 {stats.headcount_plan_summary?.total_approved || 0}
               </p>
-              <p className="text-xs text-gray-500 mt-1">{tx("approved")}</p>
+              <p className="text-xs text-muted-foreground mt-1">{tx("approved")}</p>
             </div>
-            <div className="bg-gray-50 rounded-lg p-4 text-center">
-              <p className="text-2xl font-bold text-gray-900">
+            <div className="bg-muted rounded-lg p-4 text-center">
+              <p className="text-2xl font-bold text-foreground">
                 {stats.headcount_plan_summary?.total_current || 0}
               </p>
-              <p className="text-xs text-gray-500 mt-1">{tx("current")}</p>
+              <p className="text-xs text-muted-foreground mt-1">{tx("current")}</p>
             </div>
-            <div className="bg-gray-50 rounded-lg p-4 text-center">
-              <p className="text-2xl font-bold text-gray-900">
+            <div className="bg-muted rounded-lg p-4 text-center">
+              <p className="text-2xl font-bold text-foreground">
                 {stats.headcount_plan_summary?.plan_count || 0}
               </p>
-              <p className="text-xs text-gray-500 mt-1">{tx("activePlans")}</p>
+              <p className="text-xs text-muted-foreground mt-1">{tx("activePlans")}</p>
             </div>
           </div>
         </div>
@@ -176,14 +176,14 @@ export default function PositionDashboardPage() {
           to that status. Previously rendered as inert spans. Whitelist of
           statuses matches positionStatusEnum on the backend. */}
       {(stats.status_breakdown || []).length > 0 && (
-        <div className="mt-6 bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">{tx("positionStatus")}</h2>
+        <div className="mt-6 bg-card rounded-xl border border-border p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">{tx("positionStatus")}</h2>
           <div className="flex flex-wrap gap-3">
             {(stats.status_breakdown || []).map((s: any) => (
               <Link
                 key={s.status}
                 to={`/positions/list?status=${encodeURIComponent(s.status)}`}
-                className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-1.5 hover:border-brand-300 hover:bg-brand-50 transition-colors"
+                className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-1.5 hover:border-brand-300 hover:bg-brand-50 dark:hover:bg-brand-950/40 transition-colors"
               >
                 <span
                   className={`inline-block h-3 w-3 rounded-full ${
@@ -192,10 +192,10 @@ export default function PositionDashboardPage() {
                 />
                 {/* Reuse the localized status labels from positions.list so the
                     capitalized status word matches what the list page shows. */}
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-muted-foreground">
                   {t(`positions.list.status${s.status.charAt(0).toUpperCase()}${s.status.slice(1)}`, { defaultValue: s.status }) as string}
                 </span>
-                <span className="text-sm font-semibold text-gray-900">{s.count}</span>
+                <span className="text-sm font-semibold text-foreground">{s.count}</span>
               </Link>
             ))}
           </div>

@@ -15,11 +15,11 @@ import {
 } from "lucide-react";
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: typeof Clock }> = {
-  new: { label: "New", color: "bg-blue-100 text-blue-700", icon: Clock },
-  acknowledged: { label: "Acknowledged", color: "bg-yellow-100 text-yellow-700", icon: Eye },
-  under_review: { label: "Under Review", color: "bg-purple-100 text-purple-700", icon: Search },
-  resolved: { label: "Resolved", color: "bg-green-100 text-green-700", icon: CheckCircle },
-  archived: { label: "Archived", color: "bg-gray-100 text-gray-600", icon: Archive },
+  new: { label: "New", color: "bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300", icon: Clock },
+  acknowledged: { label: "Acknowledged", color: "bg-yellow-100 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300", icon: Eye },
+  under_review: { label: "Under Review", color: "bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300", icon: Search },
+  resolved: { label: "Resolved", color: "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300", icon: CheckCircle },
+  archived: { label: "Archived", color: "bg-muted text-muted-foreground", icon: Archive },
 };
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -49,8 +49,8 @@ export default function FeedbackDashboardPage() {
   if (isLoading) {
     return (
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-8">{t("feedbackDashboard.title")}</h1>
-        <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
+        <h1 className="text-2xl font-bold text-foreground mb-8">{t("feedbackDashboard.title")}</h1>
+        <div className="bg-card rounded-xl border border-border p-8 text-center text-muted-foreground">
           {t("feedbackDashboard.loading")}
         </div>
       </div>
@@ -74,59 +74,59 @@ export default function FeedbackDashboardPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t("feedbackDashboard.title")}</h1>
-          <p className="text-gray-500 mt-1">{t("feedbackDashboard.subtitle")}</p>
+          <h1 className="text-2xl font-bold text-foreground">{t("feedbackDashboard.title")}</h1>
+          <p className="text-muted-foreground mt-1">{t("feedbackDashboard.subtitle")}</p>
         </div>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <Link to="/feedback" className="block text-left w-full bg-white rounded-xl border border-gray-200 p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+        <Link to="/feedback" className="block text-left w-full bg-card rounded-xl border border-border p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div className="flex items-center gap-3 mb-2">
-            <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
-              <MessageSquare className="h-5 w-5 text-blue-600" />
+            <div className="h-10 w-10 rounded-lg bg-blue-100 dark:bg-blue-950/40 flex items-center justify-center">
+              <MessageSquare className="h-5 w-5 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
-              <p className="text-xs text-gray-500">{t("feedbackDashboard.stats.totalFeedback")}</p>
+              <p className="text-2xl font-bold text-foreground">{stats.total}</p>
+              <p className="text-xs text-muted-foreground">{t("feedbackDashboard.stats.totalFeedback")}</p>
             </div>
           </div>
         </Link>
 
-        <Link to="/feedback" className="block text-left w-full bg-white rounded-xl border border-gray-200 p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+        <Link to="/feedback" className="block text-left w-full bg-card rounded-xl border border-border p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div className="flex items-center gap-3 mb-2">
-            <div className="h-10 w-10 rounded-lg bg-red-100 flex items-center justify-center">
-              <AlertTriangle className="h-5 w-5 text-red-600" />
+            <div className="h-10 w-10 rounded-lg bg-red-100 dark:bg-red-950/40 flex items-center justify-center">
+              <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{stats.urgentCount}</p>
-              <p className="text-xs text-gray-500">{t("feedbackDashboard.stats.urgentItems")}</p>
+              <p className="text-2xl font-bold text-foreground">{stats.urgentCount}</p>
+              <p className="text-xs text-muted-foreground">{t("feedbackDashboard.stats.urgentItems")}</p>
             </div>
           </div>
         </Link>
 
-        <Link to="/feedback" className="block text-left w-full bg-white rounded-xl border border-gray-200 p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+        <Link to="/feedback" className="block text-left w-full bg-card rounded-xl border border-border p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div className="flex items-center gap-3 mb-2">
-            <div className="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center">
-              <Reply className="h-5 w-5 text-green-600" />
+            <div className="h-10 w-10 rounded-lg bg-green-100 dark:bg-green-950/40 flex items-center justify-center">
+              <Reply className="h-5 w-5 text-green-600 dark:text-green-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{stats.responseRate}%</p>
-              <p className="text-xs text-gray-500">{t("feedbackDashboard.stats.responseRate")}</p>
+              <p className="text-2xl font-bold text-foreground">{stats.responseRate}%</p>
+              <p className="text-xs text-muted-foreground">{t("feedbackDashboard.stats.responseRate")}</p>
             </div>
           </div>
         </Link>
 
-        <Link to="/feedback" className="block text-left w-full bg-white rounded-xl border border-gray-200 p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+        <Link to="/feedback" className="block text-left w-full bg-card rounded-xl border border-border p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div className="flex items-center gap-3 mb-2">
-            <div className="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center">
-              <TrendingUp className="h-5 w-5 text-purple-600" />
+            <div className="h-10 w-10 rounded-lg bg-purple-100 dark:bg-purple-950/40 flex items-center justify-center">
+              <TrendingUp className="h-5 w-5 text-purple-600 dark:text-purple-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-2xl font-bold text-foreground">
                 {stats.byStatus.find((s: any) => s.status === "new")?.count || 0}
               </p>
-              <p className="text-xs text-gray-500">{t("feedbackDashboard.stats.newUnread")}</p>
+              <p className="text-xs text-muted-foreground">{t("feedbackDashboard.stats.newUnread")}</p>
             </div>
           </div>
         </Link>
@@ -134,19 +134,19 @@ export default function FeedbackDashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Category Breakdown */}
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
-          <h2 className="text-sm font-semibold text-gray-900 mb-4">{t("feedbackDashboard.sections.byCategory")}</h2>
+        <div className="bg-card rounded-xl border border-border p-5">
+          <h2 className="text-sm font-semibold text-foreground mb-4">{t("feedbackDashboard.sections.byCategory")}</h2>
           {stats.byCategory.length === 0 ? (
-            <p className="text-sm text-gray-400">{t("feedbackDashboard.empty.noData")}</p>
+            <p className="text-sm text-muted-foreground">{t("feedbackDashboard.empty.noData")}</p>
           ) : (
             <div className="space-y-3">
               {stats.byCategory.map((item: any) => (
                 <div key={item.category}>
                   <div className="flex items-center justify-between text-sm mb-1">
-                    <span className="text-gray-700 capitalize">{t(`feedbackDashboard.category.${item.category}`, { defaultValue: item.category })}</span>
-                    <span className="font-medium text-gray-900">{item.count}</span>
+                    <span className="text-muted-foreground capitalize">{t(`feedbackDashboard.category.${item.category}`, { defaultValue: item.category })}</span>
+                    <span className="font-medium text-foreground">{item.count}</span>
                   </div>
-                  <div className="w-full bg-gray-100 rounded-full h-2">
+                  <div className="w-full bg-muted rounded-full h-2">
                     <div
                       className={`h-2 rounded-full ${CATEGORY_COLORS[item.category] || "bg-gray-400"}`}
                       style={{ width: `${(item.count / maxCategoryCount) * 100}%` }}
@@ -159,19 +159,19 @@ export default function FeedbackDashboardPage() {
         </div>
 
         {/* Sentiment Distribution */}
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
-          <h2 className="text-sm font-semibold text-gray-900 mb-4">{t("feedbackDashboard.sections.sentimentDistribution")}</h2>
+        <div className="bg-card rounded-xl border border-border p-5">
+          <h2 className="text-sm font-semibold text-foreground mb-4">{t("feedbackDashboard.sections.sentimentDistribution")}</h2>
           {stats.bySentiment.length === 0 ? (
-            <p className="text-sm text-gray-400">{t("feedbackDashboard.empty.noData")}</p>
+            <p className="text-sm text-muted-foreground">{t("feedbackDashboard.empty.noData")}</p>
           ) : (
             <div className="space-y-3">
               {stats.bySentiment.map((item: any) => (
                 <div key={item.sentiment}>
                   <div className="flex items-center justify-between text-sm mb-1">
-                    <span className="text-gray-700 capitalize">{t(`feedbackDashboard.sentiment.${item.sentiment || "unset"}`, { defaultValue: item.sentiment || "unset" })}</span>
-                    <span className="font-medium text-gray-900">{item.count}</span>
+                    <span className="text-muted-foreground capitalize">{t(`feedbackDashboard.sentiment.${item.sentiment || "unset"}`, { defaultValue: item.sentiment || "unset" })}</span>
+                    <span className="font-medium text-foreground">{item.count}</span>
                   </div>
-                  <div className="w-full bg-gray-100 rounded-full h-2">
+                  <div className="w-full bg-muted rounded-full h-2">
                     <div
                       className={`h-2 rounded-full ${SENTIMENT_COLORS[item.sentiment] || "bg-gray-400"}`}
                       style={{ width: `${(item.count / maxSentimentCount) * 100}%` }}
@@ -185,8 +185,8 @@ export default function FeedbackDashboardPage() {
       </div>
 
       {/* Status Breakdown */}
-      <div className="bg-white rounded-xl border border-gray-200 p-5 mb-8">
-        <h2 className="text-sm font-semibold text-gray-900 mb-4">{t("feedbackDashboard.sections.byStatus")}</h2>
+      <div className="bg-card rounded-xl border border-border p-5 mb-8">
+        <h2 className="text-sm font-semibold text-foreground mb-4">{t("feedbackDashboard.sections.byStatus")}</h2>
         <div className="flex flex-wrap gap-3">
           {stats.byStatus.map((item: any) => {
             const cfg = STATUS_CONFIG[item.status] || STATUS_CONFIG.new;
@@ -206,10 +206,10 @@ export default function FeedbackDashboardPage() {
       </div>
 
       {/* Recent Feedback */}
-      <div className="bg-white rounded-xl border border-gray-200 p-5">
-        <h2 className="text-sm font-semibold text-gray-900 mb-4">{t("feedbackDashboard.sections.recentFeedback")}</h2>
+      <div className="bg-card rounded-xl border border-border p-5">
+        <h2 className="text-sm font-semibold text-foreground mb-4">{t("feedbackDashboard.sections.recentFeedback")}</h2>
         {stats.recent.length === 0 ? (
-          <p className="text-sm text-gray-400">{t("feedbackDashboard.empty.noFeedback")}</p>
+          <p className="text-sm text-muted-foreground">{t("feedbackDashboard.empty.noFeedback")}</p>
         ) : (
           <div className="space-y-3">
             {stats.recent.map((f: any) => {
@@ -219,12 +219,12 @@ export default function FeedbackDashboardPage() {
                 <div
                   key={f.id}
                   className={`flex items-center gap-4 p-3 rounded-lg border ${
-                    f.is_urgent ? "border-red-200 bg-red-50/30" : "border-gray-100"
+                    f.is_urgent ? "border-red-200 dark:border-red-900/50 bg-red-50/30 dark:bg-red-950/30" : "border-border"
                   }`}
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs font-medium text-gray-500 capitalize">{t(`feedbackDashboard.category.${f.category}`, { defaultValue: f.category })}</span>
+                      <span className="text-xs font-medium text-muted-foreground capitalize">{t(`feedbackDashboard.category.${f.category}`, { defaultValue: f.category })}</span>
                       <span className={`inline-flex items-center gap-1 text-xs ${statusCfg.color} px-2 py-0.5 rounded-full`}>
                         <StatusIcon className="h-3 w-3" />
                         {t(`feedbackDashboard.status.${f.status}`, { defaultValue: statusCfg.label })}
@@ -233,9 +233,9 @@ export default function FeedbackDashboardPage() {
                         <AlertTriangle className="h-3.5 w-3.5 text-red-500" />
                       )}
                     </div>
-                    <p className="text-sm font-medium text-gray-900 truncate">{f.subject}</p>
+                    <p className="text-sm font-medium text-foreground truncate">{f.subject}</p>
                   </div>
-                  <span className="text-xs text-gray-400 shrink-0">
+                  <span className="text-xs text-muted-foreground shrink-0">
                     {new Date(f.created_at).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",

@@ -215,50 +215,50 @@ export default function SurveyBuilderPage() {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="flex items-center gap-3 mb-8">
-        <button onClick={() => navigate("/surveys/list")} className="p-2 rounded-lg hover:bg-gray-100 text-gray-500">
+        <button onClick={() => navigate("/surveys/list")} className="p-2 rounded-lg hover:bg-muted text-muted-foreground">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-foreground">
             {editId ? t("surveyBuilder.header.editTitle") : t("surveyBuilder.header.createTitle")}
           </h1>
-          <p className="text-gray-500 mt-0.5">{t("surveyBuilder.header.subtitle")}</p>
+          <p className="text-muted-foreground mt-0.5">{t("surveyBuilder.header.subtitle")}</p>
         </div>
       </div>
 
       {/* Survey Details */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("surveyBuilder.details.heading")}</h2>
+      <div className="bg-card rounded-xl border border-border p-6 mb-6">
+        <h2 className="text-lg font-semibold text-foreground mb-4">{t("surveyBuilder.details.heading")}</h2>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t("surveyBuilder.details.titleLabel")}</label>
+            <label className="block text-sm font-medium text-muted-foreground mb-1">{t("surveyBuilder.details.titleLabel")}</label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
               placeholder={t("surveyBuilder.details.titlePlaceholder")}
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t("surveyBuilder.details.descriptionLabel")}</label>
+            <label className="block text-sm font-medium text-muted-foreground mb-1">{t("surveyBuilder.details.descriptionLabel")}</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm min-h-[80px]"
+              className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm min-h-[80px]"
               placeholder={t("surveyBuilder.details.descriptionPlaceholder")}
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("surveyBuilder.details.typeLabel")}</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("surveyBuilder.details.typeLabel")}</label>
               <select
                 value={type}
                 onChange={(e) => setType(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
               >
                 {SURVEY_TYPES.map((st) => (
                   <option key={st.value} value={st.value}>{t(`surveyBuilder.${st.labelKey}`, { defaultValue: st.labelDefault })}</option>
@@ -267,11 +267,11 @@ export default function SurveyBuilderPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("surveyBuilder.details.targetAudienceLabel")}</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("surveyBuilder.details.targetAudienceLabel")}</label>
               <select
                 value={targetType}
                 onChange={(e) => setTargetType(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
               >
                 <option value="all">{t("surveyBuilder.target.all")}</option>
                 <option value="department">{t("surveyBuilder.target.department")}</option>
@@ -281,11 +281,11 @@ export default function SurveyBuilderPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("surveyBuilder.details.recurrenceLabel")}</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("surveyBuilder.details.recurrenceLabel")}</label>
               <select
                 value={recurrence}
                 onChange={(e) => setRecurrence(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
               >
                 <option value="none">{t("surveyBuilder.recurrence.none")}</option>
                 <option value="weekly">{t("surveyBuilder.recurrence.weekly")}</option>
@@ -301,26 +301,26 @@ export default function SurveyBuilderPage() {
                 labels now say "Start Date & Time" and there's a helper line
                 under each input making the expectation explicit. */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("surveyBuilder.details.startDateLabel")}</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("surveyBuilder.details.startDateLabel")}</label>
               <input
                 type="datetime-local"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
               />
-              <p className="text-xs text-gray-400 mt-1">{t("surveyBuilder.details.dateTimeHelper")}</p>
+              <p className="text-xs text-muted-foreground mt-1">{t("surveyBuilder.details.dateTimeHelper")}</p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("surveyBuilder.details.endDateLabel")}</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("surveyBuilder.details.endDateLabel")}</label>
               <input
                 type="datetime-local"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
                 min={startDate || undefined}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
               />
-              <p className="text-xs text-gray-400 mt-1">{t("surveyBuilder.details.dateTimeHelper")}</p>
+              <p className="text-xs text-muted-foreground mt-1">{t("surveyBuilder.details.dateTimeHelper")}</p>
             </div>
 
             <div className="flex items-center gap-3 pt-6">
@@ -331,21 +331,21 @@ export default function SurveyBuilderPage() {
                   onChange={(e) => setIsAnonymous(e.target.checked)}
                   className="sr-only peer"
                 />
-                <div className="w-9 h-5 bg-gray-200 rounded-full peer peer-checked:bg-brand-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full" />
+                <div className="w-9 h-5 bg-muted rounded-full peer peer-checked:bg-brand-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full" />
               </label>
-              <span className="text-sm font-medium text-gray-700">{t("surveyBuilder.details.anonymousLabel")}</span>
+              <span className="text-sm font-medium text-muted-foreground">{t("surveyBuilder.details.anonymousLabel")}</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Questions Builder */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+      <div className="bg-card rounded-xl border border-border p-6 mb-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">{t("surveyBuilder.questions.heading")}</h2>
+          <h2 className="text-lg font-semibold text-foreground">{t("surveyBuilder.questions.heading")}</h2>
           <button
             onClick={addQuestion}
-            className="flex items-center gap-1.5 text-sm font-medium text-brand-600 hover:text-brand-700"
+            className="flex items-center gap-1.5 text-sm font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300"
           >
             <Plus className="h-4 w-4" /> {t("surveyBuilder.questions.addButton")}
           </button>
@@ -353,18 +353,18 @@ export default function SurveyBuilderPage() {
 
         <div className="space-y-4">
           {questions.map((q, idx) => (
-            <div key={q._key} className="border border-gray-200 rounded-lg p-4">
+            <div key={q._key} className="border border-border rounded-lg p-4">
               <div className="flex items-start gap-3">
                 <div className="flex flex-col items-center gap-1 pt-2">
                   <button
                     onClick={() => moveQuestion(idx, "up")}
                     disabled={idx === 0}
-                    className="text-gray-400 hover:text-gray-600 disabled:opacity-30"
+                    className="text-muted-foreground hover:text-muted-foreground disabled:opacity-30"
                     title={t("surveyBuilder.questions.moveUpTitle")}
                   >
                     <GripVertical className="h-4 w-4" />
                   </button>
-                  <span className="text-xs text-gray-400 font-mono">{idx + 1}</span>
+                  <span className="text-xs text-muted-foreground font-mono">{idx + 1}</span>
                 </div>
 
                 <div className="flex-1 space-y-3">
@@ -373,18 +373,18 @@ export default function SurveyBuilderPage() {
                       type="text"
                       value={q.question_text}
                       onChange={(e) => updateQuestion(idx, "question_text", e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                      className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                       placeholder={t("surveyBuilder.questions.textPlaceholder")}
                     />
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                      <label className="block text-xs text-gray-500 mb-1">{t("surveyBuilder.questions.typeLabel")}</label>
+                      <label className="block text-xs text-muted-foreground mb-1">{t("surveyBuilder.questions.typeLabel")}</label>
                       <select
                         value={q.question_type}
                         onChange={(e) => updateQuestion(idx, "question_type", e.target.value)}
-                        className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm"
+                        className="bg-card text-foreground w-full px-3 py-1.5 border border-border rounded-lg text-sm"
                       >
                         {QUESTION_TYPES.map((qt) => (
                           <option key={qt.value} value={qt.value}>{t(`surveyBuilder.${qt.labelKey}`, { defaultValue: qt.labelDefault })}</option>
@@ -393,12 +393,12 @@ export default function SurveyBuilderPage() {
                     </div>
 
                     <div className="flex items-end gap-2">
-                      <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                      <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
                         <input
                           type="checkbox"
                           checked={q.is_required}
                           onChange={(e) => updateQuestion(idx, "is_required", e.target.checked)}
-                          className="rounded border-gray-300"
+                          className="rounded border-border"
                         />
                         {t("surveyBuilder.questions.requiredLabel")}
                       </label>
@@ -408,7 +408,7 @@ export default function SurveyBuilderPage() {
                   {/* Options for multiple choice */}
                   {q.question_type === "multiple_choice" && (
                     <div>
-                      <label className="block text-xs text-gray-500 mb-1">
+                      <label className="block text-xs text-muted-foreground mb-1">
                         {t("surveyBuilder.questions.optionsLabel")}
                       </label>
                       <textarea
@@ -417,15 +417,15 @@ export default function SurveyBuilderPage() {
                           const opts = e.target.value.split("\n");
                           updateQuestion(idx, "options", opts.length > 0 ? opts : null);
                         }}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm min-h-[60px]"
+                        className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm min-h-[60px]"
                         placeholder={t("surveyBuilder.questions.optionsPlaceholder")}
                       />
                     </div>
                   )}
 
                   {/* Preview */}
-                  <div className="bg-gray-50 rounded-lg p-3">
-                    <p className="text-xs text-gray-400 mb-2">{t("surveyBuilder.questions.previewLabel")}</p>
+                  <div className="bg-muted rounded-lg p-3">
+                    <p className="text-xs text-muted-foreground mb-2">{t("surveyBuilder.questions.previewLabel")}</p>
                     <QuestionPreview question={q} />
                   </div>
                 </div>
@@ -433,7 +433,7 @@ export default function SurveyBuilderPage() {
                 <button
                   onClick={() => removeQuestion(idx)}
                   disabled={questions.length <= 1}
-                  className="p-1.5 rounded hover:bg-red-50 text-red-400 hover:text-red-600 disabled:opacity-30"
+                  className="p-1.5 rounded hover:bg-red-50 dark:hover:bg-red-950/40 text-red-400 hover:text-red-600 disabled:opacity-30"
                   title={t("surveyBuilder.questions.removeTitle")}
                 >
                   <Trash2 className="h-4 w-4" />
@@ -448,14 +448,14 @@ export default function SurveyBuilderPage() {
       <div className="flex items-center justify-end gap-3 pb-8">
         <button
           onClick={() => navigate("/surveys/list")}
-          className="px-4 py-2 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+          className="px-4 py-2 text-sm border border-border rounded-lg text-muted-foreground hover:bg-muted"
         >
           {t("surveyBuilder.actions.cancel")}
         </button>
         <button
           onClick={handleSaveDraft}
           disabled={isPending || !title.trim()}
-          className="flex items-center gap-2 px-4 py-2 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 text-sm border border-border rounded-lg text-muted-foreground hover:bg-muted disabled:opacity-50"
         >
           <Save className="h-4 w-4" /> {t("surveyBuilder.actions.saveDraft")}
         </button>
@@ -476,16 +476,16 @@ function QuestionPreview({ question }: { question: Question }) {
   const { question_type, question_text } = question;
 
   if (!question_text) {
-    return <p className="text-xs text-gray-300 italic">{t("surveyBuilder.preview.emptyHint")}</p>;
+    return <p className="text-xs text-muted-foreground/50 italic">{t("surveyBuilder.preview.emptyHint")}</p>;
   }
 
   if (question_type === "rating_1_5") {
     return (
       <div>
-        <p className="text-sm text-gray-700 mb-2">{question_text}</p>
+        <p className="text-sm text-muted-foreground mb-2">{question_text}</p>
         <div className="flex gap-2">
           {[1, 2, 3, 4, 5].map((n) => (
-            <button key={n} className="h-8 w-8 rounded-full border border-gray-300 text-xs text-gray-500 hover:bg-brand-50 hover:border-brand-300">
+            <button key={n} className="h-8 w-8 rounded-full border border-border text-xs text-muted-foreground hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:border-brand-300">
               {n}
             </button>
           ))}
@@ -497,10 +497,10 @@ function QuestionPreview({ question }: { question: Question }) {
   if (question_type === "rating_1_10") {
     return (
       <div>
-        <p className="text-sm text-gray-700 mb-2">{question_text}</p>
+        <p className="text-sm text-muted-foreground mb-2">{question_text}</p>
         <div className="flex gap-1">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
-            <button key={n} className="h-7 w-7 rounded border border-gray-300 text-xs text-gray-500 hover:bg-brand-50 hover:border-brand-300">
+            <button key={n} className="h-7 w-7 rounded border border-border text-xs text-muted-foreground hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:border-brand-300">
               {n}
             </button>
           ))}
@@ -512,20 +512,20 @@ function QuestionPreview({ question }: { question: Question }) {
   if (question_type === "enps_0_10") {
     return (
       <div>
-        <p className="text-sm text-gray-700 mb-2">{question_text}</p>
+        <p className="text-sm text-muted-foreground mb-2">{question_text}</p>
         <div className="flex gap-1">
           {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
             <button
               key={n}
               className={`h-7 w-7 rounded border text-xs ${
-                n <= 6 ? "border-red-200 text-red-500" : n <= 8 ? "border-yellow-200 text-yellow-600" : "border-green-200 text-green-600"
+                n <= 6 ? "border-red-200 dark:border-red-900 text-red-500 dark:text-red-400" : n <= 8 ? "border-yellow-200 dark:border-yellow-900 text-yellow-600 dark:text-yellow-400" : "border-green-200 dark:border-green-900 text-green-600 dark:text-green-400"
               }`}
             >
               {n}
             </button>
           ))}
         </div>
-        <div className="flex justify-between text-[10px] text-gray-400 mt-1 px-1">
+        <div className="flex justify-between text-[10px] text-muted-foreground mt-1 px-1">
           <span>{t("surveyBuilder.preview.enpsNotLikely")}</span>
           <span>{t("surveyBuilder.preview.enpsVeryLikely")}</span>
         </div>
@@ -536,10 +536,10 @@ function QuestionPreview({ question }: { question: Question }) {
   if (question_type === "yes_no") {
     return (
       <div>
-        <p className="text-sm text-gray-700 mb-2">{question_text}</p>
+        <p className="text-sm text-muted-foreground mb-2">{question_text}</p>
         <div className="flex gap-3">
-          <button className="px-4 py-1.5 rounded-lg border border-gray-300 text-sm text-gray-600 hover:bg-green-50 hover:border-green-300">{t("surveyBuilder.preview.yes")}</button>
-          <button className="px-4 py-1.5 rounded-lg border border-gray-300 text-sm text-gray-600 hover:bg-red-50 hover:border-red-300">{t("surveyBuilder.preview.no")}</button>
+          <button className="px-4 py-1.5 rounded-lg border border-border text-sm text-muted-foreground hover:bg-green-50 dark:hover:bg-green-950/40 hover:border-green-300">{t("surveyBuilder.preview.yes")}</button>
+          <button className="px-4 py-1.5 rounded-lg border border-border text-sm text-muted-foreground hover:bg-red-50 dark:hover:bg-red-950/40 hover:border-red-300">{t("surveyBuilder.preview.no")}</button>
         </div>
       </div>
     );
@@ -553,11 +553,11 @@ function QuestionPreview({ question }: { question: Question }) {
     ];
     return (
       <div>
-        <p className="text-sm text-gray-700 mb-2">{question_text}</p>
+        <p className="text-sm text-muted-foreground mb-2">{question_text}</p>
         <div className="space-y-1.5">
           {opts.map((o, i) => (
-            <label key={i} className="flex items-center gap-2 text-sm text-gray-600">
-              <input type="radio" name={`preview-${question_text}`} className="rounded-full border-gray-300" disabled />
+            <label key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
+              <input type="radio" name={`preview-${question_text}`} className="rounded-full border-border" disabled />
               {o}
             </label>
           ))}
@@ -569,10 +569,10 @@ function QuestionPreview({ question }: { question: Question }) {
   if (question_type === "text") {
     return (
       <div>
-        <p className="text-sm text-gray-700 mb-2">{question_text}</p>
+        <p className="text-sm text-muted-foreground mb-2">{question_text}</p>
         <textarea
           disabled
-          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white min-h-[60px]"
+          className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-card min-h-[60px]"
           placeholder={t("surveyBuilder.preview.textPlaceholder")}
         />
       </div>
@@ -582,7 +582,7 @@ function QuestionPreview({ question }: { question: Question }) {
   // scale
   return (
     <div>
-      <p className="text-sm text-gray-700 mb-2">{question_text}</p>
+      <p className="text-sm text-muted-foreground mb-2">{question_text}</p>
       <input type="range" min="1" max="10" disabled className="w-full" />
     </div>
   );

@@ -13,48 +13,52 @@ import axios from "axios";
 // Color presets
 // ---------------------------------------------------------------------------
 
+// Tinted module cards: each colour carries a dark: variant so the light tint
+// (bg-X-50 / dark header text) doesn't stay bright-on-dark in dark mode. In
+// dark mode we use a deep translucent tint, lighter icon/header text, and a
+// darker border.
 const colorMap: Record<string, { bg: string; icon: string; border: string; header: string }> = {
   indigo: {
-    bg: "bg-indigo-50",
-    icon: "text-indigo-600",
-    border: "border-indigo-200",
-    header: "text-indigo-900",
+    bg: "bg-indigo-50 dark:bg-indigo-950/40",
+    icon: "text-indigo-600 dark:text-indigo-400",
+    border: "border-indigo-200 dark:border-indigo-900",
+    header: "text-indigo-900 dark:text-indigo-200",
   },
   green: {
-    bg: "bg-green-50",
-    icon: "text-green-600",
-    border: "border-green-200",
-    header: "text-green-900",
+    bg: "bg-green-50 dark:bg-green-950/40",
+    icon: "text-green-600 dark:text-green-400",
+    border: "border-green-200 dark:border-green-900",
+    header: "text-green-900 dark:text-green-200",
   },
   amber: {
-    bg: "bg-amber-50",
-    icon: "text-amber-600",
-    border: "border-amber-200",
-    header: "text-amber-900",
+    bg: "bg-amber-50 dark:bg-amber-950/40",
+    icon: "text-amber-600 dark:text-amber-400",
+    border: "border-amber-200 dark:border-amber-900",
+    header: "text-amber-900 dark:text-amber-200",
   },
   rose: {
-    bg: "bg-rose-50",
-    icon: "text-rose-600",
-    border: "border-rose-200",
-    header: "text-rose-900",
+    bg: "bg-rose-50 dark:bg-rose-950/40",
+    icon: "text-rose-600 dark:text-rose-400",
+    border: "border-rose-200 dark:border-rose-900",
+    header: "text-rose-900 dark:text-rose-200",
   },
   blue: {
-    bg: "bg-blue-50",
-    icon: "text-blue-600",
-    border: "border-blue-200",
-    header: "text-blue-900",
+    bg: "bg-blue-50 dark:bg-blue-950/40",
+    icon: "text-blue-600 dark:text-blue-400",
+    border: "border-blue-200 dark:border-blue-900",
+    header: "text-blue-900 dark:text-blue-200",
   },
   purple: {
-    bg: "bg-purple-50",
-    icon: "text-purple-600",
-    border: "border-purple-200",
-    header: "text-purple-900",
+    bg: "bg-purple-50 dark:bg-purple-950/40",
+    icon: "text-purple-600 dark:text-purple-400",
+    border: "border-purple-200 dark:border-purple-900",
+    header: "text-purple-900 dark:text-purple-200",
   },
   cyan: {
-    bg: "bg-cyan-50",
-    icon: "text-cyan-600",
-    border: "border-cyan-200",
-    header: "text-cyan-900",
+    bg: "bg-cyan-50 dark:bg-cyan-950/40",
+    icon: "text-cyan-600 dark:text-cyan-400",
+    border: "border-cyan-200 dark:border-cyan-900",
+    header: "text-cyan-900 dark:text-cyan-200",
   },
 };
 
@@ -66,8 +70,8 @@ export function Stat({ label, value }: { label: string; value?: string | number 
   const display = value === undefined || value === null ? "--" : value;
   return (
     <div className="flex items-center justify-between py-1.5">
-      <span className="text-sm text-gray-500">{label}</span>
-      <span className="text-sm font-semibold text-gray-900">{display}</span>
+      <span className="text-sm text-muted-foreground">{label}</span>
+      <span className="text-sm font-semibold text-foreground">{display}</span>
     </div>
   );
 }
@@ -81,21 +85,21 @@ function WidgetSkeleton({ color = "indigo" }: { color?: string }) {
   return (
     <div className={`rounded-xl border ${c.border} ${c.bg} p-5 animate-pulse`}>
       <div className="flex items-center gap-3 mb-4">
-        <div className="h-9 w-9 rounded-lg bg-gray-200" />
-        <div className="h-4 w-24 rounded bg-gray-200" />
+        <div className="h-9 w-9 rounded-lg bg-muted" />
+        <div className="h-4 w-24 rounded bg-muted" />
       </div>
       <div className="space-y-3">
         <div className="flex justify-between">
-          <div className="h-3 w-20 rounded bg-gray-200" />
-          <div className="h-3 w-10 rounded bg-gray-200" />
+          <div className="h-3 w-20 rounded bg-muted" />
+          <div className="h-3 w-10 rounded bg-muted" />
         </div>
         <div className="flex justify-between">
-          <div className="h-3 w-24 rounded bg-gray-200" />
-          <div className="h-3 w-8 rounded bg-gray-200" />
+          <div className="h-3 w-24 rounded bg-muted" />
+          <div className="h-3 w-8 rounded bg-muted" />
         </div>
         <div className="flex justify-between">
-          <div className="h-3 w-16 rounded bg-gray-200" />
-          <div className="h-3 w-12 rounded bg-gray-200" />
+          <div className="h-3 w-16 rounded bg-muted" />
+          <div className="h-3 w-12 rounded bg-muted" />
         </div>
       </div>
     </div>
@@ -114,14 +118,14 @@ function WidgetOffline({ title, icon: Icon, color: _color = "indigo" }: {
   void _color;
   const { t } = useTranslation();
   return (
-    <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
+    <div className="rounded-xl border border-border bg-muted p-5">
       <div className="flex items-center gap-3 mb-4">
-        <div className="h-9 w-9 rounded-lg bg-gray-100 flex items-center justify-center">
-          <Icon className="h-5 w-5 text-gray-400" />
+        <div className="h-9 w-9 rounded-lg bg-muted flex items-center justify-center">
+          <Icon className="h-5 w-5 text-muted-foreground" />
         </div>
-        <h3 className="font-semibold text-gray-400">{title}</h3>
+        <h3 className="font-semibold text-muted-foreground">{title}</h3>
       </div>
-      <p className="text-sm text-gray-400 text-center py-4">{t('dashboard.moduleOffline')}</p>
+      <p className="text-sm text-muted-foreground text-center py-4">{t('dashboard.moduleOffline')}</p>
     </div>
   );
 }
@@ -159,7 +163,7 @@ export default function WidgetCard({
     <div className={`rounded-xl border ${c.border} ${c.bg} p-5 transition-shadow hover:shadow-md`}>
       {/* Header */}
       <div className="flex items-center gap-3 mb-4">
-        <div className={`h-9 w-9 rounded-lg bg-white/80 flex items-center justify-center shadow-sm`}>
+        <div className={`h-9 w-9 rounded-lg bg-card/80 flex items-center justify-center shadow-sm`}>
           <Icon className={`h-5 w-5 ${c.icon}`} />
         </div>
         <h3 className={`font-semibold ${c.header}`}>{title}</h3>

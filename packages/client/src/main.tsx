@@ -6,6 +6,7 @@ import App from "./App";
 import "./styles/globals.css";
 import "./lib/i18n";
 import { useAuthStore } from "@/lib/auth-store";
+import { ThemeProvider } from "@/lib/theme";
 
 // ---------------------------------------------------------------------------
 // Global error capture — sends client-side errors to the server Log Dashboard
@@ -70,10 +71,12 @@ export const queryClient = new QueryClient({
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </QueryClientProvider>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </QueryClientProvider>
+    </ThemeProvider>
   </React.StrictMode>
 );

@@ -35,20 +35,20 @@ interface ConfirmDialogProps {
 const VARIANT_STYLES: Record<Variant, { icon: typeof AlertTriangle; iconBg: string; iconColor: string; button: string }> = {
   danger: {
     icon: AlertTriangle,
-    iconBg: "bg-red-50",
-    iconColor: "text-red-600",
+    iconBg: "bg-red-50 dark:bg-red-950/40",
+    iconColor: "text-red-600 dark:text-red-400",
     button: "bg-red-600 hover:bg-red-700",
   },
   success: {
     icon: CheckCircle2,
-    iconBg: "bg-green-50",
-    iconColor: "text-green-600",
+    iconBg: "bg-green-50 dark:bg-green-950/40",
+    iconColor: "text-green-600 dark:text-green-400",
     button: "bg-green-600 hover:bg-green-700",
   },
   info: {
     icon: AlertTriangle,
-    iconBg: "bg-blue-50",
-    iconColor: "text-blue-600",
+    iconBg: "bg-blue-50 dark:bg-blue-950/40",
+    iconColor: "text-blue-600 dark:text-blue-400",
     button: "bg-brand-600 hover:bg-brand-700",
   },
 };
@@ -71,30 +71,30 @@ export default function ConfirmDialog({
     <Dialog.Root open={open} onOpenChange={(v) => !v && onCancel()}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-black/40 data-[state=open]:animate-in data-[state=open]:fade-in-0" />
-        <Dialog.Content className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-xl bg-white shadow-xl data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95">
+        <Dialog.Content className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-xl bg-card shadow-xl data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95">
           <div className="p-6">
             <div className="flex items-start gap-4">
               <div className={`shrink-0 rounded-full p-2 ${style.iconBg}`}>
                 <Icon className={`h-5 w-5 ${style.iconColor}`} />
               </div>
               <div className="flex-1">
-                <Dialog.Title className="text-base font-semibold text-gray-900">
+                <Dialog.Title className="text-base font-semibold text-foreground">
                   {title}
                 </Dialog.Title>
                 {description && (
-                  <Dialog.Description className="mt-2 text-sm text-gray-600">
+                  <Dialog.Description className="mt-2 text-sm text-muted-foreground">
                     {description}
                   </Dialog.Description>
                 )}
               </div>
             </div>
           </div>
-          <div className="flex justify-end gap-3 border-t border-gray-100 bg-gray-50 px-6 py-4 rounded-b-xl">
+          <div className="flex justify-end gap-3 border-t border-border bg-muted px-6 py-4 rounded-b-xl">
             <button
               type="button"
               onClick={onCancel}
               disabled={loading}
-              className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+              className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-muted disabled:opacity-50"
             >
               {cancelText}
             </button>

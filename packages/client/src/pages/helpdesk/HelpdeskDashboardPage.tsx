@@ -13,30 +13,30 @@ import {
 } from "lucide-react";
 
 const CATEGORY_COLORS: Record<string, string> = {
-  leave: "bg-blue-100 text-blue-700",
-  payroll: "bg-green-100 text-green-700",
-  benefits: "bg-purple-100 text-purple-700",
-  it: "bg-orange-100 text-orange-700",
-  facilities: "bg-yellow-100 text-yellow-700",
-  onboarding: "bg-teal-100 text-teal-700",
-  policy: "bg-indigo-100 text-indigo-700",
-  general: "bg-gray-100 text-gray-700",
+  leave: "bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300",
+  payroll: "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300",
+  benefits: "bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300",
+  it: "bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300",
+  facilities: "bg-yellow-100 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300",
+  onboarding: "bg-teal-100 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300",
+  policy: "bg-indigo-100 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300",
+  general: "bg-muted text-muted-foreground",
 };
 
 const PRIORITY_COLORS: Record<string, string> = {
-  low: "bg-gray-100 text-gray-600",
-  medium: "bg-blue-100 text-blue-700",
-  high: "bg-orange-100 text-orange-700",
-  urgent: "bg-red-100 text-red-700",
+  low: "bg-muted text-muted-foreground",
+  medium: "bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300",
+  high: "bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300",
+  urgent: "bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300",
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  open: "bg-blue-100 text-blue-700",
-  in_progress: "bg-yellow-100 text-yellow-700",
-  awaiting_response: "bg-purple-100 text-purple-700",
-  resolved: "bg-green-100 text-green-700",
-  closed: "bg-gray-100 text-gray-600",
-  reopened: "bg-red-100 text-red-700",
+  open: "bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300",
+  in_progress: "bg-yellow-100 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300",
+  awaiting_response: "bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300",
+  resolved: "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300",
+  closed: "bg-muted text-muted-foreground",
+  reopened: "bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300",
 };
 
 function useDashboard() {
@@ -53,7 +53,7 @@ export default function HelpdeskDashboardPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-400">
+        <div className="text-muted-foreground">
           {t("helpdeskDashboard.loading")}
         </div>
       </div>
@@ -69,28 +69,28 @@ export default function HelpdeskDashboardPage() {
       label: t("helpdeskDashboard.stats.totalOpen"),
       value: stats.total_open,
       icon: Clock,
-      color: "text-blue-600 bg-blue-50",
+      color: "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40",
       href: "/helpdesk/tickets?status=open",
     },
     {
       label: t("helpdeskDashboard.stats.inProgress"),
       value: stats.in_progress + stats.awaiting_response,
       icon: Headphones,
-      color: "text-yellow-600 bg-yellow-50",
+      color: "text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-950/40",
       href: "/helpdesk/tickets?status=in_progress",
     },
     {
       label: t("helpdeskDashboard.stats.overdue"),
       value: stats.overdue,
       icon: AlertTriangle,
-      color: "text-red-600 bg-red-50",
+      color: "text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40",
       href: "/helpdesk/tickets?sla=breached",
     },
     {
       label: t("helpdeskDashboard.stats.resolvedToday"),
       value: stats.resolved_today,
       icon: CheckCircle2,
-      color: "text-green-600 bg-green-50",
+      color: "text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-950/40",
       href: "/helpdesk/tickets?resolved_date=today",
     },
   ];
@@ -104,10 +104,10 @@ export default function HelpdeskDashboardPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-foreground">
             {t("helpdeskDashboard.title")}
           </h1>
-          <p className="text-gray-500 mt-1">
+          <p className="text-muted-foreground mt-1">
             {t("helpdeskDashboard.subtitle")}
           </p>
         </div>
@@ -127,15 +127,15 @@ export default function HelpdeskDashboardPage() {
             <Link
               key={card.label}
               to={card.href}
-              className="bg-white rounded-xl border border-gray-200 p-6 transition-colors hover:border-brand-400 hover:bg-brand-50/30 focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="bg-card rounded-xl border border-border p-6 transition-colors hover:border-brand-400 hover:bg-brand-50/30 dark:hover:bg-brand-950/30 focus:outline-none focus:ring-2 focus:ring-brand-500"
             >
               <div className="flex items-center gap-3">
                 <div className={`p-2.5 rounded-lg ${card.color}`}>
                   <Icon className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">{card.label}</p>
-                  <p className="text-2xl font-bold text-gray-900">{card.value}</p>
+                  <p className="text-sm text-muted-foreground">{card.label}</p>
+                  <p className="text-2xl font-bold text-foreground">{card.value}</p>
                 </div>
               </div>
             </Link>
@@ -146,8 +146,8 @@ export default function HelpdeskDashboardPage() {
       {/* SLA & Metrics Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
         {/* SLA Compliance */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h3 className="text-sm font-semibold text-muted-foreground mb-4 flex items-center gap-2">
             <BarChart3 className="h-4 w-4" /> {t("helpdeskDashboard.sla.compliance")}
           </h3>
           <div className="flex items-center justify-center">
@@ -158,7 +158,8 @@ export default function HelpdeskDashboardPage() {
                   cy="60"
                   r="50"
                   fill="none"
-                  stroke="#e5e7eb"
+                  className="text-gray-200 dark:text-slate-700"
+                  stroke="currentColor"
                   strokeWidth="10"
                 />
                 <circle
@@ -173,28 +174,28 @@ export default function HelpdeskDashboardPage() {
                 />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-2xl font-bold text-gray-900">
+                <span className="text-2xl font-bold text-foreground">
                   {stats.sla_compliance}%
                 </span>
               </div>
             </div>
           </div>
-          <p className="text-center text-xs text-gray-500 mt-3">
+          <p className="text-center text-xs text-muted-foreground mt-3">
             {t("helpdeskDashboard.sla.resolvedWithinSla")}
           </p>
         </div>
 
         {/* Avg Resolution Time */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h3 className="text-sm font-semibold text-muted-foreground mb-4 flex items-center gap-2">
             <Clock className="h-4 w-4" /> {t("helpdeskDashboard.metrics.avgResolutionTime")}
           </h3>
           <div className="flex items-center justify-center mt-4">
             <div className="text-center">
-              <p className="text-4xl font-bold text-gray-900">
+              <p className="text-4xl font-bold text-foreground">
                 {stats.avg_resolution_hours}
               </p>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 {t("helpdeskDashboard.metrics.hours")}
               </p>
             </div>
@@ -202,8 +203,8 @@ export default function HelpdeskDashboardPage() {
         </div>
 
         {/* Satisfaction */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h3 className="text-sm font-semibold text-muted-foreground mb-4 flex items-center gap-2">
             <Star className="h-4 w-4" /> {t("helpdeskDashboard.satisfaction.title")}
           </h3>
           <div className="flex items-center justify-center mt-4">
@@ -215,15 +216,15 @@ export default function HelpdeskDashboardPage() {
                     className={`h-6 w-6 ${
                       stats.avg_satisfaction && star <= Math.round(stats.avg_satisfaction)
                         ? "text-yellow-400 fill-yellow-400"
-                        : "text-gray-200"
+                        : "text-gray-200 dark:text-slate-700"
                     }`}
                   />
                 ))}
               </div>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-2xl font-bold text-foreground">
                 {stats.avg_satisfaction ?? t("helpdeskDashboard.satisfaction.notAvailable")}
               </p>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 {t("helpdeskDashboard.satisfaction.ratingCount", {
                   count: stats.rated_count,
                 })}
@@ -235,8 +236,8 @@ export default function HelpdeskDashboardPage() {
 
       {/* Category Breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h3 className="text-sm font-semibold text-gray-700 mb-4">
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h3 className="text-sm font-semibold text-muted-foreground mb-4">
             {t("helpdeskDashboard.categoryBreakdown.title")}
           </h3>
           <div className="space-y-3">
@@ -244,14 +245,14 @@ export default function HelpdeskDashboardPage() {
               <div key={cat.category} className="flex items-center gap-3">
                 <span
                   className={`text-xs font-medium px-2 py-0.5 rounded capitalize ${
-                    CATEGORY_COLORS[cat.category] || "bg-gray-100 text-gray-600"
+                    CATEGORY_COLORS[cat.category] || "bg-muted text-muted-foreground"
                   }`}
                 >
                   {t(`helpdeskDashboard.category.${cat.category}`, {
                     defaultValue: cat.category,
                   })}
                 </span>
-                <div className="flex-1 bg-gray-100 rounded-full h-2">
+                <div className="flex-1 bg-muted rounded-full h-2">
                   <div
                     className="bg-brand-500 h-2 rounded-full transition-all"
                     style={{
@@ -259,13 +260,13 @@ export default function HelpdeskDashboardPage() {
                     }}
                   />
                 </div>
-                <span className="text-sm font-medium text-gray-700 w-8 text-right">
+                <span className="text-sm font-medium text-muted-foreground w-8 text-right">
                   {cat.count}
                 </span>
               </div>
             ))}
             {stats.category_breakdown.length === 0 && (
-              <p className="text-sm text-gray-400 text-center py-4">
+              <p className="text-sm text-muted-foreground text-center py-4">
                 {t("helpdeskDashboard.emptyState.noTickets")}
               </p>
             )}
@@ -273,8 +274,8 @@ export default function HelpdeskDashboardPage() {
         </div>
 
         {/* Recent Tickets */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h3 className="text-sm font-semibold text-gray-700 mb-4">
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h3 className="text-sm font-semibold text-muted-foreground mb-4">
             {t("helpdeskDashboard.recentTickets.title")}
           </h3>
           <div className="space-y-3">
@@ -282,13 +283,13 @@ export default function HelpdeskDashboardPage() {
               <Link
                 key={ticket.id}
                 to={`/helpdesk/tickets/${ticket.id}`}
-                className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-muted transition-colors"
               >
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">
+                  <p className="text-sm font-medium text-foreground truncate">
                     #{ticket.id} {ticket.subject}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-muted-foreground">
                     {ticket.raised_by_name} &middot;{" "}
                     {new Date(ticket.created_at).toLocaleDateString()}
                   </p>
@@ -316,7 +317,7 @@ export default function HelpdeskDashboardPage() {
               </Link>
             ))}
             {stats.recent_tickets.length === 0 && (
-              <p className="text-sm text-gray-400 text-center py-4">
+              <p className="text-sm text-muted-foreground text-center py-4">
                 {t("helpdeskDashboard.emptyState.noTickets")}
               </p>
             )}

@@ -2,9 +2,45 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ---------------------------------------------------------------------------
+   Theme tokens (light / dark)
+   Semantic CSS variables that flip when the `.dark` class is toggled on <html>
+   (see src/lib/theme.tsx). Components use the mapped Tailwind utilities
+   (bg-background, text-foreground, bg-card, border-border, …) so a single
+   definition here themes the whole app instead of per-element `dark:` variants.
+   Values are HSL channels (no hsl() wrapper) so Tailwind can apply opacity.
+--------------------------------------------------------------------------- */
+:root {
+  --background: 210 20% 98%;        /* gray-50 — app canvas */
+  --foreground: 222 47% 11%;        /* gray-900 — primary text */
+  --card: 0 0% 100%;                /* white — surfaces/cards */
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --muted: 210 40% 96%;             /* gray-100 — subtle bg */
+  --muted-foreground: 215 16% 47%;  /* gray-500 — secondary text */
+  --border: 214 32% 91%;            /* gray-200 */
+  --input: 214 32% 91%;
+  --ring: 217 91% 60%;              /* brand-500 */
+}
+
+.dark {
+  --background: 222 47% 11%;        /* slate-900-ish canvas */
+  --foreground: 210 40% 98%;        /* near-white text */
+  --card: 217 33% 17%;             /* slate-800 — surfaces */
+  --card-foreground: 210 40% 98%;
+  --popover: 217 33% 17%;
+  --popover-foreground: 210 40% 98%;
+  --muted: 217 33% 20%;            /* slate-700-ish subtle bg */
+  --muted-foreground: 215 20% 65%; /* muted secondary text */
+  --border: 217 24% 27%;           /* slate-700 border */
+  --input: 217 24% 27%;
+  --ring: 217 91% 60%;
+}
+
 @layer base {
   body {
-    @apply bg-gray-50 text-gray-900 antialiased;
+    @apply bg-background text-foreground antialiased;
   }
 
   /* RTL (Arabic) layout support — flip directional properties */
@@ -135,5 +171,24 @@
   /* No trailing gap after the last block so panels stay tight. */
   .rich-text > :last-child {
     @apply mb-0;
+  }
+
+  /* react-day-picker (DateRangePicker calendar) renders from its own
+     bundled style.css with hardcoded light colors. In dark mode the popover
+     would show as a light island, so remap the rdp CSS variables + a couple
+     of element colors to the dark theme. Scoped to .rdp-wrap so it only
+     affects our calendars. Applies wherever DateRangePicker is used
+     (audit, attendance, etc.). */
+  .dark .rdp-wrap {
+    --rdp-accent-color: theme("colors.brand.500");
+    --rdp-accent-background-color: theme("colors.brand.950");
+    --rdp-range_middle-background-color: theme("colors.brand.950");
+    --rdp-today-color: theme("colors.brand.400");
+  }
+  .dark .rdp-wrap .rdp-day_button:hover:not([disabled]):not(.rdp-selected .rdp-day_button) {
+    background-color: hsl(var(--muted));
+  }
+  .dark .rdp-wrap .rdp-chevron {
+    fill: hsl(var(--muted-foreground));
   }
 }

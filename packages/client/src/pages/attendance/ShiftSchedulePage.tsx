@@ -422,14 +422,14 @@ export default function ShiftSchedulePage() {
   // Shift color map
   const shiftColors: Record<number, string> = {};
   const colorPalette = [
-    "bg-blue-100 text-blue-800",
-    "bg-green-100 text-green-800",
-    "bg-purple-100 text-purple-800",
-    "bg-orange-100 text-orange-800",
-    "bg-pink-100 text-pink-800",
-    "bg-teal-100 text-teal-800",
-    "bg-indigo-100 text-indigo-800",
-    "bg-yellow-100 text-yellow-800",
+    "bg-blue-100 dark:bg-blue-950/40 text-blue-800",
+    "bg-green-100 dark:bg-green-950/40 text-green-800",
+    "bg-purple-100 dark:bg-purple-950/40 text-purple-800",
+    "bg-orange-100 dark:bg-orange-950/40 text-orange-800",
+    "bg-pink-100 dark:bg-pink-950/40 text-pink-800",
+    "bg-teal-100 dark:bg-teal-950/40 text-teal-800",
+    "bg-indigo-100 dark:bg-indigo-950/40 text-indigo-800",
+    "bg-yellow-100 dark:bg-yellow-950/40 text-yellow-800",
   ];
   shifts.forEach((s: any, i: number) => {
     shiftColors[s.id] = colorPalette[i % colorPalette.length];
@@ -439,8 +439,8 @@ export default function ShiftSchedulePage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t('attendance.shiftSchedule.title')}</h1>
-          <p className="text-gray-500 mt-1">{t('attendance.shiftSchedule.subtitle')}</p>
+          <h1 className="text-2xl font-bold text-foreground">{t('attendance.shiftSchedule.title')}</h1>
+          <p className="text-muted-foreground mt-1">{t('attendance.shiftSchedule.subtitle')}</p>
         </div>
         <button
           onClick={() => setShowBulkAssign(true)}
@@ -451,7 +451,7 @@ export default function ShiftSchedulePage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 border-b border-gray-200 mb-6">
+      <div className="flex gap-1 border-b border-border mb-6">
         {([
           { key: "schedule", labelKey: "attendance.shiftSchedule.tabs.schedule", icon: Calendar },
           { key: "my-schedule", labelKey: "attendance.shiftSchedule.tabs.mySchedule", icon: Calendar },
@@ -462,8 +462,8 @@ export default function ShiftSchedulePage() {
             onClick={() => setTab(tab_.key)}
             className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition ${
               tab === tab_.key
-                ? "border-brand-600 text-brand-600"
-                : "border-transparent text-gray-500 hover:text-gray-700"
+                ? "border-brand-600 text-brand-600 dark:text-brand-400"
+                : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
             <tab_.icon className="h-4 w-4" />
@@ -478,21 +478,21 @@ export default function ShiftSchedulePage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <form
             onSubmit={handleBulkSubmit}
-            className="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 mx-4"
+            className="bg-card rounded-xl shadow-xl w-full max-w-lg p-6 mx-4"
           >
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">{t('attendance.shiftSchedule.bulk.title')}</h3>
-              <button type="button" onClick={() => { setShowBulkAssign(false); setBulkEmployeeSearch(""); }} className="text-gray-400 hover:text-gray-600">
+              <h3 className="text-lg font-semibold text-foreground">{t('attendance.shiftSchedule.bulk.title')}</h3>
+              <button type="button" onClick={() => { setShowBulkAssign(false); setBulkEmployeeSearch(""); }} className="text-muted-foreground hover:text-muted-foreground">
                 <X className="h-5 w-5" />
               </button>
             </div>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t('attendance.shiftSchedule.bulk.shiftLabel')} *</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">{t('attendance.shiftSchedule.bulk.shiftLabel')} *</label>
                 <select
                   value={bulkShiftId}
                   onChange={(e) => setBulkShiftId(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                   required
                 >
                   <option value="">{t('attendance.shiftSchedule.bulk.selectShift')}</option>
@@ -505,40 +505,40 @@ export default function ShiftSchedulePage() {
               </div>
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-muted-foreground">
                     {t('attendance.shiftSchedule.bulk.employees')} * ({t('attendance.shiftSchedule.bulk.selectedCount', { count: bulkUserIds.length })})
                   </label>
                   {bulkUserIds.length > 0 && (
                     <button
                       type="button"
                       onClick={() => setBulkUserIds([])}
-                      className="text-xs text-brand-600 hover:text-brand-700 hover:underline"
+                      className="text-xs text-brand-600 dark:text-brand-400 hover:text-brand-700 hover:underline"
                     >
                       Clear selection
                     </button>
                   )}
                 </div>
                 <div className="relative mb-2">
-                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                   <input
                     type="text"
                     value={bulkEmployeeSearch}
                     onChange={(e) => setBulkEmployeeSearch(e.target.value)}
                     placeholder="Search by name, employee code, or email"
-                    className="w-full pl-8 pr-8 py-2 border border-gray-300 rounded-lg text-sm"
+                    className="bg-card text-foreground w-full pl-8 pr-8 py-2 border border-border rounded-lg text-sm"
                   />
                   {bulkEmployeeSearch && (
                     <button
                       type="button"
                       onClick={() => setBulkEmployeeSearch("")}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground"
                       aria-label="Clear search"
                     >
                       <X className="h-4 w-4" />
                     </button>
                   )}
                 </div>
-                <div className="max-h-40 overflow-y-auto border border-gray-200 rounded-lg p-2 space-y-1">
+                <div className="max-h-40 overflow-y-auto border border-border rounded-lg p-2 space-y-1">
                   {(() => {
                     const visibleIds: number[] = filteredBulkEmployees.map((emp: any) => emp.id as number);
                     const visibleSelectedCount = visibleIds.filter((id: number) => bulkUserIds.includes(id)).length;
@@ -562,8 +562,8 @@ export default function ShiftSchedulePage() {
                     };
                     return (
                       <label
-                        className={`sticky top-0 -mx-2 -mt-2 mb-1 px-2 py-1 flex items-center gap-2 text-sm font-medium bg-gray-50 border-b border-gray-200 rounded-t-lg ${
-                          filteredBulkEmployees.length === 0 ? "cursor-not-allowed opacity-60" : "cursor-pointer hover:bg-gray-100"
+                        className={`sticky top-0 -mx-2 -mt-2 mb-1 px-2 py-1 flex items-center gap-2 text-sm font-medium bg-muted border-b border-border rounded-t-lg ${
+                          filteredBulkEmployees.length === 0 ? "cursor-not-allowed opacity-60" : "cursor-pointer hover:bg-muted"
                         }`}
                       >
                         <input
@@ -574,29 +574,29 @@ export default function ShiftSchedulePage() {
                           checked={allVisibleSelected}
                           disabled={filteredBulkEmployees.length === 0}
                           onChange={handleSelectAllVisible}
-                          className="rounded border-gray-300"
+                          className="rounded border-border"
                         />
-                        <span className="text-gray-700">
+                        <span className="text-muted-foreground">
                           Select all ({filteredBulkEmployees.length} visible)
                         </span>
                       </label>
                     );
                   })()}
                   {filteredBulkEmployees.length === 0 ? (
-                    <p className="text-xs text-gray-400 px-2 py-3 text-center">
+                    <p className="text-xs text-muted-foreground px-2 py-3 text-center">
                       No employees match &ldquo;{bulkEmployeeSearch}&rdquo;
                     </p>
                   ) : (
                     filteredBulkEmployees.map((emp: any) => (
-                      <label key={emp.id} className="flex items-center gap-2 text-sm px-2 py-1 hover:bg-gray-50 rounded cursor-pointer">
+                      <label key={emp.id} className="flex items-center gap-2 text-sm px-2 py-1 hover:bg-muted rounded cursor-pointer">
                         <input
                           type="checkbox"
                           checked={bulkUserIds.includes(emp.id)}
                           onChange={() => toggleBulkUser(emp.id)}
-                          className="rounded border-gray-300"
+                          className="rounded border-border"
                         />
                         {emp.first_name} {emp.last_name}
-                        {emp.emp_code && <span className="text-gray-400">({emp.emp_code})</span>}
+                        {emp.emp_code && <span className="text-muted-foreground">({emp.emp_code})</span>}
                       </label>
                     ))
                   )}
@@ -604,28 +604,28 @@ export default function ShiftSchedulePage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('attendance.shiftSchedule.bulk.from')} *</label>
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">{t('attendance.shiftSchedule.bulk.from')} *</label>
                   <input
                     type="date"
                     value={bulkFrom}
                     onChange={(e) => setBulkFrom(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('attendance.shiftSchedule.bulk.toOptional')}</label>
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">{t('attendance.shiftSchedule.bulk.toOptional')}</label>
                   <input
                     type="date"
                     value={bulkTo}
                     onChange={(e) => setBulkTo(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                   />
                 </div>
               </div>
             </div>
             <div className="mt-6 flex justify-end gap-2">
-              <button type="button" onClick={() => { setShowBulkAssign(false); setBulkEmployeeSearch(""); }} className="px-4 py-2 text-sm border border-gray-300 rounded-lg">
+              <button type="button" onClick={() => { setShowBulkAssign(false); setBulkEmployeeSearch(""); }} className="bg-card text-foreground px-4 py-2 text-sm border border-border rounded-lg">
                 {t('common.cancel')}
               </button>
               <button
@@ -643,18 +643,18 @@ export default function ShiftSchedulePage() {
       {/* Quick Assign Modal */}
       {showAssign && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <form onSubmit={handleQuickAssign} className="bg-white rounded-xl shadow-xl w-full max-w-sm p-6 mx-4">
+          <form onSubmit={handleQuickAssign} className="bg-card rounded-xl shadow-xl w-full max-w-sm p-6 mx-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-semibold text-gray-900">{t('attendance.shiftSchedule.quick.title')}</h3>
-              <button type="button" onClick={() => setShowAssign(null)} className="text-gray-400 hover:text-gray-600">
+              <h3 className="text-sm font-semibold text-foreground">{t('attendance.shiftSchedule.quick.title')}</h3>
+              <button type="button" onClick={() => setShowAssign(null)} className="text-muted-foreground hover:text-muted-foreground">
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <p className="text-sm text-gray-500 mb-3">{t('attendance.shiftSchedule.quick.dateLabel')}: {formatDate(showAssign.date, i18n.language)}</p>
+            <p className="text-sm text-muted-foreground mb-3">{t('attendance.shiftSchedule.quick.dateLabel')}: {formatDate(showAssign.date, i18n.language)}</p>
             <select
               value={assignShiftId}
               onChange={(e) => setAssignShiftId(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mb-2"
+              className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm mb-2"
               required
             >
               <option value="">{t('attendance.shiftSchedule.bulk.selectShift')}</option>
@@ -676,7 +676,7 @@ export default function ShiftSchedulePage() {
                 .map((d: string) => Number(d));
               if (wd.length > 0 && !wd.includes(dow)) {
                 return (
-                  <p className="mb-3 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded p-2">
+                  <p className="mb-3 text-xs text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 rounded p-2">
                     {t('attendance.shiftSchedule.quick.offDayWarning', {
                       defaultValue:
                         'This shift is off on the selected day. The schedule cell will show "Off" until you change the shift\'s working days.',
@@ -687,7 +687,7 @@ export default function ShiftSchedulePage() {
               return null;
             })()}
             <div className="flex justify-end gap-2">
-              <button type="button" onClick={() => setShowAssign(null)} className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg">
+              <button type="button" onClick={() => setShowAssign(null)} className="bg-card text-foreground px-3 py-1.5 text-sm border border-border rounded-lg">
                 {t('common.cancel')}
               </button>
               <button
@@ -705,16 +705,16 @@ export default function ShiftSchedulePage() {
       {/* Edit Assignment Modal */}
       {editAssignment && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <form onSubmit={handleEditAssignment} className="bg-white rounded-xl shadow-xl w-full max-w-sm p-6 mx-4">
+          <form onSubmit={handleEditAssignment} className="bg-card rounded-xl shadow-xl w-full max-w-sm p-6 mx-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-semibold text-gray-900">{t('attendance.shiftSchedule.edit.title')}</h3>
-              <button type="button" onClick={() => setEditAssignment(null)} className="text-gray-400 hover:text-gray-600">
+              <h3 className="text-sm font-semibold text-foreground">{t('attendance.shiftSchedule.edit.title')}</h3>
+              <button type="button" onClick={() => setEditAssignment(null)} className="text-muted-foreground hover:text-muted-foreground">
                 <X className="h-4 w-4" />
               </button>
             </div>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-muted-foreground mb-1">
                   {t('attendance.shiftSchedule.edit.shiftLabel')}
                 </label>
                 {/*
@@ -733,7 +733,7 @@ export default function ShiftSchedulePage() {
                   onChange={(e) =>
                     setEditAssignment({ ...editAssignment, shift_id: Number(e.target.value) })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                   required
                 >
                   {workingShifts.map((s: any) => (
@@ -743,7 +743,7 @@ export default function ShiftSchedulePage() {
                   ))}
                 </select>
                 {editIsWeekoff && (
-                  <p className="mt-1 text-xs text-amber-700">
+                  <p className="mt-1 text-xs text-amber-700 dark:text-amber-300">
                     {t('attendance.shiftSchedule.edit.weekoffOverrideHint', {
                       defaultValue:
                         'Selected date range will be saved as Week-off. The shift above stays in effect for the surrounding dates.',
@@ -777,19 +777,19 @@ export default function ShiftSchedulePage() {
                 }}
                 className={`flex w-full items-start justify-between gap-3 rounded-lg border px-3 py-2.5 text-left transition ${
                   weekoffShiftId == null
-                    ? 'cursor-not-allowed opacity-60 border-gray-200 bg-white'
+                    ? 'cursor-not-allowed opacity-60 border-border bg-card'
                     : editIsWeekoff
-                      ? 'cursor-pointer border-amber-300 bg-amber-50'
-                      : 'cursor-pointer border-gray-200 bg-white hover:bg-gray-50'
+                      ? 'cursor-pointer border-amber-300 bg-amber-50 dark:bg-amber-950/40'
+                      : 'cursor-pointer border-border bg-card hover:bg-muted'
                 }`}
               >
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-sm font-medium text-foreground">
                     {t('attendance.shiftSchedule.edit.weekoffToggle', {
                       defaultValue: 'Mark as Week-off',
                     })}
                   </p>
-                  <p className="text-xs text-gray-500 mt-0.5">
+                  <p className="text-xs text-muted-foreground mt-0.5">
                     {t('attendance.shiftSchedule.edit.weekoffHint', {
                       defaultValue:
                         'Carves out the selected date range as off. Surrounding shift dates are preserved.',
@@ -800,39 +800,39 @@ export default function ShiftSchedulePage() {
                 <span
                   aria-hidden
                   className={`relative inline-block h-6 w-11 flex-shrink-0 rounded-full transition-colors ${
-                    editIsWeekoff ? 'bg-brand-600' : 'bg-gray-300'
+                    editIsWeekoff ? 'bg-brand-600' : 'bg-muted'
                   }`}
                 >
                   {/* Thumb */}
                   <span
-                    className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
+                    className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-card shadow transition-transform ${
                       editIsWeekoff ? 'translate-x-5' : 'translate-x-0'
                     }`}
                   />
                 </span>
               </button>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t('attendance.shiftSchedule.edit.from')}</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">{t('attendance.shiftSchedule.edit.from')}</label>
                 <input
                   type="date"
                   value={editAssignment.effective_from}
                   onChange={(e) => setEditAssignment({ ...editAssignment, effective_from: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t('attendance.shiftSchedule.edit.toOptional')}</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">{t('attendance.shiftSchedule.edit.toOptional')}</label>
                 <input
                   type="date"
                   value={editAssignment.effective_to || ""}
                   onChange={(e) => setEditAssignment({ ...editAssignment, effective_to: e.target.value || null })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                 />
               </div>
             </div>
             <div className="mt-6 flex justify-end gap-2">
-              <button type="button" onClick={() => setEditAssignment(null)} className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg">
+              <button type="button" onClick={() => setEditAssignment(null)} className="bg-card text-foreground px-3 py-1.5 text-sm border border-border rounded-lg">
                 {t('common.cancel')}
               </button>
               <button
@@ -855,25 +855,25 @@ export default function ShiftSchedulePage() {
           <div className="flex items-center justify-between mb-4">
             <button
               onClick={() => setMonthOffset((m) => m - 1)}
-              className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 px-3 py-1.5 border border-gray-300 rounded-lg"
+              className="bg-card text-foreground flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground px-3 py-1.5 border border-border rounded-lg"
             >
               <ChevronLeft className="h-4 w-4" /> {t('attendance.previous')}
             </button>
-            <span className="text-sm font-semibold text-gray-700">
+            <span className="text-sm font-semibold text-muted-foreground">
               {formatMonthLabel(month.year, month.month, i18n.language)}
             </span>
             <div className="flex items-center gap-2">
               {monthOffset !== 0 && (
                 <button
                   onClick={() => setMonthOffset(0)}
-                  className="text-sm text-gray-600 hover:text-gray-900 px-3 py-1.5 border border-gray-300 rounded-lg"
+                  className="bg-card text-foreground text-sm text-muted-foreground hover:text-foreground px-3 py-1.5 border border-border rounded-lg"
                 >
                   {t('attendance.shiftSchedule.thisMonth', { defaultValue: 'This month' })}
                 </button>
               )}
               <button
                 onClick={() => setMonthOffset((m) => m + 1)}
-                className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 px-3 py-1.5 border border-gray-300 rounded-lg"
+                className="bg-card text-foreground flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground px-3 py-1.5 border border-border rounded-lg"
               >
                 {t('attendance.next')} <ChevronRight className="h-4 w-4" />
               </button>
@@ -892,27 +892,27 @@ export default function ShiftSchedulePage() {
           )}
 
           {/* Filters (search + department / location / role) */}
-          <div className="bg-white rounded-xl border border-gray-200 p-3 mb-3 flex flex-wrap items-end gap-3">
+          <div className="bg-card rounded-xl border border-border p-3 mb-3 flex flex-wrap items-end gap-3">
             <div className="flex-1 min-w-[220px]">
-              <label className="block text-xs font-medium text-gray-500 mb-1">Search employee</label>
+              <label className="block text-xs font-medium text-muted-foreground mb-1">Search employee</label>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                 <input
                   type="search"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Name, employee code, or email"
-                  className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                  className="bg-card text-foreground w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                   aria-label="Search employee"
                 />
               </div>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Department</label>
+              <label className="block text-xs font-medium text-muted-foreground mb-1">Department</label>
               <select
                 value={departmentId ?? ""}
                 onChange={(e) => setDepartmentId(e.target.value ? Number(e.target.value) : undefined)}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm"
               >
                 <option value="">All departments</option>
                 {(departments as any[]).map((d) => (
@@ -921,11 +921,11 @@ export default function ShiftSchedulePage() {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Location</label>
+              <label className="block text-xs font-medium text-muted-foreground mb-1">Location</label>
               <select
                 value={locationId ?? ""}
                 onChange={(e) => setLocationId(e.target.value ? Number(e.target.value) : undefined)}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm"
               >
                 <option value="">All locations</option>
                 {(locations as any[]).map((l) => (
@@ -934,11 +934,11 @@ export default function ShiftSchedulePage() {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Role</label>
+              <label className="block text-xs font-medium text-muted-foreground mb-1">Role</label>
               <select
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm"
               >
                 <option value="">All roles</option>
                 {ROLE_OPTIONS.map((r) => (
@@ -950,7 +950,7 @@ export default function ShiftSchedulePage() {
               <button
                 type="button"
                 onClick={() => { setSearch(""); setDepartmentId(undefined); setLocationId(undefined); setRoleFilter(""); }}
-                className="px-3 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="px-3 py-2 text-sm text-muted-foreground border border-border rounded-lg hover:bg-muted"
               >
                 Clear
               </button>
@@ -958,12 +958,12 @@ export default function ShiftSchedulePage() {
           </div>
 
           {/* Page size + visible-row stats */}
-          <div className="flex items-center gap-2 text-sm text-gray-600 mb-3">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
             <span>{t('attendance.shiftSchedule.search.show')}</span>
             <select
               value={pageSize}
               onChange={(e) => setPageSize(Number(e.target.value))}
-              className="px-2 py-1.5 border border-gray-300 rounded-lg text-sm bg-white"
+              className="px-2 py-1.5 border border-border rounded-lg text-sm bg-card"
               aria-label={t('attendance.shiftSchedule.search.show')}
             >
               {PAGE_SIZE_OPTIONS.map((n) => (
@@ -974,15 +974,15 @@ export default function ShiftSchedulePage() {
           </div>
 
           {/* Schedule Grid */}
-          <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto">
+          <div className="bg-card rounded-xl border border-border overflow-x-auto">
             <table className="min-w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-muted border-b border-border">
                 <tr>
                   {/* #1963 — sticky employee column needs an explicit z-index
                       and a non-translucent border-right; without those, the
                       scrolling shift badges painted over the employee name
                       when the user scrolled the table horizontally. */}
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-3 sticky left-0 z-20 bg-gray-50 border-r border-gray-200 min-w-[180px] shadow-[2px_0_4px_-2px_rgba(0,0,0,0.08)]">
+                  <th className="text-left text-xs font-medium text-muted-foreground uppercase px-4 py-3 sticky left-0 z-20 bg-muted border-r border-border min-w-[180px] shadow-[2px_0_4px_-2px_rgba(0,0,0,0.08)]">
                     {t('attendance.shiftSchedule.team.employee')}
                   </th>
                   {month.dates.map((date) => {
@@ -993,7 +993,7 @@ export default function ShiftSchedulePage() {
                       <th
                         key={date}
                         className={`text-center text-xs font-medium uppercase px-1.5 py-2 min-w-[64px] ${
-                          isWeekend ? "text-gray-400 bg-gray-100/60" : "text-gray-500"
+                          isWeekend ? "text-muted-foreground bg-muted/60" : "text-muted-foreground"
                         }`}
                       >
                         <div className="text-[10px] leading-tight">{weekday}</div>
@@ -1003,34 +1003,34 @@ export default function ShiftSchedulePage() {
                   })}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-border">
                 {scheduleLoading ? (
                   <tr>
-                    <td colSpan={month.dates.length + 1} className="px-4 py-8 text-center text-gray-400">
+                    <td colSpan={month.dates.length + 1} className="px-4 py-8 text-center text-muted-foreground">
                       {t('attendance.shiftSchedule.team.loading')}
                     </td>
                   </tr>
                 ) : schedule.length === 0 ? (
                   <tr>
-                    <td colSpan={month.dates.length + 1} className="px-4 py-8 text-center text-gray-400">
+                    <td colSpan={month.dates.length + 1} className="px-4 py-8 text-center text-muted-foreground">
                       {t('attendance.shiftSchedule.team.noEmployees')}
                     </td>
                   </tr>
                 ) : pagedSchedule.length === 0 ? (
                   <tr>
-                    <td colSpan={month.dates.length + 1} className="px-4 py-8 text-center text-gray-400">
+                    <td colSpan={month.dates.length + 1} className="px-4 py-8 text-center text-muted-foreground">
                       {t('attendance.shiftSchedule.search.noResults')}
                     </td>
                   </tr>
                 ) : (
                   pagedSchedule.map((emp: any) => (
-                    <tr key={emp.user_id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 sticky left-0 z-10 bg-white group-hover:bg-gray-50 border-r border-gray-200 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.06)]">
-                        <div className="text-sm font-medium text-gray-900">
+                    <tr key={emp.user_id} className="hover:bg-muted">
+                      <td className="px-4 py-3 sticky left-0 z-10 bg-card group-hover:bg-muted border-r border-border shadow-[2px_0_4px_-2px_rgba(0,0,0,0.06)]">
+                        <div className="text-sm font-medium text-foreground">
                           {emp.first_name} {emp.last_name}
                         </div>
                         {emp.emp_code && (
-                          <div className="text-xs text-gray-400">{emp.emp_code}</div>
+                          <div className="text-xs text-muted-foreground">{emp.emp_code}</div>
                         )}
                       </td>
                       {month.dates.map((date) => {
@@ -1067,7 +1067,7 @@ export default function ShiftSchedulePage() {
                               <div className="group relative inline-flex items-center gap-1">
                                 {isOffDay ? (
                                   <span
-                                    className="text-xs px-2 py-1 rounded-full font-medium bg-gray-100 text-gray-500"
+                                    className="text-xs px-2 py-1 rounded-full font-medium bg-muted text-muted-foreground"
                                     title={t('attendance.shiftSchedule.team.offTooltip', {
                                       defaultValue: '{{shift}} is off on this day',
                                       shift: assignment.shift_name,
@@ -1077,7 +1077,7 @@ export default function ShiftSchedulePage() {
                                   </span>
                                 ) : (
                                   <span
-                                    className={`text-xs px-2 py-1 rounded-full font-medium ${shiftColors[assignment.shift_id] || "bg-gray-100 text-gray-700"}`}
+                                    className={`text-xs px-2 py-1 rounded-full font-medium ${shiftColors[assignment.shift_id] || "bg-muted text-muted-foreground"}`}
                                   >
                                     {assignment.shift_name}
                                   </span>
@@ -1102,14 +1102,14 @@ export default function ShiftSchedulePage() {
                                         effective_to: date,
                                       })
                                     }
-                                    className="text-gray-400 hover:text-brand-600 p-0.5"
+                                    className="text-muted-foreground hover:text-brand-600 p-0.5"
                                     title={t('attendance.shiftSchedule.team.editTooltip')}
                                   >
                                     <Pencil className="h-3 w-3" />
                                   </button>
                                   <button
                                     onClick={() => setRemoveAssignmentId(assignment.assignment_id)}
-                                    className="text-gray-400 hover:text-red-600 p-0.5"
+                                    className="text-muted-foreground hover:text-red-600 p-0.5"
                                     title={t('attendance.shiftSchedule.team.removeTooltip')}
                                   >
                                     <Trash2 className="h-3 w-3" />
@@ -1121,7 +1121,7 @@ export default function ShiftSchedulePage() {
                                 onClick={() =>
                                   setShowAssign({ userId: emp.user_id, date })
                                 }
-                                className="text-gray-300 hover:text-brand-500 transition"
+                                className="text-muted-foreground/50 hover:text-brand-500 transition"
                                 title={t('attendance.shiftSchedule.team.assignTooltip')}
                               >
                                 <Plus className="h-4 w-4 mx-auto" />
@@ -1139,7 +1139,7 @@ export default function ShiftSchedulePage() {
 
           {/* Pagination footer */}
           {totalEntries > 0 && (
-            <div className="flex flex-wrap items-center justify-between gap-3 mt-3 px-1 text-sm text-gray-600">
+            <div className="flex flex-wrap items-center justify-between gap-3 mt-3 px-1 text-sm text-muted-foreground">
               <span>
                 {t('attendance.shiftSchedule.search.showingRange', {
                   from: startIdx + 1,
@@ -1152,18 +1152,18 @@ export default function ShiftSchedulePage() {
                   type="button"
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={safePage <= 1}
-                  className="flex items-center gap-1 px-3 py-1.5 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="flex items-center gap-1 px-3 py-1.5 border border-border rounded-lg text-sm hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <ChevronLeft className="h-4 w-4" /> {t('attendance.previous')}
                 </button>
-                <span className="px-3 py-1.5 text-sm font-medium text-gray-700">
+                <span className="px-3 py-1.5 text-sm font-medium text-muted-foreground">
                   {safePage} / {totalPages}
                 </span>
                 <button
                   type="button"
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={safePage >= totalPages}
-                  className="flex items-center gap-1 px-3 py-1.5 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="flex items-center gap-1 px-3 py-1.5 border border-border rounded-lg text-sm hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   {t('attendance.next')} <ChevronRight className="h-4 w-4" />
                 </button>
@@ -1177,33 +1177,33 @@ export default function ShiftSchedulePage() {
       {tab === "my-schedule" && (
         <div>
           {!mySchedule ? (
-            <div className="text-center py-12 text-gray-400">{t('attendance.shiftSchedule.my.loading')}</div>
+            <div className="text-center py-12 text-muted-foreground">{t('attendance.shiftSchedule.my.loading')}</div>
           ) : mySchedule.assignments.length === 0 ? (
-            <div className="text-center py-12 text-gray-400">{t('attendance.shiftSchedule.my.noAssignments')}</div>
+            <div className="text-center py-12 text-muted-foreground">{t('attendance.shiftSchedule.my.noAssignments')}</div>
           ) : (
             <div className="space-y-3">
-              <p className="text-sm text-gray-500 mb-4">
+              <p className="text-sm text-muted-foreground mb-4">
                 {t('attendance.shiftSchedule.my.showingFromTo', { from: formatDate(mySchedule.start_date, i18n.language), to: formatDate(mySchedule.end_date, i18n.language) })}
               </p>
               {mySchedule.assignments.map((a: any) => (
                 <div
                   key={a.assignment_id}
-                  className="bg-white rounded-xl border border-gray-200 p-4 flex items-center justify-between"
+                  className="bg-card rounded-xl border border-border p-4 flex items-center justify-between"
                 >
                   <div>
-                    <p className="text-sm font-medium text-gray-900">{a.shift_name}</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-sm font-medium text-foreground">{a.shift_name}</p>
+                    <p className="text-xs text-muted-foreground">
                       {a.start_time} - {a.end_time}
                       {a.is_night_shift ? ` ${t('attendance.shiftSchedule.my.nightSuffix')}` : ""}
                       {a.break_minutes ? ` | ${t('attendance.shiftSchedule.my.breakSuffix', { minutes: a.break_minutes })}` : ""}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       {t('attendance.shiftSchedule.my.from')}: {new Date(a.effective_from).toLocaleDateString(i18n.language)}
                     </p>
                     {a.effective_to && (
-                      <p className="text-xs text-gray-400">
+                      <p className="text-xs text-muted-foreground">
                         {t('attendance.shiftSchedule.my.to')}: {new Date(a.effective_to).toLocaleDateString(i18n.language)}
                       </p>
                     )}
@@ -1219,36 +1219,36 @@ export default function ShiftSchedulePage() {
       {tab === "swap-requests" && (
         <div>
           {swapsLoading ? (
-            <div className="text-center py-12 text-gray-400">{t('attendance.shiftSchedule.swaps.loading')}</div>
+            <div className="text-center py-12 text-muted-foreground">{t('attendance.shiftSchedule.swaps.loading')}</div>
           ) : swapRequests.length === 0 ? (
-            <div className="text-center py-12 text-gray-400">{t('attendance.shiftSchedule.swaps.none')}</div>
+            <div className="text-center py-12 text-muted-foreground">{t('attendance.shiftSchedule.swaps.none')}</div>
           ) : (
             <div className="space-y-3">
               {swapRequests.map((req: any) => (
                 <div
                   key={req.id}
-                  className="bg-white rounded-xl border border-gray-200 p-4"
+                  className="bg-card rounded-xl border border-border p-4"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <ArrowLeftRight className="h-4 w-4 text-gray-400" />
-                        <span className="text-sm font-medium text-gray-900">
+                        <ArrowLeftRight className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm font-medium text-foreground">
                           {req.requester_first_name} {req.requester_last_name}
                         </span>
-                        <span className="text-xs text-gray-400">{t('attendance.shiftSchedule.swaps.wantsToSwap')}</span>
-                        <span className="text-sm font-medium text-gray-900">
+                        <span className="text-xs text-muted-foreground">{t('attendance.shiftSchedule.swaps.wantsToSwap')}</span>
+                        <span className="text-sm font-medium text-foreground">
                           {req.target_first_name} {req.target_last_name}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-xs text-gray-500">
+                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
                         <span>
                           {req.requester_shift_name} &harr; {req.target_shift_name}
                         </span>
                         <span>{t('attendance.shiftSchedule.swaps.dateLabel')}: {new Date(req.date).toLocaleDateString(i18n.language)}</span>
                       </div>
                       {req.reason && (
-                        <p className="text-xs text-gray-500 mt-1">{t('attendance.shiftSchedule.swaps.reasonLabel')}: {req.reason}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{t('attendance.shiftSchedule.swaps.reasonLabel')}: {req.reason}</p>
                       )}
                     </div>
                     <div className="flex items-center gap-2 ml-4">
@@ -1257,14 +1257,14 @@ export default function ShiftSchedulePage() {
                           <button
                             onClick={() => approveSwap.mutate(req.id)}
                             disabled={approveSwap.isPending}
-                            className="flex items-center gap-1 text-xs bg-green-50 text-green-700 px-3 py-1.5 rounded-lg font-medium hover:bg-green-100"
+                            className="flex items-center gap-1 text-xs bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300 px-3 py-1.5 rounded-lg font-medium hover:bg-green-100 dark:hover:bg-green-950/40"
                           >
                             <Check className="h-3 w-3" /> {t('attendance.shiftSchedule.swaps.approve')}
                           </button>
                           <button
                             onClick={() => rejectSwap.mutate(req.id)}
                             disabled={rejectSwap.isPending}
-                            className="flex items-center gap-1 text-xs bg-red-50 text-red-700 px-3 py-1.5 rounded-lg font-medium hover:bg-red-100"
+                            className="flex items-center gap-1 text-xs bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 px-3 py-1.5 rounded-lg font-medium hover:bg-red-100 dark:hover:bg-red-950/40"
                           >
                             <X className="h-3 w-3" /> {t('attendance.shiftSchedule.swaps.reject')}
                           </button>
@@ -1273,8 +1273,8 @@ export default function ShiftSchedulePage() {
                         <span
                           className={`text-xs px-2 py-1 rounded-full font-medium ${
                             req.status === "approved"
-                              ? "bg-green-50 text-green-700"
-                              : "bg-red-50 text-red-700"
+                              ? "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300"
+                              : "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300"
                           }`}
                         >
                           {req.status === "approved" ? t('attendance.shiftSchedule.swaps.statusApproved') : t('attendance.shiftSchedule.swaps.statusRejected')}

@@ -47,17 +47,17 @@ export default function SurveyRespondPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">{t("surveyRespond.title")}</h1>
-        <p className="text-gray-500 mt-1">{t("surveyRespond.subtitle")}</p>
+        <h1 className="text-2xl font-bold text-foreground">{t("surveyRespond.title")}</h1>
+        <p className="text-muted-foreground mt-1">{t("surveyRespond.subtitle")}</p>
       </div>
 
       {/* Pending Surveys */}
       <div className="mb-8">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+        <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
           <Clock className="h-5 w-5 text-orange-500" />
           {t("surveyRespond.pending")}
           {pendingSurveys.length > 0 && (
-            <span className="bg-orange-100 text-orange-700 text-xs font-medium px-2 py-0.5 rounded-full">
+            <span className="bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300 text-xs font-medium px-2 py-0.5 rounded-full">
               {pendingSurveys.length}
             </span>
           )}
@@ -66,47 +66,47 @@ export default function SurveyRespondPage() {
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[1, 2].map((i) => (
-              <div key={i} className="bg-white rounded-xl border border-gray-200 p-6 animate-pulse">
+              <div key={i} className="bg-card rounded-xl border border-border p-6 animate-pulse">
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="h-5 w-16 bg-gray-200 rounded-full" />
+                  <div className="h-5 w-16 bg-muted rounded-full" />
                 </div>
-                <div className="h-5 w-48 bg-gray-200 rounded mb-2" />
-                <div className="h-4 w-full bg-gray-200 rounded mb-4" />
-                <div className="h-9 w-full bg-gray-200 rounded-lg" />
+                <div className="h-5 w-48 bg-muted rounded mb-2" />
+                <div className="h-4 w-full bg-muted rounded mb-4" />
+                <div className="h-9 w-full bg-muted rounded-lg" />
               </div>
             ))}
           </div>
         ) : pendingSurveys.length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-            <ClipboardList className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-            <p className="text-lg font-medium text-gray-500 mb-1">{t("surveyRespond.noActive")}</p>
-            <p className="text-sm text-gray-400">{t("surveyRespond.noActiveHint")}</p>
+          <div className="bg-card rounded-xl border border-border p-12 text-center">
+            <ClipboardList className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
+            <p className="text-lg font-medium text-muted-foreground mb-1">{t("surveyRespond.noActive")}</p>
+            <p className="text-sm text-muted-foreground">{t("surveyRespond.noActiveHint")}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {pendingSurveys.map((s: any) => (
-              <div key={s.id} className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
+              <div key={s.id} className="bg-card rounded-xl border border-border p-6 hover:shadow-md transition-shadow">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
                       <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                        s.type === "enps" ? "bg-indigo-100 text-indigo-700" :
-                        s.type === "pulse" ? "bg-purple-100 text-purple-700" :
-                        s.type === "engagement" ? "bg-teal-100 text-teal-700" :
-                        "bg-gray-100 text-gray-700"
+                        s.type === "enps" ? "bg-indigo-100 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300" :
+                        s.type === "pulse" ? "bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300" :
+                        s.type === "engagement" ? "bg-teal-100 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300" :
+                        "bg-muted text-muted-foreground"
                       }`}>
                         {surveyTypeLabel(s.type, t)}
                       </span>
                       {s.is_anonymous && (
-                        <span className="text-xs text-gray-400">{t("surveyRespond.anonymous")}</span>
+                        <span className="text-xs text-muted-foreground">{t("surveyRespond.anonymous")}</span>
                       )}
                     </div>
-                    <h3 className="font-semibold text-gray-900">{s.title}</h3>
+                    <h3 className="font-semibold text-foreground">{s.title}</h3>
                     {s.description && (
-                      <p className="text-sm text-gray-500 mt-1 line-clamp-2">{s.description}</p>
+                      <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{s.description}</p>
                     )}
                     {s.end_date && (
-                      <p className="text-xs text-gray-400 mt-2">
+                      <p className="text-xs text-muted-foreground mt-2">
                         {t("surveyRespond.dueBy", { date: new Date(s.end_date).toLocaleDateString() })}
                       </p>
                     )}
@@ -127,18 +127,18 @@ export default function SurveyRespondPage() {
       {/* Completed Surveys */}
       {completedSurveys.length > 0 && (
         <div className="mb-8">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
             <CheckCircle className="h-5 w-5 text-green-500" />
             {t("surveyRespond.completed")}
           </h2>
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <div className="bg-card rounded-xl border border-border overflow-hidden">
             {completedSurveys.map((s: any) => (
-              <div key={s.id} className="flex items-center justify-between px-6 py-4 border-b border-gray-50 last:border-0">
+              <div key={s.id} className="flex items-center justify-between px-6 py-4 border-b border-border last:border-0">
                 <div>
-                  <p className="font-medium text-gray-700">{s.title}</p>
-                  <p className="text-xs text-gray-400">{surveyTypeLabel(s.type, t)}</p>
+                  <p className="font-medium text-muted-foreground">{s.title}</p>
+                  <p className="text-xs text-muted-foreground">{surveyTypeLabel(s.type, t)}</p>
                 </div>
-                <span className="flex items-center gap-1.5 text-xs font-medium text-green-600">
+                <span className="flex items-center gap-1.5 text-xs font-medium text-green-600 dark:text-green-400">
                   <CheckCircle className="h-3.5 w-3.5" /> {t("surveyRespond.completedBadge")}
                 </span>
               </div>
@@ -150,26 +150,26 @@ export default function SurveyRespondPage() {
       {/* My Past Responses */}
       {myResponses && myResponses.length > 0 && (
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("surveyRespond.responseHistory")}</h2>
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <h2 className="text-lg font-semibold text-foreground mb-4">{t("surveyRespond.responseHistory")}</h2>
+          <div className="bg-card rounded-xl border border-border overflow-hidden">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-200 bg-gray-50">
-                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">{t("surveyRespond.colSurvey")}</th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">{t("surveyRespond.colType")}</th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">{t("surveyRespond.colSubmitted")}</th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">{t("surveyRespond.colAnonymous")}</th>
+                <tr className="border-b border-border bg-muted">
+                  <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase">{t("surveyRespond.colSurvey")}</th>
+                  <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase">{t("surveyRespond.colType")}</th>
+                  <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase">{t("surveyRespond.colSubmitted")}</th>
+                  <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase">{t("surveyRespond.colAnonymous")}</th>
                 </tr>
               </thead>
               <tbody>
                 {myResponses.map((r: any) => (
-                  <tr key={r.response_id} className="border-b border-gray-50">
-                    <td className="px-6 py-3 text-gray-700">{r.title}</td>
-                    <td className="px-6 py-3 text-gray-500">{surveyTypeLabel(r.type, t)}</td>
-                    <td className="px-6 py-3 text-gray-400">
+                  <tr key={r.response_id} className="border-b border-border">
+                    <td className="px-6 py-3 text-muted-foreground">{r.title}</td>
+                    <td className="px-6 py-3 text-muted-foreground">{surveyTypeLabel(r.type, t)}</td>
+                    <td className="px-6 py-3 text-muted-foreground">
                       {new Date(r.submitted_at).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-3 text-gray-500">
+                    <td className="px-6 py-3 text-muted-foreground">
                       {r.is_anonymous ? t("surveyRespond.yes") : t("surveyRespond.no")}
                     </td>
                   </tr>
@@ -229,7 +229,7 @@ function SurveyFillForm({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <div className="text-gray-400">{t("surveyRespond.loadingSurvey")}</div>
+        <div className="text-muted-foreground">{t("surveyRespond.loadingSurvey")}</div>
       </div>
     );
   }
@@ -238,8 +238,8 @@ function SurveyFillForm({
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
         <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
-        <h2 className="text-xl font-bold text-gray-900 mb-2">{t("surveyRespond.thankYou")}</h2>
-        <p className="text-gray-500">{t("surveyRespond.submittedSuccess")}</p>
+        <h2 className="text-xl font-bold text-foreground mb-2">{t("surveyRespond.thankYou")}</h2>
+        <p className="text-muted-foreground">{t("surveyRespond.submittedSuccess")}</p>
       </div>
     );
   }
@@ -252,38 +252,38 @@ function SurveyFillForm({
     <div className="max-w-3xl mx-auto">
       <button
         onClick={onBack}
-        className="text-sm text-brand-600 hover:underline mb-4"
+        className="text-sm text-brand-600 dark:text-brand-400 hover:underline mb-4"
       >
         &larr; {t("surveyRespond.backToSurveys")}
       </button>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+      <div className="bg-card rounded-xl border border-border p-6 mb-6">
         <div className="flex items-center gap-2 mb-2">
           <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-            survey.type === "enps" ? "bg-indigo-100 text-indigo-700" :
-            survey.type === "pulse" ? "bg-purple-100 text-purple-700" :
-            "bg-gray-100 text-gray-700"
+            survey.type === "enps" ? "bg-indigo-100 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300" :
+            survey.type === "pulse" ? "bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300" :
+            "bg-muted text-muted-foreground"
           }`}>
             {surveyTypeLabel(survey.type, t)}
           </span>
           {survey.is_anonymous && (
-            <span className="text-xs text-gray-400">{t("surveyRespond.responsesAnonymous")}</span>
+            <span className="text-xs text-muted-foreground">{t("surveyRespond.responsesAnonymous")}</span>
           )}
         </div>
-        <h1 className="text-xl font-bold text-gray-900">{survey.title}</h1>
+        <h1 className="text-xl font-bold text-foreground">{survey.title}</h1>
         {survey.description && (
-          <p className="text-gray-500 mt-2">{survey.description}</p>
+          <p className="text-muted-foreground mt-2">{survey.description}</p>
         )}
       </div>
 
       {/* Questions */}
       <div className="space-y-4">
         {questions.map((q: any, idx: number) => (
-          <div key={q.id} className="bg-white rounded-xl border border-gray-200 p-6">
+          <div key={q.id} className="bg-card rounded-xl border border-border p-6">
             <div className="flex items-start gap-3">
-              <span className="text-sm font-mono text-gray-400 mt-0.5">{idx + 1}.</span>
+              <span className="text-sm font-mono text-muted-foreground mt-0.5">{idx + 1}.</span>
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900 mb-3">
+                <p className="text-sm font-medium text-foreground mb-3">
                   {q.question_text}
                   {q.is_required && <span className="text-red-500 ml-1">*</span>}
                 </p>
@@ -302,7 +302,7 @@ function SurveyFillForm({
       <div className="flex items-center justify-end gap-3 mt-6 pb-8">
         <button
           onClick={onBack}
-          className="px-4 py-2 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+          className="px-4 py-2 text-sm border border-border rounded-lg text-muted-foreground hover:bg-muted"
         >
           {t("surveyRespond.cancel")}
         </button>
@@ -316,7 +316,7 @@ function SurveyFillForm({
       </div>
 
       {submitMutation.isError && (
-        <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-700">
+        <div className="mt-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-lg p-4 text-sm text-red-700 dark:text-red-300">
           {(submitMutation.error as any)?.response?.data?.error?.message || t("surveyRespond.submitError")}
         </div>
       )}
@@ -350,7 +350,7 @@ function QuestionInput({
             className={`h-10 w-10 rounded-full border text-sm font-medium transition-colors ${
               value?.rating_value === n
                 ? "bg-brand-600 text-white border-brand-600"
-                : "border-gray-300 text-gray-600 hover:bg-brand-50 hover:border-brand-300"
+                : "border-border text-muted-foreground hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:border-brand-300 dark:hover:border-brand-800"
             }`}
           >
             {n}
@@ -370,7 +370,7 @@ function QuestionInput({
             className={`h-9 w-9 rounded border text-sm font-medium transition-colors ${
               value?.rating_value === n
                 ? "bg-brand-600 text-white border-brand-600"
-                : "border-gray-300 text-gray-600 hover:bg-brand-50 hover:border-brand-300"
+                : "border-border text-muted-foreground hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:border-brand-300 dark:hover:border-brand-800"
             }`}
           >
             {n}
@@ -387,10 +387,10 @@ function QuestionInput({
           {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => {
             const isSelected = value?.rating_value === n;
             const colorClass = n <= 6
-              ? isSelected ? "bg-red-500 text-white border-red-500" : "border-red-200 text-red-600 hover:bg-red-50"
+              ? isSelected ? "bg-red-500 text-white border-red-500" : "border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40"
               : n <= 8
-              ? isSelected ? "bg-yellow-500 text-white border-yellow-500" : "border-yellow-200 text-yellow-600 hover:bg-yellow-50"
-              : isSelected ? "bg-green-500 text-white border-green-500" : "border-green-200 text-green-600 hover:bg-green-50";
+              ? isSelected ? "bg-yellow-500 text-white border-yellow-500" : "border-yellow-200 dark:border-yellow-900 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-950/40"
+              : isSelected ? "bg-green-500 text-white border-green-500" : "border-green-200 dark:border-green-900 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-950/40";
             return (
               <button
                 key={n}
@@ -402,7 +402,7 @@ function QuestionInput({
             );
           })}
         </div>
-        <div className="flex justify-between text-xs text-gray-400 mt-1.5 px-1">
+        <div className="flex justify-between text-xs text-muted-foreground mt-1.5 px-1">
           <span>{t("surveyRespond.notAtAllLikely")}</span>
           <span>{t("surveyRespond.extremelyLikely")}</span>
         </div>
@@ -418,7 +418,7 @@ function QuestionInput({
           className={`px-6 py-2 rounded-lg border text-sm font-medium transition-colors ${
             value?.text_value === "yes"
               ? "bg-green-500 text-white border-green-500"
-              : "border-gray-300 text-gray-600 hover:bg-green-50 hover:border-green-300"
+              : "border-border text-muted-foreground hover:bg-green-50 dark:hover:bg-green-950/40 hover:border-green-300 dark:hover:border-green-800"
           }`}
         >
           {t("surveyRespond.yes")}
@@ -428,7 +428,7 @@ function QuestionInput({
           className={`px-6 py-2 rounded-lg border text-sm font-medium transition-colors ${
             value?.text_value === "no"
               ? "bg-red-500 text-white border-red-500"
-              : "border-gray-300 text-gray-600 hover:bg-red-50 hover:border-red-300"
+              : "border-border text-muted-foreground hover:bg-red-50 dark:hover:bg-red-950/40 hover:border-red-300 dark:hover:border-red-800"
           }`}
         >
           {t("surveyRespond.no")}
@@ -447,8 +447,8 @@ function QuestionInput({
             onClick={() => onChange({ text_value: opt })}
             className={`w-full text-left px-4 py-2.5 rounded-lg border text-sm transition-colors ${
               value?.text_value === opt
-                ? "bg-brand-50 border-brand-300 text-brand-700"
-                : "border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300"
+                ? "bg-brand-50 dark:bg-brand-950/40 border-brand-300 dark:border-brand-800 text-brand-700 dark:text-brand-300"
+                : "border-border text-muted-foreground hover:bg-muted hover:border-border"
             }`}
           >
             {opt}
@@ -463,7 +463,7 @@ function QuestionInput({
       <textarea
         value={value?.text_value || ""}
         onChange={(e) => onChange({ text_value: e.target.value })}
-        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm min-h-[80px]"
+        className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm min-h-[80px]"
         placeholder={t("surveyRespond.textPlaceholder")}
       />
     );
@@ -480,9 +480,9 @@ function QuestionInput({
         onChange={(e) => onChange({ rating_value: parseInt(e.target.value) })}
         className="w-full"
       />
-      <div className="flex justify-between text-xs text-gray-400 mt-1">
+      <div className="flex justify-between text-xs text-muted-foreground mt-1">
         <span>1</span>
-        <span className="font-semibold text-gray-600">{value?.rating_value || 5}</span>
+        <span className="font-semibold text-muted-foreground">{value?.rating_value || 5}</span>
         <span>10</span>
       </div>
     </div>

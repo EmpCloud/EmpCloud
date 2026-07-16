@@ -65,7 +65,7 @@ function deptIndex(dept: string | null): number {
 
 function deptGradient(dept: string | null): string {
   const idx = deptIndex(dept);
-  return idx === -1 ? "from-gray-200 to-gray-300" : DEPT_GRADIENTS[idx];
+  return idx === -1 ? "from-muted to-muted dark:from-slate-700 dark:to-slate-600" : DEPT_GRADIENTS[idx];
 }
 
 /* ------------------------------------------------------------------ */
@@ -98,10 +98,10 @@ function NodeCard({
         e.stopPropagation();
         onNavigate(node.id);
       }}
-      className={`group relative w-[200px] overflow-hidden rounded-2xl border bg-white text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md ${
+      className={`group relative w-[200px] overflow-hidden rounded-2xl border bg-card text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md ${
         isHighlighted
           ? "border-brand-300 ring-2 ring-brand-100"
-          : "border-gray-200 hover:border-brand-200"
+          : "border-border hover:border-brand-200 dark:hover:border-brand-800"
       }`}
     >
       {/* Colored top strip (department-based, pastel) */}
@@ -127,14 +127,14 @@ function NodeCard({
           </div>
 
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold text-gray-900 group-hover:text-brand-600">
+            <p className="truncate text-sm font-semibold text-foreground group-hover:text-brand-600">
               {node.name}
             </p>
-            <p className="mt-0.5 truncate text-[11px] font-medium text-gray-600">
+            <p className="mt-0.5 truncate text-[11px] font-medium text-muted-foreground">
               {node.designation || t("orgChart.noDesignation")}
             </p>
             {node.department && (
-              <span className="mt-1 inline-block truncate rounded-md bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-600">
+              <span className="mt-1 inline-block truncate rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
                 {node.department}
               </span>
             )}
@@ -180,7 +180,7 @@ function ChartNode({
               e.stopPropagation();
               setExpanded(!expanded);
             }}
-            className="absolute -bottom-3 left-1/2 z-10 flex h-6 w-6 -translate-x-1/2 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 shadow-sm hover:border-brand-300 hover:bg-brand-50 hover:text-brand-600"
+            className="absolute -bottom-3 left-1/2 z-10 flex h-6 w-6 -translate-x-1/2 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm hover:border-brand-300 dark:hover:border-brand-800 hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:text-brand-600"
             title={expanded ? t("orgChart.collapseTeam") : t("orgChart.expandReports", { count: node.children.length })}
           >
             {expanded ? (
@@ -196,14 +196,14 @@ function ChartNode({
       {hasChildren && expanded && (
         <div className="flex flex-col items-center">
           {/* Vertical line from parent */}
-          <div className="h-7 w-0.5 bg-gradient-to-b from-gray-200 to-gray-300" />
+          <div className="h-7 w-0.5 bg-gradient-to-b from-muted to-muted dark:from-slate-700 dark:to-slate-600" />
 
           {/* Horizontal connector bar + children */}
           <div className="relative flex gap-10">
             {/* Horizontal bar across all children */}
             {node.children.length > 1 && (
               <div
-                className="absolute top-0 h-0.5 bg-gray-300"
+                className="absolute top-0 h-0.5 bg-muted"
                 style={{
                   left: `calc(50% / ${node.children.length})`,
                   right: `calc(50% / ${node.children.length})`,
@@ -214,7 +214,7 @@ function ChartNode({
             {node.children.map((child) => (
               <div key={child.id} className="flex flex-col items-center">
                 {/* Vertical stub into child */}
-                <div className="h-5 w-0.5 bg-gray-300" />
+                <div className="h-5 w-0.5 bg-muted" />
                 <ChartNode
                   node={child}
                   onNavigate={onNavigate}
@@ -251,7 +251,7 @@ function MobileTreeNode({
         {hasChildren ? (
           <button
             onClick={() => setExpanded(!expanded)}
-            className="flex items-center justify-center h-6 w-6 rounded hover:bg-gray-100 text-gray-400"
+            className="flex items-center justify-center h-6 w-6 rounded hover:bg-muted text-muted-foreground"
           >
             {expanded ? (
               <ChevronDown className="h-4 w-4" />
@@ -264,29 +264,29 @@ function MobileTreeNode({
         )}
         <button
           onClick={() => navigate(`/employees/${node.id}`)}
-          className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors group"
+          className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted transition-colors group"
         >
-          <div className="h-10 w-10 rounded-full bg-brand-100 flex items-center justify-center text-sm font-semibold text-brand-700 shrink-0">
+          <div className="h-10 w-10 rounded-full bg-brand-100 dark:bg-brand-950/40 flex items-center justify-center text-sm font-semibold text-brand-700 dark:text-brand-300 shrink-0">
             {getInitials(node.name)}
           </div>
           <div className="text-left">
-            <p className="text-sm font-medium text-gray-900 group-hover:text-brand-600">
+            <p className="text-sm font-medium text-foreground group-hover:text-brand-600">
               {node.name}
             </p>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted-foreground">
               {node.designation || t("orgChart.noDesignation")}
               {node.department ? ` - ${node.department}` : ""}
             </p>
           </div>
           {hasChildren && (
-            <span className="text-xs text-gray-400 ml-2">
+            <span className="text-xs text-muted-foreground ml-2">
               ({node.children.length})
             </span>
           )}
         </button>
       </div>
       {expanded && hasChildren && (
-        <div className="border-l-2 border-gray-200 ml-3">
+        <div className="border-l-2 border-border ml-3">
           {node.children.map((child) => (
             <MobileTreeNode key={child.id} node={child} level={level + 1} />
           ))}
@@ -627,12 +627,12 @@ export default function OrgChartPage() {
       <div className="mb-4 shrink-0 space-y-4">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-100 to-violet-100 text-indigo-600">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-100 to-violet-100 text-indigo-600 dark:text-indigo-400">
               <Network className="h-6 w-6" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">{t("orgChart.title")}</h1>
-              <p className="mt-0.5 text-sm text-gray-500">
+              <h1 className="text-2xl font-bold text-foreground">{t("orgChart.title")}</h1>
+              <p className="mt-0.5 text-sm text-muted-foreground">
                 {t("orgChart.subtitle")}
               </p>
             </div>
@@ -644,37 +644,37 @@ export default function OrgChartPage() {
               <button
                 type="button"
                 onClick={() => setStatModal("people")}
-                className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 shadow-sm transition hover:border-indigo-300 hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 shadow-sm transition hover:border-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 focus:outline-none focus:ring-2 focus:ring-indigo-200"
                 title={t("orgChart.viewAllPeople")}
               >
                 <Users className="h-4 w-4 text-indigo-500" />
                 <div className="text-left">
-                  <p className="text-xs text-gray-500">{t("orgChart.people")}</p>
-                  <p className="text-sm font-semibold text-gray-900">{stats.total}</p>
+                  <p className="text-xs text-muted-foreground">{t("orgChart.people")}</p>
+                  <p className="text-sm font-semibold text-foreground">{stats.total}</p>
                 </div>
               </button>
               <button
                 type="button"
                 onClick={() => setStatModal("managers")}
-                className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 shadow-sm transition hover:border-emerald-300 hover:bg-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+                className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 shadow-sm transition hover:border-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 focus:outline-none focus:ring-2 focus:ring-emerald-200"
                 title={t("orgChart.viewAllManagers")}
               >
                 <Briefcase className="h-4 w-4 text-emerald-500" />
                 <div className="text-left">
-                  <p className="text-xs text-gray-500">{t("orgChart.managers")}</p>
-                  <p className="text-sm font-semibold text-gray-900">{stats.managers}</p>
+                  <p className="text-xs text-muted-foreground">{t("orgChart.managers")}</p>
+                  <p className="text-sm font-semibold text-foreground">{stats.managers}</p>
                 </div>
               </button>
               <button
                 type="button"
                 onClick={() => setStatModal("departments")}
-                className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 shadow-sm transition hover:border-amber-300 hover:bg-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-200"
+                className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 shadow-sm transition hover:border-amber-300 hover:bg-amber-50 dark:hover:bg-amber-950/40 focus:outline-none focus:ring-2 focus:ring-amber-200"
                 title={t("orgChart.viewAllDepartments")}
               >
                 <Building2 className="h-4 w-4 text-amber-500" />
                 <div className="text-left">
-                  <p className="text-xs text-gray-500">{t("orgChart.departments")}</p>
-                  <p className="text-sm font-semibold text-gray-900">{stats.departments}</p>
+                  <p className="text-xs text-muted-foreground">{t("orgChart.departments")}</p>
+                  <p className="text-sm font-semibold text-foreground">{stats.departments}</p>
                 </div>
               </button>
             </div>
@@ -687,12 +687,12 @@ export default function OrgChartPage() {
         {!isLoading && nodes.length > 0 && (
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div className="relative max-w-md flex-1">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={t("orgChart.searchPlaceholder")}
-              className="w-full rounded-lg border border-gray-200 bg-white py-2 pl-9 pr-9 text-sm outline-none transition focus:border-brand-300 focus:ring-2 focus:ring-brand-100"
+              className="w-full rounded-lg border border-border bg-card py-2 pl-9 pr-9 text-sm outline-none transition focus:border-brand-300 dark:focus:border-brand-800 focus:ring-2 focus:ring-brand-100"
             />
             {search && (
               <button
@@ -700,14 +700,14 @@ export default function OrgChartPage() {
                   setSearch("");
                   setHighlightedId(null);
                 }}
-                className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-muted-foreground hover:bg-muted hover:text-muted-foreground"
                 aria-label={t("orgChart.clearSearch")}
               >
                 <X className="h-4 w-4" />
               </button>
             )}
             {searchResults.length > 0 && (
-              <div className="absolute z-30 mt-1 w-full overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg">
+              <div className="absolute z-30 mt-1 w-full overflow-hidden rounded-lg border border-border bg-card shadow-lg">
                 {searchResults.map((p) => (
                   <button
                     key={p.id}
@@ -715,14 +715,14 @@ export default function OrgChartPage() {
                       setHighlightedId(p.id);
                       setSearch("");
                     }}
-                    className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-gray-50"
+                    className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-muted"
                   >
                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-indigo-300 to-violet-400 text-[10px] font-semibold text-white">
                       {getInitials(p.name)}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-gray-900">{p.name}</p>
-                      <p className="truncate text-xs text-gray-500">
+                      <p className="truncate text-sm font-medium text-foreground">{p.name}</p>
+                      <p className="truncate text-xs text-muted-foreground">
                         {p.designation || t("orgChart.noDesignation")}
                         {p.department ? ` · ${p.department}` : ""}
                       </p>
@@ -740,7 +740,7 @@ export default function OrgChartPage() {
               onClick={() => exportChart("png")}
               disabled={exporting !== null}
               title={t("orgChart.downloadPng")}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-sm text-muted-foreground shadow-sm transition hover:border-brand-300 dark:hover:border-brand-800 hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:text-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {exporting === "png" ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -754,7 +754,7 @@ export default function OrgChartPage() {
               onClick={() => exportChart("pdf")}
               disabled={exporting !== null}
               title={t("orgChart.downloadPdf")}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-sm text-muted-foreground shadow-sm transition hover:border-brand-300 dark:hover:border-brand-800 hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:text-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {exporting === "pdf" ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -769,11 +769,11 @@ export default function OrgChartPage() {
       </div>
 
       {isLoading ? (
-        <div className="flex-1 flex items-center justify-center text-gray-400">
+        <div className="flex-1 flex items-center justify-center text-muted-foreground">
           {t("orgChart.loading")}
         </div>
       ) : nodes.length === 0 ? (
-        <div className="flex-1 flex items-center justify-center text-gray-400">
+        <div className="flex-1 flex items-center justify-center text-muted-foreground">
           {t("orgChart.empty")}
         </div>
       ) : (
@@ -781,7 +781,7 @@ export default function OrgChartPage() {
           {/* ====== Desktop: pannable / zoomable viewport ====== */}
           <div
             ref={containerRef}
-            className="hidden lg:block relative flex-1 h-[calc(100vh-16rem)] overflow-hidden rounded-xl border border-gray-200 bg-gradient-to-br from-gray-50 to-slate-100"
+            className="hidden lg:block relative flex-1 h-[calc(100vh-16rem)] overflow-hidden rounded-xl border border-border bg-gradient-to-br from-muted to-background dark:from-slate-900 dark:to-slate-800"
             style={{
               cursor: isDragging ? "grabbing" : "grab",
               backgroundImage:
@@ -799,26 +799,26 @@ export default function OrgChartPage() {
                 onClick={() =>
                   setScale((s) => Math.min(2.5, s + 0.15))
                 }
-                className="h-9 w-9 rounded-lg bg-white border border-gray-200 shadow-sm flex items-center justify-center hover:bg-gray-50 text-gray-600"
+                className="h-9 w-9 rounded-lg bg-card border border-border shadow-sm flex items-center justify-center hover:bg-muted text-muted-foreground"
                 title={t("orgChart.zoomIn")}
               >
                 <Plus className="h-4 w-4" />
               </button>
-              <div className="text-[10px] text-center text-gray-400 font-medium select-none">
+              <div className="text-[10px] text-center text-muted-foreground font-medium select-none">
                 {zoomPercent}%
               </div>
               <button
                 onClick={() =>
                   setScale((s) => Math.max(0.15, s - 0.15))
                 }
-                className="h-9 w-9 rounded-lg bg-white border border-gray-200 shadow-sm flex items-center justify-center hover:bg-gray-50 text-gray-600"
+                className="h-9 w-9 rounded-lg bg-card border border-border shadow-sm flex items-center justify-center hover:bg-muted text-muted-foreground"
                 title={t("orgChart.zoomOut")}
               >
                 <Minus className="h-4 w-4" />
               </button>
               <button
                 onClick={toggleFullscreen}
-                className="h-9 w-9 rounded-lg bg-white border border-gray-200 shadow-sm flex items-center justify-center hover:bg-gray-50 text-gray-600 mt-1"
+                className="h-9 w-9 rounded-lg bg-card border border-border shadow-sm flex items-center justify-center hover:bg-muted text-muted-foreground mt-1"
                 title={t("orgChart.fullscreen")}
               >
                 <Maximize2 className="h-4 w-4" />
@@ -826,7 +826,7 @@ export default function OrgChartPage() {
             </div>
 
             {/* Hint text */}
-            <div className="absolute bottom-3 left-3 z-20 text-[11px] text-gray-400 select-none pointer-events-none">
+            <div className="absolute bottom-3 left-3 z-20 text-[11px] text-muted-foreground select-none pointer-events-none">
               {t("orgChart.panHint")}
             </div>
 
@@ -852,7 +852,7 @@ export default function OrgChartPage() {
 
           {/* ====== Mobile / Tablet: vertical list tree ====== */}
           <div
-            className="lg:hidden bg-white rounded-xl border border-gray-200 p-4 overflow-auto"
+            className="lg:hidden bg-card rounded-xl border border-border p-4 overflow-auto"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
@@ -924,21 +924,21 @@ function StatListModal({
     <Dialog.Root open={open} onOpenChange={(v) => !v && onClose()}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-black/40 data-[state=open]:animate-in data-[state=open]:fade-in-0" />
-        <Dialog.Content className="fixed left-1/2 top-1/2 z-50 flex max-h-[80vh] w-full max-w-xl -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-xl bg-white shadow-xl data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95">
-          <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
-            <Dialog.Title className="text-base font-semibold text-gray-900">
+        <Dialog.Content className="fixed left-1/2 top-1/2 z-50 flex max-h-[80vh] w-full max-w-xl -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-xl bg-card shadow-xl data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95">
+          <div className="flex items-center justify-between border-b border-border px-6 py-4">
+            <Dialog.Title className="text-base font-semibold text-foreground">
               {title}
             </Dialog.Title>
             <Dialog.Close asChild>
-              <button className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600">
+              <button className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-muted-foreground">
                 <X className="h-4 w-4" />
               </button>
             </Dialog.Close>
           </div>
 
-          <div className="border-b border-gray-100 px-6 py-3">
+          <div className="border-b border-border px-6 py-3">
             <div className="relative">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
@@ -947,7 +947,7 @@ function StatListModal({
                     ? t("orgChart.filterDepartments")
                     : t("orgChart.filterPeople")
                 }
-                className="w-full rounded-lg border border-gray-200 bg-white py-2 pl-9 pr-3 text-sm outline-none focus:border-brand-300 focus:ring-2 focus:ring-brand-100"
+                className="w-full rounded-lg border border-border bg-card py-2 pl-9 pr-3 text-sm outline-none focus:border-brand-300 dark:focus:border-brand-800 focus:ring-2 focus:ring-brand-100"
               />
             </div>
           </div>
@@ -983,7 +983,7 @@ function PersonList({
 }) {
   const { t } = useTranslation();
   if (people.length === 0) {
-    return <p className="px-4 py-8 text-center text-sm text-gray-400">{t("orgChart.noMatches")}</p>;
+    return <p className="px-4 py-8 text-center text-sm text-muted-foreground">{t("orgChart.noMatches")}</p>;
   }
   return (
     <ul className="divide-y divide-gray-100">
@@ -992,20 +992,20 @@ function PersonList({
           <button
             type="button"
             onClick={() => onNavigate(p.id)}
-            className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-gray-50"
+            className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-muted"
           >
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-300 to-violet-400 text-[11px] font-semibold text-white">
               {getInitials(p.name)}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium text-gray-900">{p.name}</p>
-              <p className="truncate text-xs text-gray-500">
+              <p className="truncate text-sm font-medium text-foreground">{p.name}</p>
+              <p className="truncate text-xs text-muted-foreground">
                 {p.designation || t("orgChart.noDesignation")}
                 {p.department ? ` · ${p.department}` : ""}
               </p>
             </div>
             {p.children.length > 0 && (
-              <span className="shrink-0 rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-semibold text-brand-600">
+              <span className="shrink-0 rounded-full bg-brand-50 dark:bg-brand-950/40 px-2 py-0.5 text-[10px] font-semibold text-brand-600 dark:text-brand-400">
                 {t("orgChart.reportsBadge", { count: p.children.length })}
               </span>
             )}
@@ -1026,7 +1026,7 @@ function DepartmentList({
   const { t } = useTranslation();
   const [openDept, setOpenDept] = useState<string | null>(null);
   if (departments.length === 0) {
-    return <p className="px-4 py-8 text-center text-sm text-gray-400">{t("orgChart.noMatches")}</p>;
+    return <p className="px-4 py-8 text-center text-sm text-muted-foreground">{t("orgChart.noMatches")}</p>;
   }
   return (
     <ul className="divide-y divide-gray-100">
@@ -1037,25 +1037,25 @@ function DepartmentList({
             <button
               type="button"
               onClick={() => setOpenDept(expanded ? null : d.name)}
-              className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-gray-50"
+              className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-muted"
             >
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-amber-700">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300">
                 <Building2 className="h-4 w-4" />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-gray-900">{d.name}</p>
-                <p className="text-xs text-gray-500">
+                <p className="truncate text-sm font-medium text-foreground">{d.name}</p>
+                <p className="text-xs text-muted-foreground">
                   {t("orgChart.personCount", { count: d.people.length })}
                 </p>
               </div>
               {expanded ? (
-                <ChevronDown className="h-4 w-4 text-gray-400" />
+                <ChevronDown className="h-4 w-4 text-muted-foreground" />
               ) : (
-                <ChevronRight className="h-4 w-4 text-gray-400" />
+                <ChevronRight className="h-4 w-4 text-muted-foreground" />
               )}
             </button>
             {expanded && d.people.length > 0 && (
-              <div className="border-l-2 border-gray-100 ml-7 mb-2">
+              <div className="border-l-2 border-border ml-7 mb-2">
                 <PersonList people={d.people} onNavigate={onNavigate} />
               </div>
             )}

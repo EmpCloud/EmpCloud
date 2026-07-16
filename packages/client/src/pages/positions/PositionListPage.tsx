@@ -159,8 +159,8 @@ export default function PositionListPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{tx("title")}</h1>
-          <p className="text-gray-500 mt-1">{tx("subtitle")}</p>
+          <h1 className="text-2xl font-bold text-foreground">{tx("title")}</h1>
+          <p className="text-muted-foreground mt-1">{tx("subtitle")}</p>
         </div>
         <button
           onClick={() => setShowCreate(!showCreate)}
@@ -173,25 +173,25 @@ export default function PositionListPage() {
 
       {/* Create Form */}
       {showCreate && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">{tx("newPosition")}</h2>
+        <div className="bg-card rounded-xl border border-border p-6 mb-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">{tx("newPosition")}</h2>
           <form onSubmit={handleCreate} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{tx("titleLabel")} *</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{tx("titleLabel")} *</label>
               <input
                 type="text"
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("common.department")}</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("common.department")}</label>
               <select
                 value={form.department_id}
                 onChange={(e) => setForm({ ...form, department_id: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               >
                 <option value="">{tx("none")}</option>
                 {deptList.map((d: any) => (
@@ -200,11 +200,11 @@ export default function PositionListPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{tx("employmentType")}</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{tx("employmentType")}</label>
               <select
                 value={form.employment_type}
                 onChange={(e) => setForm({ ...form, employment_type: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               >
                 <option value="full_time">{tx("fullTime")}</option>
                 <option value="part_time">{tx("partTime")}</option>
@@ -213,40 +213,40 @@ export default function PositionListPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{tx("headcountBudget")}</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{tx("headcountBudget")}</label>
               <input
                 type="number"
                 value={form.headcount_budget}
                 onChange={(e) => setForm({ ...form, headcount_budget: Number(e.target.value) })}
                 min={1}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{tx("minSalary")}</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{tx("minSalary")}</label>
               <input
                 type="number"
                 value={form.min_salary}
                 onChange={(e) => setForm({ ...form, min_salary: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{tx("maxSalary")}</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{tx("maxSalary")}</label>
               <input
                 type="number"
                 value={form.max_salary}
                 onChange={(e) => setForm({ ...form, max_salary: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
             <div className="col-span-full">
-              <label className="block text-sm font-medium text-gray-700 mb-1">{tx("jobDescription")}</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{tx("jobDescription")}</label>
               <textarea
                 value={form.job_description}
                 onChange={(e) => setForm({ ...form, job_description: e.target.value })}
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
             <div className="flex items-center gap-2">
@@ -255,9 +255,9 @@ export default function PositionListPage() {
                 id="is_critical"
                 checked={form.is_critical}
                 onChange={(e) => setForm({ ...form, is_critical: e.target.checked })}
-                className="h-4 w-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500"
+                className="h-4 w-4 text-brand-600 dark:text-brand-400 border-border rounded focus:ring-brand-500"
               />
-              <label htmlFor="is_critical" className="text-sm text-gray-700">{tx("criticalRole")}</label>
+              <label htmlFor="is_critical" className="text-sm text-muted-foreground">{tx("criticalRole")}</label>
             </div>
             <div className="col-span-full flex gap-3">
               <button
@@ -284,13 +284,13 @@ export default function PositionListPage() {
                   });
                   createMutation.reset();
                 }}
-                className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50"
+                className="px-4 py-2 border border-border text-muted-foreground text-sm font-medium rounded-lg hover:bg-muted"
               >
                 {t("common.cancel")}
               </button>
             </div>
             {createMutation.isError && (
-              <p className="col-span-full text-sm text-red-600">
+              <p className="col-span-full text-sm text-red-600 dark:text-red-400">
                 {(createMutation.error as any)?.response?.data?.error?.message || tx("failedCreate")}
               </p>
             )}
@@ -301,19 +301,19 @@ export default function PositionListPage() {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
             type="text"
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="bg-card text-foreground w-full pl-10 pr-4 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             placeholder={tx("searchPlaceholder") as string}
           />
         </div>
         <select
           value={departmentId}
           onChange={(e) => { setDepartmentId(e.target.value); setPage(1); }}
-          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         >
           <option value="">{tx("allDepartments")}</option>
           {deptList.map((d: any) => (
@@ -323,7 +323,7 @@ export default function PositionListPage() {
         <select
           value={status}
           onChange={(e) => { setStatus(e.target.value); setPage(1); }}
-          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         >
           <option value="">{tx("allStatuses")}</option>
           <option value="active">{tx("statusActive")}</option>
@@ -334,7 +334,7 @@ export default function PositionListPage() {
         <select
           value={employmentType}
           onChange={(e) => { setEmploymentType(e.target.value); setPage(1); }}
-          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         >
           <option value="">{tx("allTypes")}</option>
           <option value="full_time">{tx("fullTime")}</option>
@@ -342,56 +342,56 @@ export default function PositionListPage() {
           <option value="contract">{tx("contract")}</option>
           <option value="intern">{tx("intern")}</option>
         </select>
-        <label className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 cursor-pointer whitespace-nowrap">
+        <label className="bg-card text-foreground flex items-center gap-2 px-3 py-2 border border-border rounded-lg text-sm text-muted-foreground cursor-pointer whitespace-nowrap">
           <input
             type="checkbox"
             checked={criticalOnly}
             onChange={(e) => { setCriticalOnly(e.target.checked); setPage(1); }}
-            className="h-4 w-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500"
+            className="h-4 w-4 text-brand-600 dark:text-brand-400 border-border rounded focus:ring-brand-500"
           />
           {tx("criticalOnly")}
         </label>
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto -mx-4 lg:mx-0">
+      <div className="bg-card rounded-xl border border-border overflow-x-auto -mx-4 lg:mx-0">
         <table className="min-w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
+          <thead className="bg-muted border-b border-border">
             <tr>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colCode")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colTitle")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("common.department")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colType")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colHeadcount")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("common.status")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colCritical")}</th>
-              <th className="text-right text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("common.actions")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("colCode")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("colTitle")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("common.department")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("colType")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("colHeadcount")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("common.status")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("colCritical")}</th>
+              <th className="text-right text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("common.actions")}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border">
             {isLoading ? (
               <tr>
-                <td colSpan={8} className="px-6 py-8 text-center text-gray-400">{t("common.loading")}</td>
+                <td colSpan={8} className="px-6 py-8 text-center text-muted-foreground">{t("common.loading")}</td>
               </tr>
             ) : positions.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-6 py-8 text-center text-gray-400">{tx("noPositions")}</td>
+                <td colSpan={8} className="px-6 py-8 text-center text-muted-foreground">{tx("noPositions")}</td>
               </tr>
             ) : (
               positions.map((pos: any) => (
-                <tr key={pos.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm font-mono text-gray-500">{pos.code || "-"}</td>
+                <tr key={pos.id} className="hover:bg-muted">
+                  <td className="px-6 py-4 text-sm font-mono text-muted-foreground">{pos.code || "-"}</td>
                   <td className="px-6 py-4">
                     <Link
                       to={`/positions/${pos.id}`}
-                      className="text-sm font-medium text-gray-900 hover:text-brand-600"
+                      className="text-sm font-medium text-foreground hover:text-brand-600"
                     >
                       {pos.title}
                     </Link>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{pos.department_name || "-"}</td>
+                  <td className="px-6 py-4 text-sm text-muted-foreground">{pos.department_name || "-"}</td>
                   <td className="px-6 py-4">
-                    <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-700 capitalize">
+                    <span className="text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground capitalize">
                       {(() => {
                         // Map server enum → localized label; fall back to the
                         // raw word with underscores stripped.
@@ -407,17 +407,17 @@ export default function PositionListPage() {
                   </td>
                   <td className="px-6 py-4">
                     <span className={`text-sm font-medium ${
-                      pos.headcount_filled >= pos.headcount_budget ? "text-green-600" : "text-amber-600"
+                      pos.headcount_filled >= pos.headcount_budget ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400"
                     }`}>
                       {pos.headcount_filled}/{pos.headcount_budget}
                     </span>
                   </td>
                   <td className="px-6 py-4">
                     <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                      pos.status === "active" ? "bg-green-50 text-green-700" :
-                      pos.status === "filled" ? "bg-blue-50 text-blue-700" :
-                      pos.status === "frozen" ? "bg-amber-50 text-amber-700" :
-                      "bg-gray-100 text-gray-500"
+                      pos.status === "active" ? "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300" :
+                      pos.status === "filled" ? "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300" :
+                      pos.status === "frozen" ? "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300" :
+                      "bg-muted text-muted-foreground"
                     }`}>
                       {tx(`status${pos.status.charAt(0).toUpperCase()}${pos.status.slice(1)}`, { defaultValue: pos.status })}
                     </span>
@@ -426,14 +426,14 @@ export default function PositionListPage() {
                     {pos.is_critical ? (
                       <AlertTriangle className="h-4 w-4 text-red-500" />
                     ) : (
-                      <span className="text-gray-300">-</span>
+                      <span className="text-muted-foreground/50">-</span>
                     )}
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-1">
                       <Link
                         to={`/positions/${pos.id}?edit=1`}
-                        className="p-1.5 rounded-lg text-gray-400 hover:bg-brand-50 hover:text-brand-600"
+                        className="p-1.5 rounded-lg text-muted-foreground hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:text-brand-600"
                         title={tx("editTooltip") as string}
                       >
                         <Pencil className="h-4 w-4" />
@@ -443,7 +443,7 @@ export default function PositionListPage() {
                           setDeleteTarget({ id: pos.id, title: pos.title });
                           setDeleteError(null);
                         }}
-                        className="p-1.5 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600"
+                        className="p-1.5 rounded-lg text-muted-foreground hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-600"
                         title={tx("deleteTooltip") as string}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -457,22 +457,22 @@ export default function PositionListPage() {
         </table>
 
         {meta && meta.total_pages > 1 && (
-          <div className="flex items-center justify-between px-6 py-3 border-t border-gray-200">
-            <p className="text-sm text-gray-500">
+          <div className="flex items-center justify-between px-6 py-3 border-t border-border">
+            <p className="text-sm text-muted-foreground">
               {tx("pageOf", { page: meta.page, total_pages: meta.total_pages, total: meta.total })}
             </p>
             <div className="flex gap-2">
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="flex items-center gap-1 px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50 hover:bg-gray-50"
+                className="flex items-center gap-1 px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50 hover:bg-muted"
               >
                 <ChevronLeft className="h-4 w-4" /> {t("common.previous")}
               </button>
               <button
                 onClick={() => setPage((p) => p + 1)}
                 disabled={page >= meta.total_pages}
-                className="flex items-center gap-1 px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50 hover:bg-gray-50"
+                className="flex items-center gap-1 px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50 hover:bg-muted"
               >
                 {t("common.next")} <ChevronRight className="h-4 w-4" />
               </button>
@@ -488,33 +488,33 @@ export default function PositionListPage() {
           onClick={() => !deleteMutation.isPending && setDeleteTarget(null)}
         >
           <div
-            className="w-full max-w-md rounded-xl bg-white shadow-xl"
+            className="w-full max-w-md rounded-xl bg-card shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="px-6 py-5">
               <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-50">
-                  <Trash2 className="h-5 w-5 text-red-600" />
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-50 dark:bg-red-950/40">
+                  <Trash2 className="h-5 w-5 text-red-600 dark:text-red-400" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900">{tx("deleteTitle")}</h3>
-                  <p className="mt-1 text-sm text-gray-500">
+                  <h3 className="text-lg font-semibold text-foreground">{tx("deleteTitle")}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">
                     {tx("deleteConfirm", { title: deleteTarget.title })}
                   </p>
                 </div>
               </div>
             </div>
             {deleteError && (
-              <div className="mx-6 mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+              <div className="mx-6 mb-4 rounded-lg bg-red-50 dark:bg-red-950/40 p-3 text-sm text-red-700 dark:text-red-300">
                 {deleteError}
               </div>
             )}
-            <div className="flex justify-end gap-3 rounded-b-xl border-t border-gray-100 bg-gray-50 px-6 py-4">
+            <div className="flex justify-end gap-3 rounded-b-xl border-t border-border bg-muted px-6 py-4">
               <button
                 type="button"
                 onClick={() => setDeleteTarget(null)}
                 disabled={deleteMutation.isPending}
-                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-white disabled:opacity-50"
+                className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-card disabled:opacity-50"
               >
                 {t("common.cancel")}
               </button>

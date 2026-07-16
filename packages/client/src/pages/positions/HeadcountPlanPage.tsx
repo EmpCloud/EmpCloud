@@ -161,16 +161,16 @@ export default function HeadcountPlanPage() {
       case "approved": return <CheckCircle className="h-4 w-4 text-green-500" />;
       case "submitted": return <Clock className="h-4 w-4 text-blue-500" />;
       case "rejected": return <FileText className="h-4 w-4 text-red-500" />;
-      default: return <FileText className="h-4 w-4 text-gray-400" />;
+      default: return <FileText className="h-4 w-4 text-muted-foreground" />;
     }
   };
 
   const statusBadge = (status: string) => {
     const classes: Record<string, string> = {
-      draft: "bg-gray-100 text-gray-600",
-      submitted: "bg-blue-50 text-blue-700",
-      approved: "bg-green-50 text-green-700",
-      rejected: "bg-red-50 text-red-700",
+      draft: "bg-muted text-muted-foreground",
+      submitted: "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300",
+      approved: "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300",
+      rejected: "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300",
     };
     return `text-xs px-2 py-1 rounded-full font-medium ${classes[status] || classes.draft}`;
   };
@@ -179,8 +179,8 @@ export default function HeadcountPlanPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{tx("title")}</h1>
-          <p className="text-gray-500 mt-1">{tx("subtitle")}</p>
+          <h1 className="text-2xl font-bold text-foreground">{tx("title")}</h1>
+          <p className="text-muted-foreground mt-1">{tx("subtitle")}</p>
         </div>
         <button
           onClick={() => setShowCreate(!showCreate)}
@@ -193,26 +193,26 @@ export default function HeadcountPlanPage() {
 
       {/* Create Form */}
       {showCreate && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">{tx("createTitle")}</h2>
+        <div className="bg-card rounded-xl border border-border p-6 mb-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">{tx("createTitle")}</h2>
           <form onSubmit={handleCreate} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{tx("planTitleLabel")} *</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{tx("planTitleLabel")} *</label>
               <input
                 type="text"
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
                 placeholder={tx("planTitlePlaceholder") as string}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{tx("fiscalYear")} *</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{tx("fiscalYear")} *</label>
               <select
                 value={form.fiscal_year}
                 onChange={(e) => setForm({ ...form, fiscal_year: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 required
               >
                 <option value="">{tx("selectYear")}</option>
@@ -222,11 +222,11 @@ export default function HeadcountPlanPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{tx("quarter")}</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{tx("quarter")}</label>
               <select
                 value={form.quarter}
                 onChange={(e) => setForm({ ...form, quarter: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               >
                 <option value="">{tx("annualOrNone")}</option>
                 <option value="Q1">Q1</option>
@@ -236,11 +236,11 @@ export default function HeadcountPlanPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{tx("department")}</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{tx("department")}</label>
               <select
                 value={form.department_id}
                 onChange={(e) => setForm({ ...form, department_id: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               >
                 <option value="">{tx("orgWide")}</option>
                 {deptList.map((d: any) => (
@@ -249,43 +249,43 @@ export default function HeadcountPlanPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{tx("plannedHeadcount")}</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{tx("plannedHeadcount")}</label>
               <input
                 type="number"
                 value={form.planned_headcount}
                 onChange={(e) => setForm({ ...form, planned_headcount: e.target.value })}
                 min={0}
                 placeholder="0"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{tx("currentHeadcount")}</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{tx("currentHeadcount")}</label>
               <input
                 type="number"
                 value={form.current_headcount}
                 onChange={(e) => setForm({ ...form, current_headcount: e.target.value })}
                 min={0}
                 placeholder="0"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{tx("budgetForm")}</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{tx("budgetForm")}</label>
               <input
                 type="number"
                 value={form.budget_amount}
                 onChange={(e) => setForm({ ...form, budget_amount: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
             <div className="col-span-full">
-              <label className="block text-sm font-medium text-gray-700 mb-1">{tx("notes")}</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{tx("notes")}</label>
               <textarea
                 value={form.notes}
                 onChange={(e) => setForm({ ...form, notes: e.target.value })}
                 rows={2}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
             <div className="col-span-full flex gap-3">
@@ -296,12 +296,12 @@ export default function HeadcountPlanPage() {
               >
                 {createMutation.isPending ? tx("creating") : tx("create")}
               </button>
-              <button type="button" onClick={() => setShowCreate(false)} className="px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50">
+              <button type="button" onClick={() => setShowCreate(false)} className="px-4 py-2 border border-border text-muted-foreground text-sm rounded-lg hover:bg-muted">
                 {tx("cancel")}
               </button>
             </div>
             {createMutation.isError && (
-              <p className="col-span-full text-sm text-red-600">
+              <p className="col-span-full text-sm text-red-600 dark:text-red-400">
                 {(createMutation.error as any)?.response?.data?.error?.message || tx("failedCreate")}
               </p>
             )}
@@ -312,19 +312,19 @@ export default function HeadcountPlanPage() {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
             type="text"
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="bg-card text-foreground w-full pl-10 pr-4 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             placeholder={tx("searchPlaceholder") as string}
           />
         </div>
         <select
           value={statusFilter}
           onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         >
           <option value="">{tx("allStatuses")}</option>
           <option value="draft">{tx("statusDraft")}</option>
@@ -335,7 +335,7 @@ export default function HeadcountPlanPage() {
         <select
           value={departmentFilter}
           onChange={(e) => { setDepartmentFilter(e.target.value); setPage(1); }}
-          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         >
           <option value="">{tx("allDepartments")}</option>
           {deptList.map((d: any) => (
@@ -345,7 +345,7 @@ export default function HeadcountPlanPage() {
         <select
           value={fiscalYearFilter}
           onChange={(e) => { setFiscalYearFilter(e.target.value); setPage(1); }}
-          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         >
           <option value="">{tx("allYears")}</option>
           {fiscalYearOptions.map((y) => (
@@ -355,25 +355,25 @@ export default function HeadcountPlanPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto -mx-4 lg:mx-0">
+      <div className="bg-card rounded-xl border border-border overflow-x-auto -mx-4 lg:mx-0">
         <table className="min-w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
+          <thead className="bg-muted border-b border-border">
             <tr>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colPlan")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("fiscalYear")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("department")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colPlanned")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colApproved")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colCurrent")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colStatus")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colActions")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("colPlan")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("fiscalYear")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("department")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("colPlanned")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("colApproved")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("colCurrent")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("colStatus")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("colActions")}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border">
             {isLoading ? (
-              <tr><td colSpan={8} className="px-6 py-8 text-center text-gray-400">{tx("loading")}</td></tr>
+              <tr><td colSpan={8} className="px-6 py-8 text-center text-muted-foreground">{tx("loading")}</td></tr>
             ) : plans.length === 0 ? (
-              <tr><td colSpan={8} className="px-6 py-8 text-center text-gray-400">{tx("noPlans")}</td></tr>
+              <tr><td colSpan={8} className="px-6 py-8 text-center text-muted-foreground">{tx("noPlans")}</td></tr>
             ) : (
               plans.map((plan: any) => (
                 // #1548 — Row is clickable and opens the details modal. Action
@@ -382,7 +382,7 @@ export default function HeadcountPlanPage() {
                 <tr
                   key={plan.id}
                   onClick={() => setViewingPlan(plan)}
-                  className="hover:bg-gray-50 cursor-pointer"
+                  className="hover:bg-muted cursor-pointer"
                   role="button"
                   tabIndex={0}
                   onKeyDown={(e) => {
@@ -395,15 +395,15 @@ export default function HeadcountPlanPage() {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       {statusIcon(plan.status)}
-                      <span className="text-sm font-medium text-gray-900">{plan.title}</span>
+                      <span className="text-sm font-medium text-foreground">{plan.title}</span>
                     </div>
-                    {plan.quarter && <span className="text-xs text-gray-400 ml-6">{plan.quarter}</span>}
+                    {plan.quarter && <span className="text-xs text-muted-foreground ml-6">{plan.quarter}</span>}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{plan.fiscal_year}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{plan.department_name || tx("orgWideShort")}</td>
-                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{plan.planned_headcount}</td>
-                  <td className="px-6 py-4 text-sm font-medium text-green-600">{plan.approved_headcount}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{plan.current_headcount}</td>
+                  <td className="px-6 py-4 text-sm text-muted-foreground">{plan.fiscal_year}</td>
+                  <td className="px-6 py-4 text-sm text-muted-foreground">{plan.department_name || tx("orgWideShort")}</td>
+                  <td className="px-6 py-4 text-sm font-medium text-foreground">{plan.planned_headcount}</td>
+                  <td className="px-6 py-4 text-sm font-medium text-green-600 dark:text-green-400">{plan.approved_headcount}</td>
+                  <td className="px-6 py-4 text-sm text-muted-foreground">{plan.current_headcount}</td>
                   <td className="px-6 py-4">
                     <span className={statusBadge(plan.status)}>
                       {tx(`status${plan.status.charAt(0).toUpperCase()}${plan.status.slice(1)}`, { defaultValue: plan.status })}
@@ -415,7 +415,7 @@ export default function HeadcountPlanPage() {
                         <button
                           onClick={() => submitMutation.mutate(plan.id)}
                           disabled={submitMutation.isPending}
-                          className="text-xs text-blue-600 hover:underline"
+                          className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
                         >
                           {tx("actionSubmit")}
                         </button>
@@ -425,14 +425,14 @@ export default function HeadcountPlanPage() {
                           <button
                             onClick={() => approveMutation.mutate(plan.id)}
                             disabled={approveMutation.isPending}
-                            className="text-xs text-green-600 hover:underline"
+                            className="text-xs text-green-600 dark:text-green-400 hover:underline"
                           >
                             {tx("actionApprove")}
                           </button>
                           <button
                             onClick={() => { setRejectReason(""); setRejectTarget(plan.id); }}
                             disabled={rejectMutation.isPending}
-                            className="text-xs text-red-600 hover:underline"
+                            className="text-xs text-red-600 dark:text-red-400 hover:underline"
                           >
                             {tx("actionReject")}
                           </button>
@@ -454,14 +454,14 @@ export default function HeadcountPlanPage() {
             onClick={() => setViewingPlan(null)}
           >
             <div
-              className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[85vh] overflow-y-auto"
+              className="bg-card rounded-xl shadow-xl w-full max-w-2xl max-h-[85vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-start justify-between px-6 py-4 border-b border-gray-200">
+              <div className="flex items-start justify-between px-6 py-4 border-b border-border">
                 <div className="flex items-center gap-2">
                   {statusIcon(viewingPlan.status)}
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900">{viewingPlan.title}</h2>
+                    <h2 className="text-lg font-semibold text-foreground">{viewingPlan.title}</h2>
                     <span className={statusBadge(viewingPlan.status)}>
                       {tx(`status${viewingPlan.status.charAt(0).toUpperCase()}${viewingPlan.status.slice(1)}`, { defaultValue: viewingPlan.status })}
                     </span>
@@ -470,43 +470,43 @@ export default function HeadcountPlanPage() {
                 <button
                   onClick={() => setViewingPlan(null)}
                   aria-label={tx("close") as string}
-                  className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600"
+                  className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-muted-foreground"
                 >
                   <X className="h-5 w-5" />
                 </button>
               </div>
               <div className="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">{tx("fiscalYear")}</p>
-                  <p className="text-gray-900 font-medium">{viewingPlan.fiscal_year || "\u2014"}</p>
+                  <p className="text-xs text-muted-foreground mb-1">{tx("fiscalYear")}</p>
+                  <p className="text-foreground font-medium">{viewingPlan.fiscal_year || "\u2014"}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">{tx("quarter")}</p>
-                  <p className="text-gray-900 font-medium">{viewingPlan.quarter || "\u2014"}</p>
+                  <p className="text-xs text-muted-foreground mb-1">{tx("quarter")}</p>
+                  <p className="text-foreground font-medium">{viewingPlan.quarter || "\u2014"}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">{tx("department")}</p>
-                  <p className="text-gray-900 font-medium">{viewingPlan.department_name || tx("orgWideShort")}</p>
+                  <p className="text-xs text-muted-foreground mb-1">{tx("department")}</p>
+                  <p className="text-foreground font-medium">{viewingPlan.department_name || tx("orgWideShort")}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">{tx("currency")}</p>
-                  <p className="text-gray-900 font-medium">{viewingPlan.currency || "\u2014"}</p>
+                  <p className="text-xs text-muted-foreground mb-1">{tx("currency")}</p>
+                  <p className="text-foreground font-medium">{viewingPlan.currency || "\u2014"}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">{tx("plannedHeadcount")}</p>
-                  <p className="text-gray-900 font-medium">{viewingPlan.planned_headcount}</p>
+                  <p className="text-xs text-muted-foreground mb-1">{tx("plannedHeadcount")}</p>
+                  <p className="text-foreground font-medium">{viewingPlan.planned_headcount}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">{tx("approvedHeadcount")}</p>
-                  <p className="text-green-600 font-medium">{viewingPlan.approved_headcount}</p>
+                  <p className="text-xs text-muted-foreground mb-1">{tx("approvedHeadcount")}</p>
+                  <p className="text-green-600 dark:text-green-400 font-medium">{viewingPlan.approved_headcount}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">{tx("currentHeadcount")}</p>
-                  <p className="text-gray-900 font-medium">{viewingPlan.current_headcount}</p>
+                  <p className="text-xs text-muted-foreground mb-1">{tx("currentHeadcount")}</p>
+                  <p className="text-foreground font-medium">{viewingPlan.current_headcount}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">{tx("budget")}</p>
-                  <p className="text-gray-900 font-medium">
+                  <p className="text-xs text-muted-foreground mb-1">{tx("budget")}</p>
+                  <p className="text-foreground font-medium">
                     {viewingPlan.budget_amount != null
                       ? `${viewingPlan.budget_amount} ${viewingPlan.currency || ""}`.trim()
                       : "\u2014"}
@@ -514,27 +514,27 @@ export default function HeadcountPlanPage() {
                 </div>
                 {viewingPlan.created_by_name && (
                   <div>
-                    <p className="text-xs text-gray-500 mb-1">{tx("createdBy")}</p>
-                    <p className="text-gray-900 font-medium">{viewingPlan.created_by_name}</p>
+                    <p className="text-xs text-muted-foreground mb-1">{tx("createdBy")}</p>
+                    <p className="text-foreground font-medium">{viewingPlan.created_by_name}</p>
                   </div>
                 )}
                 {viewingPlan.created_at && (
                   <div>
-                    <p className="text-xs text-gray-500 mb-1">{tx("createdAt")}</p>
-                    <p className="text-gray-900 font-medium">{new Date(viewingPlan.created_at).toLocaleString()}</p>
+                    <p className="text-xs text-muted-foreground mb-1">{tx("createdAt")}</p>
+                    <p className="text-foreground font-medium">{new Date(viewingPlan.created_at).toLocaleString()}</p>
                   </div>
                 )}
                 {viewingPlan.notes && (
                   <div className="sm:col-span-2">
-                    <p className="text-xs text-gray-500 mb-1">{tx("notes")}</p>
-                    <p className="text-gray-800 whitespace-pre-wrap bg-gray-50 rounded-lg border border-gray-200 px-3 py-2">{viewingPlan.notes}</p>
+                    <p className="text-xs text-muted-foreground mb-1">{tx("notes")}</p>
+                    <p className="text-foreground whitespace-pre-wrap bg-muted rounded-lg border border-border px-3 py-2">{viewingPlan.notes}</p>
                   </div>
                 )}
               </div>
-              <div className="px-6 py-3 border-t border-gray-200 flex justify-end">
+              <div className="px-6 py-3 border-t border-border flex justify-end">
                 <button
                   onClick={() => setViewingPlan(null)}
-                  className="px-4 py-2 text-sm border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                  className="px-4 py-2 text-sm border border-border text-muted-foreground rounded-lg hover:bg-muted"
                 >
                   {tx("close")}
                 </button>
@@ -544,22 +544,22 @@ export default function HeadcountPlanPage() {
         )}
 
         {meta && meta.total_pages > 1 && (
-          <div className="flex items-center justify-between px-6 py-3 border-t border-gray-200">
-            <p className="text-sm text-gray-500">
+          <div className="flex items-center justify-between px-6 py-3 border-t border-border">
+            <p className="text-sm text-muted-foreground">
               {tx("pageOf", { page: meta.page, total_pages: meta.total_pages, total: meta.total })}
             </p>
             <div className="flex gap-2">
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="flex items-center gap-1 px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50 hover:bg-gray-50"
+                className="flex items-center gap-1 px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50 hover:bg-muted"
               >
                 <ChevronLeft className="h-4 w-4" /> {tx("previous")}
               </button>
               <button
                 onClick={() => setPage((p) => p + 1)}
                 disabled={page >= meta.total_pages}
-                className="flex items-center gap-1 px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50 hover:bg-gray-50"
+                className="flex items-center gap-1 px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50 hover:bg-muted"
               >
                 {tx("next")} <ChevronRight className="h-4 w-4" />
               </button>
@@ -574,12 +574,12 @@ export default function HeadcountPlanPage() {
           optional. */}
       {rejectTarget !== null && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
-            <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-              <X className="h-5 w-5 text-red-600" />
+          <div className="w-full max-w-md rounded-xl bg-card p-6 shadow-xl">
+            <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+              <X className="h-5 w-5 text-red-600 dark:text-red-400" />
               {tx("actionReject")}
             </h3>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-muted-foreground">
               {tx("rejectPrompt")}
             </p>
             <textarea
@@ -587,14 +587,14 @@ export default function HeadcountPlanPage() {
               rows={3}
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
-              className="mt-3 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-rose-500 focus:outline-none focus:ring-1 focus:ring-rose-500"
+              className="mt-3 w-full rounded-lg border border-border bg-card text-foreground px-3 py-2 text-sm focus:border-rose-500 focus:outline-none focus:ring-1 focus:ring-rose-500"
             />
             <div className="mt-4 flex justify-end gap-2">
               <button
                 type="button"
                 onClick={() => { setRejectTarget(null); setRejectReason(""); }}
                 disabled={rejectMutation.isPending}
-                className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                className="px-3 py-1.5 text-sm border border-border rounded-lg hover:bg-muted disabled:opacity-50"
               >
                 {tx("cancel")}
               </button>

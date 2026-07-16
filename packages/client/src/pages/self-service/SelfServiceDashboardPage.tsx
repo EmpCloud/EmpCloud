@@ -29,13 +29,13 @@ function QuickLink({ to, icon: Icon, label }: { to: string; icon: any; label: st
   return (
     <Link
       to={to}
-      className="flex items-center gap-3 px-4 py-3 bg-white border border-gray-200 rounded-xl hover:border-brand-300 hover:shadow-sm transition-all group"
+      className="flex items-center gap-3 px-4 py-3 bg-card border border-border rounded-xl hover:border-brand-300 hover:shadow-sm transition-all group"
     >
-      <div className="h-10 w-10 rounded-lg bg-brand-50 flex items-center justify-center text-brand-600 group-hover:bg-brand-100">
+      <div className="h-10 w-10 rounded-lg bg-brand-50 dark:bg-brand-950/40 flex items-center justify-center text-brand-600 dark:text-brand-400 group-hover:bg-brand-100 dark:group-hover:bg-brand-900/50">
         <Icon className="h-5 w-5" />
       </div>
-      <span className="text-sm font-medium text-gray-700 group-hover:text-brand-600">{label}</span>
-      <ArrowRight className="h-4 w-4 text-gray-400 ml-auto group-hover:text-brand-500" />
+      <span className="text-sm font-medium text-muted-foreground group-hover:text-brand-600 dark:group-hover:text-brand-400">{label}</span>
+      <ArrowRight className="h-4 w-4 text-muted-foreground ml-auto group-hover:text-brand-500" />
     </Link>
   );
 }
@@ -181,10 +181,10 @@ export default function SelfServiceDashboardPage() {
     <div>
       <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-foreground">
             {t('selfService.welcomeBack', { name: user?.first_name })}
           </h1>
-          <p className="text-gray-500 mt-1">{t('selfService.overviewDesc')}</p>
+          <p className="text-muted-foreground mt-1">{t('selfService.overviewDesc')}</p>
         </div>
         {/* Primary Check In / Check Out action — always visible in the page
             header so it doesn't require scrolling or navigating to
@@ -237,10 +237,10 @@ export default function SelfServiceDashboardPage() {
         <div className="mt-6 lg:mt-0 lg:absolute lg:right-0 lg:top-0 lg:w-2/5">
           <div className="space-y-6 lg:sticky lg:top-4 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:pr-1">
         {/* Attendance Today */}
-        <div className="bg-white border border-gray-200 rounded-xl p-6">
+        <div className="bg-card border border-border rounded-xl p-6">
           <div className="flex items-center gap-2 mb-4">
-            <Clock className="h-5 w-5 text-brand-600" />
-            <h2 className="text-lg font-semibold text-gray-900">{t('attendance.myAttendanceToday')}</h2>
+            <Clock className="h-5 w-5 text-brand-600 dark:text-brand-400" />
+            <h2 className="text-lg font-semibold text-foreground">{t('attendance.myAttendanceToday')}</h2>
           </div>
           {todayAttendance ? (() => {
             // #1383 — API returns check_in / check_out as ISO timestamps,
@@ -274,12 +274,12 @@ export default function SelfServiceDashboardPage() {
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
                   {/* Check In */}
-                  <div className="rounded-lg border border-green-100 bg-green-50 p-3">
-                    <div className="flex items-center gap-1.5 text-xs font-medium text-green-700">
+                  <div className="rounded-lg border border-green-100 dark:border-green-900 bg-green-50 dark:bg-green-950/40 p-3">
+                    <div className="flex items-center gap-1.5 text-xs font-medium text-green-700 dark:text-green-300">
                       <CheckCircle2 className="h-3.5 w-3.5" />
                       {t('attendance.checkIn')}
                     </div>
-                    <p className="mt-1 text-base font-semibold text-gray-900">
+                    <p className="mt-1 text-base font-semibold text-foreground">
                       {ciText || "—"}
                     </p>
                   </div>
@@ -288,13 +288,13 @@ export default function SelfServiceDashboardPage() {
                   <div
                     className={`rounded-lg border p-3 ${
                       co
-                        ? "border-indigo-100 bg-indigo-50"
-                        : "border-gray-200 bg-gray-50"
+                        ? "border-indigo-100 dark:border-indigo-900 bg-indigo-50 dark:bg-indigo-950/40"
+                        : "border-border bg-muted"
                     }`}
                   >
                     <div
                       className={`flex items-center gap-1.5 text-xs font-medium ${
-                        co ? "text-indigo-700" : "text-gray-500"
+                        co ? "text-indigo-700" : "text-muted-foreground"
                       }`}
                     >
                       <LogOut className="h-3.5 w-3.5" />
@@ -302,7 +302,7 @@ export default function SelfServiceDashboardPage() {
                     </div>
                     <p
                       className={`mt-1 text-base font-semibold ${
-                        co ? "text-gray-900" : "text-gray-400"
+                        co ? "text-foreground" : "text-muted-foreground"
                       }`}
                     >
                       {coText || t('attendance.notYet')}
@@ -312,84 +312,84 @@ export default function SelfServiceDashboardPage() {
 
                 {/* Total worked */}
                 {workedText && (
-                  <div className="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2 text-xs">
-                    <span className="text-gray-500">{t('attendance.totalWorkedToday')}</span>
-                    <span className="font-semibold text-gray-900">{workedText}</span>
+                  <div className="flex items-center justify-between rounded-lg bg-muted px-3 py-2 text-xs">
+                    <span className="text-muted-foreground">{t('attendance.totalWorkedToday')}</span>
+                    <span className="font-semibold text-foreground">{workedText}</span>
                   </div>
                 )}
               </div>
             );
           })() : (
             <div className="flex items-center gap-3">
-              <XCircle className="h-5 w-5 text-gray-300" />
-              <p className="text-sm text-gray-500">{t('attendance.notCheckedInYet')}</p>
+              <XCircle className="h-5 w-5 text-muted-foreground/50" />
+              <p className="text-sm text-muted-foreground">{t('attendance.notCheckedInYet')}</p>
             </div>
           )}
         </div>
 
         {/* Leave Balances */}
-        <div className="bg-white border border-gray-200 rounded-xl p-6">
+        <div className="bg-card border border-border rounded-xl p-6">
           <div className="flex items-center gap-2 mb-4">
-            <CalendarDays className="h-5 w-5 text-brand-600" />
-            <h2 className="text-lg font-semibold text-gray-900">{t('leave.leaveBalance')}</h2>
+            <CalendarDays className="h-5 w-5 text-brand-600 dark:text-brand-400" />
+            <h2 className="text-lg font-semibold text-foreground">{t('leave.leaveBalance')}</h2>
           </div>
           {leaveCards.length > 0 ? (
             <div className="grid grid-cols-2 gap-3">
               {leaveCards.map((c) => (
-                <div key={c.id} className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-xs text-gray-500">{leaveTypeLabel(t, c)}</p>
-                  <p className="text-lg font-bold text-gray-900">{c.balance}</p>
-                  <p className="text-xs text-gray-400">{t('leave.daysRemaining')}</p>
+                <div key={c.id} className="bg-muted rounded-lg p-3">
+                  <p className="text-xs text-muted-foreground">{leaveTypeLabel(t, c)}</p>
+                  <p className="text-lg font-bold text-foreground">{c.balance}</p>
+                  <p className="text-xs text-muted-foreground">{t('leave.daysRemaining')}</p>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-sm text-gray-400">{t('leave.noTypes')}</p>
+            <p className="text-sm text-muted-foreground">{t('leave.noTypes')}</p>
           )}
         </div>
 
         {/* Pending Documents */}
-        <div className="bg-white border border-gray-200 rounded-xl p-6">
+        <div className="bg-card border border-border rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-brand-600" />
-              <h2 className="text-lg font-semibold text-gray-900">{t('documents.pending')}</h2>
+              <FileText className="h-5 w-5 text-brand-600 dark:text-brand-400" />
+              <h2 className="text-lg font-semibold text-foreground">{t('documents.pending')}</h2>
             </div>
-            <Link to="/documents" className="text-xs text-brand-600 hover:underline">
+            <Link to="/documents" className="text-xs text-brand-600 dark:text-brand-400 hover:underline">
               {t('common.viewAll')}
             </Link>
           </div>
           {pendingDocs.length > 0 ? (
             <ul className="space-y-2">
               {pendingDocs.slice(0, 5).map((doc: any) => (
-                <li key={doc.id} className="flex items-center gap-2 text-sm text-gray-600">
-                  <FileText className="h-4 w-4 text-gray-400 shrink-0" />
+                <li key={doc.id} className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
                   <span className="truncate">{doc.title || doc.original_name || doc.file_name || doc.category_name || t('documents.fallbackName')}</span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-sm text-gray-400">{t('documents.noPending')}</p>
+            <p className="text-sm text-muted-foreground">{t('documents.noPending')}</p>
           )}
         </div>
 
         {/* Recent Announcements — only render when there are items */}
         {canViewAnnouncements && announcementList.length > 0 && (
-          <div className="bg-white border border-gray-200 rounded-xl p-6">
+          <div className="bg-card border border-border rounded-xl p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <Megaphone className="h-5 w-5 text-brand-600" />
-                <h2 className="text-lg font-semibold text-gray-900">{t('announcements.title')}</h2>
+                <Megaphone className="h-5 w-5 text-brand-600 dark:text-brand-400" />
+                <h2 className="text-lg font-semibold text-foreground">{t('announcements.title')}</h2>
               </div>
-              <Link to="/announcements" className="text-xs text-brand-600 hover:underline">
+              <Link to="/announcements" className="text-xs text-brand-600 dark:text-brand-400 hover:underline">
                 {t('common.viewAll')}
               </Link>
             </div>
             <ul className="space-y-3">
               {announcementList.slice(0, 3).map((a: any) => (
                 <li key={a.id}>
-                  <p className="text-sm font-medium text-gray-900">{a.title}</p>
-                  <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">
+                  <p className="text-sm font-medium text-foreground">{a.title}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
                     {richTextToPlainText(a.content) || a.body || ""}
                   </p>
                 </li>
@@ -400,13 +400,13 @@ export default function SelfServiceDashboardPage() {
 
         {/* Policies to Acknowledge — only render when there are items */}
         {policyList.length > 0 && (
-          <div className="bg-white border border-gray-200 rounded-xl p-6">
+          <div className="bg-card border border-border rounded-xl p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <BookOpen className="h-5 w-5 text-brand-600" />
-                <h2 className="text-lg font-semibold text-gray-900">{t('policies.title')}</h2>
+                <BookOpen className="h-5 w-5 text-brand-600 dark:text-brand-400" />
+                <h2 className="text-lg font-semibold text-foreground">{t('policies.title')}</h2>
               </div>
-              <Link to="/policies" className="text-xs text-brand-600 hover:underline">
+              <Link to="/policies" className="text-xs text-brand-600 dark:text-brand-400 hover:underline">
                 {t('common.viewAll')}
               </Link>
             </div>
@@ -414,17 +414,17 @@ export default function SelfServiceDashboardPage() {
               {policyList.slice(0, 5).map((p: any) => (
                 <li
                   key={p.id}
-                  className="flex items-center justify-between text-sm text-gray-600 border-b border-gray-100 pb-2 last:border-0"
+                  className="flex items-center justify-between text-sm text-muted-foreground border-b border-border pb-2 last:border-0"
                 >
                   <span>{p.title}</span>
                   {p.acknowledged ? (
-                    <span className="text-xs text-green-600 flex items-center gap-1">
+                    <span className="text-xs text-green-600 dark:text-green-400 flex items-center gap-1">
                       <CheckCircle2 className="h-3 w-3" /> {t('policies.acknowledged')}
                     </span>
                   ) : (
                     <Link
                       to="/policies"
-                      className="text-xs text-brand-600 hover:underline"
+                      className="text-xs text-brand-600 dark:text-brand-400 hover:underline"
                     >
                       {t('policies.review')}
                     </Link>
@@ -473,7 +473,7 @@ function AttendanceHeaderAction({
 
   if (hasCheckedOut) {
     return (
-      <div className="inline-flex items-center gap-2 rounded-xl bg-green-50 border border-green-200 px-4 py-2.5 text-sm font-medium text-green-700">
+      <div className="inline-flex items-center gap-2 rounded-xl bg-green-50 dark:bg-green-950/40 border border-green-200 dark:border-green-900 px-4 py-2.5 text-sm font-medium text-green-700 dark:text-green-300">
         <CheckCircle2 className="h-4 w-4" />
         {t('attendance.attendanceComplete')}
       </div>
@@ -486,7 +486,7 @@ function AttendanceHeaderAction({
   if (!dashboardAllowed) {
     return (
       <div
-        className="inline-flex items-center gap-2 rounded-xl bg-gray-50 border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-600"
+        className="inline-flex items-center gap-2 rounded-xl bg-muted border border-border px-4 py-2.5 text-sm font-medium text-muted-foreground"
         title="Use the EmpCloud mobile app or a biometric device to check in / out."
       >
         <Lock className="h-4 w-4" />

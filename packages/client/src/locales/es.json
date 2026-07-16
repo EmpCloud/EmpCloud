@@ -6481,5 +6481,10 @@
     "noUpcomingHint": "No hay más celebraciones próximas en los siguientes 30 días.",
     "noneToday": "Hoy no hay celebraciones",
     "noneTodayHint": "Mira abajo quién viene este mes."
+  },
+  "theme": {
+    "light": "Claro",
+    "dark": "Oscuro",
+    "system": "Sistema"
   }
 }

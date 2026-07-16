@@ -24,9 +24,9 @@ interface CompOffRequest {
 }
 
 const STATUS_STYLES: Record<string, { bg: string; text: string; icon: typeof Clock }> = {
-  pending: { bg: "bg-amber-50", text: "text-amber-700", icon: Clock },
-  approved: { bg: "bg-green-50", text: "text-green-700", icon: CheckCircle2 },
-  rejected: { bg: "bg-red-50", text: "text-red-700", icon: XCircle },
+  pending: { bg: "bg-amber-50 dark:bg-amber-950/40", text: "text-amber-700 dark:text-amber-300", icon: Clock },
+  approved: { bg: "bg-green-50 dark:bg-green-950/40", text: "text-green-700 dark:text-green-300", icon: CheckCircle2 },
+  rejected: { bg: "bg-red-50 dark:bg-red-950/40", text: "text-red-700 dark:text-red-300", icon: XCircle },
 };
 
 const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
@@ -190,8 +190,8 @@ export default function CompOffPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t('leave.compOff.title')}</h1>
-          <p className="text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-foreground">{t('leave.compOff.title')}</h1>
+          <p className="text-muted-foreground mt-1">
             {t('leave.compOff.subtitle')}
           </p>
         </div>
@@ -221,21 +221,21 @@ export default function CompOffPage() {
       {isHR && showCredit && (
         <form
           onSubmit={handleCreditSubmit}
-          className="bg-white rounded-xl border border-emerald-200 p-6 mb-8"
+          className="bg-card rounded-xl border border-emerald-200 p-6 mb-8"
         >
-          <h2 className="text-lg font-semibold text-gray-900 mb-1">Credit / Debit Comp-Off Balance</h2>
-          <p className="text-xs text-gray-500 mb-4">
+          <h2 className="text-lg font-semibold text-foreground mb-1">Credit / Debit Comp-Off Balance</h2>
+          <p className="text-xs text-muted-foreground mb-4">
             Manually grant days to an employee's comp-off balance. Use a negative number to debit.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="lg:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
                 Employee <span className="text-red-500">*</span>
               </label>
               <select
                 value={creditForm.user_id || ""}
                 onChange={(e) => setCreditForm({ ...creditForm, user_id: Number(e.target.value) })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+                className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-card"
                 required
               >
                 <option value="">— Select employee —</option>
@@ -248,7 +248,7 @@ export default function CompOffPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
                 Days <span className="text-red-500">*</span>
               </label>
               <input
@@ -256,24 +256,24 @@ export default function CompOffPage() {
                 step="0.5"
                 value={creditForm.days}
                 onChange={(e) => setCreditForm({ ...creditForm, days: Number(e.target.value) })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                 required
               />
-              <p className="text-xs text-gray-400 mt-1">Positive to credit, negative to debit.</p>
+              <p className="text-xs text-muted-foreground mt-1">Positive to credit, negative to debit.</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Reason</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">Reason</label>
               <input
                 type="text"
                 value={creditForm.reason}
                 onChange={(e) => setCreditForm({ ...creditForm, reason: e.target.value })}
                 placeholder="e.g. Year-end carry forward"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
               />
             </div>
           </div>
           {creditError && (
-            <p className="mt-3 text-sm text-red-600">{creditError}</p>
+            <p className="mt-3 text-sm text-red-600 dark:text-red-400">{creditError}</p>
           )}
           <div className="flex justify-end gap-3 mt-4">
             <button
@@ -283,7 +283,7 @@ export default function CompOffPage() {
                 setCreditError(null);
                 setCreditForm({ user_id: 0, days: 1, reason: "" });
               }}
-              className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="px-4 py-2 text-sm text-muted-foreground border border-border rounded-lg hover:bg-muted"
             >
               Cancel
             </button>
@@ -301,45 +301,45 @@ export default function CompOffPage() {
       {/* Balance Cards — own comp-off balance & counts; self view only. */}
       {isSelfView && (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <div className="bg-card rounded-xl border border-border p-5">
           <div className="flex items-center gap-3 mb-2">
-            <div className="h-10 w-10 rounded-lg flex items-center justify-center bg-indigo-50 text-indigo-700">
+            <div className="h-10 w-10 rounded-lg flex items-center justify-center bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300">
               <CalendarDays className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-2xl font-bold text-foreground">
                 {balanceData?.balance ?? 0}
               </p>
-              <p className="text-xs text-gray-500">{t('leave.compOff.balanceLabel')}</p>
+              <p className="text-xs text-muted-foreground">{t('leave.compOff.balanceLabel')}</p>
             </div>
           </div>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-muted-foreground">
             {t('leave.compOff.usedOfAllocated', { used: balanceData?.total_used ?? 0, allocated: balanceData?.total_allocated ?? 0 })}
           </p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <div className="bg-card rounded-xl border border-border p-5">
           <div className="flex items-center gap-3 mb-2">
-            <div className="h-10 w-10 rounded-lg flex items-center justify-center bg-amber-50 text-amber-700">
+            <div className="h-10 w-10 rounded-lg flex items-center justify-center bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300">
               <Clock className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-2xl font-bold text-foreground">
                 {myRequests.filter((r) => r.status === "pending").length}
               </p>
-              <p className="text-xs text-gray-500">{t('leave.compOff.pendingRequests')}</p>
+              <p className="text-xs text-muted-foreground">{t('leave.compOff.pendingRequests')}</p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <div className="bg-card rounded-xl border border-border p-5">
           <div className="flex items-center gap-3 mb-2">
-            <div className="h-10 w-10 rounded-lg flex items-center justify-center bg-green-50 text-green-700">
+            <div className="h-10 w-10 rounded-lg flex items-center justify-center bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300">
               <CheckCircle2 className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-2xl font-bold text-foreground">
                 {myRequests.filter((r) => r.status === "approved").length}
               </p>
-              <p className="text-xs text-gray-500">{t('leave.compOff.approvedRequests')}</p>
+              <p className="text-xs text-muted-foreground">{t('leave.compOff.approvedRequests')}</p>
             </div>
           </div>
         </div>
@@ -350,38 +350,38 @@ export default function CompOffPage() {
       {isSelfView && showForm && (
         <form
           onSubmit={handleSubmit}
-          className="bg-white rounded-xl border border-gray-200 p-6 mb-8"
+          className="bg-card rounded-xl border border-border p-6 mb-8"
         >
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('leave.compOff.requestTitle')}</h2>
+          <h2 className="text-lg font-semibold text-foreground mb-4">{t('leave.compOff.requestTitle')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t('leave.compOff.dateWorked')} <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{t('leave.compOff.dateWorked')} <span className="text-red-500">*</span></label>
               <input
                 type="date"
                 value={form.worked_date}
                 onChange={(e) => handleWorkedDateChange(e.target.value)}
                 max={new Date().toISOString().slice(0, 10)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t('leave.compOff.expiresOn')} <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{t('leave.compOff.expiresOn')} <span className="text-red-500">*</span></label>
               <input
                 type="date"
                 value={form.expires_on}
                 onChange={(e) => setForm({ ...form, expires_on: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                 required
               />
-              <p className="text-xs text-gray-400 mt-1">{t('leave.compOff.expiryHint')}</p>
+              <p className="text-xs text-muted-foreground mt-1">{t('leave.compOff.expiryHint')}</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t('leave.compOff.days')}</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{t('leave.compOff.days')}</label>
               <select
                 value={form.days}
                 onChange={(e) => setForm({ ...form, days: Number(e.target.value) })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
               >
                 <option value={0.5}>{t('leave.compOff.daysHalf')}</option>
                 <option value={1}>{t('leave.compOff.daysFull')}</option>
@@ -390,11 +390,11 @@ export default function CompOffPage() {
               </select>
             </div>
             <div className="md:col-span-2 lg:col-span-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t('leave.compOff.reason')} <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{t('leave.compOff.reason')} <span className="text-red-500">*</span></label>
               <textarea
                 value={form.reason}
                 onChange={(e) => setForm({ ...form, reason: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                 rows={2}
                 placeholder={t('leave.compOff.reasonPlaceholder')}
                 required
@@ -405,7 +405,7 @@ export default function CompOffPage() {
             <button
               type="button"
               onClick={() => setShowForm(false)}
-              className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="px-4 py-2 text-sm text-muted-foreground border border-border rounded-lg hover:bg-muted"
             >
               {t('leave.compOff.cancel')}
             </button>
@@ -418,7 +418,7 @@ export default function CompOffPage() {
             </button>
           </div>
           {submitMut.isError && (
-            <p className="text-sm text-red-600 mt-2">
+            <p className="text-sm text-red-600 dark:text-red-400 mt-2">
               {(submitMut.error as any)?.response?.data?.error?.message || t('leave.compOff.submitFailed')}
             </p>
           )}
@@ -432,8 +432,8 @@ export default function CompOffPage() {
             onClick={() => setTab("my")}
             className={`px-4 py-2 text-sm font-medium rounded-lg ${
               effectiveTab === "my"
-                ? "bg-brand-50 text-brand-700"
-                : "text-gray-600 hover:bg-gray-100"
+                ? "bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300"
+                : "text-muted-foreground hover:bg-muted"
             }`}
           >
             {t('leave.compOff.myRequests')}
@@ -444,13 +444,13 @@ export default function CompOffPage() {
             onClick={() => setTab("pending")}
             className={`px-4 py-2 text-sm font-medium rounded-lg ${
               effectiveTab === "pending"
-                ? "bg-brand-50 text-brand-700"
-                : "text-gray-600 hover:bg-gray-100"
+                ? "bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300"
+                : "text-muted-foreground hover:bg-muted"
             }`}
           >
             {t('leave.compOff.pendingApprovals')}
             {pendingRequests.length > 0 && (
-              <span className="ml-2 bg-amber-100 text-amber-700 text-xs px-1.5 py-0.5 rounded-full">
+              <span className="ml-2 bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 text-xs px-1.5 py-0.5 rounded-full">
                 {pendingRequests.length}
               </span>
             )}
@@ -460,26 +460,26 @@ export default function CompOffPage() {
 
       {/* My Requests Table — own comp-off history; self view only. */}
       {isSelfView && effectiveTab === "my" && (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto">
+        <div className="bg-card rounded-xl border border-border overflow-x-auto">
           <table className="min-w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-muted border-b border-border">
               <tr>
-                <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('leave.compOff.workedDate')}</th>
-                <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('leave.compOff.days')}</th>
-                <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('leave.compOff.expiresOn')}</th>
-                <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('leave.compOff.reason')}</th>
-                <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('leave.compOff.status')}</th>
-                <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('leave.compOff.submitted')}</th>
+                <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('leave.compOff.workedDate')}</th>
+                <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('leave.compOff.days')}</th>
+                <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('leave.compOff.expiresOn')}</th>
+                <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('leave.compOff.reason')}</th>
+                <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('leave.compOff.status')}</th>
+                <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('leave.compOff.submitted')}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-border">
               {myLoading ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-gray-400">{t('leave.compOff.loading')}</td>
+                  <td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">{t('leave.compOff.loading')}</td>
                 </tr>
               ) : myRequests.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-gray-400">
+                  <td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">
                     {t('leave.compOff.noRequests')}
                   </td>
                 </tr>
@@ -488,11 +488,11 @@ export default function CompOffPage() {
                   const style = STATUS_STYLES[req.status] || STATUS_STYLES.pending;
                   const Icon = style.icon;
                   return (
-                    <tr key={req.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 text-sm font-medium text-gray-900">{req.worked_date}</td>
-                      <td className="px-6 py-4 text-sm text-gray-700">{Number(req.days)}</td>
-                      <td className="px-6 py-4 text-sm text-gray-500">{req.expires_on}</td>
-                      <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">{req.reason}</td>
+                    <tr key={req.id} className="hover:bg-muted">
+                      <td className="px-6 py-4 text-sm font-medium text-foreground">{req.worked_date}</td>
+                      <td className="px-6 py-4 text-sm text-muted-foreground">{Number(req.days)}</td>
+                      <td className="px-6 py-4 text-sm text-muted-foreground">{req.expires_on}</td>
+                      <td className="px-6 py-4 text-sm text-muted-foreground max-w-xs truncate">{req.reason}</td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full font-medium ${style.bg} ${style.text}`}>
                           <Icon className="h-3 w-3" /> {t(`leave.compOff.status${req.status.charAt(0).toUpperCase() + req.status.slice(1)}`, { defaultValue: req.status })}
@@ -501,7 +501,7 @@ export default function CompOffPage() {
                           <p className="text-xs text-red-500 mt-1">{req.rejection_reason}</p>
                         )}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-400">
+                      <td className="px-6 py-4 text-sm text-muted-foreground">
                         {new Date(req.created_at).toLocaleDateString()}
                       </td>
                     </tr>
@@ -515,25 +515,25 @@ export default function CompOffPage() {
 
       {/* Pending Approvals Table (HR View) */}
       {effectiveTab === "pending" && isHR && (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto">
+        <div className="bg-card rounded-xl border border-border overflow-x-auto">
           <table className="min-w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-muted border-b border-border">
               <tr>
-                <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('leave.compOff.employee')}</th>
-                <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('leave.compOff.workedDate')}</th>
-                <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('leave.compOff.days')}</th>
-                <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('leave.compOff.reason')}</th>
-                <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('leave.compOff.actions')}</th>
+                <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('leave.compOff.employee')}</th>
+                <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('leave.compOff.workedDate')}</th>
+                <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('leave.compOff.days')}</th>
+                <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('leave.compOff.reason')}</th>
+                <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('leave.compOff.actions')}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-border">
               {pendingLoading ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-gray-400">{t('leave.compOff.loading')}</td>
+                  <td colSpan={5} className="px-6 py-8 text-center text-muted-foreground">{t('leave.compOff.loading')}</td>
                 </tr>
               ) : pendingRequests.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-gray-400">
+                  <td colSpan={5} className="px-6 py-8 text-center text-muted-foreground">
                     {t('leave.compOff.noPending')}
                   </td>
                 </tr>
@@ -548,13 +548,13 @@ export default function CompOffPage() {
                     req.user_email ||
                     t('leave.compOff.userHash', { id: req.user_id });
                   return (
-                  <tr key={req.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                  <tr key={req.id} className="hover:bg-muted">
+                    <td className="px-6 py-4 text-sm font-medium text-foreground">
                       {displayName}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-700">{req.worked_date}</td>
-                    <td className="px-6 py-4 text-sm text-gray-700">{Number(req.days)}</td>
-                    <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">{req.reason}</td>
+                    <td className="px-6 py-4 text-sm text-muted-foreground">{req.worked_date}</td>
+                    <td className="px-6 py-4 text-sm text-muted-foreground">{Number(req.days)}</td>
+                    <td className="px-6 py-4 text-sm text-muted-foreground max-w-xs truncate">{req.reason}</td>
                     <td className="px-6 py-4">
                       <div className="flex flex-col gap-2">
                         <div className="flex items-center gap-2">
@@ -567,7 +567,7 @@ export default function CompOffPage() {
                           </button>
                           <button
                             onClick={() => setActionId(actionId === req.id ? null : req.id)}
-                            className="text-xs bg-red-50 text-red-700 px-2 py-1 rounded hover:bg-red-100"
+                            className="text-xs bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 px-2 py-1 rounded hover:bg-red-100 dark:hover:bg-red-950/40"
                           >
                             <XCircle className="h-3 w-3 inline mr-1" />{t('leave.compOff.reject')}
                           </button>
@@ -579,7 +579,7 @@ export default function CompOffPage() {
                               value={rejectReason}
                               onChange={(e) => setRejectReason(e.target.value)}
                               placeholder={t('leave.compOff.rejectionReason')}
-                              className="px-2 py-1 border border-gray-300 rounded text-xs flex-1"
+                              className="bg-card text-foreground px-2 py-1 border border-border rounded text-xs flex-1"
                             />
                             <button
                               onClick={() => rejectMut.mutate({ id: req.id, reason: rejectReason })}

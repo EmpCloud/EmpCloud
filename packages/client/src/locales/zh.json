@@ -6481,5 +6481,10 @@
     "noUpcomingHint": "未来30天内没有其他庆祝活动。",
     "noneToday": "今天没有庆祝活动",
     "noneTodayHint": "查看下方本月即将到来的庆祝。"
+  },
+  "theme": {
+    "light": "浅色",
+    "dark": "深色",
+    "system": "系统"
   }
 }

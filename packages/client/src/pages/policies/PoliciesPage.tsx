@@ -133,52 +133,52 @@ function EmployeePoliciesView() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">{t("policies.page.title")}</h1>
-        <p className="text-gray-500 mt-1">{t("policies.page.subtitleEmployee")}</p>
+        <h1 className="text-2xl font-bold text-foreground">{t("policies.page.title")}</h1>
+        <p className="text-muted-foreground mt-1">{t("policies.page.subtitleEmployee")}</p>
       </div>
 
       {pendingIds.size > 0 && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 text-sm text-amber-800">
+        <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 rounded-xl p-4 mb-6 text-sm text-amber-800">
           {t("policies.page.pendingBanner", { count: pendingIds.size })}
         </div>
       )}
 
       <div className="space-y-4">
         {isLoading ? (
-          <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">{t("policies.page.loading")}</div>
+          <div className="bg-card rounded-xl border border-border p-8 text-center text-muted-foreground">{t("policies.page.loading")}</div>
         ) : policies.length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">{t("policies.page.emptyEmployee")}</div>
+          <div className="bg-card rounded-xl border border-border p-8 text-center text-muted-foreground">{t("policies.page.emptyEmployee")}</div>
         ) : (
           policies.map((p: any) => {
             const isPending = pendingIds.has(p.id);
             const isOpen = expanded === p.id;
             return (
-              <div key={p.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+              <div key={p.id} className="bg-card rounded-xl border border-border overflow-hidden">
                 <button
                   onClick={() => setExpanded(isOpen ? null : p.id)}
-                  className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-gray-50"
+                  className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-muted"
                 >
                   <div className="flex items-center gap-3">
-                    <FileText className="h-5 w-5 text-brand-600" />
+                    <FileText className="h-5 w-5 text-brand-600 dark:text-brand-400" />
                     <div>
-                      <span className="text-sm font-semibold text-gray-900">{policyTitle(p, untitled)}</span>
+                      <span className="text-sm font-semibold text-foreground">{policyTitle(p, untitled)}</span>
                       {p.category && (
-                        <span className="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{p.category}</span>
+                        <span className="ml-2 text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">{p.category}</span>
                       )}
-                      <span className="ml-2 text-xs text-gray-400">v{p.version}</span>
+                      <span className="ml-2 text-xs text-muted-foreground">v{p.version}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     {isPending ? (
-                      <span className="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-full font-medium">{t("policies.page.pending")}</span>
+                      <span className="text-xs bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 px-2 py-1 rounded-full font-medium">{t("policies.page.pending")}</span>
                     ) : (
-                      <span className="text-xs bg-green-50 text-green-700 px-2 py-1 rounded-full font-medium">{t("policies.page.acknowledged")}</span>
+                      <span className="text-xs bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300 px-2 py-1 rounded-full font-medium">{t("policies.page.acknowledged")}</span>
                     )}
-                    {isOpen ? <ChevronUp className="h-4 w-4 text-gray-400" /> : <ChevronDown className="h-4 w-4 text-gray-400" />}
+                    {isOpen ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
                   </div>
                 </button>
                 {isOpen && (
-                  <div className="px-6 pb-4 border-t border-gray-100">
+                  <div className="px-6 pb-4 border-t border-border">
                     {/* Content is sanitized server-side via sanitizeHtml() on
                         write, so rendering it as HTML is safe. Legacy plain-text
                         rows keep their line breaks via whitespace-pre-wrap. */}
@@ -187,7 +187,7 @@ function EmployeePoliciesView() {
                       dangerouslySetInnerHTML={{ __html: p.content || "" }}
                     />
                     {p.effective_date && (
-                      <p className="text-xs text-gray-400 mb-3">{t("policies.page.effective", { date: p.effective_date })}</p>
+                      <p className="text-xs text-muted-foreground mb-3">{t("policies.page.effective", { date: p.effective_date })}</p>
                     )}
                     {isPending && (
                       <button
@@ -208,21 +208,21 @@ function EmployeePoliciesView() {
 
       {meta && meta.total_pages > 1 && (
         <div className="flex items-center justify-between mt-6">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             {t("policies.page.pageOf", { page: meta.page, total_pages: meta.total_pages, total: meta.total })}
           </p>
           <div className="flex gap-2">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
+              className="bg-card text-foreground px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50"
             >
               {t("policies.page.previous")}
             </button>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={page >= meta.total_pages}
-              className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
+              className="bg-card text-foreground px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50"
             >
               {t("policies.page.next")}
             </button>
@@ -325,8 +325,8 @@ function HRPoliciesView() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t("policies.page.title")}</h1>
-          <p className="text-gray-500 mt-1">{t("policies.page.subtitleHr")}</p>
+          <h1 className="text-2xl font-bold text-foreground">{t("policies.page.title")}</h1>
+          <p className="text-muted-foreground mt-1">{t("policies.page.subtitleHr")}</p>
         </div>
         <button
           onClick={() => {
@@ -349,50 +349,50 @@ function HRPoliciesView() {
 
       {/* Create / edit form */}
       {showCreate && (
-        <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-200 p-6 mb-6 space-y-4">
+        <form onSubmit={handleSubmit} className="bg-card rounded-xl border border-border p-6 mb-6 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-base font-semibold text-gray-900">
+            <h2 className="text-base font-semibold text-foreground">
               {editingId != null ? t("policies.page.editPolicy") : t("policies.page.createPolicy")}
             </h2>
             {editingId != null && (
-              <span className="text-xs text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
+              <span className="text-xs text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 px-2 py-0.5 rounded-full">
                 {t("policies.page.editingHint")}
               </span>
             )}
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("policies.page.fieldTitle")} <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("policies.page.fieldTitle")} <span className="text-red-500">*</span></label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                 placeholder={t("policies.page.titlePlaceholder")}
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("policies.page.fieldCategory")}</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("policies.page.fieldCategory")}</label>
               <input
                 type="text"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                 placeholder={t("policies.page.categoryPlaceholder")}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("policies.page.fieldEffectiveDate")}</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("policies.page.fieldEffectiveDate")}</label>
               <input
                 type="date"
                 value={effectiveDate}
                 onChange={(e) => setEffectiveDate(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
               />
             </div>
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("policies.page.fieldContent")} <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("policies.page.fieldContent")} <span className="text-red-500">*</span></label>
               <RichTextEditor
                 value={content}
                 onChange={setContent}
@@ -404,7 +404,7 @@ function HRPoliciesView() {
             <button
               type="button"
               onClick={resetForm}
-              className="px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="px-4 py-2 text-sm border border-border rounded-lg hover:bg-muted"
             >
               {t("policies.page.cancel")}
             </button>
@@ -424,44 +424,44 @@ function HRPoliciesView() {
       )}
 
       {/* Policies table */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto -mx-4 lg:mx-0">
+      <div className="bg-card rounded-xl border border-border overflow-x-auto -mx-4 lg:mx-0">
         <table className="min-w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
+          <thead className="bg-muted border-b border-border">
             <tr>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("policies.page.colTitle")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("policies.page.colCategory")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("policies.page.colVersion")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("policies.page.colEffectiveDate")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("policies.page.colAcknowledgments")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("policies.page.colActions")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("policies.page.colTitle")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("policies.page.colCategory")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("policies.page.colVersion")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("policies.page.colEffectiveDate")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("policies.page.colAcknowledgments")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("policies.page.colActions")}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border">
             {isLoading ? (
-              <tr><td colSpan={6} className="px-6 py-8 text-center text-gray-400">{t("policies.page.loading")}</td></tr>
+              <tr><td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">{t("policies.page.loading")}</td></tr>
             ) : policies.length === 0 ? (
-              <tr><td colSpan={6} className="px-6 py-8 text-center text-gray-400">{t("policies.page.emptyHr")}</td></tr>
+              <tr><td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">{t("policies.page.emptyHr")}</td></tr>
             ) : (
               policies.map((p: any) => (
                 <React.Fragment key={p.id}>
-                  <tr className="hover:bg-gray-50">
+                  <tr className="hover:bg-muted">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <FileText className="h-4 w-4 text-brand-600" />
-                        <span className="text-sm font-medium text-gray-900">{policyTitle(p, untitled)}</span>
+                        <FileText className="h-4 w-4 text-brand-600 dark:text-brand-400" />
+                        <span className="text-sm font-medium text-foreground">{policyTitle(p, untitled)}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       {p.category ? (
-                        <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">{p.category}</span>
+                        <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-full">{p.category}</span>
                       ) : (
-                        <span className="text-xs text-gray-400">-</span>
+                        <span className="text-xs text-muted-foreground">-</span>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">v{p.version}</td>
-                    <td className="px-6 py-4 text-sm text-gray-500">{p.effective_date || "-"}</td>
+                    <td className="px-6 py-4 text-sm text-muted-foreground">v{p.version}</td>
+                    <td className="px-6 py-4 text-sm text-muted-foreground">{p.effective_date || "-"}</td>
                     <td className="px-6 py-4">
-                      <span className="text-sm font-medium text-brand-700">{p.acknowledgment_count ?? 0}</span>
+                      <span className="text-sm font-medium text-brand-700 dark:text-brand-300">{p.acknowledgment_count ?? 0}</span>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
@@ -471,7 +471,7 @@ function HRPoliciesView() {
                             setViewContentFor(viewContentFor === p.id ? null : p.id);
                           }}
                           className={`flex items-center gap-1 text-xs font-medium ${
-                            viewContentFor === p.id ? "text-brand-700 underline" : "text-brand-600 hover:text-brand-700"
+                            viewContentFor === p.id ? "text-brand-700 dark:text-brand-300 underline" : "text-brand-600 dark:text-brand-400 hover:text-brand-700"
                           }`}
                         >
                           <FileText className="h-3.5 w-3.5" /> {t("policies.page.view")}
@@ -482,7 +482,7 @@ function HRPoliciesView() {
                             setViewAckFor(viewAckFor === p.id ? null : p.id);
                           }}
                           className={`flex items-center gap-1 text-xs font-medium ${
-                            viewAckFor === p.id ? "text-gray-900 underline" : "text-gray-500 hover:text-gray-700"
+                            viewAckFor === p.id ? "text-foreground underline" : "text-muted-foreground hover:text-foreground"
                           }`}
                         >
                           <Users className="h-3.5 w-3.5" /> {t("policies.page.acks")}
@@ -490,7 +490,7 @@ function HRPoliciesView() {
                         <button
                           onClick={() => startEdit(p)}
                           className={`flex items-center gap-1 text-xs font-medium ${
-                            editingId === p.id ? "text-amber-700 underline" : "text-amber-600 hover:text-amber-700"
+                            editingId === p.id ? "text-amber-700 dark:text-amber-300 underline" : "text-amber-600 dark:text-amber-400 hover:text-amber-700"
                           }`}
                         >
                           <Pencil className="h-3.5 w-3.5" /> {t("policies.page.edit")}
@@ -498,7 +498,7 @@ function HRPoliciesView() {
                         <button
                           onClick={() => setConfirmDeleteId(p.id)}
                           disabled={deletePolicy.isPending}
-                          className="flex items-center gap-1 text-xs font-medium text-red-600 hover:text-red-700 disabled:opacity-50"
+                          className="flex items-center gap-1 text-xs font-medium text-red-600 dark:text-red-400 hover:text-red-700 disabled:opacity-50"
                         >
                           <Trash2 className="h-3.5 w-3.5" /> {t("policies.page.delete")}
                         </button>
@@ -510,26 +510,26 @@ function HRPoliciesView() {
                   {viewContentFor === p.id && (
                     <tr>
                       <td colSpan={6} className="p-0">
-                        <div className="mx-4 my-2 bg-gray-50 border border-gray-200 rounded-xl shadow-lg animate-in slide-in-from-top-2 duration-200">
-                          <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200">
+                        <div className="mx-4 my-2 bg-muted border border-border rounded-xl shadow-lg animate-in slide-in-from-top-2 duration-200">
+                          <div className="flex items-center justify-between px-5 py-3 border-b border-border">
                             <div className="flex items-center gap-2">
-                              <FileText className="h-4 w-4 text-brand-600" />
-                              <h3 className="text-sm font-semibold text-gray-900">{policyTitle(p, untitled)}</h3>
+                              <FileText className="h-4 w-4 text-brand-600 dark:text-brand-400" />
+                              <h3 className="text-sm font-semibold text-foreground">{policyTitle(p, untitled)}</h3>
                               {p.category && (
-                                <span className="text-xs bg-white text-gray-600 px-2 py-0.5 rounded-full border border-gray-200">{p.category}</span>
+                                <span className="text-xs bg-card text-muted-foreground px-2 py-0.5 rounded-full border border-border">{p.category}</span>
                               )}
-                              <span className="text-xs text-gray-400">v{p.version}</span>
+                              <span className="text-xs text-muted-foreground">v{p.version}</span>
                             </div>
                             <button
                               onClick={() => setViewContentFor(null)}
-                              className="text-gray-400 hover:text-gray-600 text-sm px-2 py-1 rounded hover:bg-gray-200"
+                              className="text-muted-foreground hover:text-muted-foreground text-sm px-2 py-1 rounded hover:bg-muted"
                             >
                               ✕
                             </button>
                           </div>
                           <div className="px-5 py-4 max-h-64 overflow-y-auto">
                             {p.effective_date && (
-                              <p className="text-xs text-gray-400 mb-2">{t("policies.page.effective", { date: p.effective_date })}</p>
+                              <p className="text-xs text-muted-foreground mb-2">{t("policies.page.effective", { date: p.effective_date })}</p>
                             )}
                             {/* Sanitized server-side on write — safe as HTML.
                                 Legacy plain-text rows keep their line breaks. */}
@@ -547,38 +547,38 @@ function HRPoliciesView() {
                   {viewAckFor === p.id && (
                     <tr>
                       <td colSpan={6} className="p-0">
-                        <div className="mx-4 my-2 bg-gray-50 border border-gray-200 rounded-xl shadow-lg animate-in slide-in-from-top-2 duration-200">
-                          <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200">
+                        <div className="mx-4 my-2 bg-muted border border-border rounded-xl shadow-lg animate-in slide-in-from-top-2 duration-200">
+                          <div className="flex items-center justify-between px-5 py-3 border-b border-border">
                             <div className="flex items-center gap-2">
-                              <Users className="h-4 w-4 text-gray-600" />
-                              <h3 className="text-sm font-semibold text-gray-900">{t("policies.page.acksHeader", { title: policyTitle(p, untitled) })}</h3>
+                              <Users className="h-4 w-4 text-muted-foreground" />
+                              <h3 className="text-sm font-semibold text-foreground">{t("policies.page.acksHeader", { title: policyTitle(p, untitled) })}</h3>
                             </div>
                             <button
                               onClick={() => setViewAckFor(null)}
-                              className="text-gray-400 hover:text-gray-600 text-sm px-2 py-1 rounded hover:bg-gray-200"
+                              className="text-muted-foreground hover:text-muted-foreground text-sm px-2 py-1 rounded hover:bg-muted"
                             >
                               ✕
                             </button>
                           </div>
                           <div className="px-5 py-3 max-h-64 overflow-y-auto">
                             {ackQuery.isLoading ? (
-                              <p className="text-sm text-gray-400 py-2">{t("policies.page.loading")}</p>
+                              <p className="text-sm text-muted-foreground py-2">{t("policies.page.loading")}</p>
                             ) : (ackQuery.data || []).length === 0 ? (
-                              <p className="text-sm text-gray-400 py-2">{t("policies.page.noAcks")}</p>
+                              <p className="text-sm text-muted-foreground py-2">{t("policies.page.noAcks")}</p>
                             ) : (
                               <div className="space-y-1">
                                 {(ackQuery.data || []).map((a: any) => (
-                                  <div key={a.id} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+                                  <div key={a.id} className="flex items-center justify-between py-2 border-b border-border last:border-0">
                                     <div className="flex items-center gap-3">
-                                      <div className="h-7 w-7 rounded-full bg-brand-100 flex items-center justify-center text-xs font-semibold text-brand-700">
+                                      <div className="h-7 w-7 rounded-full bg-brand-100 dark:bg-brand-950/40 flex items-center justify-center text-xs font-semibold text-brand-700 dark:text-brand-300">
                                         {a.first_name?.[0]}{a.last_name?.[0]}
                                       </div>
                                       <div>
-                                        <p className="text-sm font-medium text-gray-900">{a.first_name} {a.last_name}</p>
-                                        <p className="text-xs text-gray-400">{a.email}</p>
+                                        <p className="text-sm font-medium text-foreground">{a.first_name} {a.last_name}</p>
+                                        <p className="text-xs text-muted-foreground">{a.email}</p>
                                       </div>
                                     </div>
-                                    <span className="text-xs text-gray-500">
+                                    <span className="text-xs text-muted-foreground">
                                       {new Date(a.acknowledged_at).toLocaleDateString()}
                                     </span>
                                   </div>
@@ -598,22 +598,22 @@ function HRPoliciesView() {
 
         {/* Pagination */}
         {meta && meta.total_pages > 1 && (
-          <div className="flex items-center justify-between px-6 py-3 border-t border-gray-200">
-            <p className="text-sm text-gray-500">
+          <div className="flex items-center justify-between px-6 py-3 border-t border-border">
+            <p className="text-sm text-muted-foreground">
               {t("policies.page.pageOf", { page: meta.page, total_pages: meta.total_pages, total: meta.total })}
             </p>
             <div className="flex gap-2">
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
+                className="bg-card text-foreground px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50"
               >
                 {t("policies.page.previous")}
               </button>
               <button
                 onClick={() => setPage((p) => p + 1)}
                 disabled={page >= meta.total_pages}
-                className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
+                className="bg-card text-foreground px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50"
               >
                 {t("policies.page.next")}
               </button>
@@ -632,26 +632,26 @@ function HRPoliciesView() {
             onClick={() => setConfirmDeleteId(null)}
           >
             <div
-              className="w-full max-w-md rounded-xl bg-white shadow-xl"
+              className="w-full max-w-md rounded-xl bg-card shadow-xl"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="px-6 py-4 border-b border-gray-100">
-                <h3 className="text-lg font-semibold text-gray-900">{t("policies.page.deleteTitle")}</h3>
+              <div className="px-6 py-4 border-b border-border">
+                <h3 className="text-lg font-semibold text-foreground">{t("policies.page.deleteTitle")}</h3>
               </div>
-              <div className="px-6 py-4 text-sm text-gray-600">
+              <div className="px-6 py-4 text-sm text-muted-foreground">
                 {target ? (
                   <>
-                    {t("policies.page.deleteConfirmPrefix")} <strong className="text-gray-900">{policyTitle(target, untitled)}</strong>{t("policies.page.deleteConfirmSuffix")}
+                    {t("policies.page.deleteConfirmPrefix")} <strong className="text-foreground">{policyTitle(target, untitled)}</strong>{t("policies.page.deleteConfirmSuffix")}
                   </>
                 ) : (
                   t("policies.page.deleteConfirmGeneric")
                 )}
               </div>
-              <div className="flex justify-end gap-2 px-6 py-3 bg-gray-50 rounded-b-xl border-t border-gray-100">
+              <div className="flex justify-end gap-2 px-6 py-3 bg-muted rounded-b-xl border-t border-border">
                 <button
                   type="button"
                   onClick={() => setConfirmDeleteId(null)}
-                  className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-white"
+                  className="px-3 py-1.5 text-sm border border-border rounded-lg hover:bg-card"
                 >
                   {t("policies.page.cancel")}
                 </button>

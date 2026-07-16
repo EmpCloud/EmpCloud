@@ -24,12 +24,12 @@ export function CompanyFeedWidget() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <MessageSquare className="h-5 w-5 text-brand-600" />
-          <h2 className="text-lg font-semibold text-gray-900">Company Feed</h2>
+          <MessageSquare className="h-5 w-5 text-brand-600 dark:text-brand-400" />
+          <h2 className="text-lg font-semibold text-foreground">Company Feed</h2>
         </div>
         <Link
           to="/feed"
-          className="inline-flex items-center gap-1 text-xs font-medium text-brand-600 hover:text-brand-700"
+          className="inline-flex items-center gap-1 text-xs font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700"
         >
           Open full feed <ArrowRight className="h-3 w-3" />
         </Link>
@@ -38,11 +38,11 @@ export function CompanyFeedWidget() {
       <PostComposer placeholder="Share something with the team..." />
 
       {isLoading ? (
-        <div className="rounded-xl border border-gray-200 bg-white p-6 text-center text-sm text-gray-400">
+        <div className="rounded-xl border border-border bg-card p-6 text-center text-sm text-muted-foreground">
           Loading feed...
         </div>
       ) : posts.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-gray-300 bg-white p-6 text-center text-sm text-gray-500">
+        <div className="rounded-xl border border-dashed border-border bg-card p-6 text-center text-sm text-muted-foreground">
           Nothing here yet — be the first to post.
         </div>
       ) : (
@@ -56,7 +56,7 @@ export function CompanyFeedWidget() {
       {hasMore && posts.length > 0 && (
         <Link
           to="/feed"
-          className="flex items-center justify-center gap-1 rounded-xl border border-gray-200 bg-white py-2.5 text-xs font-medium text-brand-600 hover:bg-brand-50"
+          className="flex items-center justify-center gap-1 rounded-xl border border-border bg-card py-2.5 text-xs font-medium text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-950/40"
         >
           View more posts in the full feed <ArrowRight className="h-3 w-3" />
         </Link>

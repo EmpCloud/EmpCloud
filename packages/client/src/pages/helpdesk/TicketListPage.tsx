@@ -10,19 +10,19 @@ import {
 } from "lucide-react";
 
 const PRIORITY_COLORS: Record<string, string> = {
-  low: "bg-gray-100 text-gray-600",
-  medium: "bg-blue-100 text-blue-700",
-  high: "bg-orange-100 text-orange-700",
-  urgent: "bg-red-100 text-red-700",
+  low: "bg-muted text-muted-foreground",
+  medium: "bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300",
+  high: "bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300",
+  urgent: "bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300",
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  open: "bg-blue-100 text-blue-700",
-  in_progress: "bg-yellow-100 text-yellow-700",
-  awaiting_response: "bg-purple-100 text-purple-700",
-  resolved: "bg-green-100 text-green-700",
-  closed: "bg-gray-100 text-gray-600",
-  reopened: "bg-red-100 text-red-700",
+  open: "bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300",
+  in_progress: "bg-yellow-100 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300",
+  awaiting_response: "bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300",
+  resolved: "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300",
+  closed: "bg-muted text-muted-foreground",
+  reopened: "bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300",
 };
 
 const CATEGORIES = [
@@ -105,32 +105,32 @@ export default function TicketListPage() {
   }
 
   const SLA_BADGE: Record<string, string> = {
-    breached: "bg-red-100 text-red-700",
-    "at-risk": "bg-orange-100 text-orange-700",
-    "on-track": "bg-green-100 text-green-700",
+    breached: "bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300",
+    "at-risk": "bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300",
+    "on-track": "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300",
   };
 
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t("helpdesk.list.title")}</h1>
-          <p className="text-gray-500 mt-1">{t("helpdesk.list.subtitle")}</p>
+          <h1 className="text-2xl font-bold text-foreground">{t("helpdesk.list.title")}</h1>
+          <p className="text-muted-foreground mt-1">{t("helpdesk.list.subtitle")}</p>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
+      <div className="bg-card rounded-xl border border-border p-4 mb-6">
         <div className="flex flex-wrap items-center gap-3">
           <form onSubmit={handleSearch} className="flex items-center gap-2 flex-1 min-w-[200px]">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <input
                 type="text"
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 placeholder={t("helpdesk.list.searchPlaceholder")}
-                className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm"
               />
             </div>
             <button
@@ -144,7 +144,7 @@ export default function TicketListPage() {
           <select
             value={status}
             onChange={(e) => { setStatus(e.target.value); setPage(1); }}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm"
           >
             <option value="">{t("helpdesk.list.allStatuses")}</option>
             {STATUSES.map((s) => (
@@ -157,7 +157,7 @@ export default function TicketListPage() {
           <select
             value={category}
             onChange={(e) => { setCategory(e.target.value); setPage(1); }}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm"
           >
             <option value="">{t("helpdesk.list.allCategories")}</option>
             {CATEGORIES.map((c) => (
@@ -170,7 +170,7 @@ export default function TicketListPage() {
           <select
             value={priority}
             onChange={(e) => { setPriority(e.target.value); setPage(1); }}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm"
           >
             <option value="">{t("helpdesk.list.allPriorities")}</option>
             {PRIORITIES.map((p) => (
@@ -182,12 +182,12 @@ export default function TicketListPage() {
         </div>
         {resolvedDate && (
           <div className="mt-3 flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-medium">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300 text-xs font-medium">
               {resolvedDate === "today" ? t("helpdesk.list.resolvedToday") : t("helpdesk.list.resolvedOn", { date: resolvedDate })}
               <button
                 type="button"
                 onClick={() => { setResolvedDate(""); setPage(1); }}
-                className="hover:text-green-900"
+                className="hover:text-green-900 dark:hover:text-green-100"
                 aria-label={t("helpdesk.list.clearResolvedFilter")}
               >
                 ×
@@ -198,25 +198,25 @@ export default function TicketListPage() {
       </div>
 
       {/* Tickets Table */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div className="bg-card rounded-xl border border-border overflow-hidden">
         {isLoading ? (
-          <div className="p-8 text-center text-gray-400">{t("helpdesk.list.loading")}</div>
+          <div className="p-8 text-center text-muted-foreground">{t("helpdesk.list.loading")}</div>
         ) : tickets.length === 0 ? (
-          <div className="p-8 text-center text-gray-400">{t("helpdesk.list.empty")}</div>
+          <div className="p-8 text-center text-muted-foreground">{t("helpdesk.list.empty")}</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-200 bg-gray-50">
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">{t("helpdesk.list.colId")}</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">{t("helpdesk.list.colSubject")}</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">{t("helpdesk.list.colCategory")}</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">{t("helpdesk.list.colPriority")}</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">{t("helpdesk.list.colStatus")}</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">{t("helpdesk.list.colRaisedBy")}</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">{t("helpdesk.list.colAssignedTo")}</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">{t("helpdesk.list.colSla")}</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">{t("helpdesk.list.colCreated")}</th>
+                <tr className="border-b border-border bg-muted">
+                  <th className="text-left px-4 py-3 font-medium text-muted-foreground">{t("helpdesk.list.colId")}</th>
+                  <th className="text-left px-4 py-3 font-medium text-muted-foreground">{t("helpdesk.list.colSubject")}</th>
+                  <th className="text-left px-4 py-3 font-medium text-muted-foreground">{t("helpdesk.list.colCategory")}</th>
+                  <th className="text-left px-4 py-3 font-medium text-muted-foreground">{t("helpdesk.list.colPriority")}</th>
+                  <th className="text-left px-4 py-3 font-medium text-muted-foreground">{t("helpdesk.list.colStatus")}</th>
+                  <th className="text-left px-4 py-3 font-medium text-muted-foreground">{t("helpdesk.list.colRaisedBy")}</th>
+                  <th className="text-left px-4 py-3 font-medium text-muted-foreground">{t("helpdesk.list.colAssignedTo")}</th>
+                  <th className="text-left px-4 py-3 font-medium text-muted-foreground">{t("helpdesk.list.colSla")}</th>
+                  <th className="text-left px-4 py-3 font-medium text-muted-foreground">{t("helpdesk.list.colCreated")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -225,12 +225,12 @@ export default function TicketListPage() {
                   return (
                     <tr
                       key={ticket.id}
-                      className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+                      className="border-b border-border hover:bg-muted transition-colors"
                     >
                       <td className="px-4 py-3">
                         <Link
                           to={`/helpdesk/tickets/${ticket.id}`}
-                          className="text-brand-600 font-medium hover:underline"
+                          className="text-brand-600 dark:text-brand-400 font-medium hover:underline"
                         >
                           #{ticket.id}
                         </Link>
@@ -238,13 +238,13 @@ export default function TicketListPage() {
                       <td className="px-4 py-3">
                         <Link
                           to={`/helpdesk/tickets/${ticket.id}`}
-                          className="text-gray-900 hover:text-brand-600 font-medium truncate block max-w-[250px]"
+                          className="text-foreground hover:text-brand-600 font-medium truncate block max-w-[250px]"
                         >
                           {ticket.subject}
                         </Link>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-gray-600">{t(`helpdesk.list.category.${ticket.category}`, { defaultValue: ticket.category })}</span>
+                        <span className="text-muted-foreground">{t(`helpdesk.list.category.${ticket.category}`, { defaultValue: ticket.category })}</span>
                       </td>
                       <td className="px-4 py-3">
                         <span
@@ -264,12 +264,12 @@ export default function TicketListPage() {
                           {t(`helpdesk.list.status.${ticket.status}`, { defaultValue: ticket.status.replace(/_/g, " ") })}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-gray-600">
+                      <td className="px-4 py-3 text-muted-foreground">
                         {ticket.raised_by_name || "-"}
                       </td>
-                      <td className="px-4 py-3 text-gray-600">
+                      <td className="px-4 py-3 text-muted-foreground">
                         {ticket.assigned_to_name || (
-                          <span className="text-gray-400 italic">{t("helpdesk.list.unassigned")}</span>
+                          <span className="text-muted-foreground italic">{t("helpdesk.list.unassigned")}</span>
                         )}
                       </td>
                       <td className="px-4 py-3">
@@ -282,10 +282,10 @@ export default function TicketListPage() {
                             {t(`helpdesk.list.sla.${sla}`, { defaultValue: sla.replace("-", " ") })}
                           </span>
                         ) : (
-                          <span className="text-xs text-gray-400">-</span>
+                          <span className="text-xs text-muted-foreground">-</span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-gray-500 text-xs">
+                      <td className="px-4 py-3 text-muted-foreground text-xs">
                         {new Date(ticket.created_at).toLocaleDateString()}
                       </td>
                     </tr>
@@ -300,21 +300,21 @@ export default function TicketListPage() {
       {/* Pagination */}
       {meta && meta.total_pages > 1 && (
         <div className="flex items-center justify-between mt-6">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             {t("helpdesk.list.pageOf", { page: meta.page, total_pages: meta.total_pages, total: meta.total })}
           </p>
           <div className="flex gap-2">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="flex items-center gap-1 px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50 hover:bg-gray-50"
+              className="flex items-center gap-1 px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50 hover:bg-muted"
             >
               <ChevronLeft className="h-4 w-4" /> {t("helpdesk.list.previous")}
             </button>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={page >= meta.total_pages}
-              className="flex items-center gap-1 px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50 hover:bg-gray-50"
+              className="flex items-center gap-1 px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50 hover:bg-muted"
             >
               {t("helpdesk.list.next")} <ChevronRight className="h-4 w-4" />
             </button>

@@ -217,30 +217,30 @@ export default function DocumentsPage() {
     if (!expiresAt) return "";
     const now = new Date();
     const expiry = new Date(expiresAt);
-    if (expiry < now) return "text-red-600 font-medium";
+    if (expiry < now) return "text-red-600 dark:text-red-400 font-medium";
     const daysUntil = (expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
-    if (daysUntil <= 30) return "text-orange-600 font-medium";
-    return "text-gray-500";
+    if (daysUntil <= 30) return "text-orange-600 dark:text-orange-400 font-medium";
+    return "text-muted-foreground";
   };
 
   const getStatusBadge = (doc: any) => {
     const status = doc.verification_status || (doc.is_verified ? "verified" : "pending");
     if (status === "verified" || doc.is_verified) {
       return (
-        <span className="flex items-center gap-1 text-xs text-green-700 bg-green-50 px-2 py-1 rounded-full w-fit">
+        <span className="flex items-center gap-1 text-xs text-green-700 dark:text-green-300 bg-green-50 dark:bg-green-950/40 px-2 py-1 rounded-full w-fit">
           <CheckCircle className="h-3 w-3" /> {t("documents.page.verified")}
         </span>
       );
     }
     if (status === "rejected") {
       return (
-        <span className="flex items-center gap-1 text-xs text-red-700 bg-red-50 px-2 py-1 rounded-full w-fit">
+        <span className="flex items-center gap-1 text-xs text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/40 px-2 py-1 rounded-full w-fit">
           <XCircle className="h-3 w-3" /> {t("documents.page.rejected")}
         </span>
       );
     }
     return (
-      <span className="flex items-center gap-1 text-xs text-amber-700 bg-amber-50 px-2 py-1 rounded-full w-fit">
+      <span className="flex items-center gap-1 text-xs text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 px-2 py-1 rounded-full w-fit">
         <Clock className="h-3 w-3" /> {t("documents.page.pending")}
       </span>
     );
@@ -250,8 +250,8 @@ export default function DocumentsPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t("documents.page.title")}</h1>
-          <p className="text-gray-500 mt-1">{t("documents.page.subtitle")}</p>
+          <h1 className="text-2xl font-bold text-foreground">{t("documents.page.title")}</h1>
+          <p className="text-muted-foreground mt-1">{t("documents.page.subtitle")}</p>
         </div>
         <button
           onClick={() => {
@@ -277,19 +277,19 @@ export default function DocumentsPage() {
           Shown only when there are outstanding mandatory-doc requirements and the user is not
           already looking at the mandatory tab (so it acts as a CTA, not a redundant header). */}
       {missingCount > 0 && activeTab !== "mandatory" && (
-        <div className="mb-6 bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
-          <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5 shrink-0" />
+        <div className="mb-6 bg-red-50 dark:bg-red-950/40 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+          <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5 shrink-0" />
           <div className="flex-1">
             <p className="text-sm font-medium text-red-800">
               {t("documents.page.mandatoryOutstanding", { count: missingCount })}
             </p>
-            <p className="text-xs text-red-700 mt-0.5">
+            <p className="text-xs text-red-700 dark:text-red-300 mt-0.5">
               {t("documents.page.mandatoryOutstandingHint")}
             </p>
           </div>
           <button
             onClick={() => setActiveTab("mandatory")}
-            className="text-xs font-medium text-red-700 hover:text-red-900 underline shrink-0"
+            className="text-xs font-medium text-red-700 dark:text-red-300 hover:text-red-900 underline shrink-0"
           >
             {t("documents.page.reviewNow")}
           </button>
@@ -298,36 +298,36 @@ export default function DocumentsPage() {
 
       {/* Alert Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <button onClick={() => setActiveTab("all")} className={`bg-white rounded-xl border p-5 text-left transition ${activeTab === "all" ? "border-brand-300 ring-1 ring-brand-200" : "border-gray-200"}`}>
+        <button onClick={() => setActiveTab("all")} className={`bg-card rounded-xl border p-5 text-left transition ${activeTab === "all" ? "border-brand-300 ring-1 ring-brand-200" : "border-border"}`}>
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center">
-              <FileText className="h-5 w-5 text-blue-600" />
+            <div className="h-10 w-10 rounded-lg bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center">
+              <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{meta?.total ?? 0}</p>
-              <p className="text-sm text-gray-500">{t("documents.page.totalDocuments")}</p>
+              <p className="text-2xl font-bold text-foreground">{meta?.total ?? 0}</p>
+              <p className="text-sm text-muted-foreground">{t("documents.page.totalDocuments")}</p>
             </div>
           </div>
         </button>
-        <button onClick={() => setActiveTab("expiring")} className={`bg-white rounded-xl border p-5 text-left transition ${activeTab === "expiring" ? "border-orange-300 ring-1 ring-orange-200" : "border-orange-200"}`}>
+        <button onClick={() => setActiveTab("expiring")} className={`bg-card rounded-xl border p-5 text-left transition ${activeTab === "expiring" ? "border-orange-300 ring-1 ring-orange-200" : "border-orange-200"}`}>
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-orange-50 flex items-center justify-center">
-              <Clock className="h-5 w-5 text-orange-600" />
+            <div className="h-10 w-10 rounded-lg bg-orange-50 dark:bg-orange-950/40 flex items-center justify-center">
+              <Clock className="h-5 w-5 text-orange-600 dark:text-orange-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-orange-600">{expiringCount}</p>
-              <p className="text-sm text-gray-500">{t("documents.page.expiring30")}</p>
+              <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">{expiringCount}</p>
+              <p className="text-sm text-muted-foreground">{t("documents.page.expiring30")}</p>
             </div>
           </div>
         </button>
-        <button onClick={() => setActiveTab("mandatory")} className={`bg-white rounded-xl border p-5 text-left transition ${activeTab === "mandatory" ? "border-red-300 ring-1 ring-red-200" : "border-red-200"}`}>
+        <button onClick={() => setActiveTab("mandatory")} className={`bg-card rounded-xl border p-5 text-left transition ${activeTab === "mandatory" ? "border-red-300 ring-1 ring-red-200" : "border-red-200"}`}>
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-red-50 flex items-center justify-center">
-              <AlertTriangle className="h-5 w-5 text-red-600" />
+            <div className="h-10 w-10 rounded-lg bg-red-50 dark:bg-red-950/40 flex items-center justify-center">
+              <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-red-600">{missingCount}</p>
-              <p className="text-sm text-gray-500">{t("documents.page.missingMandatory")}</p>
+              <p className="text-2xl font-bold text-red-600 dark:text-red-400">{missingCount}</p>
+              <p className="text-sm text-muted-foreground">{t("documents.page.missingMandatory")}</p>
             </div>
           </div>
         </button>
@@ -336,26 +336,26 @@ export default function DocumentsPage() {
       {/* Reject Modal */}
       {rejectingId !== null && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6 mx-4">
+          <div className="bg-card rounded-xl shadow-xl w-full max-w-md p-6 mx-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">{t("documents.page.rejectTitle")}</h3>
-              <button onClick={() => { setRejectingId(null); setRejectReason(""); }} className="text-gray-400 hover:text-gray-600">
+              <h3 className="text-lg font-semibold text-foreground">{t("documents.page.rejectTitle")}</h3>
+              <button onClick={() => { setRejectingId(null); setRejectReason(""); }} className="text-muted-foreground hover:text-muted-foreground">
                 <X className="h-5 w-5" />
               </button>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("documents.page.rejectionReason")} *</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("documents.page.rejectionReason")} *</label>
               <textarea
                 value={rejectReason}
                 onChange={(e) => setRejectReason(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                 rows={3}
                 placeholder={t("documents.page.rejectionPlaceholder")}
                 required
               />
             </div>
             <div className="mt-4 flex justify-end gap-2">
-              <button onClick={() => { setRejectingId(null); setRejectReason(""); }} className="px-4 py-2 text-sm border border-gray-300 rounded-lg">
+              <button onClick={() => { setRejectingId(null); setRejectReason(""); }} className="bg-card text-foreground px-4 py-2 text-sm border border-border rounded-lg">
                 {t("documents.page.cancel")}
               </button>
               <button
@@ -372,40 +372,40 @@ export default function DocumentsPage() {
 
       {/* Upload Form */}
       {showUpload && (
-        <form onSubmit={handleUpload} className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+        <form onSubmit={handleUpload} className="bg-card rounded-xl border border-border p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-gray-900">{t("documents.page.uploadDocument")}</h3>
-            <button type="button" onClick={() => setShowUpload(false)} className="text-gray-400 hover:text-gray-600">
+            <h3 className="text-sm font-semibold text-foreground">{t("documents.page.uploadDocument")}</h3>
+            <button type="button" onClick={() => setShowUpload(false)} className="text-muted-foreground hover:text-muted-foreground">
               <X className="h-4 w-4" />
             </button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("documents.page.fieldFile")} *</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("documents.page.fieldFile")} *</label>
               <input
                 type="file"
                 accept=".pdf,.jpg,.jpeg,.png,.docx"
                 onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
-                className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100"
+                className="w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("documents.page.fieldDocName")}</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("documents.page.fieldDocName")}</label>
               <input
                 type="text"
                 value={uploadName}
                 onChange={(e) => setUploadName(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                 placeholder={t("documents.page.docNamePlaceholder")}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("documents.page.fieldCategory")} *</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("documents.page.fieldCategory")} *</label>
               <select
                 value={uploadCategory}
                 onChange={(e) => setUploadCategory(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                 required
               >
                 <option value="">{t("documents.page.selectCategory")}</option>
@@ -415,17 +415,17 @@ export default function DocumentsPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("documents.page.fieldEmployee")}</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("documents.page.fieldEmployee")}</label>
               <div className="relative">
                 <input
                   type="text"
                   value={employeeSearch}
                   onChange={(e) => { setEmployeeSearch(e.target.value); if (!e.target.value) setUploadUserId(""); }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                   placeholder={t("documents.page.employeePlaceholder")}
                 />
                 {employeeSearch && employeeList && employeeList.length > 0 && !uploadUserId && (
-                  <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                  <div className="absolute z-10 mt-1 w-full bg-card border border-border rounded-lg shadow-lg max-h-48 overflow-y-auto">
                     {employeeList.map((u: any) => (
                       <button
                         key={u.id}
@@ -434,10 +434,10 @@ export default function DocumentsPage() {
                           setUploadUserId(String(u.id));
                           setEmployeeSearch(`${u.first_name} ${u.last_name} (${u.email})`);
                         }}
-                        className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 border-b border-gray-100 last:border-0"
+                        className="w-full text-left px-3 py-2 text-sm hover:bg-muted border-b border-border last:border-0"
                       >
-                        <span className="font-medium text-gray-900">{u.first_name} {u.last_name}</span>
-                        <span className="text-gray-500 ml-2">{u.email}</span>
+                        <span className="font-medium text-foreground">{u.first_name} {u.last_name}</span>
+                        <span className="text-muted-foreground ml-2">{u.email}</span>
                       </button>
                     ))}
                   </div>
@@ -446,7 +446,7 @@ export default function DocumentsPage() {
                   <button
                     type="button"
                     onClick={() => { setUploadUserId(""); setEmployeeSearch(""); }}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -454,17 +454,17 @@ export default function DocumentsPage() {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("documents.page.fieldExpiry")}</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("documents.page.fieldExpiry")}</label>
               <input
                 type="date"
                 value={uploadExpiry}
                 onChange={(e) => setUploadExpiry(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
               />
             </div>
           </div>
           {uploadDoc.isError && (
-            <div className="mt-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3">
+            <div className="mt-4 bg-red-50 dark:bg-red-950/40 border border-red-200 text-red-700 dark:text-red-300 text-sm rounded-lg px-4 py-3">
               {(uploadDoc.error as any)?.response?.data?.error?.message || t("documents.page.uploadFailed")}
             </div>
           )}
@@ -483,26 +483,26 @@ export default function DocumentsPage() {
       {/* Tab: Expiring Documents */}
       {activeTab === "expiring" && (
         <div className="mb-6">
-          <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+          <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
             <AlertTriangle className="h-4 w-4 text-orange-500" /> {t("documents.page.expiringHeading")}
           </h3>
           {expiringCount === 0 ? (
-            <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
+            <div className="bg-card rounded-xl border border-border p-8 text-center text-muted-foreground">
               {t("documents.page.noExpiring")}
             </div>
           ) : (
-            <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto">
+            <div className="bg-card rounded-xl border border-border overflow-x-auto">
               <table className="min-w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
+                <thead className="bg-muted border-b border-border">
                   <tr>
-                    <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("documents.page.colDocument")}</th>
-                    <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("documents.page.colEmployee")}</th>
-                    <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("documents.page.colCategory")}</th>
-                    <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("documents.page.colExpires")}</th>
-                    <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("documents.page.colStatus")}</th>
+                    <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("documents.page.colDocument")}</th>
+                    <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("documents.page.colEmployee")}</th>
+                    <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("documents.page.colCategory")}</th>
+                    <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("documents.page.colExpires")}</th>
+                    <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("documents.page.colStatus")}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-border">
                   {(expiryAlerts || []).map((doc: any) => {
                     const isExpired = new Date(doc.expires_at) < new Date();
                     return (
@@ -510,26 +510,26 @@ export default function DocumentsPage() {
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
                             <FileText className={`h-5 w-5 ${isExpired ? "text-red-400" : "text-orange-400"}`} />
-                            <span className="text-sm font-medium text-gray-900">{doc.name}</span>
+                            <span className="text-sm font-medium text-foreground">{doc.name}</span>
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-600">
+                        <td className="px-6 py-4 text-sm text-muted-foreground">
                           {doc.user_first_name} {doc.user_last_name}
-                          {doc.user_emp_code && <span className="text-gray-400 ml-1">({doc.user_emp_code})</span>}
+                          {doc.user_emp_code && <span className="text-muted-foreground ml-1">({doc.user_emp_code})</span>}
                         </td>
                         <td className="px-6 py-4">
-                          <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">{doc.category_name}</span>
+                          <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-full">{doc.category_name}</span>
                         </td>
                         <td className="px-6 py-4">
-                          <span className={`text-sm font-medium ${isExpired ? "text-red-600" : "text-orange-600"}`}>
+                          <span className={`text-sm font-medium ${isExpired ? "text-red-600 dark:text-red-400" : "text-orange-600 dark:text-orange-400"}`}>
                             {isExpired ? t("documents.page.expiredPrefix") + " " : ""}{new Date(doc.expires_at).toLocaleDateString()}
                           </span>
                         </td>
                         <td className="px-6 py-4">
                           {doc.is_verified ? (
-                            <span className="text-xs text-green-700 bg-green-50 px-2 py-1 rounded-full">{t("documents.page.verified")}</span>
+                            <span className="text-xs text-green-700 dark:text-green-300 bg-green-50 dark:bg-green-950/40 px-2 py-1 rounded-full">{t("documents.page.verified")}</span>
                           ) : (
-                            <span className="text-xs text-amber-700 bg-amber-50 px-2 py-1 rounded-full">{t("documents.page.pending")}</span>
+                            <span className="text-xs text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 px-2 py-1 rounded-full">{t("documents.page.pending")}</span>
                           )}
                         </td>
                       </tr>
@@ -545,30 +545,30 @@ export default function DocumentsPage() {
       {/* Tab: Missing Mandatory */}
       {activeTab === "mandatory" && (
         <div className="mb-6">
-          <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+          <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
             <Users className="h-4 w-4 text-red-500" /> {t("documents.page.missingHeading")}
           </h3>
           {missingCount === 0 ? (
-            <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
+            <div className="bg-card rounded-xl border border-border p-8 text-center text-muted-foreground">
               {t("documents.page.allSubmitted")}
             </div>
           ) : (
-            <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto">
+            <div className="bg-card rounded-xl border border-border overflow-x-auto">
               <table className="min-w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
+                <thead className="bg-muted border-b border-border">
                   <tr>
-                    <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("documents.page.colEmployee")}</th>
-                    <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("documents.page.colEmployeeCode")}</th>
-                    <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("documents.page.colMissingDocument")}</th>
+                    <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("documents.page.colEmployee")}</th>
+                    <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("documents.page.colEmployeeCode")}</th>
+                    <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("documents.page.colMissingDocument")}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-border">
                   {(mandatoryData?.missing || []).map((item: any, i: number) => (
-                    <tr key={i} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.user_name}</td>
-                      <td className="px-6 py-4 text-sm text-gray-500">{item.emp_code || "--"}</td>
+                    <tr key={i} className="hover:bg-muted">
+                      <td className="px-6 py-4 text-sm font-medium text-foreground">{item.user_name}</td>
+                      <td className="px-6 py-4 text-sm text-muted-foreground">{item.emp_code || "--"}</td>
                       <td className="px-6 py-4">
-                        <span className="text-xs bg-red-50 text-red-700 px-2 py-1 rounded-full font-medium">{item.category_name}</span>
+                        <span className="text-xs bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 px-2 py-1 rounded-full font-medium">{item.category_name}</span>
                       </td>
                     </tr>
                   ))}
@@ -585,19 +585,19 @@ export default function DocumentsPage() {
           {/* Filters */}
           <div className="flex gap-4 mb-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <input
                 type="text"
                 value={searchText}
                 onChange={(e) => { setSearchText(e.target.value); setPage(1); }}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full pl-10 pr-4 py-2 border border-border rounded-lg text-sm"
                 placeholder={t("documents.page.searchPlaceholder")}
               />
             </div>
             <select
               value={filterCategory}
               onChange={(e) => { setFilterCategory(e.target.value); setPage(1); }}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm"
             >
               <option value="">{t("documents.page.allCategories")}</option>
               {(categories || []).map((c: any) => (
@@ -607,41 +607,41 @@ export default function DocumentsPage() {
           </div>
 
           {/* Documents Table */}
-          <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto -mx-4 lg:mx-0">
+          <div className="bg-card rounded-xl border border-border overflow-x-auto -mx-4 lg:mx-0">
             <table className="min-w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-muted border-b border-border">
                 <tr>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("documents.page.colDocument")}</th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("documents.page.colEmployee")}</th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("documents.page.colCategory")}</th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("documents.page.colExpiry")}</th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("documents.page.colStatus")}</th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("documents.page.colActions")}</th>
+                  <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("documents.page.colDocument")}</th>
+                  <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("documents.page.colEmployee")}</th>
+                  <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("documents.page.colCategory")}</th>
+                  <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("documents.page.colExpiry")}</th>
+                  <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("documents.page.colStatus")}</th>
+                  <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("documents.page.colActions")}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-border">
                 {isLoading ? (
-                  <tr><td colSpan={6} className="px-6 py-8 text-center text-gray-400">{t("documents.page.loading")}</td></tr>
+                  <tr><td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">{t("documents.page.loading")}</td></tr>
                 ) : docs.length === 0 ? (
-                  <tr><td colSpan={6} className="px-6 py-8 text-center text-gray-400">{t("documents.page.noDocuments")}</td></tr>
+                  <tr><td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">{t("documents.page.noDocuments")}</td></tr>
                 ) : (
                   docs.map((doc: any) => (
-                    <tr key={doc.id} className="hover:bg-gray-50">
+                    <tr key={doc.id} className="hover:bg-muted">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <FileText className="h-5 w-5 text-gray-400" />
+                          <FileText className="h-5 w-5 text-muted-foreground" />
                           <div>
-                            <p className="text-sm font-medium text-gray-900">{doc.name}</p>
-                            <p className="text-xs text-gray-400">{doc.mime_type} &middot; {doc.file_size ? `${(doc.file_size / 1024).toFixed(0)} KB` : ""}</p>
+                            <p className="text-sm font-medium text-foreground">{doc.name}</p>
+                            <p className="text-xs text-muted-foreground">{doc.mime_type} &middot; {doc.file_size ? `${(doc.file_size / 1024).toFixed(0)} KB` : ""}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
+                      <td className="px-6 py-4 text-sm text-muted-foreground">
                         {doc.user_first_name} {doc.user_last_name}
-                        {doc.user_emp_code && <span className="text-gray-400 ml-1">({doc.user_emp_code})</span>}
+                        {doc.user_emp_code && <span className="text-muted-foreground ml-1">({doc.user_emp_code})</span>}
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">{doc.category_name}</span>
+                        <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-full">{doc.category_name}</span>
                       </td>
                       <td className="px-6 py-4">
                         <span className={`text-sm ${getExpiryClass(doc.expires_at)}`}>
@@ -660,7 +660,7 @@ export default function DocumentsPage() {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => handleDownload(doc.id, doc.name)}
-                            className="text-xs text-brand-600 hover:text-brand-800 font-medium"
+                            className="text-xs text-brand-600 dark:text-brand-400 hover:text-brand-800 font-medium"
                           >
                             {t("documents.page.download")}
                           </button>
@@ -668,13 +668,13 @@ export default function DocumentsPage() {
                             <>
                               <button
                                 onClick={() => verifyDoc.mutate({ id: doc.id, is_verified: true })}
-                                className="text-xs text-green-600 hover:text-green-800 font-medium"
+                                className="text-xs text-green-600 dark:text-green-400 hover:text-green-800 font-medium"
                               >
                                 {t("documents.page.verify")}
                               </button>
                               <button
                                 onClick={() => setRejectingId(doc.id)}
-                                className="text-xs text-red-600 hover:text-red-800 font-medium"
+                                className="text-xs text-red-600 dark:text-red-400 hover:text-red-800 font-medium"
                               >
                                 {t("documents.page.reject")}
                               </button>
@@ -683,7 +683,7 @@ export default function DocumentsPage() {
                           {isHR && doc.verification_status === "rejected" && (
                             <button
                               onClick={() => verifyDoc.mutate({ id: doc.id, is_verified: true })}
-                              className="text-xs text-green-600 hover:text-green-800 font-medium"
+                              className="text-xs text-green-600 dark:text-green-400 hover:text-green-800 font-medium"
                             >
                               {t("documents.page.verify")}
                             </button>
@@ -691,7 +691,7 @@ export default function DocumentsPage() {
                           {isHR && (
                             <button
                               onClick={() => setDeleteDocId(doc.id)}
-                              className="text-xs text-red-600 hover:text-red-800 font-medium"
+                              className="text-xs text-red-600 dark:text-red-400 hover:text-red-800 font-medium"
                             >
                               {t("documents.page.delete")}
                             </button>
@@ -706,22 +706,22 @@ export default function DocumentsPage() {
 
             {/* Pagination */}
             {meta && meta.total_pages > 1 && (
-              <div className="flex items-center justify-between px-6 py-3 border-t border-gray-200">
-                <p className="text-sm text-gray-500">
+              <div className="flex items-center justify-between px-6 py-3 border-t border-border">
+                <p className="text-sm text-muted-foreground">
                   {t("documents.page.pageOf", { page: meta.page, total_pages: meta.total_pages, total: meta.total })}
                 </p>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page === 1}
-                    className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
+                    className="bg-card text-foreground px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50"
                   >
                     {t("documents.page.previous")}
                   </button>
                   <button
                     onClick={() => setPage((p) => p + 1)}
                     disabled={page >= meta.total_pages}
-                    className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
+                    className="bg-card text-foreground px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50"
                   >
                     {t("documents.page.next")}
                   </button>

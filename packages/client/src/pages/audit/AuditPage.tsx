@@ -88,19 +88,19 @@ function ActionTypeSelect({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-500"
+        className="flex w-full items-center justify-between gap-2 rounded-lg border border-border bg-card px-3 py-2 text-left text-sm text-muted-foreground hover:bg-muted focus:outline-none focus:ring-2 focus:ring-brand-500"
         aria-haspopup="listbox"
         aria-expanded={open}
       >
         <span className="truncate">{selected?.label}</span>
-        <ChevronDown className={`h-4 w-4 shrink-0 text-gray-400 transition-transform ${open ? "rotate-180" : ""}`} />
+        <ChevronDown className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
 
       {open && (
-        <div className="absolute z-30 mt-1 w-full rounded-lg border border-gray-200 bg-white shadow-lg">
-          <div className="border-b border-gray-100 p-2">
+        <div className="absolute z-30 mt-1 w-full rounded-lg border border-border bg-card shadow-lg">
+          <div className="border-b border-border p-2">
             <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
                 ref={inputRef}
                 type="text"
@@ -108,13 +108,13 @@ function ActionTypeSelect({
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={onInputKeyDown}
                 placeholder={searchPlaceholder}
-                className="w-full rounded-md border border-gray-300 py-1.5 pl-8 pr-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full rounded-md border border-border py-1.5 pl-8 pr-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-card text-foreground"
               />
             </div>
           </div>
           <ul role="listbox" className="max-h-60 overflow-y-auto py-1">
             {filtered.length === 0 ? (
-              <li className="px-3 py-2 text-sm text-gray-400">{noMatchLabel}</li>
+              <li className="px-3 py-2 text-sm text-muted-foreground">{noMatchLabel}</li>
             ) : (
               filtered.map((o, i) => {
                 const isSelected = o.value === value;
@@ -129,8 +129,8 @@ function ActionTypeSelect({
                       onClick={() => choose(o.value)}
                       onMouseEnter={() => setActiveIndex(i)}
                       className={`flex w-full items-center px-3 py-1.5 text-left text-sm ${
-                        isSelected ? "font-medium text-brand-700" : "text-gray-700"
-                      } ${isActive ? "bg-gray-100" : ""}`}
+                        isSelected ? "font-medium text-brand-700 dark:text-brand-300" : "text-muted-foreground"
+                      } ${isActive ? "bg-muted" : ""}`}
                     >
                       {o.label}
                     </button>
@@ -161,14 +161,14 @@ const AUDIT_ACTION_VALUES = [
 
 // Color-code action categories
 function getActionStyle(action: string): string {
-  if (action.startsWith("login") || action === "logout" || action === "register") return "bg-blue-50 text-blue-700";
-  if (action.startsWith("user_") || action === "password_change" || action === "password_reset") return "bg-purple-50 text-purple-700";
-  if (action.startsWith("leave_")) return "bg-amber-50 text-amber-700";
-  if (action.startsWith("attendance_")) return "bg-green-50 text-green-700";
-  if (action.startsWith("subscription_") || action.startsWith("seat_")) return "bg-indigo-50 text-indigo-700";
-  if (action.startsWith("oauth_") || action.startsWith("token_")) return "bg-gray-100 text-gray-600";
-  if (action.startsWith("document_") || action.startsWith("policy_") || action.startsWith("announcement_")) return "bg-teal-50 text-teal-700";
-  return "bg-gray-100 text-gray-700";
+  if (action.startsWith("login") || action === "logout" || action === "register") return "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300";
+  if (action.startsWith("user_") || action === "password_change" || action === "password_reset") return "bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300";
+  if (action.startsWith("leave_")) return "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300";
+  if (action.startsWith("attendance_")) return "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300";
+  if (action.startsWith("subscription_") || action.startsWith("seat_")) return "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300";
+  if (action.startsWith("oauth_") || action.startsWith("token_")) return "bg-muted text-muted-foreground";
+  if (action.startsWith("document_") || action.startsWith("policy_") || action.startsWith("announcement_")) return "bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300";
+  return "bg-muted text-muted-foreground";
 }
 
 export default function AuditPage() {
@@ -214,19 +214,19 @@ export default function AuditPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">{tx("title")}</h1>
-        <p className="text-gray-500 mt-1">{tx("subtitle")}</p>
+        <h1 className="text-2xl font-bold text-foreground">{tx("title")}</h1>
+        <p className="text-muted-foreground mt-1">{tx("subtitle")}</p>
       </div>
 
       {/* Filter Controls */}
-      <div className="bg-white rounded-xl border border-gray-200 p-4 mb-4">
+      <div className="bg-card rounded-xl border border-border p-4 mb-4">
         <div className="flex items-center gap-2 mb-3">
-          <Filter className="h-4 w-4 text-gray-400" />
-          <span className="text-sm font-medium text-gray-700">{tx("filters")}</span>
+          <Filter className="h-4 w-4 text-muted-foreground" />
+          <span className="text-sm font-medium text-muted-foreground">{tx("filters")}</span>
           {hasFilters && (
             <button
               onClick={clearFilters}
-              className="ml-auto flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700"
+              className="ml-auto flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
             >
               <RotateCcw className="h-3 w-3" /> {tx("clearAll")}
             </button>
@@ -235,7 +235,7 @@ export default function AuditPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {/* Action Type Filter — searchable single-select */}
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">{tx("actionType")}</label>
+            <label className="block text-xs font-medium text-muted-foreground mb-1">{tx("actionType")}</label>
             <ActionTypeSelect
               value={action}
               options={AUDIT_ACTION_VALUES.map((value) => ({ value, label: actionLabel(value) }))}
@@ -249,7 +249,7 @@ export default function AuditPage() {
               Replaces the old separate From/To native date inputs; Apply drives
               start_date / end_date so the query contract is unchanged. */}
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">
+            <label className="block text-xs font-medium text-muted-foreground mb-1">
               <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {t("attendance.dateFrom")} &mdash; {t("attendance.dateTo")}</span>
             </label>
             <DateRangePicker
@@ -268,47 +268,47 @@ export default function AuditPage() {
 
       {/* Results Summary */}
       {hasFilters && meta && (
-        <div className="text-sm text-gray-500 mb-3">
+        <div className="text-sm text-muted-foreground mb-3">
           {tx("showingResults", { count: logs.length, total: meta.total })}
-          {action && <span className="ml-1">{tx("showingFor")} <span className="font-medium text-gray-700">{actionLabel(action)}</span></span>}
-          {startDate && <span className="ml-1">{tx("showingFrom")} <span className="font-medium text-gray-700">{startDate}</span></span>}
-          {endDate && <span className="ml-1">{tx("showingTo")} <span className="font-medium text-gray-700">{endDate}</span></span>}
+          {action && <span className="ml-1">{tx("showingFor")} <span className="font-medium text-muted-foreground">{actionLabel(action)}</span></span>}
+          {startDate && <span className="ml-1">{tx("showingFrom")} <span className="font-medium text-muted-foreground">{startDate}</span></span>}
+          {endDate && <span className="ml-1">{tx("showingTo")} <span className="font-medium text-muted-foreground">{endDate}</span></span>}
         </div>
       )}
 
-      <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto -mx-4 lg:mx-0">
+      <div className="bg-card rounded-xl border border-border overflow-x-auto -mx-4 lg:mx-0">
         <table className="min-w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
+          <thead className="bg-muted border-b border-border">
             <tr>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colTime")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colAction")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colUser")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colResource")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colIp")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("colTime")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("colAction")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("colUser")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("colResource")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("colIp")}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border">
             {isLoading ? (
               <>
                 {[1, 2, 3, 4, 5].map((i) => (
                   <tr key={i} className="animate-pulse">
-                    <td className="px-6 py-4"><div className="h-4 w-32 bg-gray-200 rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-24 bg-gray-200 rounded-full" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-16 bg-gray-200 rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-20 bg-gray-200 rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-24 bg-gray-200 rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-32 bg-muted rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-24 bg-muted rounded-full" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-16 bg-muted rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-20 bg-muted rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-24 bg-muted rounded" /></td>
                   </tr>
                 ))}
               </>
             ) : logs.length === 0 ? (
               <tr>
                 <td colSpan={5} className="px-6 py-12 text-center">
-                  <Search className="h-8 w-8 text-gray-300 mx-auto mb-2" />
-                  <p className="text-gray-400 text-sm">
+                  <Search className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
+                  <p className="text-muted-foreground text-sm">
                     {hasFilters ? tx("noMatchingFilters") : tx("noLogs")}
                   </p>
                   {hasFilters && (
-                    <button onClick={clearFilters} className="text-brand-600 text-sm mt-1 hover:underline">
+                    <button onClick={clearFilters} className="text-brand-600 dark:text-brand-400 text-sm mt-1 hover:underline">
                       {tx("clearFilters")}
                     </button>
                   )}
@@ -316,34 +316,34 @@ export default function AuditPage() {
               </tr>
             ) : (
               logs.map((log: any) => (
-                <tr key={log.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-3 text-sm text-gray-500 whitespace-nowrap">{formatDate(log.created_at)}</td>
+                <tr key={log.id} className="hover:bg-muted">
+                  <td className="px-6 py-3 text-sm text-muted-foreground whitespace-nowrap">{formatDate(log.created_at)}</td>
                   <td className="px-6 py-3">
                     <span className={`text-xs px-2 py-1 rounded-full font-mono font-medium ${getActionStyle(log.action)}`}>
                       {log.action}
                     </span>
                   </td>
-                  <td className="px-6 py-3 text-sm text-gray-700">
+                  <td className="px-6 py-3 text-sm text-muted-foreground">
                     {log.user_first_name
                       ? `${log.user_first_name} ${log.user_last_name || ""}`.trim()
                       : log.user_id
                         ? (tx("userHash", { id: log.user_id }) as string)
                         : (tx("system") as string)}
                     {log.user_email && (
-                      <span className="block text-xs text-gray-400">{log.user_email}</span>
+                      <span className="block text-xs text-muted-foreground">{log.user_email}</span>
                     )}
                   </td>
-                  <td className="px-6 py-3 text-sm text-gray-500">
+                  <td className="px-6 py-3 text-sm text-muted-foreground">
                     {log.resource_type ? (
                       <span className="text-xs">
                         {log.resource_type}
-                        {log.resource_id && <span className="text-gray-400 ml-1">#{log.resource_id}</span>}
+                        {log.resource_id && <span className="text-muted-foreground ml-1">#{log.resource_id}</span>}
                       </span>
                     ) : (
-                      <span className="text-gray-300">--</span>
+                      <span className="text-muted-foreground/50">--</span>
                     )}
                   </td>
-                  <td className="px-6 py-3 text-sm text-gray-400 font-mono">{log.ip_address || "--"}</td>
+                  <td className="px-6 py-3 text-sm text-muted-foreground font-mono">{log.ip_address || "--"}</td>
                 </tr>
               ))
             )}
@@ -351,13 +351,13 @@ export default function AuditPage() {
         </table>
 
         {meta && meta.total_pages > 1 && (
-          <div className="flex items-center justify-between px-6 py-3 border-t border-gray-200">
-            <p className="text-sm text-gray-500">
+          <div className="flex items-center justify-between px-6 py-3 border-t border-border">
+            <p className="text-sm text-muted-foreground">
               {tx("pageOf", { page: meta.page, total_pages: meta.total_pages, total: meta.total })}
             </p>
             <div className="flex gap-2">
-              <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1 text-sm border rounded-lg disabled:opacity-50">{t("common.previous")}</button>
-              <button onClick={() => setPage((p) => p + 1)} disabled={page >= meta.total_pages} className="px-3 py-1 text-sm border rounded-lg disabled:opacity-50">{t("common.next")}</button>
+              <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50 hover:bg-muted">{t("common.previous")}</button>
+              <button onClick={() => setPage((p) => p + 1)} disabled={page >= meta.total_pages} className="px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50 hover:bg-muted">{t("common.next")}</button>
             </div>
           </div>
         )}

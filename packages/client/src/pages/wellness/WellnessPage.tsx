@@ -19,14 +19,14 @@ import {
 } from "lucide-react";
 
 const PROGRAM_TYPE_CONFIG: Record<string, { label: string; color: string; icon: any }> = {
-  fitness: { label: "Fitness", color: "bg-green-100 text-green-700", icon: Dumbbell },
-  mental_health: { label: "Mental Health", color: "bg-purple-100 text-purple-700", icon: Brain },
-  nutrition: { label: "Nutrition", color: "bg-orange-100 text-orange-700", icon: Apple },
-  meditation: { label: "Meditation", color: "bg-indigo-100 text-indigo-700", icon: Flower2 },
-  yoga: { label: "Yoga", color: "bg-pink-100 text-pink-700", icon: Sparkles },
-  team_activity: { label: "Team Activity", color: "bg-blue-100 text-blue-700", icon: Users },
-  health_checkup: { label: "Health Checkup", color: "bg-red-100 text-red-700", icon: Stethoscope },
-  other: { label: "Other", color: "bg-gray-100 text-gray-700", icon: Heart },
+  fitness: { label: "Fitness", color: "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300", icon: Dumbbell },
+  mental_health: { label: "Mental Health", color: "bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300", icon: Brain },
+  nutrition: { label: "Nutrition", color: "bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300", icon: Apple },
+  meditation: { label: "Meditation", color: "bg-indigo-100 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300", icon: Flower2 },
+  yoga: { label: "Yoga", color: "bg-pink-100 dark:bg-pink-950/40 text-pink-700 dark:text-pink-300", icon: Sparkles },
+  team_activity: { label: "Team Activity", color: "bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300", icon: Users },
+  health_checkup: { label: "Health Checkup", color: "bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300", icon: Stethoscope },
+  other: { label: "Other", color: "bg-muted text-muted-foreground", icon: Heart },
 };
 
 export default function WellnessPage() {
@@ -91,8 +91,8 @@ export default function WellnessPage() {
         <div
           className={`p-3 rounded-lg border text-sm ${
             enrollMessage.type === "success"
-              ? "bg-green-50 border-green-200 text-green-700"
-              : "bg-red-50 border-red-200 text-red-700"
+              ? "bg-green-50 dark:bg-green-950/40 border-green-200 dark:border-green-900 text-green-700 dark:text-green-300"
+              : "bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-900 text-red-700 dark:text-red-300"
           }`}
         >
           {enrollMessage.text}
@@ -101,8 +101,8 @@ export default function WellnessPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t("wellnessPage.header.title")}</h1>
-          <p className="text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-foreground">{t("wellnessPage.header.title")}</h1>
+          <p className="text-muted-foreground mt-1">
             {t("wellnessPage.header.subtitle")}
           </p>
         </div>
@@ -130,15 +130,15 @@ export default function WellnessPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Link
             to="/wellness/check-in"
-            className="block text-left w-full bg-white rounded-xl border border-gray-200 p-4 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="block text-left w-full bg-card rounded-xl border border-border p-4 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center">
-                <Heart className="h-5 w-5 text-green-600" />
+              <div className="h-10 w-10 rounded-lg bg-green-100 dark:bg-green-950/40 flex items-center justify-center">
+                <Heart className="h-5 w-5 text-green-600 dark:text-green-400" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">{t("wellnessPage.stats.checkInStreak")}</p>
-                <p className="text-xl font-bold text-gray-900">
+                <p className="text-sm text-muted-foreground">{t("wellnessPage.stats.checkInStreak")}</p>
+                <p className="text-xl font-bold text-foreground">
                   {t("wellnessPage.stats.checkInStreakValue", { count: summaryData.checkin_streak })}
                 </p>
               </div>
@@ -146,43 +146,43 @@ export default function WellnessPage() {
           </Link>
           <Link
             to="/wellness/my"
-            className="block text-left w-full bg-white rounded-xl border border-gray-200 p-4 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="block text-left w-full bg-card rounded-xl border border-border p-4 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                <Dumbbell className="h-5 w-5 text-blue-600" />
+              <div className="h-10 w-10 rounded-lg bg-blue-100 dark:bg-blue-950/40 flex items-center justify-center">
+                <Dumbbell className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">{t("wellnessPage.stats.activePrograms")}</p>
-                <p className="text-xl font-bold text-gray-900">{summaryData.enrolled_programs?.length || 0}</p>
+                <p className="text-sm text-muted-foreground">{t("wellnessPage.stats.activePrograms")}</p>
+                <p className="text-xl font-bold text-foreground">{summaryData.enrolled_programs?.length || 0}</p>
               </div>
             </div>
           </Link>
           <Link
             to="/wellness/my"
-            className="block text-left w-full bg-white rounded-xl border border-gray-200 p-4 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="block text-left w-full bg-card rounded-xl border border-border p-4 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center">
-                <Trophy className="h-5 w-5 text-purple-600" />
+              <div className="h-10 w-10 rounded-lg bg-purple-100 dark:bg-purple-950/40 flex items-center justify-center">
+                <Trophy className="h-5 w-5 text-purple-600 dark:text-purple-400" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">{t("wellnessPage.stats.goalsCompleted")}</p>
-                <p className="text-xl font-bold text-gray-900">{summaryData.completed_goals_count || 0}</p>
+                <p className="text-sm text-muted-foreground">{t("wellnessPage.stats.goalsCompleted")}</p>
+                <p className="text-xl font-bold text-foreground">{summaryData.completed_goals_count || 0}</p>
               </div>
             </div>
           </Link>
           <Link
             to="/wellness/check-in"
-            className="block text-left w-full bg-white rounded-xl border border-gray-200 p-4 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="block text-left w-full bg-card rounded-xl border border-border p-4 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-amber-100 flex items-center justify-center">
-                <Sparkles className="h-5 w-5 text-amber-600" />
+              <div className="h-10 w-10 rounded-lg bg-amber-100 dark:bg-amber-950/40 flex items-center justify-center">
+                <Sparkles className="h-5 w-5 text-amber-600 dark:text-amber-400" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">{t("wellnessPage.stats.latestMood")}</p>
-                <p className="text-xl font-bold text-gray-900 capitalize">{summaryData.latest_mood || t("wellnessPage.stats.moodEmpty")}</p>
+                <p className="text-sm text-muted-foreground">{t("wellnessPage.stats.latestMood")}</p>
+                <p className="text-xl font-bold text-foreground capitalize">{summaryData.latest_mood || t("wellnessPage.stats.moodEmpty")}</p>
               </div>
             </div>
           </Link>
@@ -197,7 +197,7 @@ export default function WellnessPage() {
             setTypeFilter(e.target.value);
             setPage(1);
           }}
-          className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+          className="px-3 py-2 border border-border rounded-lg text-sm bg-card"
         >
           <option value="">{t("wellnessPage.filter.allTypes")}</option>
           {Object.entries(PROGRAM_TYPE_CONFIG).map(([key, { label }]) => (
@@ -206,51 +206,54 @@ export default function WellnessPage() {
             </option>
           ))}
         </select>
-        <span className="text-sm text-gray-500">
+        <span className="text-sm text-muted-foreground">
           {t("wellnessPage.filter.programsAvailable", { count: total })}
         </span>
       </div>
 
       {/* Programs Grid */}
       {isLoading ? (
-        <div className="text-center py-12 text-gray-400">{t("wellnessPage.list.loading")}</div>
+        <div className="text-center py-12 text-muted-foreground">{t("wellnessPage.list.loading")}</div>
       ) : programs.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
-          <Heart className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500">{t("wellnessPage.list.empty")}</p>
+        <div className="text-center py-12 bg-card rounded-xl border border-border">
+          <Heart className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
+          <p className="text-muted-foreground">{t("wellnessPage.list.empty")}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {programs.map((program: any) => {
             const cfg = PROGRAM_TYPE_CONFIG[program.program_type] || PROGRAM_TYPE_CONFIG.other;
             const Icon = cfg.icon;
+            const cfgTokens = cfg.color.split(" ");
+            const boxBgClasses = cfgTokens.filter((c) => c.includes("bg-")).join(" ");
+            const iconTextClasses = cfgTokens.filter((c) => c.includes("text-")).join(" ");
             return (
               <div
                 key={program.id}
-                className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow"
+                className="bg-card rounded-xl border border-border p-6 hover:shadow-md transition-shadow"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className={`h-10 w-10 rounded-lg ${cfg.color.split(" ")[0]} flex items-center justify-center`}>
-                      <Icon className={`h-5 w-5 ${cfg.color.split(" ")[1]}`} />
+                    <div className={`h-10 w-10 rounded-lg ${boxBgClasses} flex items-center justify-center`}>
+                      <Icon className={`h-5 w-5 ${iconTextClasses}`} />
                     </div>
                     <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${cfg.color}`}>
                       {t(`wellnessPage.programType.${program.program_type}`, { defaultValue: cfg.label })}
                     </span>
                   </div>
                   {program.points_reward > 0 && (
-                    <span className="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
+                    <span className="text-xs font-medium text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-full">
                       {t("wellnessPage.card.pointsReward", { count: program.points_reward })}
                     </span>
                   )}
                 </div>
 
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">{program.title}</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-2">{program.title}</h3>
                 {program.description && (
-                  <p className="text-sm text-gray-500 mb-4 line-clamp-2">{program.description}</p>
+                  <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{program.description}</p>
                 )}
 
-                <div className="flex items-center justify-between text-xs text-gray-400 mb-4">
+                <div className="flex items-center justify-between text-xs text-muted-foreground mb-4">
                   {program.start_date && (
                     <span>
                       {new Date(program.start_date).toLocaleDateString()} —{" "}
@@ -268,7 +271,7 @@ export default function WellnessPage() {
                 {enrolledProgramIds.has(program.id) ? (
                   <button
                     disabled
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-green-100 text-green-700 border border-green-200 rounded-lg text-sm font-medium cursor-not-allowed"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-900 rounded-lg text-sm font-medium cursor-not-allowed"
                   >
                     {t("wellnessPage.card.enrolledButton")}
                   </button>
@@ -293,17 +296,17 @@ export default function WellnessPage() {
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="p-2 rounded-lg border border-gray-300 disabled:opacity-50 hover:bg-gray-50"
+            className="p-2 rounded-lg border border-border disabled:opacity-50 hover:bg-muted"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
-          <span className="text-sm text-gray-600">
+          <span className="text-sm text-muted-foreground">
             {t("wellnessPage.pagination.pageOf", { page, totalPages })}
           </span>
           <button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="p-2 rounded-lg border border-gray-300 disabled:opacity-50 hover:bg-gray-50"
+            className="p-2 rounded-lg border border-border disabled:opacity-50 hover:bg-muted"
           >
             <ChevronRight className="h-4 w-4" />
           </button>

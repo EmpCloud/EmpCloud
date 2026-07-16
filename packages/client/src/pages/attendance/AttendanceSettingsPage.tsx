@@ -126,23 +126,23 @@ export default function AttendanceSettingsPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-          <SettingsIcon className="h-6 w-6 text-brand-600" /> {t("attendanceSettings.title")}
+        <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
+          <SettingsIcon className="h-6 w-6 text-brand-600 dark:text-brand-400" /> {t("attendanceSettings.title")}
         </h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <p className="text-sm text-muted-foreground mt-1">
           {t("attendanceSettings.subtitle")}
         </p>
       </header>
 
       {/* Org-level settings */}
-      <section className="bg-white rounded-xl border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-1">{t("attendanceSettings.allowedChannels")}</h2>
-        <p className="text-sm text-gray-500 mb-4">
+      <section className="bg-card rounded-xl border border-border p-6">
+        <h2 className="text-lg font-semibold text-foreground mb-1">{t("attendanceSettings.allowedChannels")}</h2>
+        <p className="text-sm text-muted-foreground mb-4">
           {t("attendanceSettings.allowedChannelsDesc")}
         </p>
 
         {settingsQ.isLoading ? (
-          <div className="flex items-center gap-2 text-gray-500 text-sm">
+          <div className="flex items-center gap-2 text-muted-foreground text-sm">
             <Loader2 className="h-4 w-4 animate-spin" /> {t("attendanceSettings.loading")}
           </div>
         ) : (
@@ -154,8 +154,8 @@ export default function AttendanceSettingsPage() {
                   key={channel}
                   className={`flex items-start gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${
                     enabled
-                      ? "border-brand-300 bg-brand-50"
-                      : "border-gray-200 bg-white hover:border-gray-300"
+                      ? "border-brand-300 bg-brand-50 dark:bg-brand-950/40"
+                      : "border-border bg-card hover:border-border"
                   }`}
                 >
                   <input
@@ -163,13 +163,13 @@ export default function AttendanceSettingsPage() {
                     checked={enabled}
                     onChange={() => toggleChannel(channel)}
                     disabled={updateSettings.isPending}
-                    className="mt-0.5 h-4 w-4 text-brand-600"
+                    className="mt-0.5 h-4 w-4 text-brand-600 dark:text-brand-400"
                   />
                   <div>
-                    <div className="text-sm font-medium text-gray-900">
+                    <div className="text-sm font-medium text-foreground">
                       {t(`attendanceSettings.channel.${channel}`, { defaultValue: CHANNEL_LABEL[channel] })}
                     </div>
-                    <div className="text-xs text-gray-500 mt-0.5">
+                    <div className="text-xs text-muted-foreground mt-0.5">
                       {channel === "dashboard" && t("attendanceSettings.channelDesc.dashboard")}
                       {channel === "biometric" && t("attendanceSettings.channelDesc.biometric")}
                       {channel === "app" && t("attendanceSettings.channelDesc.app")}
@@ -181,21 +181,21 @@ export default function AttendanceSettingsPage() {
           </div>
         )}
 
-        <div className="mt-6 pt-6 border-t border-gray-100">
+        <div className="mt-6 pt-6 border-t border-border">
           <label className="flex items-start gap-3 cursor-pointer">
             <input
               type="checkbox"
               checked={!!settingsQ.data?.geofence_advisory}
               onChange={(e) => updateSettings.mutate({ geofence_advisory: e.target.checked })}
               disabled={updateSettings.isPending || settingsQ.isLoading}
-              className="mt-0.5 h-4 w-4 text-brand-600"
+              className="mt-0.5 h-4 w-4 text-brand-600 dark:text-brand-400"
             />
             <div>
-              <div className="text-sm font-medium text-gray-900 flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-gray-500" />
+              <div className="text-sm font-medium text-foreground flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-muted-foreground" />
                 {t("attendanceSettings.enableGeofencing")}
               </div>
-              <div className="text-xs text-gray-500 mt-0.5">
+              <div className="text-xs text-muted-foreground mt-0.5">
                 {t("attendanceSettings.enableGeofencingDesc")}
               </div>
             </div>
@@ -239,11 +239,11 @@ function GeofencesSection({ geofences, isLoading }: { geofences: Geofence[]; isL
   });
 
   return (
-    <section className="bg-white rounded-xl border border-gray-200 p-6">
+    <section className="bg-card rounded-xl border border-border p-6">
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900">{t("attendanceSettings.geofences")}</h2>
-          <p className="text-sm text-gray-500">
+          <h2 className="text-lg font-semibold text-foreground">{t("attendanceSettings.geofences")}</h2>
+          <p className="text-sm text-muted-foreground">
             <Trans
               i18nKey="attendanceSettings.geofencesDesc"
               count={geofences.length}
@@ -261,11 +261,11 @@ function GeofencesSection({ geofences, isLoading }: { geofences: Geofence[]; isL
       </div>
 
       {isLoading ? (
-        <div className="text-sm text-gray-500 flex items-center gap-2">
+        <div className="text-sm text-muted-foreground flex items-center gap-2">
           <Loader2 className="h-4 w-4 animate-spin" /> {t("attendanceSettings.loading")}
         </div>
       ) : geofences.length === 0 ? (
-        <div className="text-sm text-gray-500 italic py-6 text-center border border-dashed border-gray-200 rounded-lg">
+        <div className="text-sm text-muted-foreground italic py-6 text-center border border-dashed border-border rounded-lg">
           <Trans i18nKey="attendanceSettings.noGeofences" components={{ strong: <strong /> }} />
         </div>
       ) : (
@@ -273,12 +273,12 @@ function GeofencesSection({ geofences, isLoading }: { geofences: Geofence[]; isL
           {geofences.map((f) => (
             <div
               key={f.id}
-              className="border border-gray-200 rounded-lg p-3 flex items-start gap-3"
+              className="border border-border rounded-lg p-3 flex items-start gap-3"
             >
-              <MapPin className="h-4 w-4 text-brand-600 mt-0.5 flex-shrink-0" />
+              <MapPin className="h-4 w-4 text-brand-600 dark:text-brand-400 mt-0.5 flex-shrink-0" />
               <div className="min-w-0 flex-1">
-                <div className="text-sm font-medium text-gray-900 truncate">{f.name}</div>
-                <div className="text-xs text-gray-500 mt-0.5">
+                <div className="text-sm font-medium text-foreground truncate">{f.name}</div>
+                <div className="text-xs text-muted-foreground mt-0.5">
                   {Number(f.latitude).toFixed(6)}, {Number(f.longitude).toFixed(6)} ·{" "}
                   {t("attendanceSettings.mRadius", { radius: f.radius_meters })}
                 </div>
@@ -286,14 +286,14 @@ function GeofencesSection({ geofences, isLoading }: { geofences: Geofence[]; isL
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => setEditing(f)}
-                  className="p-1.5 text-gray-500 hover:text-brand-600 hover:bg-brand-50 rounded"
+                  className="p-1.5 text-muted-foreground hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-950/40 rounded"
                   aria-label={t("attendanceSettings.editGeofence")}
                 >
                   <Pencil className="h-4 w-4" />
                 </button>
                 <button
                   onClick={() => setPendingDelete(f)}
-                  className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded"
+                  className="p-1.5 text-muted-foreground hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 rounded"
                   aria-label={t("attendanceSettings.deleteGeofence")}
                 >
                   <Trash2 className="h-4 w-4" />
@@ -422,16 +422,16 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-xl border border-gray-200 w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+        className="bg-card rounded-xl border border-border w-full max-w-2xl max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 sticky top-0 bg-white">
-          <h3 className="text-lg font-semibold text-gray-900">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border sticky top-0 bg-card">
+          <h3 className="text-lg font-semibold text-foreground">
             {mode === "create" ? t("attendanceSettings.addGeofence") : t("attendanceSettings.editGeofence")}
           </h3>
           <button
             onClick={onClose}
-            className="p-1 text-gray-400 hover:text-gray-600 rounded hover:bg-gray-100"
+            className="p-1 text-muted-foreground hover:text-muted-foreground rounded hover:bg-muted"
             aria-label={t("attendanceSettings.close")}
           >
             <X className="h-5 w-5" />
@@ -440,7 +440,7 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
 
         <div className="p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t("attendanceSettings.nameLabel")}</label>
+            <label className="block text-sm font-medium text-muted-foreground mb-1">{t("attendanceSettings.nameLabel")}</label>
             <input
               type="text"
               value={name}
@@ -454,18 +454,18 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
               className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 outline-none ${
                 errors.name
                   ? "border-red-300 focus:ring-red-300 focus:border-red-400"
-                  : "border-gray-200 focus:ring-brand-500 focus:border-brand-500"
+                  : "border-border focus:ring-brand-500 focus:border-brand-500"
               }`}
             />
             {errors.name && (
-              <p className="mt-1 text-xs text-red-600">{errors.name}</p>
+              <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.name}</p>
             )}
           </div>
 
           {/* Map picker — click anywhere or drag the marker to set the
               coordinates. Circle overlay shows the current radius. */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t("attendanceSettings.locationLabel")}</label>
+            <label className="block text-sm font-medium text-muted-foreground mb-1">{t("attendanceSettings.locationLabel")}</label>
             <GeofenceMapPicker
               latitude={latitude === "" || Number.isNaN(Number(latitude)) ? null : Number(latitude)}
               longitude={
@@ -479,14 +479,14 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
                 setLongitude(lng.toFixed(7));
               }}
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               {t("attendanceSettings.mapHint")}
             </p>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("attendanceSettings.latitudeLabel")}</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("attendanceSettings.latitudeLabel")}</label>
               <input
                 type="number"
                 step="0.0000001"
@@ -500,15 +500,15 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
                 className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 outline-none ${
                   errors.latitude
                     ? "border-red-300 focus:ring-red-300 focus:border-red-400"
-                    : "border-gray-200 focus:ring-brand-500 focus:border-brand-500"
+                    : "border-border focus:ring-brand-500 focus:border-brand-500"
                 }`}
               />
               {errors.latitude && (
-                <p className="mt-1 text-xs text-red-600">{errors.latitude}</p>
+                <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.latitude}</p>
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("attendanceSettings.longitudeLabel")}</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("attendanceSettings.longitudeLabel")}</label>
               <input
                 type="number"
                 step="0.0000001"
@@ -522,17 +522,17 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
                 className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 outline-none ${
                   errors.longitude
                     ? "border-red-300 focus:ring-red-300 focus:border-red-400"
-                    : "border-gray-200 focus:ring-brand-500 focus:border-brand-500"
+                    : "border-border focus:ring-brand-500 focus:border-brand-500"
                 }`}
               />
               {errors.longitude && (
-                <p className="mt-1 text-xs text-red-600">{errors.longitude}</p>
+                <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.longitude}</p>
               )}
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-muted-foreground mb-1">
               {t("attendanceSettings.radiusLabel")}
             </label>
             <input
@@ -548,23 +548,23 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
               className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 outline-none ${
                 errors.radius
                   ? "border-red-300 focus:ring-red-300 focus:border-red-400"
-                  : "border-gray-200 focus:ring-brand-500 focus:border-brand-500"
+                  : "border-border focus:ring-brand-500 focus:border-brand-500"
               }`}
             />
             {errors.radius ? (
-              <p className="mt-1 text-xs text-red-600">{errors.radius}</p>
+              <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.radius}</p>
             ) : (
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 {t("attendanceSettings.radiusHint")}
               </p>
             )}
           </div>
         </div>
 
-        <div className="flex justify-end gap-2 px-6 py-4 border-t border-gray-200 bg-gray-50">
+        <div className="flex justify-end gap-2 px-6 py-4 border-t border-border bg-muted">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg"
+            className="px-4 py-2 text-sm text-muted-foreground hover:bg-muted rounded-lg"
           >
             {t("attendanceSettings.cancel")}
           </button>
@@ -678,11 +678,11 @@ function OverridesSection({ geofences }: { geofences: Geofence[] }) {
   }, [overridesQ.data, search]);
 
   return (
-    <section className="bg-white rounded-xl border border-gray-200 p-6">
+    <section className="bg-card rounded-xl border border-border p-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900">{t("attendanceSettings.overrides")}</h2>
-          <p className="text-sm text-gray-500">
+          <h2 className="text-lg font-semibold text-foreground">{t("attendanceSettings.overrides")}</h2>
+          <p className="text-sm text-muted-foreground">
             {t("attendanceSettings.overridesDesc")}
           </p>
         </div>
@@ -695,28 +695,28 @@ function OverridesSection({ geofences }: { geofences: Geofence[] }) {
       </div>
 
       <div className="relative mb-3">
-        <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+        <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={t("attendanceSettings.searchEmployee")}
-          className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+          className="bg-card text-foreground w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
         />
       </div>
 
       {overridesQ.isLoading || directoryQ.isLoading ? (
-        <div className="text-sm text-gray-500 flex items-center gap-2">
+        <div className="text-sm text-muted-foreground flex items-center gap-2">
           <Loader2 className="h-4 w-4 animate-spin" /> {t("attendanceSettings.loadingOverrides")}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-sm text-gray-500 italic py-6 text-center border border-dashed border-gray-200 rounded-lg">
+        <div className="text-sm text-muted-foreground italic py-6 text-center border border-dashed border-border rounded-lg">
           {search ? t("attendanceSettings.noOverridesMatch") : t("attendanceSettings.noOverrides")}
         </div>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-xs font-semibold text-gray-500 uppercase border-b border-gray-200">
+              <tr className="text-left text-xs font-semibold text-muted-foreground uppercase border-b border-border">
                 <th className="px-3 py-2">{t("attendanceSettings.colEmployee")}</th>
                 <th className="px-3 py-2">{t("attendanceSettings.colChannels")}</th>
                 <th className="px-3 py-2">{t("attendanceSettings.colGeofence")}</th>
@@ -727,26 +727,26 @@ function OverridesSection({ geofences }: { geofences: Geofence[] }) {
             </thead>
             <tbody>
               {filtered.map((row) => (
-                <tr key={row.id} className="border-b border-gray-100 hover:bg-gray-50/60">
+                <tr key={row.id} className="border-b border-border hover:bg-muted/60">
                   <td className="px-3 py-3">
-                    <div className="font-medium text-gray-900">
+                    <div className="font-medium text-foreground">
                       {row.user
                         ? `${row.user.first_name} ${row.user.last_name}`
                         : t("attendanceSettings.userN", { id: row.user_id })}
                     </div>
                     {row.user && (
-                      <div className="text-xs text-gray-500">{row.user.email}</div>
+                      <div className="text-xs text-muted-foreground">{row.user.email}</div>
                     )}
                   </td>
                   <td className="px-3 py-3">
                     {row.allowed_channels === null ? (
-                      <span className="text-xs text-gray-500 italic">{t("attendanceSettings.inheritOrg")}</span>
+                      <span className="text-xs text-muted-foreground italic">{t("attendanceSettings.inheritOrg")}</span>
                     ) : (
                       <div className="flex flex-wrap gap-1">
                         {row.allowed_channels.map((c) => (
                           <span
                             key={c}
-                            className="inline-flex items-center gap-1 text-xs bg-brand-50 text-brand-700 px-2 py-0.5 rounded"
+                            className="inline-flex items-center gap-1 text-xs bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300 px-2 py-0.5 rounded"
                           >
                             {c === "app" && <Smartphone className="h-3 w-3" />}
                             {c}
@@ -755,12 +755,12 @@ function OverridesSection({ geofences }: { geofences: Geofence[] }) {
                       </div>
                     )}
                   </td>
-                  <td className="px-3 py-3 text-gray-700 text-xs">
+                  <td className="px-3 py-3 text-muted-foreground text-xs">
                     {row.geofence_mode === "inherit" && (
-                      <span className="text-gray-500 italic">{t("attendanceSettings.inheritOrg")}</span>
+                      <span className="text-muted-foreground italic">{t("attendanceSettings.inheritOrg")}</span>
                     )}
                     {row.geofence_mode === "off" && (
-                      <span className="text-amber-700">{t("attendanceSettings.disabledForUser")}</span>
+                      <span className="text-amber-700 dark:text-amber-300">{t("attendanceSettings.disabledForUser")}</span>
                     )}
                     {row.geofence_mode === "custom" && (
                       <span>
@@ -770,24 +770,24 @@ function OverridesSection({ geofences }: { geofences: Geofence[] }) {
                       </span>
                     )}
                   </td>
-                  <td className="px-3 py-3 text-gray-700 whitespace-nowrap">
-                    {row.start_date} → {row.end_date ?? <span className="text-gray-400">{t("attendanceSettings.open")}</span>}
+                  <td className="px-3 py-3 text-muted-foreground whitespace-nowrap">
+                    {row.start_date} → {row.end_date ?? <span className="text-muted-foreground">{t("attendanceSettings.open")}</span>}
                   </td>
-                  <td className="px-3 py-3 text-gray-600 max-w-xs truncate" title={row.note ?? ""}>
+                  <td className="px-3 py-3 text-muted-foreground max-w-xs truncate" title={row.note ?? ""}>
                     {row.note ?? ""}
                   </td>
                   <td className="px-3 py-3">
                     <div className="flex items-center gap-1">
                       <button
                         onClick={() => setEditing(row)}
-                        className="p-1.5 text-gray-500 hover:text-brand-600 hover:bg-brand-50 rounded"
+                        className="p-1.5 text-muted-foreground hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-950/40 rounded"
                         aria-label={t("attendanceSettings.editOverride")}
                       >
                         <Pencil className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => setPendingDelete(row)}
-                        className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded"
+                        className="p-1.5 text-muted-foreground hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 rounded"
                         aria-label={t("attendanceSettings.deleteOverride")}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -947,16 +947,16 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-xl border border-gray-200 w-full max-w-xl max-h-[90vh] overflow-y-auto"
+        className="bg-card rounded-xl border border-border w-full max-w-xl max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 sticky top-0 bg-white">
-          <h3 className="text-lg font-semibold text-gray-900">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border sticky top-0 bg-card">
+          <h3 className="text-lg font-semibold text-foreground">
             {mode === "create" ? t("attendanceSettings.newOverrideTitle") : t("attendanceSettings.editOverrideTitle")}
           </h3>
           <button
             onClick={onClose}
-            className="p-1 text-gray-400 hover:text-gray-600 rounded hover:bg-gray-100"
+            className="p-1 text-muted-foreground hover:text-muted-foreground rounded hover:bg-muted"
             aria-label={t("attendanceSettings.close")}
           >
             <X className="h-5 w-5" />
@@ -967,21 +967,21 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
           {/* Employee picker (create mode only) */}
           {mode === "create" ? (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("attendanceSettings.colEmployee")}</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("attendanceSettings.colEmployee")}</label>
               {selectedUser ? (
-                <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg bg-gray-50">
+                <div className="flex items-center justify-between p-3 border border-border rounded-lg bg-muted">
                   <div>
-                    <div className="text-sm font-medium text-gray-900">
+                    <div className="text-sm font-medium text-foreground">
                       {selectedUser.first_name} {selectedUser.last_name}
                     </div>
-                    <div className="text-xs text-gray-500">{selectedUser.email}</div>
+                    <div className="text-xs text-muted-foreground">{selectedUser.email}</div>
                   </div>
                   <button
                     onClick={() => {
                       setUserId(null);
                       setUserSearch("");
                     }}
-                    className="text-xs text-brand-600 hover:underline"
+                    className="text-xs text-brand-600 dark:text-brand-400 hover:underline"
                   >
                     {t("attendanceSettings.change")}
                   </button>
@@ -989,17 +989,17 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
               ) : (
                 <>
                   <div className="relative">
-                    <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                     <input
                       value={userSearch}
                       onChange={(e) => setUserSearch(e.target.value)}
                       placeholder={t("attendanceSettings.searchNameEmail")}
-                      className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                      className="bg-card text-foreground w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
                     />
                   </div>
-                  <div className="mt-2 border border-gray-200 rounded-lg divide-y divide-gray-100 max-h-48 overflow-y-auto">
+                  <div className="mt-2 border border-border rounded-lg divide-y divide-border max-h-48 overflow-y-auto">
                     {filteredDirectory.length === 0 && (
-                      <div className="px-3 py-2 text-xs text-gray-500">{t("attendanceSettings.noMatches")}</div>
+                      <div className="px-3 py-2 text-xs text-muted-foreground">{t("attendanceSettings.noMatches")}</div>
                     )}
                     {filteredDirectory.map((emp) => (
                       <button
@@ -1008,12 +1008,12 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
                           setUserId(emp.id);
                           setUserSearch("");
                         }}
-                        className="w-full text-left px-3 py-2 hover:bg-gray-50"
+                        className="w-full text-left px-3 py-2 hover:bg-muted"
                       >
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-foreground">
                           {emp.first_name} {emp.last_name}
                         </div>
-                        <div className="text-xs text-gray-500">{emp.email}</div>
+                        <div className="text-xs text-muted-foreground">{emp.email}</div>
                       </button>
                     ))}
                   </div>
@@ -1022,15 +1022,15 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
             </div>
           ) : (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("attendanceSettings.colEmployee")}</label>
-              <div className="p-3 border border-gray-200 rounded-lg bg-gray-50">
-                <div className="text-sm font-medium text-gray-900">
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("attendanceSettings.colEmployee")}</label>
+              <div className="p-3 border border-border rounded-lg bg-muted">
+                <div className="text-sm font-medium text-foreground">
                   {existing!.user
                     ? `${existing!.user!.first_name} ${existing!.user!.last_name}`
                     : t("attendanceSettings.userN", { id: existing!.user_id })}
                 </div>
                 {existing!.user && (
-                  <div className="text-xs text-gray-500">{existing!.user!.email}</div>
+                  <div className="text-xs text-muted-foreground">{existing!.user!.email}</div>
                 )}
               </div>
             </div>
@@ -1039,8 +1039,8 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
           {/* Channels */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="block text-sm font-medium text-gray-700">{t("attendanceSettings.allowedChannelsShort")}</label>
-              <label className="text-xs text-gray-600 inline-flex items-center gap-1">
+              <label className="block text-sm font-medium text-muted-foreground">{t("attendanceSettings.allowedChannelsShort")}</label>
+              <label className="text-xs text-muted-foreground inline-flex items-center gap-1">
                 <input
                   type="checkbox"
                   checked={inheritChannels}
@@ -1056,8 +1056,8 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
                   key={c}
                   className={`flex items-center gap-2 p-2 border rounded-lg cursor-pointer text-sm ${
                     channels.includes(c)
-                      ? "border-brand-300 bg-brand-50 text-brand-900"
-                      : "border-gray-200"
+                      ? "border-brand-300 bg-brand-50 dark:bg-brand-950/40 text-brand-900"
+                      : "border-border"
                   }`}
                 >
                   <input
@@ -1078,7 +1078,7 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
 
           {/* Geofence mode */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">{t("attendanceSettings.colGeofence")}</label>
+            <label className="block text-sm font-medium text-muted-foreground mb-2">{t("attendanceSettings.colGeofence")}</label>
             <div className="space-y-2">
               {(["inherit", "off", "custom"] as const).map((mode) => (
                 <label key={mode} className="flex items-start gap-2 cursor-pointer">
@@ -1088,15 +1088,15 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
                     value={mode}
                     checked={geofenceMode === mode}
                     onChange={() => setGeofenceMode(mode)}
-                    className="mt-1 h-4 w-4 text-brand-600"
+                    className="mt-1 h-4 w-4 text-brand-600 dark:text-brand-400"
                   />
                   <div>
-                    <div className="text-sm text-gray-900">
+                    <div className="text-sm text-foreground">
                       {mode === "inherit" && t("attendanceSettings.geoModeInherit")}
                       {mode === "off" && t("attendanceSettings.geoModeOff")}
                       {mode === "custom" && t("attendanceSettings.geoModeCustom")}
                     </div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-muted-foreground">
                       {mode === "inherit" && t("attendanceSettings.geoModeInheritDesc")}
                       {mode === "off" && t("attendanceSettings.geoModeOffDesc")}
                       {mode === "custom" && t("attendanceSettings.geoModeCustomDesc")}
@@ -1109,7 +1109,7 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
               <select
                 value={customFenceId ?? ""}
                 onChange={(e) => setCustomFenceId(e.target.value ? Number(e.target.value) : null)}
-                className="mt-3 w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                className="bg-card text-foreground mt-3 w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
               >
                 <option value="">{t("attendanceSettings.selectGeofence")}</option>
                 {geofences.map((f) => (
@@ -1124,32 +1124,32 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
           {/* Dates */}
           <div className="grid sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("attendanceSettings.startDate")}</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("attendanceSettings.startDate")}</label>
               <input
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
                 disabled={mode === "edit"}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none disabled:bg-gray-50 disabled:text-gray-500"
+                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none disabled:bg-muted disabled:text-muted-foreground"
               />
               {mode === "edit" && (
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   {t("attendanceSettings.startDateLocked")}
                 </p>
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                {t("attendanceSettings.endDate")} <span className="text-gray-400 font-normal">{t("attendanceSettings.optional")}</span>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
+                {t("attendanceSettings.endDate")} <span className="text-muted-foreground font-normal">{t("attendanceSettings.optional")}</span>
               </label>
               <input
                 type="date"
                 value={endDate}
                 min={startDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 {t("attendanceSettings.endDateHint")}
               </p>
             </div>
@@ -1157,8 +1157,8 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
 
           {/* Note */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {t("attendanceSettings.colNote")} <span className="text-gray-400 font-normal">{t("attendanceSettings.optional")}</span>
+            <label className="block text-sm font-medium text-muted-foreground mb-1">
+              {t("attendanceSettings.colNote")} <span className="text-muted-foreground font-normal">{t("attendanceSettings.optional")}</span>
             </label>
             <textarea
               value={note}
@@ -1166,15 +1166,15 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
               rows={2}
               maxLength={255}
               placeholder={t("attendanceSettings.notePlaceholder")}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+              className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
             />
           </div>
         </div>
 
-        <div className="flex justify-end gap-2 px-6 py-4 border-t border-gray-200 bg-gray-50">
+        <div className="flex justify-end gap-2 px-6 py-4 border-t border-border bg-muted">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg"
+            className="px-4 py-2 text-sm text-muted-foreground hover:bg-muted rounded-lg"
           >
             {t("attendanceSettings.cancel")}
           </button>

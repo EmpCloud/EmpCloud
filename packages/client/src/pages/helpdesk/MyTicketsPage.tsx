@@ -13,19 +13,19 @@ import {
 } from "lucide-react";
 
 const PRIORITY_COLORS: Record<string, string> = {
-  low: "bg-gray-100 text-gray-600",
-  medium: "bg-blue-100 text-blue-700",
-  high: "bg-orange-100 text-orange-700",
-  urgent: "bg-red-100 text-red-700",
+  low: "bg-muted text-muted-foreground",
+  medium: "bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300",
+  high: "bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300",
+  urgent: "bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300",
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  open: "bg-blue-100 text-blue-700",
-  in_progress: "bg-yellow-100 text-yellow-700",
-  awaiting_response: "bg-purple-100 text-purple-700",
-  resolved: "bg-green-100 text-green-700",
-  closed: "bg-gray-100 text-gray-600",
-  reopened: "bg-red-100 text-red-700",
+  open: "bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300",
+  in_progress: "bg-yellow-100 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300",
+  awaiting_response: "bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300",
+  resolved: "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300",
+  closed: "bg-muted text-muted-foreground",
+  reopened: "bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300",
 };
 
 const CATEGORIES = [
@@ -91,8 +91,8 @@ export default function MyTicketsPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t("helpdesk.myTicketsPage.title")}</h1>
-          <p className="text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-foreground">{t("helpdesk.myTicketsPage.title")}</h1>
+          <p className="text-muted-foreground mt-1">
             {t("helpdesk.myTicketsPage.subtitle")}
           </p>
         </div>
@@ -106,14 +106,14 @@ export default function MyTicketsPage() {
 
       {/* Create Ticket Form */}
       {showForm && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+        <div className="bg-card rounded-xl border border-border p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold text-foreground">
               {t("helpdesk.myTicketsPage.newTicket")}
             </h2>
             <button
               onClick={() => setShowForm(false)}
-              className="p-1 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+              className="p-1 rounded-lg text-muted-foreground hover:bg-muted hover:text-muted-foreground"
             >
               <X className="h-5 w-5" />
             </button>
@@ -121,13 +121,13 @@ export default function MyTicketsPage() {
           <form onSubmit={handleCreate} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-muted-foreground mb-1">
                   {t("helpdesk.myTicketsPage.category")}
                 </label>
                 <select
                   value={formCategory}
                   onChange={(e) => setFormCategory(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                 >
                   {CATEGORIES.map((c) => (
                     <option key={c} value={c}>
@@ -137,13 +137,13 @@ export default function MyTicketsPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-muted-foreground mb-1">
                   {t("helpdesk.myTicketsPage.priorityLabel")}
                 </label>
                 <select
                   value={formPriority}
                   onChange={(e) => setFormPriority(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                 >
                   {PRIORITIES.map((p) => (
                     <option key={p} value={p}>
@@ -155,21 +155,21 @@ export default function MyTicketsPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
                 {t("helpdesk.myTicketsPage.subject")}
               </label>
               <input
                 type="text"
                 value={formSubject}
                 onChange={(e) => setFormSubject(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                 placeholder={t("helpdesk.myTicketsPage.subjectPlaceholder")}
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
                 {t("helpdesk.myTicketsPage.description")}
               </label>
               <RichTextEditor
@@ -183,7 +183,7 @@ export default function MyTicketsPage() {
               <button
                 type="button"
                 onClick={() => setShowForm(false)}
-                className="px-4 py-2 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                className="px-4 py-2 text-sm border border-border rounded-lg text-muted-foreground hover:bg-muted"
               >
                 {t("helpdesk.myTicketsPage.cancel")}
               </button>
@@ -205,7 +205,7 @@ export default function MyTicketsPage() {
         <button
           onClick={() => { setStatusFilter(""); setPage(1); }}
           className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-            !statusFilter ? "bg-brand-50 text-brand-700" : "text-gray-600 hover:bg-gray-100"
+            !statusFilter ? "bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300" : "text-muted-foreground hover:bg-muted"
           }`}
         >
           {t("helpdesk.myTicketsPage.tabAll")}
@@ -216,8 +216,8 @@ export default function MyTicketsPage() {
             onClick={() => { setStatusFilter(s); setPage(1); }}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
               statusFilter === s
-                ? "bg-brand-50 text-brand-700"
-                : "text-gray-600 hover:bg-gray-100"
+                ? "bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300"
+                : "text-muted-foreground hover:bg-muted"
             }`}
           >
             {t(`helpdesk.myTicketsPage.status.${s}`)}
@@ -230,26 +230,26 @@ export default function MyTicketsPage() {
         {isLoading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white rounded-xl border border-gray-200 p-4 animate-pulse">
+              <div key={i} className="bg-card rounded-xl border border-border p-4 animate-pulse">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <div className="h-4 w-10 bg-gray-200 rounded" />
-                      <div className="h-4 w-14 bg-gray-200 rounded-full" />
-                      <div className="h-4 w-16 bg-gray-200 rounded" />
+                      <div className="h-4 w-10 bg-muted rounded" />
+                      <div className="h-4 w-14 bg-muted rounded-full" />
+                      <div className="h-4 w-16 bg-muted rounded" />
                     </div>
-                    <div className="h-4 w-2/3 bg-gray-200 rounded mb-1" />
-                    <div className="h-3 w-full bg-gray-200 rounded" />
+                    <div className="h-4 w-2/3 bg-muted rounded mb-1" />
+                    <div className="h-3 w-full bg-muted rounded" />
                   </div>
-                  <div className="h-3 w-20 bg-gray-200 rounded" />
+                  <div className="h-3 w-20 bg-muted rounded" />
                 </div>
               </div>
             ))}
           </div>
         ) : tickets.length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
-            <TicketCheck className="h-12 w-12 mx-auto mb-3 text-gray-300" />
-            <p className="text-lg font-medium text-gray-500 mb-1">{t("helpdesk.myTicketsPage.noTickets")}</p>
+          <div className="bg-card rounded-xl border border-border p-8 text-center text-muted-foreground">
+            <TicketCheck className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
+            <p className="text-lg font-medium text-muted-foreground mb-1">{t("helpdesk.myTicketsPage.noTickets")}</p>
             <p className="text-sm">
               {t("helpdesk.myTicketsPage.noTicketsHint")}
             </p>
@@ -259,12 +259,12 @@ export default function MyTicketsPage() {
             <Link
               key={ticket.id}
               to={`/helpdesk/tickets/${ticket.id}`}
-              className="block bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-shadow"
+              className="block bg-card rounded-xl border border-border p-4 hover:shadow-md transition-shadow"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs text-gray-400 font-mono">#{ticket.id}</span>
+                    <span className="text-xs text-muted-foreground font-mono">#{ticket.id}</span>
                     <span
                       className={`text-xs font-medium px-2 py-0.5 rounded ${
                         PRIORITY_COLORS[ticket.priority] || ""
@@ -280,19 +280,19 @@ export default function MyTicketsPage() {
                       {t(`helpdesk.myTicketsPage.status.${ticket.status}`, { defaultValue: ticket.status.replace(/_/g, " ") })}
                     </span>
                   </div>
-                  <h3 className="text-sm font-semibold text-gray-900 truncate">
+                  <h3 className="text-sm font-semibold text-foreground truncate">
                     {ticket.subject}
                   </h3>
-                  <p className="text-xs text-gray-500 mt-1 line-clamp-1">
+                  <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
                     {richTextToPlainText(ticket.description)}
                   </p>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-muted-foreground">
                     {new Date(ticket.created_at).toLocaleDateString()}
                   </p>
                   {ticket.assigned_to_name && (
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       {t("helpdesk.myTicketsPage.assigned", { name: ticket.assigned_to_name })}
                     </p>
                   )}
@@ -306,21 +306,21 @@ export default function MyTicketsPage() {
       {/* Pagination */}
       {meta && meta.total_pages > 1 && (
         <div className="flex items-center justify-between mt-6">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             {t("helpdesk.myTicketsPage.pageOf", { page: meta.page, total_pages: meta.total_pages, total: meta.total })}
           </p>
           <div className="flex gap-2">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="flex items-center gap-1 px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
+              className="bg-card text-foreground flex items-center gap-1 px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50"
             >
               <ChevronLeft className="h-4 w-4" /> {t("helpdesk.myTicketsPage.previous")}
             </button>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={page >= meta.total_pages}
-              className="flex items-center gap-1 px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
+              className="bg-card text-foreground flex items-center gap-1 px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50"
             >
               {t("helpdesk.myTicketsPage.next")} <ChevronRight className="h-4 w-4" />
             </button>

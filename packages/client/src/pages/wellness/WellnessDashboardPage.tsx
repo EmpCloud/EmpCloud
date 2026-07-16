@@ -20,11 +20,11 @@ import {
 import { showToast } from "@/components/ui/Toast";
 
 const MOOD_CONFIG: Record<string, { color: string; icon: any }> = {
-  great: { color: "text-green-600", icon: Smile },
-  good: { color: "text-blue-600", icon: Smile },
-  okay: { color: "text-amber-600", icon: Meh },
-  low: { color: "text-orange-600", icon: Frown },
-  stressed: { color: "text-red-600", icon: Frown },
+  great: { color: "text-green-600 dark:text-green-400", icon: Smile },
+  good: { color: "text-blue-600 dark:text-blue-400", icon: Smile },
+  okay: { color: "text-amber-600 dark:text-amber-400", icon: Meh },
+  low: { color: "text-orange-600 dark:text-orange-400", icon: Frown },
+  stressed: { color: "text-red-600 dark:text-red-400", icon: Frown },
 };
 
 const PROGRAM_TYPES = [
@@ -94,7 +94,7 @@ export default function WellnessDashboardPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-400">{t("wellnessDashboard.loading")}</div>
+        <div className="text-muted-foreground">{t("wellnessDashboard.loading")}</div>
       </div>
     );
   }
@@ -102,7 +102,7 @@ export default function WellnessDashboardPage() {
   if (isError) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-500">{t("wellnessDashboard.error.load")}</div>
+        <div className="text-muted-foreground">{t("wellnessDashboard.error.load")}</div>
       </div>
     );
   }
@@ -120,8 +120,8 @@ export default function WellnessDashboardPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t("wellnessDashboard.header.title")}</h1>
-          <p className="text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-foreground">{t("wellnessDashboard.header.title")}</h1>
+          <p className="text-muted-foreground mt-1">
             {t("wellnessDashboard.header.subtitle")}
           </p>
         </div>
@@ -135,14 +135,14 @@ export default function WellnessDashboardPage() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Link to="/wellness" className="block text-left w-full bg-white rounded-xl border border-gray-200 p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+        <Link to="/wellness" className="block text-left w-full bg-card rounded-xl border border-border p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div className="flex items-center gap-3 mb-2">
-            <div className="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center">
-              <Heart className="h-5 w-5 text-green-600" />
+            <div className="h-10 w-10 rounded-lg bg-green-100 dark:bg-green-950/40 flex items-center justify-center">
+              <Heart className="h-5 w-5 text-green-600 dark:text-green-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">{t("wellnessDashboard.kpi.wellnessScore")}</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm text-muted-foreground">{t("wellnessDashboard.kpi.wellnessScore")}</p>
+              <p className="text-2xl font-bold text-foreground">
                 {d.wellness_score !== null
                   ? t("wellnessDashboard.kpi.wellnessScoreValue", { score: d.wellness_score })
                   : t("wellnessDashboard.kpi.valueEmpty")}
@@ -150,41 +150,41 @@ export default function WellnessDashboardPage() {
             </div>
           </div>
         </Link>
-        <Link to="/wellness" className="block text-left w-full bg-white rounded-xl border border-gray-200 p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+        <Link to="/wellness" className="block text-left w-full bg-card rounded-xl border border-border p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div className="flex items-center gap-3 mb-2">
-            <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
-              <TrendingUp className="h-5 w-5 text-blue-600" />
+            <div className="h-10 w-10 rounded-lg bg-blue-100 dark:bg-blue-950/40 flex items-center justify-center">
+              <TrendingUp className="h-5 w-5 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">{t("wellnessDashboard.kpi.activePrograms")}</p>
-              <p className="text-2xl font-bold text-gray-900">{d.active_programs || 0}</p>
+              <p className="text-sm text-muted-foreground">{t("wellnessDashboard.kpi.activePrograms")}</p>
+              <p className="text-2xl font-bold text-foreground">{d.active_programs || 0}</p>
             </div>
           </div>
-          <p className="text-xs text-gray-400">{t("wellnessDashboard.kpi.totalPrograms", { count: d.total_programs || 0 })}</p>
+          <p className="text-xs text-muted-foreground">{t("wellnessDashboard.kpi.totalPrograms", { count: d.total_programs || 0 })}</p>
         </Link>
-        <Link to="/wellness" className="block text-left w-full bg-white rounded-xl border border-gray-200 p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+        <Link to="/wellness" className="block text-left w-full bg-card rounded-xl border border-border p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div className="flex items-center gap-3 mb-2">
-            <div className="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center">
-              <Users className="h-5 w-5 text-purple-600" />
+            <div className="h-10 w-10 rounded-lg bg-purple-100 dark:bg-purple-950/40 flex items-center justify-center">
+              <Users className="h-5 w-5 text-purple-600 dark:text-purple-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">{t("wellnessDashboard.kpi.activeParticipants")}</p>
-              <p className="text-2xl font-bold text-gray-900">{d.active_participants || 0}</p>
+              <p className="text-sm text-muted-foreground">{t("wellnessDashboard.kpi.activeParticipants")}</p>
+              <p className="text-2xl font-bold text-foreground">{d.active_participants || 0}</p>
             </div>
           </div>
-          <p className="text-xs text-gray-400">{t("wellnessDashboard.kpi.checkins30d", { count: d.checkin_count_30d || 0 })}</p>
+          <p className="text-xs text-muted-foreground">{t("wellnessDashboard.kpi.checkins30d", { count: d.checkin_count_30d || 0 })}</p>
         </Link>
-        <Link to="/wellness" className="block text-left w-full bg-white rounded-xl border border-gray-200 p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+        <Link to="/wellness" className="block text-left w-full bg-card rounded-xl border border-border p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
           <div className="flex items-center gap-3 mb-2">
-            <div className="h-10 w-10 rounded-lg bg-amber-100 flex items-center justify-center">
-              <Trophy className="h-5 w-5 text-amber-600" />
+            <div className="h-10 w-10 rounded-lg bg-amber-100 dark:bg-amber-950/40 flex items-center justify-center">
+              <Trophy className="h-5 w-5 text-amber-600 dark:text-amber-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">{t("wellnessDashboard.kpi.goalCompletion")}</p>
-              <p className="text-2xl font-bold text-gray-900">{t("wellnessDashboard.kpi.goalCompletionValue", { rate: d.goal_completion_rate || 0 })}</p>
+              <p className="text-sm text-muted-foreground">{t("wellnessDashboard.kpi.goalCompletion")}</p>
+              <p className="text-2xl font-bold text-foreground">{t("wellnessDashboard.kpi.goalCompletionValue", { rate: d.goal_completion_rate || 0 })}</p>
             </div>
           </div>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-muted-foreground">
             {t("wellnessDashboard.kpi.goalsProgress", { completed: d.completed_goals || 0, total: d.total_goals || 0 })}
           </p>
         </Link>
@@ -192,10 +192,10 @@ export default function WellnessDashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Mood Distribution */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t("wellnessDashboard.mood.title")}</h3>
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-4">{t("wellnessDashboard.mood.title")}</h3>
           {moodTotal === 0 ? (
-            <p className="text-sm text-gray-400">{t("wellnessDashboard.mood.noData")}</p>
+            <p className="text-sm text-muted-foreground">{t("wellnessDashboard.mood.noData")}</p>
           ) : (
             <div className="space-y-3">
               {Object.entries(MOOD_CONFIG).map(([key, cfg]) => {
@@ -205,14 +205,14 @@ export default function WellnessDashboardPage() {
                 return (
                   <div key={key} className="flex items-center gap-3">
                     <Icon className={`h-5 w-5 ${cfg.color}`} />
-                    <span className="text-sm text-gray-600 w-20">{t(`wellnessDashboard.mood.${key}`, { defaultValue: key })}</span>
-                    <div className="flex-1 h-6 bg-gray-100 rounded-full overflow-hidden">
+                    <span className="text-sm text-muted-foreground w-20">{t(`wellnessDashboard.mood.${key}`, { defaultValue: key })}</span>
+                    <div className="flex-1 h-6 bg-muted rounded-full overflow-hidden">
                       <div
                         className="h-full bg-brand-500 rounded-full transition-all"
                         style={{ width: `${pct}%` }}
                       />
                     </div>
-                    <span className="text-sm font-medium text-gray-700 w-12 text-right">
+                    <span className="text-sm font-medium text-muted-foreground w-12 text-right">
                       {t("wellnessDashboard.mood.percent", { pct })}
                     </span>
                   </div>
@@ -223,16 +223,16 @@ export default function WellnessDashboardPage() {
         </div>
 
         {/* Avg Stats */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t("wellnessDashboard.metrics.title")}</h3>
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-4">{t("wellnessDashboard.metrics.title")}</h3>
           <div className="space-y-6">
             <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-lg bg-yellow-100 flex items-center justify-center">
-                <Zap className="h-6 w-6 text-yellow-600" />
+              <div className="h-12 w-12 rounded-lg bg-yellow-100 dark:bg-yellow-950/40 flex items-center justify-center">
+                <Zap className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">{t("wellnessDashboard.metrics.avgEnergyLevel")}</p>
-                <p className="text-xl font-bold text-gray-900">
+                <p className="text-sm text-muted-foreground">{t("wellnessDashboard.metrics.avgEnergyLevel")}</p>
+                <p className="text-xl font-bold text-foreground">
                   {d.avg_energy_level !== null
                     ? t("wellnessDashboard.metrics.avgEnergyLevelValue", { value: d.avg_energy_level })
                     : t("wellnessDashboard.kpi.valueEmpty")}
@@ -240,12 +240,12 @@ export default function WellnessDashboardPage() {
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-lg bg-green-100 flex items-center justify-center">
-                <Dumbbell className="h-6 w-6 text-green-600" />
+              <div className="h-12 w-12 rounded-lg bg-green-100 dark:bg-green-950/40 flex items-center justify-center">
+                <Dumbbell className="h-6 w-6 text-green-600 dark:text-green-400" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">{t("wellnessDashboard.metrics.avgExerciseMinutes")}</p>
-                <p className="text-xl font-bold text-gray-900">
+                <p className="text-sm text-muted-foreground">{t("wellnessDashboard.metrics.avgExerciseMinutes")}</p>
+                <p className="text-xl font-bold text-foreground">
                   {d.avg_exercise_minutes !== null
                     ? t("wellnessDashboard.metrics.avgExerciseMinutesValue", { value: d.avg_exercise_minutes })
                     : t("wellnessDashboard.kpi.valueEmpty")}
@@ -253,13 +253,13 @@ export default function WellnessDashboardPage() {
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-lg bg-indigo-100 flex items-center justify-center">
-                <Target className="h-6 w-6 text-indigo-600" />
+              <div className="h-12 w-12 rounded-lg bg-indigo-100 dark:bg-indigo-950/40 flex items-center justify-center">
+                <Target className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">{t("wellnessDashboard.metrics.totalEnrollments")}</p>
-                <p className="text-xl font-bold text-gray-900">{d.total_enrollments || 0}</p>
-                <p className="text-xs text-gray-400">{t("wellnessDashboard.metrics.completedEnrollments", { count: d.completed_enrollments || 0 })}</p>
+                <p className="text-sm text-muted-foreground">{t("wellnessDashboard.metrics.totalEnrollments")}</p>
+                <p className="text-xl font-bold text-foreground">{d.total_enrollments || 0}</p>
+                <p className="text-xs text-muted-foreground">{t("wellnessDashboard.metrics.completedEnrollments", { count: d.completed_enrollments || 0 })}</p>
               </div>
             </div>
           </div>
@@ -268,34 +268,34 @@ export default function WellnessDashboardPage() {
 
       {/* Top Programs */}
       {d.top_programs && d.top_programs.length > 0 && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t("wellnessDashboard.topPrograms.title")}</h3>
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-4">{t("wellnessDashboard.topPrograms.title")}</h3>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-100">
-                  <th className="text-left py-2 text-gray-500 font-medium">{t("wellnessDashboard.topPrograms.colProgram")}</th>
-                  <th className="text-left py-2 text-gray-500 font-medium">{t("wellnessDashboard.topPrograms.colType")}</th>
-                  <th className="text-right py-2 text-gray-500 font-medium">{t("wellnessDashboard.topPrograms.colEnrolled")}</th>
-                  <th className="text-right py-2 text-gray-500 font-medium">{t("wellnessDashboard.topPrograms.colPoints")}</th>
-                  <th className="text-center py-2 text-gray-500 font-medium">{t("wellnessDashboard.topPrograms.colStatus")}</th>
+                <tr className="border-b border-border">
+                  <th className="text-left py-2 text-muted-foreground font-medium">{t("wellnessDashboard.topPrograms.colProgram")}</th>
+                  <th className="text-left py-2 text-muted-foreground font-medium">{t("wellnessDashboard.topPrograms.colType")}</th>
+                  <th className="text-right py-2 text-muted-foreground font-medium">{t("wellnessDashboard.topPrograms.colEnrolled")}</th>
+                  <th className="text-right py-2 text-muted-foreground font-medium">{t("wellnessDashboard.topPrograms.colPoints")}</th>
+                  <th className="text-center py-2 text-muted-foreground font-medium">{t("wellnessDashboard.topPrograms.colStatus")}</th>
                 </tr>
               </thead>
               <tbody>
                 {d.top_programs.map((p: any) => (
-                  <tr key={p.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                    <td className="py-3 font-medium text-gray-900">
-                      <Link to="/wellness" className="text-brand-600 hover:underline focus:outline-none focus:ring-2 focus:ring-brand-500 rounded">
+                  <tr key={p.id} className="border-b border-border hover:bg-muted transition-colors">
+                    <td className="py-3 font-medium text-foreground">
+                      <Link to="/wellness" className="text-brand-600 dark:text-brand-400 hover:underline focus:outline-none focus:ring-2 focus:ring-brand-500 rounded">
                         {p.title}
                       </Link>
                     </td>
-                    <td className="py-3 text-gray-600">{t(`wellnessDashboard.programType.${p.program_type}`, { defaultValue: p.program_type })}</td>
-                    <td className="py-3 text-right text-gray-700">
+                    <td className="py-3 text-muted-foreground">{t(`wellnessDashboard.programType.${p.program_type}`, { defaultValue: p.program_type })}</td>
+                    <td className="py-3 text-right text-muted-foreground">
                       {p.max_participants
                         ? t("wellnessDashboard.topPrograms.enrolledOfMax", { enrolled: p.enrolled_count, max: p.max_participants })
                         : p.enrolled_count}
                     </td>
-                    <td className="py-3 text-right text-amber-600 font-medium">
+                    <td className="py-3 text-right text-amber-600 dark:text-amber-400 font-medium">
                       {p.points_reward > 0
                         ? t("wellnessDashboard.topPrograms.pointsReward", { points: p.points_reward })
                         : t("wellnessDashboard.topPrograms.pointsEmpty")}
@@ -304,8 +304,8 @@ export default function WellnessDashboardPage() {
                       <span
                         className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                           p.is_active
-                            ? "bg-green-100 text-green-700"
-                            : "bg-gray-100 text-gray-600"
+                            ? "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300"
+                            : "bg-muted text-muted-foreground"
                         }`}
                       >
                         {p.is_active ? t("wellnessDashboard.status.active") : t("wellnessDashboard.status.inactive")}
@@ -323,42 +323,42 @@ export default function WellnessDashboardPage() {
       {showCreate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="fixed inset-0 bg-black/50" onClick={() => setShowCreate(false)} />
-          <div className="relative bg-white rounded-xl shadow-xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+          <div className="relative bg-card rounded-xl shadow-xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold text-gray-900">{t("wellnessDashboard.modal.title")}</h2>
-              <button onClick={() => setShowCreate(false)} className="text-gray-400 hover:text-gray-600">
+              <h2 className="text-lg font-semibold text-foreground">{t("wellnessDashboard.modal.title")}</h2>
+              <button onClick={() => setShowCreate(false)} className="text-muted-foreground hover:text-foreground">
                 <X className="h-5 w-5" />
               </button>
             </div>
             <form onSubmit={handleCreate} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t("wellnessDashboard.modal.fieldTitle")}</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">{t("wellnessDashboard.modal.fieldTitle")}</label>
                 <input
                   type="text"
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                   placeholder={t("wellnessDashboard.modal.titlePlaceholder")}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t("wellnessDashboard.modal.fieldDescription")}</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">{t("wellnessDashboard.modal.fieldDescription")}</label>
                 <textarea
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                   placeholder={t("wellnessDashboard.modal.descriptionPlaceholder")}
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("wellnessDashboard.modal.fieldType")}</label>
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">{t("wellnessDashboard.modal.fieldType")}</label>
                   <select
                     value={form.program_type}
                     onChange={(e) => setForm({ ...form, program_type: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+                    className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-card"
                   >
                     {PROGRAM_TYPES.map((pt) => (
                       <option key={pt} value={pt}>
@@ -368,12 +368,12 @@ export default function WellnessDashboardPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("wellnessDashboard.modal.fieldMaxParticipants")}</label>
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">{t("wellnessDashboard.modal.fieldMaxParticipants")}</label>
                   <input
                     type="number"
                     value={form.max_participants}
                     onChange={(e) => setForm({ ...form, max_participants: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                     placeholder={t("wellnessDashboard.modal.maxParticipantsPlaceholder")}
                     min="1"
                   />
@@ -381,37 +381,37 @@ export default function WellnessDashboardPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("wellnessDashboard.modal.fieldStartDate")}</label>
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">{t("wellnessDashboard.modal.fieldStartDate")}</label>
                   <input
                     type="date"
                     value={form.start_date}
                     onChange={(e) => setForm({ ...form, start_date: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("wellnessDashboard.modal.fieldEndDate")}</label>
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">{t("wellnessDashboard.modal.fieldEndDate")}</label>
                   <input
                     type="date"
                     value={form.end_date}
                     onChange={(e) => setForm({ ...form, end_date: e.target.value })}
                     min={form.start_date || undefined}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t("wellnessDashboard.modal.fieldPointsReward")}</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">{t("wellnessDashboard.modal.fieldPointsReward")}</label>
                 <input
                   type="number"
                   value={form.points_reward}
                   onChange={(e) => setForm({ ...form, points_reward: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                   min="0"
                 />
               </div>
               {createMutation.isError && (
-                <p className="text-sm text-red-600">
+                <p className="text-sm text-red-600 dark:text-red-400">
                   {(createMutation.error as any)?.response?.data?.error?.message || t("wellnessDashboard.error.createProgram")}
                 </p>
               )}
@@ -419,7 +419,7 @@ export default function WellnessDashboardPage() {
                 <button
                   type="button"
                   onClick={() => setShowCreate(false)}
-                  className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg text-sm"
+                  className="px-4 py-2 text-muted-foreground hover:bg-muted rounded-lg text-sm"
                 >
                   {t("wellnessDashboard.modal.cancel")}
                 </button>

@@ -145,18 +145,18 @@ const KIND_STYLE: Record<
 > = {
   birthday: {
     Icon: Gift,
-    ring: "ring-amber-100",
-    chip: "bg-amber-50 text-amber-700",
-    softGrad: "from-amber-50 to-white",
-    accent: "text-amber-600",
+    ring: "ring-amber-100 dark:ring-amber-900/40",
+    chip: "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300",
+    softGrad: "from-amber-50 to-white dark:from-amber-950/40 dark:to-slate-900",
+    accent: "text-amber-600 dark:text-amber-400",
     bar: "bg-amber-400",
   },
   anniversary: {
     Icon: Award,
-    ring: "ring-brand-100",
-    chip: "bg-brand-50 text-brand-700",
-    softGrad: "from-brand-50 to-white",
-    accent: "text-brand-600",
+    ring: "ring-brand-100 dark:ring-brand-900/40",
+    chip: "bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300",
+    softGrad: "from-brand-50 to-white dark:from-brand-950/40 dark:to-slate-900",
+    accent: "text-brand-600 dark:text-brand-400",
     bar: "bg-brand-500",
   },
 };
@@ -215,20 +215,20 @@ export default function CelebrationsPage() {
       {/* ── Header — clean & light, matching the app's other page headers ── */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-50 dark:bg-brand-950/40 text-brand-600 dark:text-brand-400">
             <PartyPopper className="h-6 w-6" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">{t("celebrations.title")}</h1>
-            <p className="text-sm text-gray-500">{t("celebrations.subtitle")}</p>
+            <h1 className="text-2xl font-bold text-foreground">{t("celebrations.title")}</h1>
+            <p className="text-sm text-muted-foreground">{t("celebrations.subtitle")}</p>
           </div>
         </div>
 
         {/* Compact stat pills */}
         {!isLoading && (
           <div className="flex flex-wrap gap-2">
-            <HeroStat icon={Gift} label={t("celebrations.birthdays")} value={all.filter((c) => c.kind === "birthday").length} accent="text-amber-600" />
-            <HeroStat icon={Award} label={t("celebrations.anniversaries")} value={all.filter((c) => c.kind === "anniversary").length} accent="text-brand-600" />
+            <HeroStat icon={Gift} label={t("celebrations.birthdays")} value={all.filter((c) => c.kind === "birthday").length} accent="text-amber-600 dark:text-amber-400" />
+            <HeroStat icon={Award} label={t("celebrations.anniversaries")} value={all.filter((c) => c.kind === "anniversary").length} accent="text-brand-600 dark:text-brand-400" />
             <HeroStat icon={Sparkles} label={t("celebrations.today")} value={all.filter((c) => c.daysUntil === 0).length} accent="text-amber-500" />
           </div>
         )}
@@ -236,7 +236,7 @@ export default function CelebrationsPage() {
 
       {/* ── Filter toggle — extra top spacing to separate it clearly from
              the header above (a thin divider + generous gap). ──────────── */}
-      <div className="flex flex-wrap items-center gap-2 border-t border-gray-100 pt-6 mt-2">
+      <div className="flex flex-wrap items-center gap-2 border-t border-border pt-6 mt-2">
         <FilterTab active={filter === "all"} onClick={() => setFilter("all")}>
           {t("celebrations.filterAll")}
         </FilterTab>
@@ -269,13 +269,13 @@ export default function CelebrationsPage() {
             </section>
           ) : (
             // No one celebrating today — a warm anchor instead of a bare list.
-            <div className="flex items-center gap-3 rounded-xl border border-gray-100 bg-gradient-to-r from-brand-50 to-white p-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white text-brand-600 shadow-sm">
+            <div className="flex items-center gap-3 rounded-xl border border-border bg-gradient-to-r from-brand-50 to-white dark:from-brand-950/40 dark:to-slate-900 p-4">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-card text-brand-600 dark:text-brand-400 shadow-sm">
                 <Sparkles className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-800">{t("celebrations.noneToday")}</p>
-                <p className="text-xs text-gray-500">{t("celebrations.noneTodayHint")}</p>
+                <p className="text-sm font-semibold text-foreground">{t("celebrations.noneToday")}</p>
+                <p className="text-xs text-muted-foreground">{t("celebrations.noneTodayHint")}</p>
               </div>
             </div>
           )}
@@ -329,10 +329,10 @@ function HeroStat({
   accent: string;
 }) {
   return (
-    <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-1.5">
+    <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-1.5">
       <Icon className={`h-4 w-4 ${accent}`} />
-      <span className="text-sm font-bold tabular-nums text-gray-900">{value}</span>
-      <span className="text-xs text-gray-500">{label}</span>
+      <span className="text-sm font-bold tabular-nums text-foreground">{value}</span>
+      <span className="text-xs text-muted-foreground">{label}</span>
     </div>
   );
 }
@@ -352,7 +352,7 @@ function FilterTab({
       className={`inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium transition ${
         active
           ? "bg-brand-600 text-white shadow-sm"
-          : "border border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
+          : "border border-border bg-card text-muted-foreground hover:bg-muted"
       }`}
     >
       {children}
@@ -376,11 +376,11 @@ function SectionHeading({
       <span className="text-lg" aria-hidden>
         {emoji}
       </span>
-      <h2 className="text-lg font-bold text-gray-900">{title}</h2>
-      <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-600 tabular-nums">
+      <h2 className="text-lg font-bold text-foreground">{title}</h2>
+      <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-semibold text-muted-foreground tabular-nums">
         {count}
       </span>
-      {hint ? <span className="ml-1 text-xs font-medium text-gray-400">{hint}</span> : null}
+      {hint ? <span className="ml-1 text-xs font-medium text-muted-foreground">{hint}</span> : null}
     </div>
   );
 }
@@ -392,7 +392,7 @@ function TodayCard({ c, deptName, t }: { c: Celebration; deptName: string; t: TF
   const Icon = s.Icon;
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl border border-gray-100 bg-gradient-to-br ${s.softGrad} p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md`}
+      className={`relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br ${s.softGrad} p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md`}
     >
       <ConfettiLayer />
       <div className="relative flex flex-col items-center text-center">
@@ -404,10 +404,10 @@ function TodayCard({ c, deptName, t }: { c: Celebration; deptName: string; t: TF
           size="xl"
           ring={`ring-4 ${s.ring}`}
         />
-        <p className="mt-3 text-base font-bold text-gray-900">
+        <p className="mt-3 text-base font-bold text-foreground">
           {c.firstName} {c.lastName}
         </p>
-        {deptName && <p className="text-xs text-gray-500">{deptName}</p>}
+        {deptName && <p className="text-xs text-muted-foreground">{deptName}</p>}
         <span
           className={`mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${s.chip}`}
         >
@@ -428,8 +428,8 @@ function UpcomingRow({ c, deptName, t }: { c: Celebration; deptName: string; t: 
 
   return (
     <div
-      className={`group relative flex items-center gap-3 overflow-hidden rounded-xl border bg-white p-3.5 pl-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${
-        soon ? "border-gray-200" : "border-gray-100"
+      className={`group relative flex items-center gap-3 overflow-hidden rounded-xl border bg-card p-3.5 pl-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${
+        soon ? "border-border" : "border-border"
       }`}
     >
       {/* Colored left accent bar — type at a glance */}
@@ -445,7 +445,7 @@ function UpcomingRow({ c, deptName, t }: { c: Celebration; deptName: string; t: 
       />
 
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold text-gray-900">
+        <p className="truncate text-sm font-semibold text-foreground">
           {c.firstName} {c.lastName}
         </p>
         <div className="mt-1 flex items-center gap-1.5">
@@ -455,14 +455,14 @@ function UpcomingRow({ c, deptName, t }: { c: Celebration; deptName: string; t: 
               ? t("celebrations.birthday")
               : t("celebrations.yearsAnniversary", { years: ordinal(c.years ?? 0) })}
           </span>
-          {deptName && <span className="truncate text-xs text-gray-400">{deptName}</span>}
+          {deptName && <span className="truncate text-xs text-muted-foreground">{deptName}</span>}
         </div>
       </div>
 
       {/* Date badge — soft pill so the "when" reads clearly */}
       <div
         className={`shrink-0 rounded-lg px-2.5 py-1.5 text-center ${
-          soon ? s.chip : "bg-gray-50 text-gray-600"
+          soon ? s.chip : "bg-muted text-muted-foreground"
         }`}
       >
         <p className="flex items-center justify-center gap-1 text-sm font-bold tabular-nums leading-none">
@@ -483,10 +483,10 @@ function LoadingState() {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {[1, 2, 3, 4, 5, 6].map((i) => (
-        <div key={i} className="animate-pulse rounded-2xl border border-gray-100 bg-white p-5">
-          <div className="mx-auto h-16 w-16 rounded-full bg-gray-200" />
-          <div className="mx-auto mt-3 h-4 w-28 rounded bg-gray-200" />
-          <div className="mx-auto mt-2 h-3 w-20 rounded bg-gray-100" />
+        <div key={i} className="animate-pulse rounded-2xl border border-border bg-card p-5">
+          <div className="mx-auto h-16 w-16 rounded-full bg-muted" />
+          <div className="mx-auto mt-3 h-4 w-28 rounded bg-muted" />
+          <div className="mx-auto mt-2 h-3 w-20 rounded bg-muted" />
         </div>
       ))}
     </div>
@@ -504,15 +504,15 @@ function EmptyState({
 }) {
   return (
     <div
-      className={`flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-white text-center ${
+      className={`flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card text-center ${
         compact ? "py-10" : "py-16"
       }`}
     >
-      <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-gray-50">
-        <PartyPopper className="h-7 w-7 text-gray-300" />
+      <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+        <PartyPopper className="h-7 w-7 text-muted-foreground/50" />
       </div>
-      <p className="text-sm font-semibold text-gray-700">{title}</p>
-      <p className="mt-1 max-w-sm text-xs text-gray-400">{hint}</p>
+      <p className="text-sm font-semibold text-muted-foreground">{title}</p>
+      <p className="mt-1 max-w-sm text-xs text-muted-foreground">{hint}</p>
     </div>
   );
 }
