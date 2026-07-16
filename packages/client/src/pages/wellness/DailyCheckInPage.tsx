@@ -16,11 +16,11 @@ const todayISO = () => new Date().toISOString().split("T")[0];
 
 // Mood options — label text comes from i18n (wellness.checkIn.mood.*).
 const MOODS = [
-  { value: "great", emoji: "😄", color: "border-green-400 bg-green-50 hover:bg-green-100" },
-  { value: "good", emoji: "🙂", color: "border-blue-400 bg-blue-50 hover:bg-blue-100" },
-  { value: "okay", emoji: "😐", color: "border-amber-400 bg-amber-50 hover:bg-amber-100" },
-  { value: "low", emoji: "😔", color: "border-orange-400 bg-orange-50 hover:bg-orange-100" },
-  { value: "stressed", emoji: "😰", color: "border-red-400 bg-red-50 hover:bg-red-100" },
+  { value: "great", emoji: "😄", color: "border-green-400 bg-green-50 dark:bg-green-950/40 hover:bg-green-100 dark:hover:bg-green-950/40" },
+  { value: "good", emoji: "🙂", color: "border-blue-400 bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-950/40" },
+  { value: "okay", emoji: "😐", color: "border-amber-400 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-950/40" },
+  { value: "low", emoji: "😔", color: "border-orange-400 bg-orange-50 dark:bg-orange-950/40 hover:bg-orange-100 dark:hover:bg-orange-950/40" },
+  { value: "stressed", emoji: "😰", color: "border-red-400 bg-red-50 dark:bg-red-950/40 hover:bg-red-100 dark:hover:bg-red-950/40" },
 ];
 
 export default function DailyCheckInPage() {
@@ -77,12 +77,12 @@ export default function DailyCheckInPage() {
   if (submitted || alreadyCheckedIn) {
     return (
       <div className="max-w-lg mx-auto mt-12">
-        <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
+        <div className="bg-card rounded-xl border border-border p-8 text-center">
           <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <h2 className="text-2xl font-bold text-foreground mb-2">
             {submitted ? t("wellness.checkIn.completeTitle") : t("wellness.checkIn.alreadyTitle")}
           </h2>
-          <p className="text-gray-500 mb-6">
+          <p className="text-muted-foreground mb-6">
             {submitted ? t("wellness.checkIn.completeText") : t("wellness.checkIn.alreadyText")}
           </p>
           <div className="flex items-center justify-center gap-3">
@@ -94,7 +94,7 @@ export default function DailyCheckInPage() {
             </button>
             <button
               onClick={() => navigate("/wellness")}
-              className="px-4 py-2 border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 text-sm"
+              className="px-4 py-2 border border-border text-muted-foreground rounded-lg hover:bg-muted text-sm"
             >
               {t("wellness.checkIn.explorePrograms")}
             </button>
@@ -106,7 +106,7 @@ export default function DailyCheckInPage() {
 
   if (loadingToday) {
     return (
-      <div className="max-w-lg mx-auto mt-12 text-center text-gray-400">
+      <div className="max-w-lg mx-auto mt-12 text-center text-muted-foreground">
         {t("wellness.checkIn.loading")}
       </div>
     );
@@ -118,13 +118,13 @@ export default function DailyCheckInPage() {
       <div className="flex items-center gap-3">
         <button
           onClick={() => navigate(-1)}
-          className="p-2 rounded-lg hover:bg-gray-100 text-gray-500"
+          className="p-2 rounded-lg hover:bg-muted text-muted-foreground"
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t("wellness.checkIn.title")}</h1>
-          <p className="text-gray-500 text-sm">
+          <h1 className="text-2xl font-bold text-foreground">{t("wellness.checkIn.title")}</h1>
+          <p className="text-muted-foreground text-sm">
             {new Date().toLocaleDateString(undefined, {
               weekday: "long",
               month: "long",
@@ -137,10 +137,10 @@ export default function DailyCheckInPage() {
 
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Mood Picker */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <div className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-2 mb-4">
             <Heart className="h-5 w-5 text-pink-500" />
-            <h3 className="text-lg font-semibold text-gray-900">{t("wellness.checkIn.moodQuestion")}</h3>
+            <h3 className="text-lg font-semibold text-foreground">{t("wellness.checkIn.moodQuestion")}</h3>
           </div>
           <div className="grid grid-cols-5 gap-3">
             {MOODS.map((m) => (
@@ -150,12 +150,12 @@ export default function DailyCheckInPage() {
                 onClick={() => setForm({ ...form, mood: m.value })}
                 className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
                   form.mood === m.value
-                    ? `${m.color} border-opacity-100 ring-2 ring-offset-2 ring-brand-500`
-                    : "border-gray-200 hover:border-gray-300"
+                    ? `${m.color} border-opacity-100 ring-2 ring-offset-2 ring-offset-card ring-brand-500`
+                    : "border-border hover:border-border"
                 }`}
               >
                 <span className="text-3xl">{m.emoji}</span>
-                <span className="text-xs font-medium text-gray-600">{t(`wellness.checkIn.mood.${m.value}`)}</span>
+                <span className="text-xs font-medium text-muted-foreground">{t(`wellness.checkIn.mood.${m.value}`)}</span>
               </button>
             ))}
           </div>
@@ -165,13 +165,13 @@ export default function DailyCheckInPage() {
         </div>
 
         {/* Energy Level */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <div className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-2 mb-4">
             <Zap className="h-5 w-5 text-yellow-500" />
-            <h3 className="text-lg font-semibold text-gray-900">{t("wellness.checkIn.energyLevel")}</h3>
+            <h3 className="text-lg font-semibold text-foreground">{t("wellness.checkIn.energyLevel")}</h3>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-500 w-8">{t("wellness.checkIn.low")}</span>
+            <span className="text-sm text-muted-foreground w-8">{t("wellness.checkIn.low")}</span>
             <div className="flex-1 flex items-center gap-2">
               {[1, 2, 3, 4, 5].map((level) => (
                 <button
@@ -181,30 +181,30 @@ export default function DailyCheckInPage() {
                   className={`flex-1 h-12 rounded-lg flex items-center justify-center text-lg font-bold transition-all ${
                     form.energy_level >= level
                       ? "bg-yellow-400 text-yellow-900"
-                      : "bg-gray-100 text-gray-400 hover:bg-gray-200"
+                      : "bg-muted text-muted-foreground hover:bg-muted"
                   }`}
                 >
                   {level}
                 </button>
               ))}
             </div>
-            <span className="text-sm text-gray-500 w-8">{t("wellness.checkIn.high")}</span>
+            <span className="text-sm text-muted-foreground w-8">{t("wellness.checkIn.high")}</span>
           </div>
         </div>
 
         {/* Sleep & Exercise */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <div className="bg-card rounded-xl border border-border p-6">
           <div className="grid grid-cols-2 gap-6">
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <Moon className="h-5 w-5 text-indigo-500" />
-                <label className="text-sm font-semibold text-gray-900">{t("wellness.checkIn.sleepHours")}</label>
+                <label className="text-sm font-semibold text-foreground">{t("wellness.checkIn.sleepHours")}</label>
               </div>
               <input
                 type="number"
                 value={form.sleep_hours}
                 onChange={(e) => setForm({ ...form, sleep_hours: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                 placeholder={t("wellness.checkIn.sleepPlaceholder")}
                 step="0.5"
                 min="0"
@@ -214,13 +214,13 @@ export default function DailyCheckInPage() {
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <Dumbbell className="h-5 w-5 text-green-500" />
-                <label className="text-sm font-semibold text-gray-900">{t("wellness.checkIn.exerciseMinutes")}</label>
+                <label className="text-sm font-semibold text-foreground">{t("wellness.checkIn.exerciseMinutes")}</label>
               </div>
               <input
                 type="number"
                 value={form.exercise_minutes}
                 onChange={(e) => setForm({ ...form, exercise_minutes: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                 placeholder={t("wellness.checkIn.exercisePlaceholder")}
                 min="0"
               />
@@ -229,22 +229,22 @@ export default function DailyCheckInPage() {
         </div>
 
         {/* Notes */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <label className="block text-sm font-semibold text-gray-900 mb-3">
+        <div className="bg-card rounded-xl border border-border p-6">
+          <label className="block text-sm font-semibold text-foreground mb-3">
             {t("wellness.checkIn.notesLabel")}
           </label>
           <textarea
             value={form.notes}
             onChange={(e) => setForm({ ...form, notes: e.target.value })}
             rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
             placeholder={t("wellness.checkIn.notesPlaceholder")}
           />
         </div>
 
         {/* Error */}
         {mutation.isError && (
-          <p className="text-sm text-red-600 text-center">
+          <p className="text-sm text-red-600 dark:text-red-400 text-center">
             {(mutation.error as any)?.response?.data?.error?.message || t("wellness.checkIn.error")}
           </p>
         )}
