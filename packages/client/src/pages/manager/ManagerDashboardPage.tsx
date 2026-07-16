@@ -123,12 +123,12 @@ export default function ManagerDashboardPage() {
   // act on a click. Team Size → Direct Reports; attendance stats → Team
   // Attendance Today; Pending Leaves → Pending Leave Requests.
   const statCards = [
-    { key: "teamSize", label: t('manager.stats.teamSize'), value: stats?.team_size ?? "-", icon: Users, color: "bg-blue-50 text-blue-700", section: "direct-reports" },
-    { key: "presentToday", label: t('manager.stats.presentToday'), value: stats?.present_today ?? "-", icon: UserCheck, color: "bg-green-50 text-green-700", section: "team-attendance" },
-    { key: "absentToday", label: t('manager.stats.absentToday'), value: stats?.absent_today ?? "-", icon: UserX, color: "bg-red-50 text-red-700", section: "team-attendance" },
-    { key: "onLeave", label: t('manager.stats.onLeave'), value: stats?.on_leave_today ?? "-", icon: CalendarDays, color: "bg-purple-50 text-purple-700", section: "team-attendance" },
-    { key: "lateToday", label: t('manager.stats.lateToday'), value: stats?.late_today ?? "-", icon: AlertTriangle, color: "bg-yellow-50 text-yellow-700", section: "team-attendance" },
-    { key: "pendingLeaves", label: t('manager.stats.pendingLeaves'), value: stats?.pending_leave_requests ?? "-", icon: Clock, color: "bg-amber-50 text-amber-700", section: "pending-leaves" },
+    { key: "teamSize", label: t('manager.stats.teamSize'), value: stats?.team_size ?? "-", icon: Users, color: "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300", section: "direct-reports" },
+    { key: "presentToday", label: t('manager.stats.presentToday'), value: stats?.present_today ?? "-", icon: UserCheck, color: "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300", section: "team-attendance" },
+    { key: "absentToday", label: t('manager.stats.absentToday'), value: stats?.absent_today ?? "-", icon: UserX, color: "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300", section: "team-attendance" },
+    { key: "onLeave", label: t('manager.stats.onLeave'), value: stats?.on_leave_today ?? "-", icon: CalendarDays, color: "bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300", section: "team-attendance" },
+    { key: "lateToday", label: t('manager.stats.lateToday'), value: stats?.late_today ?? "-", icon: AlertTriangle, color: "bg-yellow-50 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300", section: "team-attendance" },
+    { key: "pendingLeaves", label: t('manager.stats.pendingLeaves'), value: stats?.pending_leave_requests ?? "-", icon: Clock, color: "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300", section: "pending-leaves" },
   ];
 
   const scrollToSection = (id: string) => {
@@ -139,8 +139,8 @@ export default function ManagerDashboardPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">{t('manager.title')}</h1>
-        <p className="text-gray-500 mt-1">
+        <h1 className="text-2xl font-bold text-foreground">{t('manager.title')}</h1>
+        <p className="text-muted-foreground mt-1">
           {t('manager.subtitle')}
         </p>
       </div>
@@ -153,17 +153,17 @@ export default function ManagerDashboardPage() {
             type="button"
             onClick={() => scrollToSection(s.section)}
             aria-label={`Jump to ${s.label}`}
-            className="bg-white rounded-xl border border-gray-200 p-5 text-left transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="bg-card rounded-xl border border-border p-5 text-left transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
             <div className="flex items-center gap-3">
               <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${s.color}`}>
                 <s.icon className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-2xl font-bold text-foreground">
                   {statsLoading ? "..." : s.value}
                 </p>
-                <p className="text-xs text-gray-500">{s.label}</p>
+                <p className="text-xs text-muted-foreground">{s.label}</p>
               </div>
             </div>
           </button>
@@ -172,30 +172,30 @@ export default function ManagerDashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Team Attendance Today */}
-        <div id="team-attendance" className="bg-white rounded-xl border border-gray-200 overflow-hidden scroll-mt-4">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">{t('manager.teamAttendanceToday')}</h2>
+        <div id="team-attendance" className="bg-card rounded-xl border border-border overflow-hidden scroll-mt-4">
+          <div className="px-6 py-4 border-b border-border">
+            <h2 className="text-lg font-semibold text-foreground">{t('manager.teamAttendanceToday')}</h2>
           </div>
           <div className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
             {attendance?.present?.length === 0 && attendance?.absent?.length === 0 ? (
-              <div className="px-6 py-8 text-center text-gray-400">{t('manager.noTeamMembers')}</div>
+              <div className="px-6 py-8 text-center text-muted-foreground">{t('manager.noTeamMembers')}</div>
             ) : (
               <>
                 {(attendance?.present || []).map((r: any) => (
                   <div key={r.id} className="flex items-center justify-between px-6 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-sm font-semibold text-green-700">
+                      <div className="h-8 w-8 rounded-full bg-green-100 dark:bg-green-950/40 flex items-center justify-center text-sm font-semibold text-green-700 dark:text-green-300">
                         {r.first_name?.[0]}{r.last_name?.[0]}
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{r.first_name} {r.last_name}</p>
-                        <p className="text-xs text-gray-400">
+                        <p className="text-sm font-medium text-foreground">{r.first_name} {r.last_name}</p>
+                        <p className="text-xs text-muted-foreground">
                           {t('manager.inPrefix')}: {r.check_in ? new Date(r.check_in).toLocaleTimeString() : "-"}
                           {r.check_out ? ` | ${t('manager.outPrefix')}: ${new Date(r.check_out).toLocaleTimeString()}` : ""}
                         </p>
                       </div>
                     </div>
-                    <span className="text-xs px-2 py-1 rounded-full bg-green-50 text-green-700 font-medium">
+                    <span className="text-xs px-2 py-1 rounded-full bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300 font-medium">
                       {r.status === "half_day" ? t('manager.statusHalfDay') : t('manager.statusPresent')}
                     </span>
                   </div>
@@ -203,15 +203,15 @@ export default function ManagerDashboardPage() {
                 {(attendance?.absent || []).map((m: any) => (
                   <div key={m.id} className="flex items-center justify-between px-6 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-red-100 flex items-center justify-center text-sm font-semibold text-red-700">
+                      <div className="h-8 w-8 rounded-full bg-red-100 dark:bg-red-950/40 flex items-center justify-center text-sm font-semibold text-red-700 dark:text-red-300">
                         {m.first_name?.[0]}{m.last_name?.[0]}
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{m.first_name} {m.last_name}</p>
-                        <p className="text-xs text-gray-400">{m.emp_code || m.email}</p>
+                        <p className="text-sm font-medium text-foreground">{m.first_name} {m.last_name}</p>
+                        <p className="text-xs text-muted-foreground">{m.emp_code || m.email}</p>
                       </div>
                     </div>
-                    <span className="text-xs px-2 py-1 rounded-full bg-red-50 text-red-700 font-medium">
+                    <span className="text-xs px-2 py-1 rounded-full bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 font-medium">
                       {t('manager.statusAbsent')}
                     </span>
                   </div>
@@ -219,15 +219,15 @@ export default function ManagerDashboardPage() {
                 {(attendance?.on_leave || []).map((r: any) => (
                   <div key={r.id} className="flex items-center justify-between px-6 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center text-sm font-semibold text-purple-700">
+                      <div className="h-8 w-8 rounded-full bg-purple-100 dark:bg-purple-950/40 flex items-center justify-center text-sm font-semibold text-purple-700 dark:text-purple-300">
                         {r.first_name?.[0]}{r.last_name?.[0]}
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{r.first_name} {r.last_name}</p>
-                        <p className="text-xs text-gray-400">{r.emp_code || r.email}</p>
+                        <p className="text-sm font-medium text-foreground">{r.first_name} {r.last_name}</p>
+                        <p className="text-xs text-muted-foreground">{r.emp_code || r.email}</p>
                       </div>
                     </div>
-                    <span className="text-xs px-2 py-1 rounded-full bg-purple-50 text-purple-700 font-medium">
+                    <span className="text-xs px-2 py-1 rounded-full bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 font-medium">
                       {t('manager.statusOnLeave')}
                     </span>
                   </div>
@@ -238,13 +238,13 @@ export default function ManagerDashboardPage() {
         </div>
 
         {/* Team Leave Calendar (this week) */}
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">{t('manager.teamLeaveCalendar')}</h2>
+        <div className="bg-card rounded-xl border border-border overflow-hidden">
+          <div className="px-6 py-4 border-b border-border">
+            <h2 className="text-lg font-semibold text-foreground">{t('manager.teamLeaveCalendar')}</h2>
           </div>
           <div className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
             {calendar.length === 0 ? (
-              <div className="px-6 py-8 text-center text-gray-400">
+              <div className="px-6 py-8 text-center text-muted-foreground">
                 {t('manager.noApprovedLeaves')}
               </div>
             ) : (
@@ -256,10 +256,10 @@ export default function ManagerDashboardPage() {
                       style={{ backgroundColor: leave.leave_type_color || "#6366f1" }}
                     />
                     <div>
-                      <p className="text-sm font-medium text-gray-900">
+                      <p className="text-sm font-medium text-foreground">
                         {leave.first_name} {leave.last_name}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-muted-foreground">
                         {leave.leave_type_name ? leaveTypeLabel(t, { code: leave.leave_type_code, name: leave.leave_type_name }) : t('manager.leaveFallback')} &mdash;{" "}
                         {leave.start_date === leave.end_date
                           ? leave.start_date
@@ -269,7 +269,7 @@ export default function ManagerDashboardPage() {
                       </p>
                     </div>
                   </div>
-                  <span className="text-xs text-gray-500">{Number(leave.days_count)}d</span>
+                  <span className="text-xs text-muted-foreground">{Number(leave.days_count)}d</span>
                 </div>
               ))
             )}
@@ -278,60 +278,60 @@ export default function ManagerDashboardPage() {
       </div>
 
       {/* Pending Leave Requests */}
-      <div id="pending-leaves" className="bg-white rounded-xl border border-gray-200 overflow-hidden mb-8 scroll-mt-4">
-        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">{t('manager.pendingLeaveRequests')}</h2>
-          <span className="text-xs bg-amber-50 text-amber-700 px-2 py-1 rounded-full font-medium">
+      <div id="pending-leaves" className="bg-card rounded-xl border border-border overflow-hidden mb-8 scroll-mt-4">
+        <div className="px-6 py-4 border-b border-border flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-foreground">{t('manager.pendingLeaveRequests')}</h2>
+          <span className="text-xs bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 px-2 py-1 rounded-full font-medium">
             {t('manager.pendingBadge', { count: pendingLeaves.length })}
           </span>
         </div>
         <table className="min-w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
+          <thead className="bg-muted border-b border-border">
             <tr>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('manager.table.employee')}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('manager.table.type')}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('manager.table.dates')}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('manager.table.days')}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('manager.table.reason')}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t('manager.table.actions')}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('manager.table.employee')}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('manager.table.type')}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('manager.table.dates')}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('manager.table.days')}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('manager.table.reason')}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('manager.table.actions')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {pendingLeaves.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-6 py-8 text-center text-gray-400">
+                <td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">
                   {t('manager.noPendingRequests')}
                 </td>
               </tr>
             ) : (
               pendingLeaves.map((leave) => (
-                <tr key={leave.id} className="hover:bg-gray-50">
+                <tr key={leave.id} className="hover:bg-muted">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-brand-100 flex items-center justify-center text-sm font-semibold text-brand-700">
+                      <div className="h-8 w-8 rounded-full bg-brand-100 dark:bg-brand-950/40 flex items-center justify-center text-sm font-semibold text-brand-700 dark:text-brand-300">
                         {leave.first_name?.[0]}{leave.last_name?.[0]}
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900">
+                        <p className="text-sm font-medium text-foreground">
                           {leave.first_name} {leave.last_name}
                         </p>
-                        <p className="text-xs text-gray-400">{leave.emp_code || ""}</p>
+                        <p className="text-xs text-muted-foreground">{leave.emp_code || ""}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-700">
+                  <td className="px-6 py-4 text-sm text-muted-foreground">
                     {leave.leave_type_name ? leaveTypeLabel(t, { code: leave.leave_type_code, name: leave.leave_type_name }) : "-"}
                     {/* #1609 — guard with Boolean(): MySQL tinyint 0 renders as literal "0". */}
-                    {Boolean(leave.is_half_day) && <span className="ml-1 text-xs text-gray-400">{t('manager.halfSuffix')}</span>}
+                    {Boolean(leave.is_half_day) && <span className="ml-1 text-xs text-muted-foreground">{t('manager.halfSuffix')}</span>}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
+                  <td className="px-6 py-4 text-sm text-muted-foreground">
                     {leave.start_date} &mdash; {leave.end_date}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-700 font-medium">
+                  <td className="px-6 py-4 text-sm text-muted-foreground font-medium">
                     {Number(leave.days_count)}
                   </td>
                   <td
-                    className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate cursor-help"
+                    className="px-6 py-4 text-sm text-muted-foreground max-w-xs truncate cursor-help"
                     title={leave.reason || ""}
                   >
                     {leave.reason}
@@ -341,7 +341,7 @@ export default function ManagerDashboardPage() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => setActionId(actionId === leave.id ? null : leave.id)}
-                          className="text-xs bg-green-50 text-green-700 px-2 py-1 rounded hover:bg-green-100"
+                          className="text-xs bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300 px-2 py-1 rounded hover:bg-green-100 dark:hover:bg-green-950/40"
                         >
                           {t('manager.review')}
                         </button>
@@ -381,38 +381,38 @@ export default function ManagerDashboardPage() {
       </div>
 
       {/* Direct Reports List */}
-      <div id="direct-reports" className="bg-white rounded-xl border border-gray-200 overflow-hidden scroll-mt-4">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">{t('manager.directReports')}</h2>
+      <div id="direct-reports" className="bg-card rounded-xl border border-border overflow-hidden scroll-mt-4">
+        <div className="px-6 py-4 border-b border-border">
+          <h2 className="text-lg font-semibold text-foreground">{t('manager.directReports')}</h2>
         </div>
         <div className="divide-y divide-gray-100">
           {teamLoading ? (
-            <div className="px-6 py-8 text-center text-gray-400">{t('manager.loadingTeam')}</div>
+            <div className="px-6 py-8 text-center text-muted-foreground">{t('manager.loadingTeam')}</div>
           ) : team.length === 0 ? (
-            <div className="px-6 py-8 text-center text-gray-400">
+            <div className="px-6 py-8 text-center text-muted-foreground">
               {t('manager.noDirectReports')}
             </div>
           ) : (
             team.map((member) => (
               <div
                 key={member.id}
-                className="flex items-center justify-between px-6 py-4 hover:bg-gray-50 cursor-pointer"
+                className="flex items-center justify-between px-6 py-4 hover:bg-muted cursor-pointer"
                 onClick={() => window.location.href = `/employees/${member.id}`}
               >
                 <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 rounded-full bg-brand-100 flex items-center justify-center text-sm font-semibold text-brand-700">
+                  <div className="h-10 w-10 rounded-full bg-brand-100 dark:bg-brand-950/40 flex items-center justify-center text-sm font-semibold text-brand-700 dark:text-brand-300">
                     {member.first_name?.[0]}{member.last_name?.[0]}
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-sm font-medium text-foreground">
                       {member.first_name} {member.last_name}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-muted-foreground">
                       {member.designation || member.role} {member.emp_code ? `| ${member.emp_code}` : ""}
                     </p>
                   </div>
                 </div>
-                <ChevronRight className="h-4 w-4 text-gray-400" />
+                <ChevronRight className="h-4 w-4 text-muted-foreground" />
               </div>
             ))
           )}

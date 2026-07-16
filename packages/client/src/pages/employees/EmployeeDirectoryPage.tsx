@@ -500,19 +500,19 @@ export default function EmployeeDirectoryPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{tx("title")}</h1>
-          <p className="text-gray-500 mt-1">{tx("subtitle")}</p>
+          <h1 className="text-2xl font-bold text-foreground">{tx("title")}</h1>
+          <p className="text-muted-foreground mt-1">{tx("subtitle")}</p>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={handleDownload}
             disabled={exportQuery.isFetching}
-            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted disabled:opacity-50"
           >
             <Download className="h-4 w-4" />
             {exportQuery.isFetching ? tx("exporting") : tx("exportExcel")}
           </button>
-          <label className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer">
+          <label className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted cursor-pointer">
             <Upload className="h-4 w-4" />
             {tx("bulkUpdate")}
             <input
@@ -528,8 +528,8 @@ export default function EmployeeDirectoryPage() {
               onClick={() => setShowPendingInvitations(true)}
               className={`relative flex items-center gap-2 px-4 py-2 border rounded-lg text-sm font-medium transition-colors ${
                 invitations.length > 0
-                  ? "border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100"
-                  : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                  ? "border-amber-300 bg-amber-50 dark:bg-amber-950/40 text-amber-800 hover:bg-amber-100 dark:hover:bg-amber-950/40"
+                  : "border-border text-muted-foreground hover:bg-muted"
               }`}
             >
               <Mail className="h-4 w-4" />
@@ -544,7 +544,7 @@ export default function EmployeeDirectoryPage() {
           {isOrgAdmin && (
             <button
               onClick={() => setShowCsvImport(true)}
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50"
+              className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted"
             >
               <FileSpreadsheet className="h-4 w-4" /> {tx("importEmployees")}
             </button>
@@ -554,7 +554,7 @@ export default function EmployeeDirectoryPage() {
               onClick={() => setShowBulkInviteConfirm(true)}
               disabled={bulkInvite.isPending}
               title={tx("inviteAllTooltip") as string}
-              className="flex items-center gap-2 px-4 py-2 border border-brand-300 bg-brand-50 text-brand-800 rounded-lg text-sm font-medium hover:bg-brand-100 disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2 border border-brand-300 bg-brand-50 dark:bg-brand-950/40 text-brand-800 rounded-lg text-sm font-medium hover:bg-brand-100 dark:hover:bg-brand-950/40 disabled:opacity-50"
             >
               <Users className="h-4 w-4" /> {tx("inviteAll")}
             </button>
@@ -579,20 +579,20 @@ export default function EmployeeDirectoryPage() {
           onClick={() => !bulkInvite.isPending && setShowBulkInviteConfirm(false)}
         >
           <div
-            className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-6"
+            className="w-full max-w-md bg-card rounded-2xl shadow-2xl p-6"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start gap-3 mb-4">
-              <div className="h-10 w-10 rounded-xl bg-brand-50 flex items-center justify-center text-brand-700">
+              <div className="h-10 w-10 rounded-xl bg-brand-50 dark:bg-brand-950/40 flex items-center justify-center text-brand-700 dark:text-brand-300">
                 <Users className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-semibold text-foreground">
                   {bulkInviteIncludeActivated
                     ? "Invite all employees"
                     : "Invite all unactivated employees"}
                 </h3>
-                <p className="text-xs text-gray-500 mt-0.5">
+                <p className="text-xs text-muted-foreground mt-0.5">
                   {bulkInviteIncludeActivated
                     ? "This sends a fresh invitation email to every active employee in the directory — including users who have already set a password. When they click the link, their existing password will be overwritten with the new one they pick."
                     : "This sends an invitation email to every active employee in the directory who hasn't set a password yet. Anyone with a pending invitation is skipped."}
@@ -603,24 +603,24 @@ export default function EmployeeDirectoryPage() {
             {/* Opt-in to also re-invite already-activated users (bulk
                 password reset). Off by default to prevent accidental
                 mass-resets. */}
-            <label className="mt-2 mb-2 flex items-start gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 cursor-pointer hover:bg-gray-100">
+            <label className="mt-2 mb-2 flex items-start gap-2 rounded-lg border border-border bg-muted px-3 py-2 cursor-pointer hover:bg-muted">
               <input
                 type="checkbox"
                 checked={bulkInviteIncludeActivated}
                 onChange={(e) => setBulkInviteIncludeActivated(e.target.checked)}
                 disabled={bulkInvite.isPending}
-                className="mt-0.5 h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500"
+                className="mt-0.5 h-4 w-4 rounded border-border text-brand-600 dark:text-brand-400 focus:ring-brand-500"
               />
-              <div className="text-xs text-gray-700">
+              <div className="text-xs text-muted-foreground">
                 <span className="font-medium">Also re-invite already-activated employees</span>
-                <p className="text-gray-500 mt-0.5">
+                <p className="text-muted-foreground mt-0.5">
                   Existing users will receive a fresh link. Clicking it resets their current password.
                 </p>
               </div>
             </label>
 
             {bulkInviteIncludeActivated && (
-              <div className="mb-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+              <div className="mb-2 rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-950/40 px-3 py-2 text-xs text-amber-800">
                 <strong>Heads-up:</strong> every active employee will receive a fresh invitation email.
                 Their current password will be overwritten when they click the link.
               </div>
@@ -631,7 +631,7 @@ export default function EmployeeDirectoryPage() {
                 type="button"
                 onClick={() => setShowBulkInviteConfirm(false)}
                 disabled={bulkInvite.isPending}
-                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-muted disabled:opacity-50"
               >
                 Cancel
               </button>
@@ -661,49 +661,49 @@ export default function EmployeeDirectoryPage() {
       {showInvite && canInvite && (
         <form
           onSubmit={handleInvite}
-          className="bg-white rounded-xl border border-gray-200 p-6 mb-6 space-y-3"
+          className="bg-card rounded-xl border border-border p-6 mb-6 space-y-3"
         >
           <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
             <div className="md:col-span-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">Email *</label>
               <input
                 type="email"
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                 placeholder="colleague@company.com"
                 required
               />
             </div>
             <div className="md:col-span-3">
-              <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">First Name</label>
               <input
                 type="text"
                 value={inviteFirstName}
                 onChange={(e) => setInviteFirstName(e.target.value)}
                 disabled={!!existingUserMatch}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed"
                 placeholder="Jane"
               />
             </div>
             <div className="md:col-span-3">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">Last Name</label>
               <input
                 type="text"
                 value={inviteLastName}
                 onChange={(e) => setInviteLastName(e.target.value)}
                 disabled={!!existingUserMatch}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed"
                 placeholder="Doe"
               />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">Role</label>
               <select
                 value={inviteRole}
                 onChange={(e) => setInviteRole(e.target.value)}
                 disabled={!!existingUserMatch}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed"
               >
                 <option value="employee">Employee</option>
                 <option value="manager">Manager</option>
@@ -716,7 +716,7 @@ export default function EmployeeDirectoryPage() {
               fields just locked. Without this the disabled inputs feel
               like a glitch to anyone seeing it for the first time. */}
           {existingUserMatch && (
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted-foreground">
               Existing employee detected — name and role are locked. Submitting will resend their invitation.
             </p>
           )}
@@ -742,12 +742,12 @@ export default function EmployeeDirectoryPage() {
                 setInviteLastName("");
                 setExistingUserMatch(null);
               }}
-              className="text-sm text-gray-500 hover:text-gray-700"
+              className="text-sm text-muted-foreground hover:text-foreground"
             >
               Cancel
             </button>
           </div>
-          {inviteError && <p className="text-sm text-red-600">{inviteError}</p>}
+          {inviteError && <p className="text-sm text-red-600 dark:text-red-400">{inviteError}</p>}
         </form>
       )}
 
@@ -759,19 +759,19 @@ export default function EmployeeDirectoryPage() {
           onClick={() => setShowPendingInvitations(false)}
         >
           <div
-            className="w-full max-w-2xl max-h-[85vh] flex flex-col bg-white rounded-2xl shadow-2xl"
+            className="w-full max-w-2xl max-h-[85vh] flex flex-col bg-card rounded-2xl shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border">
               <div className="flex items-center gap-2">
-                <div className="h-9 w-9 rounded-full bg-amber-100 flex items-center justify-center text-amber-700">
+                <div className="h-9 w-9 rounded-full bg-amber-100 dark:bg-amber-950/40 flex items-center justify-center text-amber-700 dark:text-amber-300">
                   <Mail className="h-4 w-4" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">
+                  <h3 className="text-lg font-semibold text-foreground">
                     Pending Invitations
                   </h3>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-muted-foreground">
                     {invitations.length} invitation{invitations.length === 1 ? "" : "s"} waiting to be accepted
                   </p>
                 </div>
@@ -779,7 +779,7 @@ export default function EmployeeDirectoryPage() {
               <button
                 onClick={() => setShowPendingInvitations(false)}
                 aria-label={t("common.close")}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-muted-foreground hover:text-muted-foreground"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -787,7 +787,7 @@ export default function EmployeeDirectoryPage() {
 
             <div className="flex-1 overflow-y-auto px-6 py-4">
               {invitations.length === 0 ? (
-                <p className="text-sm text-gray-400 py-8 text-center">
+                <p className="text-sm text-muted-foreground py-8 text-center">
                   No pending invitations.
                 </p>
               ) : (
@@ -798,23 +798,23 @@ export default function EmployeeDirectoryPage() {
                       className="flex items-center justify-between rounded-lg px-4 py-3 border border-amber-100 bg-amber-50/40"
                     >
                       <div className="flex items-center gap-3 min-w-0">
-                        <div className="h-8 w-8 flex-shrink-0 rounded-full bg-amber-100 flex items-center justify-center text-amber-700">
+                        <div className="h-8 w-8 flex-shrink-0 rounded-full bg-amber-100 dark:bg-amber-950/40 flex items-center justify-center text-amber-700 dark:text-amber-300">
                           <Mail className="h-4 w-4" />
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-medium text-gray-900 truncate">
+                          <p className="text-sm font-medium text-foreground truncate">
                             {inv.email}
                           </p>
-                          <p className="text-xs text-gray-500 capitalize">
+                          <p className="text-xs text-muted-foreground capitalize">
                             {(inv.role || "employee").replace(/_/g, " ")}
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 flex-shrink-0">
-                        <span className="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-full font-medium">
+                        <span className="text-xs bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 px-2 py-1 rounded-full font-medium">
                           Pending
                         </span>
-                        <span className="text-xs text-gray-400">
+                        <span className="text-xs text-muted-foreground">
                           Invited{" "}
                           {inv.created_at ? new Date(inv.created_at).toLocaleDateString() : ""}
                         </span>
@@ -825,7 +825,7 @@ export default function EmployeeDirectoryPage() {
                             resendInvitation.isPending && resendInvitation.variables === inv.id
                           }
                           title="Rotate token and re-send invitation email"
-                          className="inline-flex items-center gap-1 rounded-md border border-amber-300 bg-white px-2.5 py-1 text-xs font-medium text-amber-800 hover:bg-amber-100 disabled:opacity-50"
+                          className="inline-flex items-center gap-1 rounded-md border border-amber-300 bg-card px-2.5 py-1 text-xs font-medium text-amber-800 hover:bg-amber-100 dark:hover:bg-amber-950/40 disabled:opacity-50"
                         >
                           {resendInvitation.isPending && resendInvitation.variables === inv.id ? (
                             <Loader2 className="h-3 w-3 animate-spin" />
@@ -841,7 +841,7 @@ export default function EmployeeDirectoryPage() {
                             cancelInvitation.isPending && cancelInvitation.variables === inv.id
                           }
                           title={t("common.cancelInvitationTooltip")}
-                          className="inline-flex items-center gap-1 rounded-md border border-red-300 bg-white px-2.5 py-1 text-xs font-medium text-red-700 hover:bg-red-50 disabled:opacity-50"
+                          className="inline-flex items-center gap-1 rounded-md border border-red-300 bg-card px-2.5 py-1 text-xs font-medium text-red-700 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/40 disabled:opacity-50"
                         >
                           {cancelInvitation.isPending && cancelInvitation.variables === inv.id ? (
                             <Loader2 className="h-3 w-3 animate-spin" />
@@ -857,11 +857,11 @@ export default function EmployeeDirectoryPage() {
               )}
             </div>
 
-            <div className="flex justify-end gap-2 px-6 py-3 border-t border-gray-100">
+            <div className="flex justify-end gap-2 px-6 py-3 border-t border-border">
               <button
                 type="button"
                 onClick={() => setShowPendingInvitations(false)}
-                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-muted"
               >
                 Close
               </button>
@@ -873,21 +873,21 @@ export default function EmployeeDirectoryPage() {
       {/* Upload Preview Modal */}
       {showUpload && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl mx-4 max-h-[85vh] flex flex-col">
+          <div className="bg-card rounded-2xl shadow-2xl w-full max-w-4xl mx-4 max-h-[85vh] flex flex-col">
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Bulk Update Preview</h3>
-                <p className="text-xs text-gray-400">{uploadRows.length} rows parsed from file</p>
+                <h3 className="text-lg font-semibold text-foreground">Bulk Update Preview</h3>
+                <p className="text-xs text-muted-foreground">{uploadRows.length} rows parsed from file</p>
               </div>
-              <button onClick={() => { setShowUpload(false); setUploadRows([]); setUploadResult(null); }} className="text-gray-400 hover:text-gray-600">
+              <button onClick={() => { setShowUpload(false); setUploadRows([]); setUploadResult(null); }} className="text-muted-foreground hover:text-muted-foreground">
                 <X className="h-5 w-5" />
               </button>
             </div>
 
             {/* Result Banner */}
             {uploadResult && (
-              <div className={`mx-6 mt-4 p-3 rounded-lg text-sm ${uploadResult.errors > 0 ? "bg-amber-50 text-amber-800" : "bg-green-50 text-green-800"}`}>
+              <div className={`mx-6 mt-4 p-3 rounded-lg text-sm ${uploadResult.errors > 0 ? "bg-amber-50 dark:bg-amber-950/40 text-amber-800" : "bg-green-50 dark:bg-green-950/40 text-green-800"}`}>
                 <div className="flex items-center gap-2">
                   {uploadResult.errors > 0 ? <AlertTriangle className="h-4 w-4" /> : <CheckCircle2 className="h-4 w-4" />}
                   <span className="font-medium">
@@ -909,7 +909,7 @@ export default function EmployeeDirectoryPage() {
                       .map((h) => (
                         <th
                           key={h}
-                          className="sticky top-0 z-10 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase px-3 py-2 border-b border-gray-200"
+                          className="sticky top-0 z-10 bg-muted text-left text-xs font-medium text-muted-foreground uppercase px-3 py-2 border-b border-border"
                         >
                           {h}
                         </th>
@@ -920,21 +920,21 @@ export default function EmployeeDirectoryPage() {
                   {uploadRows.map((row, i) => {
                     const detail = uploadResult?.details?.[i];
                     return (
-                      <tr key={i} className={detail?.status === "error" ? "bg-red-50" : ""}>
-                        <td className="px-3 py-2 text-gray-500 whitespace-nowrap border-b border-gray-100">{row.id || "-"}</td>
-                        <td className="px-3 py-2 text-gray-600 whitespace-nowrap border-b border-gray-100">{row.emp_code || "-"}</td>
-                        <td className="px-3 py-2 font-medium text-gray-900 whitespace-nowrap border-b border-gray-100">{row.first_name} {row.last_name}</td>
-                        <td className="px-3 py-2 text-gray-500 whitespace-nowrap border-b border-gray-100">{row.email || "-"}</td>
-                        <td className="px-3 py-2 text-gray-500 whitespace-nowrap border-b border-gray-100">{row.designation || "-"}</td>
-                        <td className="px-3 py-2 text-gray-500 whitespace-nowrap border-b border-gray-100">{row.department_name || "-"}</td>
-                        <td className="px-3 py-2 text-gray-500 whitespace-nowrap border-b border-gray-100">{row.role || "-"}</td>
+                      <tr key={i} className={detail?.status === "error" ? "bg-red-50 dark:bg-red-950/40" : ""}>
+                        <td className="px-3 py-2 text-muted-foreground whitespace-nowrap border-b border-border">{row.id || "-"}</td>
+                        <td className="px-3 py-2 text-muted-foreground whitespace-nowrap border-b border-border">{row.emp_code || "-"}</td>
+                        <td className="px-3 py-2 font-medium text-foreground whitespace-nowrap border-b border-border">{row.first_name} {row.last_name}</td>
+                        <td className="px-3 py-2 text-muted-foreground whitespace-nowrap border-b border-border">{row.email || "-"}</td>
+                        <td className="px-3 py-2 text-muted-foreground whitespace-nowrap border-b border-border">{row.designation || "-"}</td>
+                        <td className="px-3 py-2 text-muted-foreground whitespace-nowrap border-b border-border">{row.department_name || "-"}</td>
+                        <td className="px-3 py-2 text-muted-foreground whitespace-nowrap border-b border-border">{row.role || "-"}</td>
                         {uploadResult && (
-                          <td className="px-3 py-2 whitespace-nowrap border-b border-gray-100">
+                          <td className="px-3 py-2 whitespace-nowrap border-b border-border">
                             <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                              detail?.status === "updated" ? "bg-green-100 text-green-700"
-                                : detail?.status === "unchanged" ? "bg-gray-100 text-gray-500"
-                                : detail?.status === "error" ? "bg-red-100 text-red-700"
-                                : "bg-yellow-100 text-yellow-700"
+                              detail?.status === "updated" ? "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300"
+                                : detail?.status === "unchanged" ? "bg-muted text-muted-foreground"
+                                : detail?.status === "error" ? "bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300"
+                                : "bg-yellow-100 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300"
                             }`}>
                               {detail?.status || "pending"}
                               {detail?.error && <span className="ml-1">({detail.error})</span>}
@@ -949,14 +949,14 @@ export default function EmployeeDirectoryPage() {
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
-              <p className="text-xs text-gray-400">
+            <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-muted rounded-b-2xl">
+              <p className="text-xs text-muted-foreground">
                 Edit the exported CSV, change values, and upload. The ID column identifies each employee.
               </p>
               <div className="flex gap-3">
                 <button
                   onClick={() => { setShowUpload(false); setUploadRows([]); setUploadResult(null); }}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100"
+                  className="px-4 py-2 text-sm font-medium text-muted-foreground border border-border rounded-lg hover:bg-muted"
                 >
                   {uploadResult ? "Close" : "Cancel"}
                 </button>
@@ -978,7 +978,7 @@ export default function EmployeeDirectoryPage() {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
             type="text"
             value={search}
@@ -986,7 +986,7 @@ export default function EmployeeDirectoryPage() {
               setSearch(e.target.value);
               setPage(1);
             }}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+            className="bg-card text-foreground w-full pl-10 pr-4 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
             placeholder={tx("searchPlaceholder") as string}
           />
         </div>
@@ -996,7 +996,7 @@ export default function EmployeeDirectoryPage() {
             setDepartmentId(e.target.value);
             setPage(1);
           }}
-          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+          className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
         >
           <option value="">{tx("allDepartments")}</option>
           {deptList.map((d: any) => (
@@ -1011,7 +1011,7 @@ export default function EmployeeDirectoryPage() {
             setLocationId(e.target.value);
             setPage(1);
           }}
-          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+          className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
         >
           <option value="">{tx("allLocations")}</option>
           {(locations || []).map((l: any) => (
@@ -1026,7 +1026,7 @@ export default function EmployeeDirectoryPage() {
             setRoleFilter(e.target.value);
             setPage(1);
           }}
-          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+          className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
         >
           <option value="">{tx("allRoles")}</option>
           <option value="employee">{tx("roleEmployee")}</option>
@@ -1045,50 +1045,50 @@ export default function EmployeeDirectoryPage() {
           gray-50 page bg through during overscroll, which is the visual
           glitch the reporter screenshotted. Flatten left/right corners
           on mobile so there's nothing to leak through. */}
-      <div className="bg-white rounded-none lg:rounded-xl border-y border-gray-200 lg:border lg:border-gray-200 overflow-x-auto overscroll-x-contain -mx-4 lg:mx-0">
+      <div className="bg-card rounded-none lg:rounded-xl border-y border-border lg:border lg:border-border overflow-x-auto overscroll-x-contain -mx-4 lg:mx-0">
         <table className="min-w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
+          <thead className="bg-muted border-b border-border">
             <tr>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colEmployee")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colEmail")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("common.department")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colDesignation")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colRole")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{tx("colEmpCode")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("common.status")}</th>
-              <th className="text-right text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("common.actions")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("colEmployee")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("colEmail")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("common.department")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("colDesignation")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("colRole")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("colEmpCode")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("common.status")}</th>
+              <th className="text-right text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("common.actions")}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border">
             {isLoading ? (
               <>
                 {[1, 2, 3, 4, 5].map((i) => (
                   <tr key={i} className="animate-pulse">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="h-8 w-8 rounded-full bg-gray-200" />
-                        <div className="h-4 w-28 bg-gray-200 rounded" />
+                        <div className="h-8 w-8 rounded-full bg-muted" />
+                        <div className="h-4 w-28 bg-muted rounded" />
                       </div>
                     </td>
-                    <td className="px-6 py-4"><div className="h-4 w-36 bg-gray-200 rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-20 bg-gray-200 rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-24 bg-gray-200 rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-20 bg-gray-200 rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-16 bg-gray-200 rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-14 bg-gray-200 rounded-full" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-16 bg-gray-200 rounded ml-auto" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-36 bg-muted rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-20 bg-muted rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-24 bg-muted rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-20 bg-muted rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-16 bg-muted rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-14 bg-muted rounded-full" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-16 bg-muted rounded ml-auto" /></td>
                   </tr>
                 ))}
               </>
             ) : employees.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-6 py-8 text-center text-gray-400">
+                <td colSpan={8} className="px-6 py-8 text-center text-muted-foreground">
                   {tx("noEmployees")}
                 </td>
               </tr>
             ) : (
               employees.map((emp: any) => (
-                <tr key={emp.id} className="hover:bg-gray-50">
+                <tr key={emp.id} className="hover:bg-muted">
                   <td className="px-6 py-4">
                     <Link
                       to={`/employees/${emp.id}`}
@@ -1102,16 +1102,16 @@ export default function EmployeeDirectoryPage() {
                         lastName={emp.last_name}
                         size="sm"
                       />
-                      <span className="text-sm font-medium text-gray-900 group-hover:text-brand-600">
+                      <span className="text-sm font-medium text-foreground group-hover:text-brand-600">
                         {emp.first_name} {emp.last_name}
                       </span>
                     </Link>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{emp.email}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
+                  <td className="px-6 py-4 text-sm text-muted-foreground">{emp.email}</td>
+                  <td className="px-6 py-4 text-sm text-muted-foreground">
                     {emp.department_name || "-"}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
+                  <td className="px-6 py-4 text-sm text-muted-foreground">
                     {emp.designation || "-"}
                   </td>
                   <td className="px-6 py-4">
@@ -1134,7 +1134,7 @@ export default function EmployeeDirectoryPage() {
                             updateRoleMut.mutate({ userId: emp.id, role: e.target.value })
                           }
                           disabled={updateRoleMut.isPending}
-                          className="text-xs border border-gray-200 rounded-full px-2 py-1 bg-gray-50 text-gray-700 cursor-pointer hover:bg-gray-100 disabled:opacity-50"
+                          className="text-xs border border-border rounded-full px-2 py-1 bg-muted text-muted-foreground cursor-pointer hover:bg-muted disabled:opacity-50"
                         >
                           <option value="employee">{tx("roleEmployee")}</option>
                           <option value="manager">{tx("roleManager")}</option>
@@ -1142,21 +1142,21 @@ export default function EmployeeDirectoryPage() {
                           <option value="org_admin">{tx("roleOrgAdmin")}</option>
                         </select>
                       ) : (
-                        <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
+                        <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-full">
                           {roleLabel(emp.role || "employee")}
                         </span>
                       );
                     })()}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
+                  <td className="px-6 py-4 text-sm text-muted-foreground">
                     {emp.emp_code || "-"}
                   </td>
                   <td className="px-6 py-4">
                     <span
                       className={`text-xs px-2 py-1 rounded-full font-medium ${
                         emp.status === 1
-                          ? "bg-green-50 text-green-700"
-                          : "bg-red-50 text-red-700"
+                          ? "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300"
+                          : "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300"
                       }`}
                     >
                       {emp.status === 1 ? tx("statusActive") : tx("statusInactive")}
@@ -1179,7 +1179,7 @@ export default function EmployeeDirectoryPage() {
                             sendDirectInvite.mutate(emp.id);
                           }}
                           disabled={invitingId !== null}
-                          className="inline-flex items-center justify-center h-8 w-8 rounded-lg text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-colors disabled:opacity-50 disabled:cursor-wait"
+                          className="inline-flex items-center justify-center h-8 w-8 rounded-lg text-muted-foreground hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:text-blue-600 transition-colors disabled:opacity-50 disabled:cursor-wait"
                           title={tx("sendInviteTooltip", { email: emp.email }) as string}
                           aria-label={tx("sendInviteAria", { name: `${emp.first_name} ${emp.last_name}` }) as string}
                         >
@@ -1196,7 +1196,7 @@ export default function EmployeeDirectoryPage() {
                           setEditTargetId(emp.id);
                           setEditError(null);
                         }}
-                        className="inline-flex items-center justify-center h-8 w-8 rounded-lg text-gray-500 hover:bg-brand-50 hover:text-brand-600 transition-colors"
+                        className="inline-flex items-center justify-center h-8 w-8 rounded-lg text-muted-foreground hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:text-brand-600 transition-colors"
                         title={tx("editTooltip") as string}
                         aria-label={tx("editAria", { name: `${emp.first_name} ${emp.last_name}` }) as string}
                       >
@@ -1209,7 +1209,7 @@ export default function EmployeeDirectoryPage() {
                             setDeleteTarget({ id: emp.id, name: `${emp.first_name} ${emp.last_name}` })
                           }
                           disabled={emp.id === currentUser?.id}
-                          className="inline-flex items-center justify-center h-8 w-8 rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-gray-500"
+                          className="inline-flex items-center justify-center h-8 w-8 rounded-lg text-muted-foreground hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-600 transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-muted-foreground"
                           title={(emp.id === currentUser?.id ? tx("deleteSelfTooltip") : tx("deleteTooltip")) as string}
                           aria-label={tx("deleteAria", { name: `${emp.first_name} ${emp.last_name}` }) as string}
                         >
@@ -1240,13 +1240,13 @@ export default function EmployeeDirectoryPage() {
               }}
           >
             <div
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col"
+              className="bg-card rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-border">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Edit Employee</h3>
-                  <p className="text-xs text-gray-400">
+                  <h3 className="text-lg font-semibold text-foreground">Edit Employee</h3>
+                  <p className="text-xs text-muted-foreground">
                     {editLoading ? "Loading..." : editEmployee ? `${editEmployee.first_name} ${editEmployee.last_name} — ${editEmployee.email}` : ""}
                   </p>
                 </div>
@@ -1262,7 +1262,7 @@ export default function EmployeeDirectoryPage() {
                 setPasswordCopied(false);
                 resetPassword.reset();
               }}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-muted-foreground hover:text-muted-foreground"
                   aria-label={t("common.close")}
                 >
                   <X className="h-5 w-5" />
@@ -1270,7 +1270,7 @@ export default function EmployeeDirectoryPage() {
               </div>
               {editLoading || !editEmployee ? (
                 <div className="flex justify-center items-center py-16">
-                  <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                 </div>
               ) : (
                 <form
@@ -1290,23 +1290,23 @@ export default function EmployeeDirectoryPage() {
                   <div className="flex-1 overflow-y-auto px-6 py-5">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Emp Code</label>
-                        <input name="emp_code" defaultValue={editEmployee.emp_code || ""} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none" />
+                        <label className="block text-sm font-medium text-muted-foreground mb-1">Emp Code</label>
+                        <input name="emp_code" defaultValue={editEmployee.emp_code || ""} className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none" />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Contact</label>
-                        <input name="contact_number" defaultValue={editEmployee.contact_number || ""} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none" />
+                        <label className="block text-sm font-medium text-muted-foreground mb-1">Contact</label>
+                        <input name="contact_number" defaultValue={editEmployee.contact_number || ""} className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none" />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">First Name <span className="text-red-500">*</span></label>
-                        <input name="first_name" defaultValue={editEmployee.first_name || ""} required className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none" />
+                        <label className="block text-sm font-medium text-muted-foreground mb-1">First Name <span className="text-red-500">*</span></label>
+                        <input name="first_name" defaultValue={editEmployee.first_name || ""} required className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none" />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Last Name <span className="text-red-500">*</span></label>
-                        <input name="last_name" defaultValue={editEmployee.last_name || ""} required className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none" />
+                        <label className="block text-sm font-medium text-muted-foreground mb-1">Last Name <span className="text-red-500">*</span></label>
+                        <input name="last_name" defaultValue={editEmployee.last_name || ""} required className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none" />
                       </div>
                       <div className="sm:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-muted-foreground mb-1">
                           Email <span className="text-red-500">*</span>
                         </label>
                         <input
@@ -1314,22 +1314,22 @@ export default function EmployeeDirectoryPage() {
                           name="email"
                           defaultValue={editEmployee.email || ""}
                           required
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                          className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
                         />
-                        <p className="text-xs text-amber-600 mt-1">
+                        <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
                           Email is the user's login. Changing it ends their current session and notifies both the old and new addresses.
                         </p>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Designation</label>
-                        <input name="designation" defaultValue={editEmployee.designation || ""} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none" />
+                        <label className="block text-sm font-medium text-muted-foreground mb-1">Designation</label>
+                        <input name="designation" defaultValue={editEmployee.designation || ""} className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none" />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                        <label className="block text-sm font-medium text-muted-foreground mb-1">Department</label>
                         <select
                           name="department_name"
                           defaultValue={deptList.find((d: any) => d.id === editEmployee.department_id)?.name || ""}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                          className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
                         >
                           <option value="">—</option>
                           {deptList.map((d: any) => (
@@ -1338,11 +1338,11 @@ export default function EmployeeDirectoryPage() {
                         </select>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                        <label className="block text-sm font-medium text-muted-foreground mb-1">Location</label>
                         <select
                           name="location_name"
                           defaultValue={(locations || []).find((l: any) => l.id === editEmployee.location_id)?.name || ""}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                          className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
                         >
                           <option value="">—</option>
                           {(locations || []).map((l: any) => (
@@ -1351,8 +1351,8 @@ export default function EmployeeDirectoryPage() {
                         </select>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Employment Type</label>
-                        <select name="employment_type" defaultValue={editEmployee.employment_type || "full_time"} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none">
+                        <label className="block text-sm font-medium text-muted-foreground mb-1">Employment Type</label>
+                        <select name="employment_type" defaultValue={editEmployee.employment_type || "full_time"} className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none">
                           <option value="full_time">Full Time</option>
                           <option value="part_time">Part Time</option>
                           <option value="contract">Contract</option>
@@ -1360,8 +1360,8 @@ export default function EmployeeDirectoryPage() {
                         </select>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
-                        <select name="gender" defaultValue={editEmployee.gender || ""} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none">
+                        <label className="block text-sm font-medium text-muted-foreground mb-1">Gender</label>
+                        <select name="gender" defaultValue={editEmployee.gender || ""} className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none">
                           <option value="">—</option>
                           <option value="male">Male</option>
                           <option value="female">Female</option>
@@ -1369,16 +1369,16 @@ export default function EmployeeDirectoryPage() {
                         </select>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
-                        <input type="date" name="date_of_birth" defaultValue={formatDate(editEmployee.date_of_birth)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none" />
+                        <label className="block text-sm font-medium text-muted-foreground mb-1">Date of Birth</label>
+                        <input type="date" name="date_of_birth" defaultValue={formatDate(editEmployee.date_of_birth)} className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none" />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Date of Joining</label>
-                        <input type="date" name="date_of_joining" defaultValue={formatDate(editEmployee.date_of_joining)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none" />
+                        <label className="block text-sm font-medium text-muted-foreground mb-1">Date of Joining</label>
+                        <input type="date" name="date_of_joining" defaultValue={formatDate(editEmployee.date_of_joining)} className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none" />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
-                        <select name="role" defaultValue={editEmployee.role || "employee"} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none">
+                        <label className="block text-sm font-medium text-muted-foreground mb-1">Role</label>
+                        <select name="role" defaultValue={editEmployee.role || "employee"} className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none">
                           <option value="employee">Employee</option>
                           <option value="manager">Manager</option>
                           <option value="hr_admin">HR Admin</option>
@@ -1386,8 +1386,8 @@ export default function EmployeeDirectoryPage() {
                         </select>
                       </div>
                       <div className="sm:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                        <textarea name="address" defaultValue={editEmployee.address || ""} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none resize-none" />
+                        <label className="block text-sm font-medium text-muted-foreground mb-1">Address</label>
+                        <textarea name="address" defaultValue={editEmployee.address || ""} rows={2} className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none resize-none" />
                       </div>
                       {/* Custom Roles — additive on top of the primary system role above.
                           Saves immediately on add/remove (independent of the form's
@@ -1401,17 +1401,17 @@ export default function EmployeeDirectoryPage() {
                       </div>
                     </div>
                     {editError && (
-                      <div className="mt-4 p-3 rounded-lg bg-red-50 text-sm text-red-700">{editError}</div>
+                      <div className="mt-4 p-3 rounded-lg bg-red-50 dark:bg-red-950/40 text-sm text-red-700 dark:text-red-300">{editError}</div>
                     )}
 
                     {/* Password reset — org_admin only, not for own row */}
                     {isOrgAdmin && editEmployee.id !== currentUser?.id && (
-                      <div className="mt-6 border-t border-gray-100 pt-5">
+                      <div className="mt-6 border-t border-border pt-5">
                         {!showPasswordSection ? (
                           <button
                             type="button"
                             onClick={() => setShowPasswordSection(true)}
-                            className="inline-flex items-center gap-2 text-sm font-medium text-brand-600 hover:text-brand-700"
+                            className="inline-flex items-center gap-2 text-sm font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700"
                           >
                             <KeyRound className="h-4 w-4" />
                             Change password
@@ -1419,8 +1419,8 @@ export default function EmployeeDirectoryPage() {
                         ) : (
                           <div className="space-y-3">
                             <div className="flex items-center justify-between">
-                              <h4 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
-                                <KeyRound className="h-4 w-4 text-brand-600" />
+                              <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                                <KeyRound className="h-4 w-4 text-brand-600 dark:text-brand-400" />
                                 Change password
                               </h4>
                               <button
@@ -1431,18 +1431,18 @@ export default function EmployeeDirectoryPage() {
                                   setConfirmPassword("");
                                   setPasswordError(null);
                                 }}
-                                className="text-xs text-gray-500 hover:text-gray-700"
+                                className="text-xs text-muted-foreground hover:text-foreground"
                               >
                                 Cancel
                               </button>
                             </div>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-muted-foreground">
                               Set a new password for this employee. They will need to use the new
                               password on their next sign-in. Share it with them securely.
                             </p>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                               <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-sm font-medium text-muted-foreground mb-1">
                                   New Password
                                 </label>
                                 <div className="relative">
@@ -1454,13 +1454,13 @@ export default function EmployeeDirectoryPage() {
                                       if (passwordError) setPasswordError(null);
                                     }}
                                     placeholder="Min 8 chars, upper, lower, digit, special"
-                                    className="w-full px-3 py-2 pr-9 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                                    className="w-full px-3 py-2 pr-9 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
                                     autoComplete="new-password"
                                   />
                                   <button
                                     type="button"
                                     onClick={() => setShowNewPassword((v) => !v)}
-                                    className="absolute inset-y-0 right-0 flex items-center pr-2 text-gray-400 hover:text-gray-600"
+                                    className="absolute inset-y-0 right-0 flex items-center pr-2 text-muted-foreground hover:text-muted-foreground"
                                     aria-label={showNewPassword ? "Hide password" : "Show password"}
                                   >
                                     {showNewPassword ? (
@@ -1472,7 +1472,7 @@ export default function EmployeeDirectoryPage() {
                                 </div>
                               </div>
                               <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-sm font-medium text-muted-foreground mb-1">
                                   Confirm Password
                                 </label>
                                 <input
@@ -1483,13 +1483,13 @@ export default function EmployeeDirectoryPage() {
                                     if (passwordError) setPasswordError(null);
                                   }}
                                   placeholder="Re-enter password"
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
                                   autoComplete="new-password"
                                 />
                               </div>
                             </div>
                             {passwordError && (
-                              <p className="text-sm text-red-600">{passwordError}</p>
+                              <p className="text-sm text-red-600 dark:text-red-400">{passwordError}</p>
                             )}
                             <div className="flex items-center gap-2">
                               <button
@@ -1548,7 +1548,7 @@ export default function EmployeeDirectoryPage() {
                                 )}
                               </button>
                               {resetPassword.isSuccess && !passwordError && (
-                                <span className="inline-flex items-center gap-1.5 text-sm text-green-700">
+                                <span className="inline-flex items-center gap-1.5 text-sm text-green-700 dark:text-green-300">
                                   <CheckCircle2 className="h-4 w-4" />
                                   {passwordCopied
                                     ? "Password reset and copied to clipboard"
@@ -1562,7 +1562,7 @@ export default function EmployeeDirectoryPage() {
                       </div>
                     )}
                   </div>
-                  <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
+                  <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-border bg-muted rounded-b-2xl">
                     <button
                       type="button"
                       onClick={() => {
@@ -1576,7 +1576,7 @@ export default function EmployeeDirectoryPage() {
                 resetPassword.reset();
               }}
                       disabled={updateEmployee.isPending}
-                      className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-white disabled:opacity-50"
+                      className="px-4 py-2 text-sm font-medium text-muted-foreground border border-border rounded-lg hover:bg-card disabled:opacity-50"
                     >
                       Cancel
                     </button>
@@ -1605,33 +1605,33 @@ export default function EmployeeDirectoryPage() {
             onClick={() => !deleteEmployee.isPending && setDeleteTarget(null)}
           >
             <div
-              className="bg-white rounded-xl shadow-xl w-full max-w-md"
+              className="bg-card rounded-xl shadow-xl w-full max-w-md"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="px-6 py-5 border-b border-gray-100">
+              <div className="px-6 py-5 border-b border-border">
                 <div className="flex items-start gap-3">
-                  <div className="h-10 w-10 rounded-full bg-red-50 flex items-center justify-center flex-shrink-0">
-                    <Trash2 className="h-5 w-5 text-red-600" />
+                  <div className="h-10 w-10 rounded-full bg-red-50 dark:bg-red-950/40 flex items-center justify-center flex-shrink-0">
+                    <Trash2 className="h-5 w-5 text-red-600 dark:text-red-400" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Delete employee</h3>
-                    <p className="text-sm text-gray-500 mt-1">
-                      Deactivate <span className="font-medium text-gray-700">{deleteTarget.name}</span>? This will revoke their access immediately. You can reactivate them later from user management.
+                    <h3 className="text-lg font-semibold text-foreground">Delete employee</h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Deactivate <span className="font-medium text-muted-foreground">{deleteTarget.name}</span>? This will revoke their access immediately. You can reactivate them later from user management.
                     </p>
                   </div>
                 </div>
               </div>
               {deleteEmployee.isError && (
-                <div className="mx-6 mt-4 p-3 rounded-lg bg-red-50 text-sm text-red-700">
+                <div className="mx-6 mt-4 p-3 rounded-lg bg-red-50 dark:bg-red-950/40 text-sm text-red-700 dark:text-red-300">
                   {(deleteEmployee.error as any)?.response?.data?.error?.message || "Failed to delete employee"}
                 </div>
               )}
-              <div className="px-6 py-4 bg-gray-50 rounded-b-xl flex justify-end gap-3">
+              <div className="px-6 py-4 bg-muted rounded-b-xl flex justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setDeleteTarget(null)}
                   disabled={deleteEmployee.isPending}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-white disabled:opacity-50"
+                  className="px-4 py-2 text-sm font-medium text-muted-foreground border border-border rounded-lg hover:bg-card disabled:opacity-50"
                 >
                   Cancel
                 </button>
@@ -1656,22 +1656,22 @@ export default function EmployeeDirectoryPage() {
 
         {/* Pagination */}
         {meta && meta.total_pages > 1 && (
-          <div className="flex items-center justify-between px-6 py-3 border-t border-gray-200">
-            <p className="text-sm text-gray-500">
+          <div className="flex items-center justify-between px-6 py-3 border-t border-border">
+            <p className="text-sm text-muted-foreground">
               Page {meta.page} of {meta.total_pages} ({meta.total} total)
             </p>
             <div className="flex gap-2">
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="flex items-center gap-1 px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50 hover:bg-gray-50"
+                className="flex items-center gap-1 px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50 hover:bg-muted"
               >
                 <ChevronLeft className="h-4 w-4" /> Previous
               </button>
               <button
                 onClick={() => setPage((p) => p + 1)}
                 disabled={page >= meta.total_pages}
-                className="flex items-center gap-1 px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50 hover:bg-gray-50"
+                className="flex items-center gap-1 px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50 hover:bg-muted"
               >
                 Next <ChevronRight className="h-4 w-4" />
               </button>
