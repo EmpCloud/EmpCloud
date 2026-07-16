@@ -38,10 +38,10 @@ interface PunchRow {
 type TFn = (key: string, opts?: Record<string, unknown>) => string;
 
 function sourceMeta(source: string, t: TFn): { label: string; Icon: typeof Fingerprint; cls: string } {
-  if (source === "biometric") return { label: t("attendance.my.sourceBiometric"), Icon: Fingerprint, cls: "bg-purple-50 text-purple-700" };
-  if (source === "app") return { label: t("attendance.my.sourceApp"), Icon: Smartphone, cls: "bg-blue-50 text-blue-700" };
-  if (source === "dashboard") return { label: t("attendance.my.sourceWeb"), Icon: Monitor, cls: "bg-emerald-50 text-emerald-700" };
-  return { label: source || t("attendance.my.sourceManual"), Icon: Monitor, cls: "bg-gray-100 text-gray-700" };
+  if (source === "biometric") return { label: t("attendance.my.sourceBiometric"), Icon: Fingerprint, cls: "bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300" };
+  if (source === "app") return { label: t("attendance.my.sourceApp"), Icon: Smartphone, cls: "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300" };
+  if (source === "dashboard") return { label: t("attendance.my.sourceWeb"), Icon: Monitor, cls: "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300" };
+  return { label: source || t("attendance.my.sourceManual"), Icon: Monitor, cls: "bg-muted text-muted-foreground" };
 }
 
 // Punch label for position in a day's timeline (first = check in, last = check out).
@@ -272,42 +272,42 @@ export default function AttendancePage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t("attendance.my.title")}</h1>
-          <p className="text-gray-500 mt-1">{t("attendance.my.subtitle")}</p>
+          <h1 className="text-2xl font-bold text-foreground">{t("attendance.my.title")}</h1>
+          <p className="text-muted-foreground mt-1">{t("attendance.my.subtitle")}</p>
         </div>
       </div>
 
       {/* Today's Status + Actions */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("attendance.my.today", { date: now.toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "long", day: "numeric" }) })}</h2>
+      <div className="bg-card rounded-xl border border-border p-6 mb-6">
+        <h2 className="text-lg font-semibold text-foreground mb-4">{t("attendance.my.today", { date: now.toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "long", day: "numeric" }) })}</h2>
         <div className="flex flex-wrap items-center gap-4">
           {todayLoading ? (
             <div className="flex items-center gap-4 animate-pulse">
-              <div className="h-4 w-24 bg-gray-200 rounded" />
-              <div className="h-4 w-24 bg-gray-200 rounded" />
-              <div className="h-9 w-28 bg-gray-200 rounded-lg" />
+              <div className="h-4 w-24 bg-muted rounded" />
+              <div className="h-4 w-24 bg-muted rounded" />
+              <div className="h-9 w-28 bg-muted rounded-lg" />
             </div>
           ) : (
             <>
-              <div className="flex items-center gap-2 text-sm text-gray-600">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Clock className="h-4 w-4" />
                 <span>{t("attendance.my.checkInLabel")}: {todayRecord?.check_in ? new Date(todayRecord.check_in).toLocaleTimeString() : t("attendance.my.notYet")}</span>
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Clock className="h-4 w-4" />
                 <span>{t("attendance.my.checkOutLabel")}: {todayRecord?.check_out ? new Date(todayRecord.check_out).toLocaleTimeString() : t("attendance.my.notYet")}</span>
               </div>
               {todayRecord?.worked_minutes != null && (
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-muted-foreground">
                   {t("attendance.my.workedLabel")}: {Math.floor(todayRecord.worked_minutes / 60)}h {todayRecord.worked_minutes % 60}m
                 </div>
               )}
               {todayRecord?.status && (
                 <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                  todayRecord.status === "present" ? "bg-green-50 text-green-700"
-                    : todayRecord.status === "checked_in" ? "bg-brand-50 text-brand-700"
-                    : todayRecord.status === "half_day" ? "bg-yellow-50 text-yellow-700"
-                    : "bg-gray-100 text-gray-700"
+                  todayRecord.status === "present" ? "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300"
+                    : todayRecord.status === "checked_in" ? "bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300"
+                    : todayRecord.status === "half_day" ? "bg-yellow-50 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300"
+                    : "bg-muted text-muted-foreground"
                 }`}>
                   {t(`attendance.my.status.${todayRecord.status}`, { defaultValue: todayRecord.status.replace(/_/g, " ") })}
                 </span>
@@ -317,7 +317,7 @@ export default function AttendancePage() {
           <div className="ml-auto flex gap-2">
             {!dashboardAllowed && !hasCheckedOut ? (
               <span
-                className="inline-flex items-center gap-2 text-xs text-gray-500 bg-gray-50 border border-gray-200 px-3 py-2 rounded-lg"
+                className="inline-flex items-center gap-2 text-xs text-muted-foreground bg-muted border border-border px-3 py-2 rounded-lg"
                 title={t("attendance.my.webDisabledTooltip")}
               >
                 <Lock className="h-3.5 w-3.5" />
@@ -344,7 +344,7 @@ export default function AttendancePage() {
                   </button>
                 )}
                 {hasCheckedOut && (
-                  <span className="text-sm text-gray-500 py-2">{t("attendance.my.completed")}</span>
+                  <span className="text-sm text-muted-foreground py-2">{t("attendance.my.completed")}</span>
                 )}
               </>
             )}
@@ -364,17 +364,17 @@ export default function AttendancePage() {
       </div>
 
       {showRegForm && (
-        <form ref={regFormRef} onSubmit={handleRegSubmit} className="bg-white rounded-xl border border-amber-200 p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+        <form ref={regFormRef} onSubmit={handleRegSubmit} className="bg-card rounded-xl border border-amber-200 dark:border-amber-900/40 p-6 mb-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
             <AlertCircle className="h-5 w-5 text-amber-500" />
             {t("attendance.my.regFormTitle")}
           </h2>
-          <p className="text-sm text-gray-500 mb-4">
+          <p className="text-sm text-muted-foreground mb-4">
             {t("attendance.my.regFormHint")}
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
                 {t("attendance.my.fieldDate")} <span className="text-red-500">*</span>
               </label>
               <input
@@ -382,12 +382,12 @@ export default function AttendancePage() {
                 value={regForm.date}
                 onChange={(e) => setRegField("date", e.target.value)}
                 max={new Date().toISOString().slice(0, 10)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
                 {t("attendance.my.fieldReason")} <span className="text-red-500">*</span>
               </label>
               <input
@@ -395,23 +395,23 @@ export default function AttendancePage() {
                 value={regForm.reason}
                 onChange={(e) => setRegField("reason", e.target.value)}
                 placeholder={t("attendance.my.reasonPlaceholder")}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
                 {t("attendance.my.fieldRequestedCheckIn")}
               </label>
               <input
                 type="datetime-local"
                 value={regForm.requested_check_in}
                 onChange={(e) => setRegField("requested_check_in", e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
                 {t("attendance.my.fieldRequestedCheckOut")}
               </label>
               {/* `min` ties the check-out picker to the current check-in value so users
@@ -422,17 +422,17 @@ export default function AttendancePage() {
                 value={regForm.requested_check_out}
                 min={regForm.requested_check_in || undefined}
                 onChange={(e) => setRegField("requested_check_out", e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
               />
             </div>
           </div>
           {regFormError && (
-            <div className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            <div className="mt-3 rounded-lg border border-red-200 dark:border-red-900/40 bg-red-50 dark:bg-red-950/40 px-3 py-2 text-sm text-red-700 dark:text-red-300">
               {regFormError}
             </div>
           )}
           {submitRegularization.isError && !regFormError && (
-            <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3 mt-4">
+            <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/40 text-red-700 dark:text-red-300 text-sm rounded-lg px-4 py-3 mt-4">
               {(submitRegularization.error && typeof submitRegularization.error === "object" && "response" in submitRegularization.error
                 ? (submitRegularization.error as any).response?.data?.error?.message
                 : null) || t("attendance.my.errorSubmit")}
@@ -451,30 +451,30 @@ export default function AttendancePage() {
       )}
 
       {/* My Regularization Requests — #1919 */}
-      <div className="bg-white rounded-xl border border-gray-200 mb-6">
-        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">{t("attendance.my.myRequests")}</h2>
+      <div className="bg-card rounded-xl border border-border mb-6">
+        <div className="px-6 py-4 border-b border-border flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-foreground">{t("attendance.my.myRequests")}</h2>
           {myRegRequests.length > 0 && (
-            <span className="text-xs text-gray-400">{t("attendance.my.showingLatest", { count: myRegRequests.length })}</span>
+            <span className="text-xs text-muted-foreground">{t("attendance.my.showingLatest", { count: myRegRequests.length })}</span>
           )}
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full">
-            <thead className="bg-gray-50 border-b border-gray-100">
+            <thead className="bg-muted border-b border-border">
               <tr>
-                <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("attendance.my.colDate")}</th>
-                <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("attendance.my.colReason")}</th>
-                <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3 whitespace-nowrap">{t("attendance.my.colRequestedCheckIn")}</th>
-                <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3 whitespace-nowrap">{t("attendance.my.colRequestedCheckOut")}</th>
-                <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("attendance.my.colStatus")}</th>
-                <th className="text-right text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("attendance.my.colActions")}</th>
+                <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("attendance.my.colDate")}</th>
+                <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("attendance.my.colReason")}</th>
+                <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3 whitespace-nowrap">{t("attendance.my.colRequestedCheckIn")}</th>
+                <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3 whitespace-nowrap">{t("attendance.my.colRequestedCheckOut")}</th>
+                <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("attendance.my.colStatus")}</th>
+                <th className="text-right text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("attendance.my.colActions")}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-border">
               {regHistLoading ? (
-                <tr><td colSpan={6} className="px-6 py-6 text-center text-gray-400">{t("attendance.my.loading")}</td></tr>
+                <tr><td colSpan={6} className="px-6 py-6 text-center text-muted-foreground">{t("attendance.my.loading")}</td></tr>
               ) : myRegRequests.length === 0 ? (
-                <tr><td colSpan={6} className="px-6 py-6 text-center text-gray-400">{t("attendance.my.noRequests")}</td></tr>
+                <tr><td colSpan={6} className="px-6 py-6 text-center text-muted-foreground">{t("attendance.my.noRequests")}</td></tr>
               ) : (
                 myRegRequests.map((r) => {
                   // requested_check_in/out come back as proper UTC instants
@@ -489,20 +489,20 @@ export default function AttendancePage() {
                       : d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
                   };
                   return (
-                    <tr key={r.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-3 text-sm font-medium text-gray-900 whitespace-nowrap">
+                    <tr key={r.id} className="hover:bg-muted">
+                      <td className="px-6 py-3 text-sm font-medium text-foreground whitespace-nowrap">
                         {r.date ? new Date(r.date).toLocaleDateString() : "-"}
                       </td>
-                      <td className="px-6 py-3 text-sm text-gray-600 max-w-xs truncate" title={r.reason}>
+                      <td className="px-6 py-3 text-sm text-muted-foreground max-w-xs truncate" title={r.reason}>
                         {r.reason || "-"}
                       </td>
-                      <td className="px-6 py-3 text-sm text-gray-600 whitespace-nowrap">{fmtTime(r.requested_check_in)}</td>
-                      <td className="px-6 py-3 text-sm text-gray-600 whitespace-nowrap">{fmtTime(r.requested_check_out)}</td>
+                      <td className="px-6 py-3 text-sm text-muted-foreground whitespace-nowrap">{fmtTime(r.requested_check_in)}</td>
+                      <td className="px-6 py-3 text-sm text-muted-foreground whitespace-nowrap">{fmtTime(r.requested_check_out)}</td>
                       <td className="px-6 py-3">
                         <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                          r.status === "approved" ? "bg-green-50 text-green-700"
-                            : r.status === "rejected" ? "bg-red-50 text-red-700"
-                            : "bg-amber-50 text-amber-700"
+                          r.status === "approved" ? "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300"
+                            : r.status === "rejected" ? "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300"
+                            : "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300"
                         }`}>{t(`attendance.my.reqStatus.${r.status}`, { defaultValue: r.status })}</span>
                         {r.rejection_reason && (
                           <p className="text-xs text-red-500 mt-1" title={r.rejection_reason}>
@@ -516,7 +516,7 @@ export default function AttendancePage() {
                             type="button"
                             onClick={() => setDeleteRegId(r.id)}
                             disabled={deleteRegularization.isPending}
-                            className="inline-flex items-center justify-center p-1.5 rounded text-red-600 hover:bg-red-50 disabled:opacity-50"
+                            className="inline-flex items-center justify-center p-1.5 rounded text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 disabled:opacity-50"
                             aria-label={t("attendance.my.deletePendingAria")}
                             title={t("attendance.my.deleteRequestTitle")}
                           >
@@ -538,7 +538,7 @@ export default function AttendancePage() {
         <select
           value={month}
           onChange={(e) => { setMonth(Number(e.target.value)); setPage(1); }}
-          className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+          className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm"
         >
           {months.map((m) => (
             <option key={m.value} value={m.value}>{m.label}</option>
@@ -547,7 +547,7 @@ export default function AttendancePage() {
         <select
           value={year}
           onChange={(e) => { setYear(Number(e.target.value)); setPage(1); }}
-          className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+          className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm"
         >
           {Array.from({ length: 5 }, (_, i) => now.getFullYear() - i).map((y) => (
             <option key={y} value={y}>{y}</option>
@@ -556,38 +556,38 @@ export default function AttendancePage() {
       </div>
 
       {/* History Table */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto -mx-4 lg:mx-0">
+      <div className="bg-card rounded-xl border border-border overflow-x-auto -mx-4 lg:mx-0">
         <table className="min-w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
+          <thead className="bg-muted border-b border-border">
             <tr>
               <th className="px-3 py-3 w-10"></th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("attendance.my.colDate")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("attendance.my.colCheckIn")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("attendance.my.colCheckOut")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("attendance.my.colWorked")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("attendance.my.colStatus")}</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("attendance.my.colLate")}</th>
-              <th className="text-right text-xs font-medium text-gray-500 uppercase px-6 py-3">{t("attendance.my.colDetails")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("attendance.my.colDate")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("attendance.my.colCheckIn")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("attendance.my.colCheckOut")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("attendance.my.colWorked")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("attendance.my.colStatus")}</th>
+              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("attendance.my.colLate")}</th>
+              <th className="text-right text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("attendance.my.colDetails")}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border">
             {histLoading ? (
               <>
                 {[1, 2, 3, 4, 5].map((i) => (
                   <tr key={i} className="animate-pulse">
-                    <td className="px-3 py-4"><div className="h-4 w-4 bg-gray-200 rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-20 bg-gray-200 rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-16 bg-gray-200 rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-16 bg-gray-200 rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-12 bg-gray-200 rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-16 bg-gray-200 rounded-full" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-10 bg-gray-200 rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-6 bg-gray-200 rounded ml-auto" /></td>
+                    <td className="px-3 py-4"><div className="h-4 w-4 bg-muted rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-20 bg-muted rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-16 bg-muted rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-16 bg-muted rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-12 bg-muted rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-16 bg-muted rounded-full" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-10 bg-muted rounded" /></td>
+                    <td className="px-6 py-4"><div className="h-4 w-6 bg-muted rounded ml-auto" /></td>
                   </tr>
                 ))}
               </>
             ) : records.length === 0 ? (
-              <tr><td colSpan={8} className="px-6 py-8 text-center text-gray-400">{t("attendance.my.noRecords")}</td></tr>
+              <tr><td colSpan={8} className="px-6 py-8 text-center text-muted-foreground">{t("attendance.my.noRecords")}</td></tr>
             ) : (
               records.map((r: any) => {
                 // Synthesized rows (holiday / week_off / absent with no real
@@ -600,13 +600,13 @@ export default function AttendancePage() {
                 const expanded = canExpand && expandedRowId === r.id;
                 return (
                   <Fragment key={r.id}>
-                  <tr className="hover:bg-gray-50">
+                  <tr className="hover:bg-muted">
                     <td className="px-3 py-4 w-10">
                       {canExpand && (
                         <button
                           type="button"
                           onClick={() => setExpandedRowId(expanded ? null : r.id)}
-                          className="inline-flex items-center justify-center p-1.5 rounded text-gray-500 hover:bg-gray-100"
+                          className="inline-flex items-center justify-center p-1.5 rounded text-muted-foreground hover:bg-muted"
                           aria-label={expanded ? t("attendance.my.collapseTimeline") : t("attendance.my.expandTimeline")}
                           title={expanded ? t("attendance.my.hideTimeline") : t("attendance.my.showTimeline")}
                           aria-expanded={expanded}
@@ -615,34 +615,34 @@ export default function AttendancePage() {
                         </button>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900">{new Date(r.date).toLocaleDateString()}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{r.check_in ? new Date(r.check_in).toLocaleTimeString() : "-"}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{r.check_out ? new Date(r.check_out).toLocaleTimeString() : "-"}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
+                    <td className="px-6 py-4 text-sm font-medium text-foreground">{new Date(r.date).toLocaleDateString()}</td>
+                    <td className="px-6 py-4 text-sm text-muted-foreground">{r.check_in ? new Date(r.check_in).toLocaleTimeString() : "-"}</td>
+                    <td className="px-6 py-4 text-sm text-muted-foreground">{r.check_out ? new Date(r.check_out).toLocaleTimeString() : "-"}</td>
+                    <td className="px-6 py-4 text-sm text-muted-foreground">
                       {r.worked_minutes != null ? `${Math.floor(r.worked_minutes / 60)}h ${r.worked_minutes % 60}m` : "-"}
                     </td>
                     <td className="px-6 py-4">
                       <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                        r.status === "present" ? "bg-green-50 text-green-700"
-                          : r.status === "checked_in" ? "bg-brand-50 text-brand-700"
-                          : r.status === "half_day" ? "bg-yellow-50 text-yellow-700"
-                          : r.status === "on_leave" ? "bg-blue-50 text-blue-700"
-                          : r.status === "holiday" ? "bg-purple-50 text-purple-700"
-                          : r.status === "week_off" ? "bg-gray-100 text-gray-600"
-                          : "bg-red-50 text-red-700"
+                        r.status === "present" ? "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300"
+                          : r.status === "checked_in" ? "bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300"
+                          : r.status === "half_day" ? "bg-yellow-50 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300"
+                          : r.status === "on_leave" ? "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300"
+                          : r.status === "holiday" ? "bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300"
+                          : r.status === "week_off" ? "bg-muted text-muted-foreground"
+                          : "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300"
                       }`}>
                         {r.status === "holiday" && r.holiday_name
                           ? r.holiday_name
                           : t(`attendance.my.status.${r.status}`, { defaultValue: r.status.replace(/_/g, " ") })}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{r.late_minutes ? `${Math.floor(r.late_minutes / 60)}h ${r.late_minutes % 60}m` : "-"}</td>
+                    <td className="px-6 py-4 text-sm text-muted-foreground">{r.late_minutes ? `${Math.floor(r.late_minutes / 60)}h ${r.late_minutes % 60}m` : "-"}</td>
                     <td className="px-6 py-4 text-right">
                       <div className="inline-flex items-center justify-end gap-1">
                         <button
                           type="button"
                           onClick={() => openRegularizeFor(r)}
-                          className="inline-flex items-center justify-center p-1.5 rounded text-amber-600 hover:bg-amber-50"
+                          className="inline-flex items-center justify-center p-1.5 rounded text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40"
                           aria-label={t("attendance.my.regularizeDay")}
                           title={t("attendance.my.regularizeDay")}
                         >
@@ -655,7 +655,7 @@ export default function AttendancePage() {
                           <button
                             type="button"
                             onClick={() => setDetailRecord(r)}
-                            className="inline-flex items-center justify-center p-1.5 rounded text-brand-600 hover:bg-brand-50"
+                            className="inline-flex items-center justify-center p-1.5 rounded text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-950/40"
                             aria-label={t("attendance.my.viewDetailsAria")}
                             title={t("attendance.my.viewDetailsTitle")}
                           >
@@ -674,11 +674,11 @@ export default function AttendancePage() {
         </table>
 
         {meta && meta.total_pages > 1 && (
-          <div className="flex items-center justify-between px-6 py-3 border-t border-gray-200">
-            <p className="text-sm text-gray-500">{t("attendance.my.pageOf", { page: meta.page, total_pages: meta.total_pages, total: meta.total })}</p>
+          <div className="flex items-center justify-between px-6 py-3 border-t border-border">
+            <p className="text-sm text-muted-foreground">{t("attendance.my.pageOf", { page: meta.page, total_pages: meta.total_pages, total: meta.total })}</p>
             <div className="flex gap-2">
-              <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50">{t("attendance.my.previous")}</button>
-              <button onClick={() => setPage((p) => p + 1)} disabled={page >= meta.total_pages} className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50">{t("attendance.my.next")}</button>
+              <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="bg-card text-foreground px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50">{t("attendance.my.previous")}</button>
+              <button onClick={() => setPage((p) => p + 1)} disabled={page >= meta.total_pages} className="bg-card text-foreground px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50">{t("attendance.my.next")}</button>
             </div>
           </div>
         )}
@@ -721,16 +721,16 @@ function InlinePunchTimelineRow({ recordId, colSpan }: { recordId: number; colSp
     staleTime: 60_000,
   });
   return (
-    <tr className="bg-gray-50">
+    <tr className="bg-muted">
       <td colSpan={colSpan} className="px-6 py-4">
         {isLoading ? (
-          <div className="flex items-center gap-2 text-sm text-gray-500">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Loader2 className="w-4 h-4 animate-spin" /> {t("attendance.my.loadingTimeline")}
           </div>
         ) : isError ? (
-          <p className="text-sm text-red-600">{t("attendance.my.timelineError")}</p>
+          <p className="text-sm text-red-600 dark:text-red-400">{t("attendance.my.timelineError")}</p>
         ) : !data?.punches?.length ? (
-          <p className="text-sm text-gray-500">{t("attendance.my.noPunches")}</p>
+          <p className="text-sm text-muted-foreground">{t("attendance.my.noPunches")}</p>
         ) : (
           <ol className="space-y-2">
             {(data.punches as PunchRow[]).map((p, idx, arr) => {
@@ -738,15 +738,15 @@ function InlinePunchTimelineRow({ recordId, colSpan }: { recordId: number; colSp
               const isLast = idx === arr.length - 1 && arr.length > 1;
               const label = punchLabel(idx, arr.length, t);
               const labelCls = isFirst
-                ? "bg-green-100 text-green-800"
+                ? "bg-green-100 dark:bg-green-950/40 text-green-800 dark:text-green-200"
                 : isLast
-                ? "bg-rose-100 text-rose-800"
-                : "bg-gray-200 text-gray-700";
+                ? "bg-rose-100 dark:bg-rose-950/40 text-rose-800 dark:text-rose-200"
+                : "bg-muted text-muted-foreground";
               const meta = sourceMeta(p.source, t);
               const Icon = meta.Icon;
               return (
                 <li key={p.id} className="flex flex-wrap items-center gap-3 text-sm">
-                  <span className="font-mono text-gray-700 w-20">{fmtPunchTime(p.punch_time)}</span>
+                  <span className="font-mono text-muted-foreground w-20">{fmtPunchTime(p.punch_time)}</span>
                   <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${labelCls}`}>
                     {label}
                   </span>
@@ -754,13 +754,13 @@ function InlinePunchTimelineRow({ recordId, colSpan }: { recordId: number; colSp
                     <Icon className="w-3 h-3" /> {meta.label}
                   </span>
                   {p.latitude != null && p.longitude != null && (
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-muted-foreground">
                       {Number(p.latitude).toFixed(4)}, {Number(p.longitude).toFixed(4)}
                     </span>
                   )}
                   {p.device_identifier && (
-                    <span className="text-xs text-gray-500" title={t("attendance.my.deviceIdentifier")}>
-                      <span className="text-gray-400">{t("attendance.my.via")}</span> {p.device_identifier}
+                    <span className="text-xs text-muted-foreground" title={t("attendance.my.deviceIdentifier")}>
+                      <span className="text-muted-foreground">{t("attendance.my.via")}</span> {p.device_identifier}
                     </span>
                   )}
                 </li>
@@ -799,11 +799,11 @@ function AttendanceDetailModal({
 
   const statusLabel = t(`attendance.my.status.${r.status}`, { defaultValue: (r.status || "").replace(/_/g, " ") });
   const statusCls =
-    r.status === "present" ? "bg-green-50 text-green-700"
-      : r.status === "checked_in" ? "bg-brand-50 text-brand-700"
-      : r.status === "half_day" ? "bg-yellow-50 text-yellow-700"
-      : r.status === "on_leave" ? "bg-blue-50 text-blue-700"
-      : "bg-red-50 text-red-700";
+    r.status === "present" ? "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300"
+      : r.status === "checked_in" ? "bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300"
+      : r.status === "half_day" ? "bg-yellow-50 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300"
+      : r.status === "on_leave" ? "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300"
+      : "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300";
 
   return (
     <div
@@ -811,20 +811,20 @@ function AttendanceDetailModal({
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+        className="bg-card rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">{t("attendance.my.detailsTitle")}</h3>
-            <p className="text-xs text-gray-500 mt-0.5">
+            <h3 className="text-lg font-semibold text-foreground">{t("attendance.my.detailsTitle")}</h3>
+            <p className="text-xs text-muted-foreground mt-0.5">
               {r.date ? new Date(r.date).toLocaleDateString() : ""}
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 p-1 rounded"
+            className="text-muted-foreground hover:text-foreground p-1 rounded"
             aria-label={t("attendance.my.close")}
           >
             <X className="w-5 h-5" />
@@ -834,27 +834,27 @@ function AttendanceDetailModal({
         <div className="px-6 py-5 space-y-6">
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
             <div>
-              <p className="text-xs uppercase text-gray-400">{t("attendance.my.colCheckIn")}</p>
-              <p className="text-gray-800 mt-0.5">{r.check_in ? new Date(r.check_in).toLocaleTimeString() : "-"}</p>
+              <p className="text-xs uppercase text-muted-foreground">{t("attendance.my.colCheckIn")}</p>
+              <p className="text-foreground mt-0.5">{r.check_in ? new Date(r.check_in).toLocaleTimeString() : "-"}</p>
             </div>
             <div>
-              <p className="text-xs uppercase text-gray-400">{t("attendance.my.colCheckOut")}</p>
-              <p className="text-gray-800 mt-0.5">{r.check_out ? new Date(r.check_out).toLocaleTimeString() : "-"}</p>
+              <p className="text-xs uppercase text-muted-foreground">{t("attendance.my.colCheckOut")}</p>
+              <p className="text-foreground mt-0.5">{r.check_out ? new Date(r.check_out).toLocaleTimeString() : "-"}</p>
             </div>
             <div>
-              <p className="text-xs uppercase text-gray-400">{t("attendance.my.colWorked")}</p>
-              <p className="text-gray-800 mt-0.5">
+              <p className="text-xs uppercase text-muted-foreground">{t("attendance.my.colWorked")}</p>
+              <p className="text-foreground mt-0.5">
                 {r.worked_minutes != null ? `${Math.floor(r.worked_minutes / 60)}h ${r.worked_minutes % 60}m` : "-"}
               </p>
             </div>
             <div>
-              <p className="text-xs uppercase text-gray-400">{t("attendance.my.colLate")}</p>
-              <p className="text-gray-800 mt-0.5">
+              <p className="text-xs uppercase text-muted-foreground">{t("attendance.my.colLate")}</p>
+              <p className="text-foreground mt-0.5">
                 {r.late_minutes ? `${Math.floor(r.late_minutes / 60)}h ${r.late_minutes % 60}m` : "-"}
               </p>
             </div>
             <div>
-              <p className="text-xs uppercase text-gray-400">{t("attendance.my.colStatus")}</p>
+              <p className="text-xs uppercase text-muted-foreground">{t("attendance.my.colStatus")}</p>
               <p className="mt-0.5">
                 <span className={`text-xs px-2 py-1 rounded-full font-medium ${statusCls}`}>{statusLabel}</span>
               </p>
@@ -862,15 +862,15 @@ function AttendanceDetailModal({
           </div>
 
           <div>
-            <p className="text-xs font-medium text-gray-500 uppercase mb-3">{t("attendance.my.punchTimeline")}</p>
+            <p className="text-xs font-medium text-muted-foreground uppercase mb-3">{t("attendance.my.punchTimeline")}</p>
             {isLoading ? (
-              <div className="flex items-center gap-2 text-sm text-gray-500">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Loader2 className="w-4 h-4 animate-spin" /> {t("attendance.my.loadingTimeline")}
               </div>
             ) : isError ? (
-              <p className="text-sm text-red-600">{t("attendance.my.timelineError")}</p>
+              <p className="text-sm text-red-600 dark:text-red-400">{t("attendance.my.timelineError")}</p>
             ) : !data?.punches?.length ? (
-              <p className="text-sm text-gray-500">{t("attendance.my.noPunches")}</p>
+              <p className="text-sm text-muted-foreground">{t("attendance.my.noPunches")}</p>
             ) : (
               <ol className="space-y-2">
                 {(data.punches as PunchRow[]).map((p, idx, arr) => {
@@ -878,15 +878,15 @@ function AttendanceDetailModal({
                   const isLast = idx === arr.length - 1 && arr.length > 1;
                   const label = punchLabel(idx, arr.length, t);
                   const labelCls = isFirst
-                    ? "bg-green-100 text-green-800"
+                    ? "bg-green-100 dark:bg-green-950/40 text-green-800 dark:text-green-200"
                     : isLast
-                    ? "bg-rose-100 text-rose-800"
-                    : "bg-gray-200 text-gray-700";
+                    ? "bg-rose-100 dark:bg-rose-950/40 text-rose-800 dark:text-rose-200"
+                    : "bg-muted text-muted-foreground";
                   const meta = sourceMeta(p.source, t);
                   const Icon = meta.Icon;
                   return (
                     <li key={p.id} className="flex flex-wrap items-center gap-3 text-sm">
-                      <span className="font-mono text-gray-700 w-20">{fmtPunchTime(p.punch_time)}</span>
+                      <span className="font-mono text-muted-foreground w-20">{fmtPunchTime(p.punch_time)}</span>
                       <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${labelCls}`}>
                         {label}
                       </span>
@@ -894,13 +894,13 @@ function AttendanceDetailModal({
                         <Icon className="w-3 h-3" /> {meta.label}
                       </span>
                       {p.latitude != null && p.longitude != null && (
-                        <span className="text-xs text-gray-400">
+                        <span className="text-xs text-muted-foreground">
                           {Number(p.latitude).toFixed(4)}, {Number(p.longitude).toFixed(4)}
                         </span>
                       )}
                       {p.device_identifier && (
-                        <span className="text-xs text-gray-500" title={t("attendance.my.deviceIdentifier")}>
-                          <span className="text-gray-400">{t("attendance.my.via")}</span> {p.device_identifier}
+                        <span className="text-xs text-muted-foreground" title={t("attendance.my.deviceIdentifier")}>
+                          <span className="text-muted-foreground">{t("attendance.my.via")}</span> {p.device_identifier}
                         </span>
                       )}
                     </li>
@@ -911,11 +911,11 @@ function AttendanceDetailModal({
           </div>
         </div>
 
-        <div className="px-6 py-3 border-t border-gray-200 flex justify-end">
+        <div className="px-6 py-3 border-t border-border flex justify-end">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50"
+            className="px-4 py-2 text-sm border border-border rounded-lg hover:bg-muted"
           >
             {t("attendance.my.close")}
           </button>
