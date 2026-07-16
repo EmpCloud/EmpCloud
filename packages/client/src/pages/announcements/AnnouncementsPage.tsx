@@ -16,10 +16,10 @@ const AVAILABLE_ROLES = ["employee", "manager", "hr_admin", "org_admin"];
 // Priority → colour + icon. Label text comes from i18n
 // (announcements.page.priority.*).
 const PRIORITY_CONFIG: Record<string, { color: string; icon: typeof Info }> = {
-  urgent: { color: "bg-red-100 text-red-700 border-red-200", icon: AlertCircle },
-  high: { color: "bg-orange-100 text-orange-700 border-orange-200", icon: AlertTriangle },
-  normal: { color: "bg-blue-100 text-blue-700 border-blue-200", icon: Info },
-  low: { color: "bg-gray-100 text-gray-600 border-gray-200", icon: Info },
+  urgent: { color: "bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300 border-red-200", icon: AlertCircle },
+  high: { color: "bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300 border-orange-200", icon: AlertTriangle },
+  normal: { color: "bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border-blue-200", icon: Info },
+  low: { color: "bg-muted text-muted-foreground border-border", icon: Info },
 };
 
 const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
@@ -209,14 +209,14 @@ export default function AnnouncementsPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-gray-900">{t("announcements.page.title")}</h1>
+            <h1 className="text-2xl font-bold text-foreground">{t("announcements.page.title")}</h1>
             {typeof unreadCount === "number" && unreadCount > 0 && (
               <span className="inline-flex items-center justify-center h-6 min-w-[1.5rem] px-2 text-xs font-bold text-white bg-red-500 rounded-full">
                 {unreadCount}
               </span>
             )}
           </div>
-          <p className="text-gray-500 mt-1">{t("announcements.page.subtitle")}</p>
+          <p className="text-muted-foreground mt-1">{t("announcements.page.subtitle")}</p>
         </div>
         {isHR && (
           <button
@@ -230,25 +230,25 @@ export default function AnnouncementsPage() {
 
       {/* Create Announcement Form */}
       {showForm && isHR && (
-        <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-200 p-6 mb-6 space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900">
+        <form onSubmit={handleSubmit} className="bg-card rounded-xl border border-border p-6 mb-6 space-y-4">
+          <h2 className="text-lg font-semibold text-foreground">
             {editId != null ? t("announcements.page.editTitle") : t("announcements.page.createTitle")}
           </h2>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t("announcements.page.fieldTitle")} <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium text-muted-foreground mb-1">{t("announcements.page.fieldTitle")} <span className="text-red-500">*</span></label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
               placeholder={t("announcements.page.titlePlaceholder")}
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t("announcements.page.fieldContent")} <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium text-muted-foreground mb-1">{t("announcements.page.fieldContent")} <span className="text-red-500">*</span></label>
             <RichTextEditor
               value={content}
               onChange={setContent}
@@ -258,11 +258,11 @@ export default function AnnouncementsPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("announcements.page.fieldPriority")}</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("announcements.page.fieldPriority")}</label>
               <select
                 value={priority}
                 onChange={(e) => setPriority(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
               >
                 <option value="low">{t("announcements.page.priority.low")}</option>
                 <option value="normal">{t("announcements.page.priority.normal")}</option>
@@ -272,11 +272,11 @@ export default function AnnouncementsPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("announcements.page.fieldTarget")}</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("announcements.page.fieldTarget")}</label>
               <select
                 value={targetType}
                 onChange={(e) => { setTargetType(e.target.value); setSelectedTargetIds([]); }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
               >
                 <option value="all">{t("announcements.page.targetAll")}</option>
                 <option value="department">{t("announcements.page.targetDepartment")}</option>
@@ -286,64 +286,64 @@ export default function AnnouncementsPage() {
 
             {targetType === "department" && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-muted-foreground mb-1">
                   {t("announcements.page.selectDepartments")}
                 </label>
-                <div className="w-full border border-gray-300 rounded-lg p-2 max-h-40 overflow-y-auto bg-white">
+                <div className="w-full border border-border rounded-lg p-2 max-h-40 overflow-y-auto bg-card">
                   {deptLoading ? (
-                    <p className="text-xs text-gray-400 p-1">{t("announcements.page.loadingDepartments")}</p>
+                    <p className="text-xs text-muted-foreground p-1">{t("announcements.page.loadingDepartments")}</p>
                   ) : (departments || []).length === 0 ? (
-                    <p className="text-xs text-gray-400 p-1">{t("announcements.page.noDepartments")}</p>
+                    <p className="text-xs text-muted-foreground p-1">{t("announcements.page.noDepartments")}</p>
                   ) : (
                     (departments || []).map((dept: any) => (
-                      <label key={dept.id} className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-50 cursor-pointer">
+                      <label key={dept.id} className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-muted cursor-pointer">
                         <input
                           type="checkbox"
                           checked={selectedTargetIds.includes(String(dept.id))}
                           onChange={() => handleTargetToggle(String(dept.id))}
-                          className="rounded border-gray-300 text-brand-600"
+                          className="rounded border-border text-brand-600 dark:text-brand-400"
                         />
-                        <span className="text-sm text-gray-700">{dept.name}</span>
+                        <span className="text-sm text-muted-foreground">{dept.name}</span>
                       </label>
                     ))
                   )}
                 </div>
                 {selectedTargetIds.length > 0 && (
-                  <p className="text-xs text-gray-500 mt-1">{t("announcements.page.departmentsSelected", { count: selectedTargetIds.length })}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{t("announcements.page.departmentsSelected", { count: selectedTargetIds.length })}</p>
                 )}
               </div>
             )}
             {targetType === "role" && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-muted-foreground mb-1">
                   {t("announcements.page.selectRoles")}
                 </label>
-                <div className="w-full border border-gray-300 rounded-lg p-2 max-h-40 overflow-y-auto bg-white">
+                <div className="w-full border border-border rounded-lg p-2 max-h-40 overflow-y-auto bg-card">
                   {AVAILABLE_ROLES.map((role) => (
-                    <label key={role} className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-50 cursor-pointer">
+                    <label key={role} className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-muted cursor-pointer">
                       <input
                         type="checkbox"
                         checked={selectedTargetIds.includes(role)}
                         onChange={() => handleTargetToggle(role)}
-                        className="rounded border-gray-300 text-brand-600"
+                        className="rounded border-border text-brand-600 dark:text-brand-400"
                       />
-                      <span className="text-sm text-gray-700">{t(`announcements.page.roles.${role}`)}</span>
+                      <span className="text-sm text-muted-foreground">{t(`announcements.page.roles.${role}`)}</span>
                     </label>
                   ))}
                 </div>
                 {selectedTargetIds.length > 0 && (
-                  <p className="text-xs text-gray-500 mt-1">{t("announcements.page.rolesSelected", { count: selectedTargetIds.length })}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{t("announcements.page.rolesSelected", { count: selectedTargetIds.length })}</p>
                 )}
               </div>
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("announcements.page.fieldExpires")}</label>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("announcements.page.fieldExpires")}</label>
               <input
                 type="datetime-local"
                 value={expiresAt}
                 onChange={(e) => setExpiresAt(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
               />
             </div>
           </div>
@@ -352,7 +352,7 @@ export default function AnnouncementsPage() {
             <button
               type="button"
               onClick={closeForm}
-              className="px-4 py-2 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+              className="px-4 py-2 text-sm border border-border rounded-lg text-muted-foreground hover:bg-muted"
             >
               {t("announcements.page.cancel")}
             </button>
@@ -371,11 +371,11 @@ export default function AnnouncementsPage() {
       {/* Announcement Cards */}
       <div className="space-y-4">
         {isLoading ? (
-          <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
+          <div className="bg-card rounded-xl border border-border p-8 text-center text-muted-foreground">
             {t("announcements.page.loading")}
           </div>
         ) : announcements.length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
+          <div className="bg-card rounded-xl border border-border p-8 text-center text-muted-foreground">
             {t("announcements.page.empty")}
           </div>
         ) : (
@@ -388,8 +388,8 @@ export default function AnnouncementsPage() {
             return (
               <div
                 key={a.id}
-                className={`bg-white rounded-xl border overflow-hidden transition-shadow hover:shadow-md ${
-                  isRead ? "border-gray-200" : "border-brand-300 shadow-sm"
+                className={`bg-card rounded-xl border overflow-hidden transition-shadow hover:shadow-md ${
+                  isRead ? "border-border" : "border-brand-300 shadow-sm"
                 }`}
               >
                 <div className="p-6">
@@ -404,20 +404,20 @@ export default function AnnouncementsPage() {
 
                         {/* Unread indicator */}
                         {!isRead && (
-                          <span className="inline-flex items-center text-xs font-medium text-brand-600">
+                          <span className="inline-flex items-center text-xs font-medium text-brand-600 dark:text-brand-400">
                             {t("announcements.page.new")}
                           </span>
                         )}
 
                         {/* Target badge */}
                         {a.target_type !== "all" && (
-                          <span className="text-xs text-gray-400 capitalize">
+                          <span className="text-xs text-muted-foreground capitalize">
                             {a.target_type}
                           </span>
                         )}
                       </div>
 
-                      <h3 className={`text-base font-semibold ${isRead ? "text-gray-700" : "text-gray-900"}`}>
+                      <h3 className={`text-base font-semibold ${isRead ? "text-muted-foreground" : "text-foreground"}`}>
                         {a.title}
                       </h3>
 
@@ -429,14 +429,14 @@ export default function AnnouncementsPage() {
                       <div
                         className={`rich-text mt-1 ${
                           isExpanded ? "" : "line-clamp-2"
-                        } ${isRead ? "text-gray-500" : "text-gray-600"}`}
+                        } ${isRead ? "text-muted-foreground" : "text-muted-foreground"}`}
                         dangerouslySetInnerHTML={{ __html: a.content || "" }}
                       />
 
                       {(a.content.length > 120 || (a.content.match(/\n/g) || []).length > 2) && (
                         <button
                           onClick={(e) => { e.stopPropagation(); setExpandedId(isExpanded ? null : a.id); }}
-                          className="mt-1 text-xs text-brand-600 hover:text-brand-700 flex items-center gap-1"
+                          className="mt-1 text-xs text-brand-600 dark:text-brand-400 hover:text-brand-700 flex items-center gap-1"
                         >
                           {isExpanded ? (
                             <>{t("announcements.page.showLess")} <ChevronUp className="h-3 w-3" /></>
@@ -453,7 +453,7 @@ export default function AnnouncementsPage() {
                         <button
                           onClick={() => handleMarkRead(a.id)}
                           disabled={markAsRead.isPending}
-                          className="flex items-center gap-1.5 text-xs font-medium text-brand-600 hover:text-brand-700 border border-brand-200 px-3 py-1.5 rounded-lg hover:bg-brand-50 disabled:opacity-50"
+                          className="flex items-center gap-1.5 text-xs font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700 border border-brand-200 px-3 py-1.5 rounded-lg hover:bg-brand-50 dark:hover:bg-brand-950/40 disabled:opacity-50"
                         >
                           <Check className="h-3.5 w-3.5" /> {t("announcements.page.markRead")}
                         </button>
@@ -463,7 +463,7 @@ export default function AnnouncementsPage() {
                           onClick={() => startEdit(a)}
                           title={t("announcements.page.editTitle")}
                           aria-label={t("announcements.page.editAria", { title: a.title })}
-                          className="flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-brand-700 border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-brand-50"
+                          className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-brand-700 border border-border px-3 py-1.5 rounded-lg hover:bg-brand-50 dark:hover:bg-brand-950/40"
                         >
                           <Pencil className="h-3.5 w-3.5" /> {t("announcements.page.edit")}
                         </button>
@@ -474,7 +474,7 @@ export default function AnnouncementsPage() {
                           disabled={deleteAnnouncement.isPending}
                           title={t("announcements.page.deleteTitle")}
                           aria-label={t("announcements.page.deleteAria", { title: a.title })}
-                          className="flex items-center gap-1.5 text-xs font-medium text-red-600 hover:text-red-700 border border-red-200 px-3 py-1.5 rounded-lg hover:bg-red-50 disabled:opacity-50"
+                          className="flex items-center gap-1.5 text-xs font-medium text-red-600 dark:text-red-400 hover:text-red-700 border border-red-200 px-3 py-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 disabled:opacity-50"
                         >
                           <Trash2 className="h-3.5 w-3.5" /> {t("announcements.page.delete")}
                         </button>
@@ -483,7 +483,7 @@ export default function AnnouncementsPage() {
                   </div>
 
                   {/* Footer */}
-                  <div className="mt-4 flex items-center gap-4 text-xs text-gray-400">
+                  <div className="mt-4 flex items-center gap-4 text-xs text-muted-foreground">
                     <span>
                       {a.published_at
                         ? new Date(a.published_at).toLocaleDateString("en-US", {
@@ -516,21 +516,21 @@ export default function AnnouncementsPage() {
       {/* Pagination */}
       {meta && meta.total_pages > 1 && (
         <div className="flex items-center justify-between mt-6">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             {t("announcements.page.pageOf", { page: meta.page, total_pages: meta.total_pages, total: meta.total })}
           </p>
           <div className="flex gap-2">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
+              className="bg-card text-foreground px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50"
             >
               {t("announcements.page.previous")}
             </button>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={page >= meta.total_pages}
-              className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
+              className="bg-card text-foreground px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50"
             >
               {t("announcements.page.next")}
             </button>
