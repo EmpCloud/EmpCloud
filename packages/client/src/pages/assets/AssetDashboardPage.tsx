@@ -15,16 +15,16 @@ import {
 } from "lucide-react";
 
 const ACTION_COLORS: Record<string, string> = {
-  created: "text-green-600",
-  assigned: "text-blue-600",
-  returned: "text-purple-600",
-  sent_to_repair: "text-yellow-600",
-  repaired: "text-yellow-600",
-  retired: "text-gray-600",
-  lost: "text-red-600",
-  found: "text-green-600",
-  damaged: "text-orange-600",
-  updated: "text-indigo-600",
+  created: "text-green-600 dark:text-green-400",
+  assigned: "text-blue-600 dark:text-blue-400",
+  returned: "text-purple-600 dark:text-purple-400",
+  sent_to_repair: "text-yellow-600 dark:text-yellow-400",
+  repaired: "text-yellow-600 dark:text-yellow-400",
+  retired: "text-muted-foreground",
+  lost: "text-red-600 dark:text-red-400",
+  found: "text-green-600 dark:text-green-400",
+  damaged: "text-orange-600 dark:text-orange-400",
+  updated: "text-indigo-600 dark:text-indigo-400",
 };
 
 function useDashboard() {
@@ -41,7 +41,7 @@ export default function AssetDashboardPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-400">{t("assetDashboard.loading")}</div>
+        <div className="text-muted-foreground">{t("assetDashboard.loading")}</div>
       </div>
     );
   }
@@ -61,12 +61,12 @@ export default function AssetDashboardPage() {
   // explain the missing 30. A small "Unaccounted" badge below catches any
   // future status drift (e.g. a new enum value the UI doesn't know about yet).
   const statCards = [
-    { label: t("assetDashboard.totalAssets"), value: stats.total, icon: Package, color: "text-gray-900 bg-gray-50", to: "/assets" },
-    { label: t("assetDashboard.available"), value: stats.available, icon: Box, color: "text-green-700 bg-green-50", to: "/assets?status=available" },
-    { label: t("assetDashboard.assigned"), value: stats.assigned, icon: UserCheck, color: "text-blue-700 bg-blue-50", to: "/assets?status=assigned" },
-    { label: t("assetDashboard.inRepair"), value: stats.in_repair, icon: Wrench, color: "text-yellow-700 bg-yellow-50", to: "/assets?status=in_repair" },
-    { label: t("assetDashboard.lostDamaged"), value: (stats.lost || 0) + (stats.damaged || 0), icon: AlertTriangle, color: "text-red-700 bg-red-50", to: "/assets?status=lost" },
-    { label: t("assetDashboard.retired"), value: stats.retired || 0, icon: Archive, color: "text-gray-600 bg-gray-100", to: "/assets?status=retired" },
+    { label: t("assetDashboard.totalAssets"), value: stats.total, icon: Package, color: "text-foreground bg-muted", to: "/assets" },
+    { label: t("assetDashboard.available"), value: stats.available, icon: Box, color: "text-green-700 dark:text-green-300 bg-green-50 dark:bg-green-950/40", to: "/assets?status=available" },
+    { label: t("assetDashboard.assigned"), value: stats.assigned, icon: UserCheck, color: "text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/40", to: "/assets?status=assigned" },
+    { label: t("assetDashboard.inRepair"), value: stats.in_repair, icon: Wrench, color: "text-yellow-700 dark:text-yellow-300 bg-yellow-50 dark:bg-yellow-950/40", to: "/assets?status=in_repair" },
+    { label: t("assetDashboard.lostDamaged"), value: (stats.lost || 0) + (stats.damaged || 0), icon: AlertTriangle, color: "text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/40", to: "/assets?status=lost" },
+    { label: t("assetDashboard.retired"), value: stats.retired || 0, icon: Archive, color: "text-muted-foreground bg-muted", to: "/assets?status=retired" },
   ];
 
   const accounted =
@@ -82,8 +82,8 @@ export default function AssetDashboardPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t("assetDashboard.title")}</h1>
-          <p className="text-sm text-gray-500 mt-1">{t("assetDashboard.subtitle")}</p>
+          <h1 className="text-2xl font-bold text-foreground">{t("assetDashboard.title")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t("assetDashboard.subtitle")}</p>
         </div>
         <Link
           to="/assets"
@@ -102,15 +102,15 @@ export default function AssetDashboardPage() {
             <Link
               key={card.label}
               to={card.to}
-              className="block text-left w-full bg-white rounded-xl border border-gray-200 p-4 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="block text-left w-full bg-card rounded-xl border border-border p-4 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             >
               <div className="flex items-center gap-3">
                 <div className={`p-2 rounded-lg ${card.color}`}>
                   <Icon className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">{card.value}</p>
-                  <p className="text-xs text-gray-500">{card.label}</p>
+                  <p className="text-2xl font-bold text-foreground">{card.value}</p>
+                  <p className="text-xs text-muted-foreground">{card.label}</p>
                 </div>
               </div>
             </Link>
@@ -124,20 +124,20 @@ export default function AssetDashboardPage() {
           status was added. Linking to the unfiltered list lets the admin
           inspect the offending rows directly. */}
       {unaccounted > 0 && (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-800 flex items-center justify-between">
+        <div className="rounded-lg border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-950/40 px-4 py-2 text-sm text-amber-800 dark:text-amber-200 flex items-center justify-between">
           <span>
             {t("assetDashboard.unaccounted", { count: unaccounted })}
           </span>
-          <Link to="/assets" className="font-medium underline hover:text-amber-900">{t("assetDashboard.viewAll")}</Link>
+          <Link to="/assets" className="font-medium underline hover:text-amber-900 dark:hover:text-amber-100">{t("assetDashboard.viewAll")}</Link>
         </div>
       )}
 
       {/* Expiring Warranties Alert */}
       {stats.expiring_warranties && stats.expiring_warranties.length > 0 && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+        <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 rounded-xl p-4">
           <div className="flex items-center gap-2 mb-3">
-            <AlertTriangle className="h-5 w-5 text-amber-600" />
-            <h2 className="text-sm font-semibold text-amber-800">
+            <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+            <h2 className="text-sm font-semibold text-amber-800 dark:text-amber-200">
               {t("assetDashboard.warrantiesExpiring", { count: stats.expiring_warranties.length })}
             </h2>
           </div>
@@ -147,15 +147,15 @@ export default function AssetDashboardPage() {
                 <div>
                   <Link
                     to={`/assets/${asset.id}`}
-                    className="font-medium text-amber-900 hover:underline"
+                    className="font-medium text-amber-900 dark:text-amber-100 hover:underline"
                   >
                     {asset.asset_tag} - {asset.name}
                   </Link>
                   {asset.assigned_to_name && (
-                    <span className="text-amber-700 ml-2">({asset.assigned_to_name})</span>
+                    <span className="text-amber-700 dark:text-amber-300 ml-2">({asset.assigned_to_name})</span>
                   )}
                 </div>
-                <span className="text-amber-600">
+                <span className="text-amber-600 dark:text-amber-400">
                   {t("assetDashboard.expires", { date: new Date(asset.warranty_expiry).toLocaleDateString() })}
                 </span>
               </div>
@@ -166,10 +166,10 @@ export default function AssetDashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Category Breakdown */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <div className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-2 mb-4">
-            <BarChart3 className="h-5 w-5 text-gray-500" />
-            <h2 className="text-lg font-semibold text-gray-900">{t("assetDashboard.byCategory")}</h2>
+            <BarChart3 className="h-5 w-5 text-muted-foreground" />
+            <h2 className="text-lg font-semibold text-foreground">{t("assetDashboard.byCategory")}</h2>
           </div>
           {stats.category_breakdown && stats.category_breakdown.length > 0 ? (
             <div className="space-y-3">
@@ -178,10 +178,10 @@ export default function AssetDashboardPage() {
                 return (
                   <div key={cat.category}>
                     <div className="flex items-center justify-between text-sm mb-1">
-                      <span className="text-gray-700">{cat.category}</span>
-                      <span className="text-gray-500">{cat.count} ({pct}%)</span>
+                      <span className="text-muted-foreground">{cat.category}</span>
+                      <span className="text-muted-foreground">{cat.count} ({pct}%)</span>
                     </div>
-                    <div className="w-full bg-gray-100 rounded-full h-2">
+                    <div className="w-full bg-muted rounded-full h-2">
                       <div
                         className="bg-brand-500 h-2 rounded-full transition-all"
                         style={{ width: `${pct}%` }}
@@ -192,15 +192,15 @@ export default function AssetDashboardPage() {
               })}
             </div>
           ) : (
-            <p className="text-sm text-gray-400">{t("assetDashboard.noAssets")}</p>
+            <p className="text-sm text-muted-foreground">{t("assetDashboard.noAssets")}</p>
           )}
         </div>
 
         {/* Top Assignees */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <div className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-2 mb-4">
-            <UserCheck className="h-5 w-5 text-gray-500" />
-            <h2 className="text-lg font-semibold text-gray-900">{t("assetDashboard.topAssignees")}</h2>
+            <UserCheck className="h-5 w-5 text-muted-foreground" />
+            <h2 className="text-lg font-semibold text-foreground">{t("assetDashboard.topAssignees")}</h2>
           </div>
           {stats.top_assignees && stats.top_assignees.length > 0 ? (
             <div className="space-y-3">
@@ -208,59 +208,59 @@ export default function AssetDashboardPage() {
                 <Link
                   key={assignee.user_id}
                   to={`/assets?assigned_to=${assignee.user_id}`}
-                  className="flex items-center justify-between rounded-lg p-2 -m-2 transition-all hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="flex items-center justify-between rounded-lg p-2 -m-2 transition-all hover:bg-muted focus:outline-none focus:ring-2 focus:ring-brand-500"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-full bg-brand-100 flex items-center justify-center text-xs font-semibold text-brand-700">
+                    <div className="h-8 w-8 rounded-full bg-brand-100 dark:bg-brand-950/40 flex items-center justify-center text-xs font-semibold text-brand-700 dark:text-brand-300">
                       {idx + 1}
                     </div>
-                    <span className="text-sm text-gray-700">{assignee.name}</span>
+                    <span className="text-sm text-muted-foreground">{assignee.name}</span>
                   </div>
-                  <span className="text-sm font-medium text-gray-900">{t("assetDashboard.assetsCount", { count: assignee.count })}</span>
+                  <span className="text-sm font-medium text-foreground">{t("assetDashboard.assetsCount", { count: assignee.count })}</span>
                 </Link>
               ))}
             </div>
           ) : (
-            <p className="text-sm text-gray-400">{t("assetDashboard.noAssignments")}</p>
+            <p className="text-sm text-muted-foreground">{t("assetDashboard.noAssignments")}</p>
           )}
         </div>
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
+      <div className="bg-card rounded-xl border border-border p-6">
         <div className="flex items-center gap-2 mb-4">
-          <Clock className="h-5 w-5 text-gray-500" />
-          <h2 className="text-lg font-semibold text-gray-900">{t("assetDashboard.recentActivity")}</h2>
+          <Clock className="h-5 w-5 text-muted-foreground" />
+          <h2 className="text-lg font-semibold text-foreground">{t("assetDashboard.recentActivity")}</h2>
         </div>
         {stats.recent_activity && stats.recent_activity.length > 0 ? (
           <div className="space-y-3">
             {stats.recent_activity.map((activity: any) => (
               <div
                 key={activity.id}
-                className="flex items-start gap-3 text-sm border-b border-gray-50 pb-3 last:border-0"
+                className="flex items-start gap-3 text-sm border-b border-border pb-3 last:border-0"
               >
-                <div className={`mt-0.5 font-medium ${ACTION_COLORS[activity.action] || "text-gray-600"}`}>
+                <div className={`mt-0.5 font-medium ${ACTION_COLORS[activity.action] || "text-muted-foreground"}`}>
                   {t(`assetDashboard.action.${activity.action}`, { defaultValue: activity.action })}
                 </div>
                 <div className="flex-1">
                   <Link
                     to={`/assets/${activity.asset_id}`}
-                    className="font-medium text-gray-900 hover:underline"
+                    className="font-medium text-foreground hover:underline"
                   >
                     {activity.asset_tag} - {activity.asset_name}
                   </Link>
                   {activity.notes && (
-                    <p className="text-gray-500 text-xs mt-0.5">{activity.notes}</p>
+                    <p className="text-muted-foreground text-xs mt-0.5">{activity.notes}</p>
                   )}
                 </div>
-                <span className="text-xs text-gray-400 whitespace-nowrap">
+                <span className="text-xs text-muted-foreground whitespace-nowrap">
                   {new Date(activity.created_at).toLocaleString()}
                 </span>
               </div>
             ))}
           </div>
         ) : (
-          <p className="text-sm text-gray-400">{t("assetDashboard.noActivity")}</p>
+          <p className="text-sm text-muted-foreground">{t("assetDashboard.noActivity")}</p>
         )}
       </div>
     </div>
