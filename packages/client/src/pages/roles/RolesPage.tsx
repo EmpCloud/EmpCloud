@@ -112,11 +112,11 @@ export default function RolesPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <Shield className="h-6 w-6 text-brand-600" />
+          <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
+            <Shield className="h-6 w-6 text-brand-600 dark:text-brand-400" />
             {tx("title")}
           </h1>
-          <p className="text-gray-500 mt-1">{tx("subtitle")}</p>
+          <p className="text-muted-foreground mt-1">{tx("subtitle")}</p>
         </div>
         <button
           type="button"
@@ -134,13 +134,13 @@ export default function RolesPage() {
         subtitle={tx("systemRolesSubtitle") as string}
       />
       {isLoading ? (
-        <div className="flex items-center gap-2 text-gray-400 text-sm py-6">
+        <div className="flex items-center gap-2 text-muted-foreground text-sm py-6">
           <Loader2 className="h-4 w-4 animate-spin" /> {tx("loadingRoles")}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
           {systemRoles.length === 0 && (
-            <p className="text-sm text-gray-400 col-span-2">
+            <p className="text-sm text-muted-foreground col-span-2">
               {tx("noSystemRoles")}
             </p>
           )}
@@ -165,11 +165,11 @@ export default function RolesPage() {
         subtitle={tx("customRolesSubtitle") as string}
       />
       {customRoles.length === 0 ? (
-        <div className="border border-dashed border-gray-300 rounded-lg p-6 text-center text-sm text-gray-500">
+        <div className="border border-dashed border-border rounded-lg p-6 text-center text-sm text-muted-foreground">
           {tx("noCustomRolesPrefix")}{" "}
           <button
             onClick={() => setEditing({ role: null, mode: "create" })}
-            className="text-brand-600 hover:underline font-medium"
+            className="text-brand-600 dark:text-brand-400 hover:underline font-medium"
           >
             {tx("noCustomRolesCreateOne")}
           </button>{" "}
@@ -229,10 +229,10 @@ function SectionHeader({
 }) {
   return (
     <div className="mb-3">
-      <h2 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+      <h2 className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
         {icon} {title}
       </h2>
-      <p className="text-xs text-gray-500 mt-0.5">{subtitle}</p>
+      <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>
     </div>
   );
 }
@@ -264,29 +264,29 @@ function RoleCard({
   const isSystem = role.type === 0;
 
   return (
-    <div className="border border-gray-200 rounded-xl bg-white p-4 hover:border-gray-300 transition-colors">
+    <div className="border border-border rounded-xl bg-card p-4 hover:border-brand-500 dark:hover:border-brand-400 transition-colors">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="font-semibold text-gray-900 truncate">{displayName}</h3>
+            <h3 className="font-semibold text-foreground truncate">{displayName}</h3>
             {isSystem && (
-              <span className="text-[10px] font-semibold uppercase tracking-wide bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">
+              <span className="text-[10px] font-semibold uppercase tracking-wide bg-muted text-muted-foreground px-1.5 py-0.5 rounded">
                 {tx("badgeSystem")}
               </span>
             )}
             {isCustomized && (
               <span
                 title={tx("badgeCustomizedTooltip") as string}
-                className="text-[10px] font-semibold uppercase tracking-wide bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded"
+                className="text-[10px] font-semibold uppercase tracking-wide bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 px-1.5 py-0.5 rounded"
               >
                 {tx("badgeCustomized")}
               </span>
             )}
           </div>
           {displayDescription && (
-            <p className="text-xs text-gray-500 mt-1 line-clamp-2">{displayDescription}</p>
+            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{displayDescription}</p>
           )}
-          <p className="text-xs text-gray-400 mt-2">
+          <p className="text-xs text-muted-foreground mt-2">
             {tx("permissionsCount", { count: role.permissions.length })}
           </p>
         </div>
@@ -294,7 +294,7 @@ function RoleCard({
           <button
             type="button"
             onClick={onEdit}
-            className="p-1.5 text-gray-400 hover:text-brand-600 hover:bg-brand-50 rounded"
+            className="p-1.5 text-muted-foreground hover:text-brand-600 dark:hover:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-950/40 rounded"
             title={tx("editRoleTooltip") as string}
           >
             <Pencil className="h-4 w-4" />
@@ -303,7 +303,7 @@ function RoleCard({
             <button
               type="button"
               onClick={onDelete}
-              className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded"
+              className="p-1.5 text-muted-foreground hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded"
               title={tx("deleteRoleTooltip") as string}
             >
               <Trash2 className="h-4 w-4" />
@@ -313,7 +313,7 @@ function RoleCard({
             <button
               type="button"
               onClick={onReset}
-              className="p-1.5 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded"
+              className="p-1.5 text-muted-foreground hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40 rounded"
               title={tx("resetRoleTooltip") as string}
             >
               <Trash2 className="h-4 w-4" />
@@ -425,25 +425,25 @@ function RoleBuilderModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col">
+      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+        <div className="flex items-center justify-between border-b border-border px-6 py-4">
           <div className="min-w-0">
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold text-foreground">
               {mode === "create"
                 ? tx("createCustomRoleTitle")
                 : isSystemRole
                   ? tx("editSystemRoleTitle")
                   : tx("editRoleTitle")}
             </h2>
-            <p className="text-xs text-gray-500 mt-0.5">
+            <p className="text-xs text-muted-foreground mt-0.5">
               {tx("permissionsSelected", { selected: selectedCount, total: totalCount })}
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded"
+            className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded"
           >
             <X className="h-5 w-5" />
           </button>
@@ -454,10 +454,10 @@ function RoleBuilderModal({
           {/* Name + description */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
                 {tx("roleNameLabel")}
                 {isSystemRole && (
-                  <span className="text-xs font-normal text-gray-400 ml-2">{tx("roleNameLocked")}</span>
+                  <span className="text-xs font-normal text-muted-foreground ml-2">{tx("roleNameLocked")}</span>
                 )}
               </label>
               <input
@@ -470,41 +470,41 @@ function RoleBuilderModal({
                 onChange={(e) => setName(e.target.value)}
                 disabled={isSystemRole}
                 placeholder={tx("roleNamePlaceholder") as string}
-                className={`w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 ${
-                  isSystemRole ? "bg-gray-50 text-gray-500 cursor-not-allowed" : ""
+                className={`w-full border border-border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 ${
+                  isSystemRole ? "bg-muted text-muted-foreground cursor-not-allowed" : "bg-card text-foreground"
                 }`}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                {tx("descriptionLabel")} <span className="text-xs font-normal text-gray-400">{tx("descriptionOptional")}</span>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
+                {tx("descriptionLabel")} <span className="text-xs font-normal text-muted-foreground">{tx("descriptionOptional")}</span>
               </label>
               <input
                 type="text"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder={tx("descriptionPlaceholder") as string}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500"
+                className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 bg-card text-foreground"
               />
             </div>
           </div>
 
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={tx("searchPermissionsPlaceholder") as string}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500"
+              className="bg-card text-foreground w-full pl-10 pr-4 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500"
             />
           </div>
 
           {/* Permission groups */}
-          <div className="border border-gray-200 rounded-lg divide-y divide-gray-100">
+          <div className="border border-border rounded-lg divide-y divide-border">
             {filteredGroups.length === 0 && (
-              <div className="px-4 py-6 text-center text-sm text-gray-400">
+              <div className="px-4 py-6 text-center text-sm text-muted-foreground">
                 {tx("noPermissionsMatch", { query: search })}
               </div>
             )}
@@ -515,11 +515,11 @@ function RoleBuilderModal({
               const someOn = groupSelectedCount > 0 && !allOn;
               return (
                 <div key={group}>
-                  <div className="flex items-center gap-2 px-3 py-2.5 bg-gray-50 hover:bg-gray-100">
+                  <div className="flex items-center gap-2 px-3 py-2.5 bg-muted hover:bg-muted-foreground/10 transition-colors">
                     <button
                       type="button"
                       onClick={() => toggleGroupOpen(group)}
-                      className="text-gray-400 hover:text-gray-600"
+                      className="text-muted-foreground hover:text-foreground"
                     >
                       {open ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                     </button>
@@ -528,44 +528,45 @@ function RoleBuilderModal({
                       checked={allOn}
                       ref={(el) => { if (el) el.indeterminate = someOn; }}
                       onChange={() => toggleGroup(perms)}
+                      className="accent-brand-600"
                     />
-                    <span className="font-medium text-sm text-gray-800 flex-1">{group}</span>
-                    <span className="text-xs text-gray-400">
+                    <span className="font-medium text-sm text-foreground flex-1">{group}</span>
+                    <span className="text-xs text-muted-foreground">
                       {groupSelectedCount} / {perms.length}
                     </span>
                   </div>
                   {open && (
-                    <div className="divide-y divide-gray-50">
+                    <div className="divide-y divide-border">
                       {perms.map((p) => (
                         <label
                           key={p.key}
-                          className="flex items-start gap-3 px-3 py-2 hover:bg-brand-50/40 cursor-pointer"
+                          className="flex items-start gap-3 px-3 py-2 hover:bg-brand-50/40 dark:hover:bg-brand-950/30 cursor-pointer"
                         >
                           <input
                             type="checkbox"
                             checked={selected.has(p.key)}
                             onChange={() => toggleOne(p.key)}
-                            className="mt-0.5"
+                            className="mt-0.5 accent-brand-600"
                           />
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2">
-                              <span className="text-sm text-gray-900">{p.label}</span>
-                              <span className="text-[10px] font-mono text-gray-400">{p.key}</span>
+                              <span className="text-sm text-foreground">{p.label}</span>
+                              <span className="text-[10px] font-mono text-muted-foreground">{p.key}</span>
                               {p.scope && (
                                 <span
                                   className={`text-[10px] font-semibold uppercase px-1 py-0.5 rounded ${
                                     p.scope === "all"
-                                      ? "bg-red-50 text-red-600"
+                                      ? "bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400"
                                       : p.scope === "team"
-                                        ? "bg-amber-50 text-amber-700"
-                                        : "bg-gray-100 text-gray-500"
+                                        ? "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300"
+                                        : "bg-muted text-muted-foreground"
                                   }`}
                                 >
                                   {p.scope}
                                 </span>
                               )}
                             </div>
-                            <p className="text-xs text-gray-500">{p.description}</p>
+                            <p className="text-xs text-muted-foreground">{p.description}</p>
                           </div>
                         </label>
                       ))}
@@ -578,15 +579,15 @@ function RoleBuilderModal({
         </div>
 
         {/* Footer */}
-        <div className="border-t border-gray-200 px-6 py-3 flex items-center justify-between gap-3">
+        <div className="border-t border-border px-6 py-3 flex items-center justify-between gap-3">
           {mutation.isError && (
-            <span className="text-xs text-red-600">{extractApiError(mutation.error)}</span>
+            <span className="text-xs text-red-600 dark:text-red-400">{extractApiError(mutation.error)}</span>
           )}
           <div className="ml-auto flex items-center gap-2">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="px-4 py-2 text-sm font-medium text-muted-foreground border border-border rounded-lg hover:bg-muted"
             >
               {t("common.cancel")}
             </button>
@@ -642,22 +643,22 @@ function ConfirmDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-md">
         <div className="px-6 py-5">
           <div className="flex items-center gap-3 mb-3">
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isReset ? "bg-amber-50" : "bg-red-50"}`}>
-              <AlertTriangle className={`h-5 w-5 ${isReset ? "text-amber-600" : "text-red-600"}`} />
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isReset ? "bg-amber-50 dark:bg-amber-950/40" : "bg-red-50 dark:bg-red-950/40"}`}>
+              <AlertTriangle className={`h-5 w-5 ${isReset ? "text-amber-600 dark:text-amber-400" : "text-red-600 dark:text-red-400"}`} />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+            <h3 className="text-lg font-semibold text-foreground">{title}</h3>
           </div>
-          <p className="text-sm text-gray-600">{body}</p>
-          {error && <p className="text-sm text-red-600 mt-3">{error}</p>}
+          <p className="text-sm text-muted-foreground">{body}</p>
+          {error && <p className="text-sm text-red-600 dark:text-red-400 mt-3">{error}</p>}
         </div>
-        <div className="flex justify-end gap-2 px-6 py-3 border-t border-gray-200">
+        <div className="flex justify-end gap-2 px-6 py-3 border-t border-border">
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+            className="px-4 py-2 text-sm font-medium text-muted-foreground border border-border rounded-lg hover:bg-muted"
           >
             {t("common.cancel")}
           </button>
