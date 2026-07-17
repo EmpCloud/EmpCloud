@@ -46,7 +46,7 @@ export default function PlatformSettingsPage() {
     {
       title: t("platformSettings.sections.platformInfo.title"),
       icon: Server,
-      color: "bg-blue-50 text-blue-600",
+      color: "bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400",
       items: info
         ? [
             { label: t("platformSettings.fields.serverVersion"), value: info.server.version },
@@ -59,7 +59,7 @@ export default function PlatformSettingsPage() {
     {
       title: t("platformSettings.sections.email.title"),
       icon: Mail,
-      color: "bg-green-50 text-green-600",
+      color: "bg-green-50 dark:bg-green-950/40 text-green-600 dark:text-green-400",
       items: info
         ? [
             {
@@ -77,7 +77,7 @@ export default function PlatformSettingsPage() {
     {
       title: t("platformSettings.sections.security.title"),
       icon: Shield,
-      color: "bg-amber-50 text-amber-600",
+      color: "bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400",
       items: info
         ? [
             { label: t("platformSettings.fields.bcryptRounds"), value: String(info.security.bcrypt_rounds) },
@@ -94,12 +94,12 @@ export default function PlatformSettingsPage() {
     <div>
       <div className="mb-8">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-purple-50 flex items-center justify-center">
-            <Settings className="h-5 w-5 text-purple-600" />
+          <div className="h-10 w-10 rounded-xl bg-purple-50 dark:bg-purple-950/40 flex items-center justify-center">
+            <Settings className="h-5 w-5 text-purple-600 dark:text-purple-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">{t("platformSettings.header.title")}</h1>
-            <p className="text-gray-500 mt-0.5 text-sm">
+            <h1 className="text-2xl font-bold text-foreground">{t("platformSettings.header.title")}</h1>
+            <p className="text-muted-foreground mt-0.5 text-sm">
               {t("platformSettings.header.subtitle")}
             </p>
           </div>
@@ -109,12 +109,12 @@ export default function PlatformSettingsPage() {
       {isLoading ? (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-white rounded-xl border border-gray-200 p-6 animate-pulse">
-              <div className="h-5 w-32 bg-gray-200 rounded mb-4" />
+            <div key={i} className="bg-card rounded-xl border border-border p-6 animate-pulse">
+              <div className="h-5 w-32 bg-muted rounded mb-4" />
               <div className="space-y-3">
-                <div className="h-4 w-full bg-gray-200 rounded" />
-                <div className="h-4 w-3/4 bg-gray-200 rounded" />
-                <div className="h-4 w-5/6 bg-gray-200 rounded" />
+                <div className="h-4 w-full bg-muted rounded" />
+                <div className="h-4 w-3/4 bg-muted rounded" />
+                <div className="h-4 w-5/6 bg-muted rounded" />
               </div>
             </div>
           ))}
@@ -124,26 +124,26 @@ export default function PlatformSettingsPage() {
           {sections.map((section) => (
             <div
               key={section.title}
-              className="bg-white rounded-xl border border-gray-200 overflow-hidden"
+              className="bg-card rounded-xl border border-border overflow-hidden"
             >
-              <div className="px-6 py-4 border-b border-gray-200 flex items-center gap-3">
+              <div className="px-6 py-4 border-b border-border flex items-center gap-3">
                 <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${section.color}`}>
                   <section.icon className="h-4 w-4" />
                 </div>
-                <h2 className="text-base font-semibold text-gray-900">{section.title}</h2>
+                <h2 className="text-base font-semibold text-foreground">{section.title}</h2>
               </div>
               <div className="p-6">
                 <dl className="space-y-3">
                   {section.items.map((item: any) => (
                     <div key={item.label} className="flex items-center justify-between">
-                      <dt className="text-sm text-gray-500">{item.label}</dt>
-                      <dd className="text-sm font-medium text-gray-900 text-right">
+                      <dt className="text-sm text-muted-foreground">{item.label}</dt>
+                      <dd className="text-sm font-medium text-foreground text-right">
                         {"badge" in item ? (
                           <span
                             className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
                               item.badge
-                                ? "bg-green-100 text-green-700"
-                                : "bg-red-100 text-red-700"
+                                ? "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300"
+                                : "bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300"
                             }`}
                           >
                             {item.value}
@@ -161,7 +161,7 @@ export default function PlatformSettingsPage() {
         </div>
       )}
 
-      <div className="mt-6 flex items-center gap-2 text-xs text-gray-400">
+      <div className="mt-6 flex items-center gap-2 text-xs text-muted-foreground">
         <Clock className="h-3.5 w-3.5" />
         <span>{t("platformSettings.footer.autoRefresh")}</span>
       </div>
