@@ -166,6 +166,11 @@ export async function getOrgList(params: {
   return {
     data: orgs.map((o: any) => ({
       ...o,
+      // The organizations table stores activation as the boolean `is_active`,
+      // but the org-list UI renders a status pill via i18n key
+      // `orgList.status.<status>`. Derive a string status here so the pill
+      // resolves ("active"/"inactive") instead of showing the raw key.
+      status: o.is_active ? "active" : "inactive",
       user_count: Number(o.user_count),
       subscription_count: Number(o.subscription_count),
       monthly_spend: Number(o.monthly_spend),

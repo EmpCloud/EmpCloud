@@ -3321,7 +3321,8 @@
       }
     },
     "status": {
-      "active": "activa"
+      "active": "activa",
+      "inactive": "inactiva"
     },
     "loading": "Cargando...",
     "empty": "No se encontraron organizaciones",
