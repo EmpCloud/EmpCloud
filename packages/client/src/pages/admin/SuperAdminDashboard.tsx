@@ -65,7 +65,7 @@ function StatCard({
   trendValue?: string;
 }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
+    <div className="bg-card rounded-xl border border-border p-6 hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between">
         <div className={`h-12 w-12 rounded-lg ${color} flex items-center justify-center`}>
           <Icon className="h-6 w-6" />
@@ -74,10 +74,10 @@ function StatCard({
           <div
             className={`flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full ${
               trend === "up"
-                ? "bg-green-50 text-green-600"
+                ? "bg-green-50 dark:bg-green-950/40 text-green-600 dark:text-green-400"
                 : trend === "down"
-                  ? "bg-red-50 text-red-600"
-                  : "bg-gray-50 text-gray-500"
+                  ? "bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400"
+                  : "bg-muted text-muted-foreground"
             }`}
           >
             {trend === "up" ? (
@@ -90,9 +90,9 @@ function StatCard({
         )}
       </div>
       <div className="mt-4">
-        <p className="text-2xl font-bold text-gray-900">{value}</p>
-        <p className="text-sm text-gray-500 mt-1">{label}</p>
-        {subtitle && <p className="text-xs text-gray-400 mt-0.5">{subtitle}</p>}
+        <p className="text-2xl font-bold text-foreground">{value}</p>
+        <p className="text-sm text-muted-foreground mt-1">{label}</p>
+        {subtitle && <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>}
       </div>
     </div>
   );
@@ -102,14 +102,14 @@ function HealthBadge({ status }: { status: string }) {
   const { t } = useTranslation();
   if (status === "healthy") {
     return (
-      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300">
         <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
         {t("superAdminDashboard.healthBadge.healthy")}
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
+    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300">
       <span className="h-2 w-2 rounded-full bg-red-500" />
       {t("superAdminDashboard.healthBadge.down")}
     </span>
@@ -132,16 +132,16 @@ function QuickLinkCard({
   return (
     <Link
       to={to}
-      className="flex items-center gap-4 p-4 bg-white rounded-xl border border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all group"
+      className="flex items-center gap-4 p-4 bg-card rounded-xl border border-border hover:border-border hover:shadow-sm transition-all group"
     >
       <div className={`h-10 w-10 rounded-lg ${color} flex items-center justify-center shrink-0`}>
         <Icon className="h-5 w-5" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-gray-900">{label}</p>
-        <p className="text-xs text-gray-500 truncate">{description}</p>
+        <p className="text-sm font-medium text-foreground">{label}</p>
+        <p className="text-xs text-muted-foreground truncate">{description}</p>
       </div>
-      <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+      <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-muted-foreground transition-colors" />
     </Link>
   );
 }
@@ -190,7 +190,7 @@ export default function SuperAdminDashboard() {
       <div className="flex items-center justify-center h-64">
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 border-4 border-brand-200 border-t-brand-600 rounded-full animate-spin" />
-          <div className="text-gray-400 text-sm">{t("superAdminDashboard.loading")}</div>
+          <div className="text-muted-foreground text-sm">{t("superAdminDashboard.loading")}</div>
         </div>
       </div>
     );
@@ -201,8 +201,8 @@ export default function SuperAdminDashboard() {
       <div className="flex items-center justify-center h-64">
         <div className="flex flex-col items-center gap-3 text-center">
           <Activity className="h-8 w-8 text-red-400" />
-          <div className="text-gray-600 font-medium">{t("superAdminDashboard.error.title")}</div>
-          <div className="text-gray-400 text-sm">{t("superAdminDashboard.error.retryHint")}</div>
+          <div className="text-muted-foreground font-medium">{t("superAdminDashboard.error.title")}</div>
+          <div className="text-muted-foreground text-sm">{t("superAdminDashboard.error.retryHint")}</div>
         </div>
       </div>
     );
@@ -220,8 +220,8 @@ export default function SuperAdminDashboard() {
             <Crown className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">{t("superAdminDashboard.title")}</h1>
-            <p className="text-gray-500 mt-0.5 text-sm">
+            <h1 className="text-2xl font-bold text-foreground">{t("superAdminDashboard.title")}</h1>
+            <p className="text-muted-foreground mt-0.5 text-sm">
               {t("superAdminDashboard.subtitle")}
             </p>
           </div>
@@ -235,7 +235,7 @@ export default function SuperAdminDashboard() {
           value={overview?.total_organizations ?? 0}
           subtitle={t("superAdminDashboard.stats.newThisMonth", { count: overview?.new_orgs_this_month ?? 0 })}
           icon={Building2}
-          color="bg-blue-50 text-blue-600"
+          color="bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400"
           trend={overview?.new_orgs_this_month > 0 ? "up" : "neutral"}
           trendValue={overview?.new_orgs_this_month > 0 ? `+${overview.new_orgs_this_month}` : "0"}
         />
@@ -244,7 +244,7 @@ export default function SuperAdminDashboard() {
           value={overview?.total_users ?? 0}
           subtitle={t("superAdminDashboard.stats.newThisMonth", { count: overview?.new_users_this_month ?? 0 })}
           icon={Users}
-          color="bg-green-50 text-green-600"
+          color="bg-green-50 dark:bg-green-950/40 text-green-600 dark:text-green-400"
           trend={overview?.new_users_this_month > 0 ? "up" : "neutral"}
           trendValue={overview?.new_users_this_month > 0 ? `+${overview.new_users_this_month}` : "0"}
         />
@@ -252,14 +252,14 @@ export default function SuperAdminDashboard() {
           label={t("superAdminDashboard.stats.activeSubscriptions")}
           value={overview?.active_subscriptions ?? 0}
           icon={CreditCard}
-          color="bg-purple-50 text-purple-600"
+          color="bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400"
         />
         <StatCard
           label={t("superAdminDashboard.stats.mrr")}
           value={formatINR(overview?.mrr ?? 0)}
           subtitle={t("superAdminDashboard.stats.mrrSubtitle")}
           icon={TrendingUp}
-          color="bg-amber-50 text-amber-600"
+          color="bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400"
           trend={revenue?.mrr_growth_percent > 0 ? "up" : revenue?.mrr_growth_percent < 0 ? "down" : "neutral"}
           trendValue={revenue?.mrr_growth_percent != null ? `${revenue.mrr_growth_percent}%` : undefined}
         />
@@ -268,7 +268,7 @@ export default function SuperAdminDashboard() {
           value={formatINR(overview?.arr ?? 0)}
           subtitle={t("superAdminDashboard.stats.arrSubtitle")}
           icon={DollarSign}
-          color="bg-indigo-50 text-indigo-600"
+          color="bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400"
         />
         <StatCard
           label={t("superAdminDashboard.stats.systemHealth")}
@@ -283,10 +283,10 @@ export default function SuperAdminDashboard() {
           icon={Heart}
           color={
             health?.overall_status === "all_healthy"
-              ? "bg-green-50 text-green-600"
+              ? "bg-green-50 dark:bg-green-950/40 text-green-600 dark:text-green-400"
               : health?.overall_status === "degraded"
-                ? "bg-yellow-50 text-yellow-600"
-                : "bg-red-50 text-red-600"
+                ? "bg-yellow-50 dark:bg-yellow-950/40 text-yellow-600 dark:text-yellow-400"
+                : "bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400"
           }
         />
       </div>
@@ -298,47 +298,47 @@ export default function SuperAdminDashboard() {
           icon={Building2}
           label={t("superAdminDashboard.quickLinks.organizations.label")}
           description={t("superAdminDashboard.quickLinks.organizations.description")}
-          color="bg-blue-50 text-blue-600"
+          color="bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400"
         />
         <QuickLinkCard
           to="/admin/modules"
           icon={Package}
           label={t("superAdminDashboard.quickLinks.moduleAnalytics.label")}
           description={t("superAdminDashboard.quickLinks.moduleAnalytics.description")}
-          color="bg-purple-50 text-purple-600"
+          color="bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400"
         />
         <QuickLinkCard
           to="/admin/revenue"
           icon={BarChart3}
           label={t("superAdminDashboard.quickLinks.revenueAnalytics.label")}
           description={t("superAdminDashboard.quickLinks.revenueAnalytics.description")}
-          color="bg-amber-50 text-amber-600"
+          color="bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400"
         />
         <QuickLinkCard
           to="/admin/subscriptions"
           icon={CreditCard}
           label={t("superAdminDashboard.quickLinks.subscriptionMetrics.label")}
           description={t("superAdminDashboard.quickLinks.subscriptionMetrics.description")}
-          color="bg-green-50 text-green-600"
+          color="bg-green-50 dark:bg-green-950/40 text-green-600 dark:text-green-400"
         />
       </div>
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Revenue Trend (Line) */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <div className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">{t("superAdminDashboard.charts.revenueTrend.title")}</h2>
-            <Link to="/admin/revenue" className="text-xs text-brand-600 hover:underline">
+            <h2 className="text-lg font-semibold text-foreground">{t("superAdminDashboard.charts.revenueTrend.title")}</h2>
+            <Link to="/admin/revenue" className="text-xs text-brand-600 dark:text-brand-400 hover:underline">
               {t("superAdminDashboard.charts.viewDetails")}
             </Link>
           </div>
           {revenue?.revenue_trend?.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={revenue.revenue_trend}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-                <YAxis tickFormatter={(v) => formatINR(v)} tick={{ fontSize: 11 }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="month" tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} stroke="hsl(var(--border))" />
+                <YAxis tickFormatter={(v) => formatINR(v)} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
                 <Tooltip formatter={(value: any) => formatINR(Number(value))} />
                 <Line
                   type="monotone"
@@ -351,17 +351,17 @@ export default function SuperAdminDashboard() {
               </LineChart>
             </ResponsiveContainer>
           ) : (
-            <div className="flex items-center justify-center h-[300px] text-gray-400 text-sm">
+            <div className="flex items-center justify-center h-[300px] text-muted-foreground text-sm">
               {t("superAdminDashboard.empty.revenue")}
             </div>
           )}
         </div>
 
         {/* Revenue by Module (Pie) */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <div className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">{t("superAdminDashboard.charts.revenueByModule.title")}</h2>
-            <Link to="/admin/modules" className="text-xs text-brand-600 hover:underline">
+            <h2 className="text-lg font-semibold text-foreground">{t("superAdminDashboard.charts.revenueByModule.title")}</h2>
+            <Link to="/admin/modules" className="text-xs text-brand-600 dark:text-brand-400 hover:underline">
               {t("superAdminDashboard.charts.viewDetails")}
             </Link>
           </div>
@@ -388,7 +388,7 @@ export default function SuperAdminDashboard() {
               </PieChart>
             </ResponsiveContainer>
           ) : (
-            <div className="flex items-center justify-center h-[300px] text-gray-400 text-sm">
+            <div className="flex items-center justify-center h-[300px] text-muted-foreground text-sm">
               {t("superAdminDashboard.empty.revenue")}
             </div>
           )}
@@ -398,30 +398,30 @@ export default function SuperAdminDashboard() {
       {/* Module Adoption + Growth Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Module Adoption (Bar) */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("superAdminDashboard.charts.moduleAdoption.title")}</h2>
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">{t("superAdminDashboard.charts.moduleAdoption.title")}</h2>
           {adoption?.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={adoption}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="name" tick={{ fontSize: 11 }} angle={-15} textAnchor="end" height={60} />
-                <YAxis allowDecimals={false} />
-                <Tooltip />
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="name" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} angle={-15} textAnchor="end" height={60} stroke="hsl(var(--border))" />
+                <YAxis allowDecimals={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} stroke="hsl(var(--border))" />
+                <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))", borderRadius: "0.5rem" }} labelStyle={{ color: "hsl(var(--foreground))" }} itemStyle={{ color: "hsl(var(--foreground))" }} />
                 <Legend />
                 <Bar dataKey="org_count" name={t("superAdminDashboard.charts.legend.organizations")} fill="#6366f1" radius={[4, 4, 0, 0]} />
                 <Bar dataKey="total_seats" name={t("superAdminDashboard.charts.legend.totalSeats")} fill="#a78bfa" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <div className="flex items-center justify-center h-[300px] text-gray-400 text-sm">
+            <div className="flex items-center justify-center h-[300px] text-muted-foreground text-sm">
               {t("superAdminDashboard.empty.adoption")}
             </div>
           )}
         </div>
 
         {/* Org & User Growth */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("superAdminDashboard.charts.growthTrends.title")}</h2>
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">{t("superAdminDashboard.charts.growthTrends.title")}</h2>
           {growth?.org_growth?.length > 0 || growth?.user_growth?.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <BarChart
@@ -444,17 +444,17 @@ export default function SuperAdminDashboard() {
                     }));
                 })()}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="month" tick={{ fontSize: 11 }} />
-                <YAxis allowDecimals={false} />
-                <Tooltip />
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="month" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} stroke="hsl(var(--border))" />
+                <YAxis allowDecimals={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} stroke="hsl(var(--border))" />
+                <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))", borderRadius: "0.5rem" }} labelStyle={{ color: "hsl(var(--foreground))" }} itemStyle={{ color: "hsl(var(--foreground))" }} />
                 <Legend />
                 <Bar dataKey="new_orgs" name={t("superAdminDashboard.charts.legend.newOrgs")} fill="#3b82f6" radius={[4, 4, 0, 0]} />
                 <Bar dataKey="new_users" name={t("superAdminDashboard.charts.legend.newUsers")} fill="#10b981" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <div className="flex items-center justify-center h-[300px] text-gray-400 text-sm">
+            <div className="flex items-center justify-center h-[300px] text-muted-foreground text-sm">
               {t("superAdminDashboard.empty.growth")}
             </div>
           )}
@@ -464,16 +464,16 @@ export default function SuperAdminDashboard() {
       {/* System Health + Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* System Health */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <div className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">{t("superAdminDashboard.systemHealth.title")}</h2>
+            <h2 className="text-lg font-semibold text-foreground">{t("superAdminDashboard.systemHealth.title")}</h2>
             <span
               className={`text-xs font-medium px-2.5 py-1 rounded-full ${
                 health?.overall_status === "all_healthy"
-                  ? "bg-green-100 text-green-700"
+                  ? "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300"
                   : health?.overall_status === "degraded"
-                    ? "bg-yellow-100 text-yellow-700"
-                    : "bg-red-100 text-red-700"
+                    ? "bg-yellow-100 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300"
+                    : "bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300"
               }`}
             >
               {health?.overall_status === "all_healthy"
@@ -499,15 +499,15 @@ export default function SuperAdminDashboard() {
                       mod.status === "healthy" ? "bg-green-500 animate-pulse" : "bg-red-500"
                     }`}
                   />
-                  <p className="text-sm font-medium text-gray-900">{mod.name}</p>
+                  <p className="text-sm font-medium text-foreground">{mod.name}</p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-xs text-gray-500">{mod.latency_ms}ms</span>
+                  <span className="text-xs text-muted-foreground">{mod.latency_ms}ms</span>
                   <HealthBadge status={mod.status} />
                 </div>
               </div>
             )) ?? (
-              <div className="text-center text-gray-400 py-8 text-sm">
+              <div className="text-center text-muted-foreground py-8 text-sm">
                 {t("superAdminDashboard.systemHealth.checkingModules")}
               </div>
             )}
@@ -515,26 +515,26 @@ export default function SuperAdminDashboard() {
         </div>
 
         {/* Recent Activity */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("superAdminDashboard.activity.title")}</h2>
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">{t("superAdminDashboard.activity.title")}</h2>
           <div className="space-y-0 max-h-[420px] overflow-y-auto">
             {activity?.length > 0 ? (
               activity.map((event: any) => (
                 <div
                   key={event.id}
-                  className="flex items-start gap-3 py-3 border-b border-gray-100 last:border-0"
+                  className="flex items-start gap-3 py-3 border-b border-border last:border-0"
                 >
-                  <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center shrink-0 mt-0.5">
-                    <Activity className="h-4 w-4 text-gray-500" />
+                  <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center shrink-0 mt-0.5">
+                    <Activity className="h-4 w-4 text-muted-foreground" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-gray-900">
+                    <p className="text-sm text-foreground">
                       <span className="font-medium">
                         {event.user_name || event.user_email || t("superAdminDashboard.activity.systemActor")}
                       </span>{" "}
-                      <span className="text-gray-600">{event.action}</span>{" "}
+                      <span className="text-muted-foreground">{event.action}</span>{" "}
                       {event.entity_type && (
-                        <span className="text-gray-500">
+                        <span className="text-muted-foreground">
                           {event.entity_type}
                           {event.entity_id ? ` #${event.entity_id}` : ""}
                         </span>
@@ -542,9 +542,9 @@ export default function SuperAdminDashboard() {
                     </p>
                     <div className="flex items-center gap-2 mt-1">
                       {event.org_name && (
-                        <span className="text-xs text-gray-400">{event.org_name}</span>
+                        <span className="text-xs text-muted-foreground">{event.org_name}</span>
                       )}
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-muted-foreground">
                         {new Date(event.created_at).toLocaleString()}
                       </span>
                     </div>
@@ -552,7 +552,7 @@ export default function SuperAdminDashboard() {
                 </div>
               ))
             ) : (
-              <div className="text-center text-gray-400 py-8 text-sm">
+              <div className="text-center text-muted-foreground py-8 text-sm">
                 {t("superAdminDashboard.empty.activity")}
               </div>
             )}
