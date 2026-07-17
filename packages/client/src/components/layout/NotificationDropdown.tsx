@@ -86,6 +86,10 @@ export function NotificationDropdown() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setOpen(!open)}
+        // Icon-only control in the topbar: give it an accessible name + a
+        // hover tooltip so it's not an unlabelled bell.
+        title={t('common.notifications')}
+        aria-label={t('common.notifications')}
         className="relative p-2 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
       >
         <Bell className="h-5 w-5" />
