@@ -86,26 +86,53 @@ async function main() {
     await runAllMigrations(db);
   }
 
-  // Bootstrap module api_url from env vars — ONLY for rows where api_url
-  // is currently NULL. This is strictly a fresh-install seed: any value
-  // an operator has set by hand (or via SQL in production) is preserved
-  // across restarts. To reset a row back to the env-derived value, set
-  // its api_url back to NULL in the DB and restart the server.
+  // Bootstrap module api_url from env vars. A set <MODULE>_MODULE_URL is
+  // AUTHORITATIVE: it overwrites whatever is stored, rather than only filling
+  // NULLs as this used to.
+  //
+  // Why: migration 040 seeds api_url with LOCAL-DEV defaults (localhost:4000,
+  // :4500, ...) on every environment, and it runs before this block. So on test
+  // and prod nothing was ever NULL by the time we got here, this bootstrap
+  // silently no-opped, and the dev ports stuck forever — the health dashboard
+  // then called ports nothing listens on and reported every module "down"
+  // (instant ECONNREFUSED, ~5ms), while the services were actually fine. The
+  // same stale URLs also feed module-sync and the dashboard widgets.
+  //
+  // Env vars are per-environment by definition, so letting them win is what
+  // makes these addresses correct on local, test and prod with no code change.
+  // Slugs with no env var set are left untouched.
   {
     const { getDB } = await import("./db/connection.js");
     const db = getDB();
+
+    /** `http://host:6003` + `/api/v1` -> `http://host:6003/api/v1` (no double slash). */
+    const withPath = (baseUrl: string | undefined, apiPath: string): string | undefined =>
+      baseUrl ? `${baseUrl.replace(/\/+$/, "")}${apiPath}` : undefined;
+
     const moduleUrls: Record<string, string | undefined> = {
-      "emp-billing": process.env.BILLING_MODULE_URL ? `${process.env.BILLING_MODULE_URL}/api/v1` : undefined,
-      "emp-payroll": process.env.PAYROLL_MODULE_URL ? `${process.env.PAYROLL_MODULE_URL}/api/v1` : undefined,
-      "emp-monitor": process.env.MONITOR_MODULE_URL ? `${process.env.MONITOR_MODULE_URL}/api/v3` : undefined,
+      "emp-billing": withPath(process.env.BILLING_MODULE_URL, "/api/v1"),
+      "emp-payroll": withPath(process.env.PAYROLL_MODULE_URL, "/api/v1"),
+      "emp-recruit": withPath(process.env.RECRUIT_MODULE_URL, "/api/v1"),
+      "emp-performance": withPath(process.env.PERFORMANCE_MODULE_URL, "/api/v1"),
+      "emp-rewards": withPath(process.env.REWARDS_MODULE_URL, "/api/v1"),
+      "emp-exit": withPath(process.env.EXIT_MODULE_URL, "/api/v1"),
+      "emp-lms": withPath(process.env.LMS_MODULE_URL, "/api/v1"),
+      "emp-field": withPath(process.env.FIELD_MODULE_URL, "/api/v1"),
+      "emp-projects": withPath(process.env.PROJECT_MODULE_URL, "/v1"),
+      "emp-monitor": withPath(process.env.MONITOR_MODULE_URL, "/api/v3"),
     };
+
     for (const [slug, apiUrl] of Object.entries(moduleUrls)) {
-      if (apiUrl) {
-        await db("modules")
-          .where({ slug })
-          .whereNull("api_url")
-          .update({ api_url: apiUrl })
-          .catch(() => {});
+      if (!apiUrl) continue;
+      try {
+        const row = await db("modules").where({ slug }).first();
+        // Only write when it actually differs, so a correct config is a no-op
+        // and the log line below only appears when something was fixed.
+        if (!row || row.api_url === apiUrl) continue;
+        await db("modules").where({ slug }).update({ api_url: apiUrl, updated_at: new Date() });
+        logger.info(`Module api_url set from env: ${slug} -> ${apiUrl} (was ${row.api_url ?? "null"})`);
+      } catch {
+        /* never block startup on this */
       }
     }
   }
