@@ -171,7 +171,14 @@
   .sidebar-collapsed nav a > span,
   .sidebar-collapsed nav button > span,
   .sidebar-collapsed nav a > .inline-block,
+  /* Section labels: the top-level `label` prop renders as `.text-xs.uppercase`,
+     but the per-group section HEADERS (ATTENDANCE & LEAVE, COMMUNICATION, …)
+     render as `text-[10px] … uppercase` divs — a different size class the old
+     selector missed, so they leaked into the 64px collapsed rail and clipped
+     to "ATTEN / COMM / WOR / ACCOU". Match any uppercase label div in the
+     collapsed nav so every section header hides regardless of its size class. */
   .sidebar-collapsed nav .text-xs.uppercase,
+  .sidebar-collapsed nav > .uppercase,
   .sidebar-collapsed nav button > svg.lucide-chevron-down {
     display: none;
   }
