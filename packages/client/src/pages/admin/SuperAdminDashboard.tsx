@@ -489,8 +489,8 @@ export default function SuperAdminDashboard() {
                 key={mod.slug}
                 className={`flex items-center justify-between rounded-lg border p-3 ${
                   mod.status === "healthy"
-                    ? "border-green-200 bg-green-50/50"
-                    : "border-red-200 bg-red-50/50"
+                    ? "border-green-200 dark:border-green-900 bg-green-50/50 dark:bg-green-950/30"
+                    : "border-red-200 dark:border-red-900 bg-red-50/50 dark:bg-red-950/30"
                 }`}
               >
                 <div className="flex items-center gap-3">
