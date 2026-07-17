@@ -463,15 +463,44 @@ router.put("/notifications/:id/deactivate", async (req: Request, res: Response, 
 // Module Management (super_admin)
 // =========================================================================
 
-// PUT /api/v1/admin/modules/:id — enable/disable module
+// PUT /api/v1/admin/modules/:id — enable/disable a module and/or set its api_url.
+//
+// api_url is the per-environment base the platform uses to reach the module
+// (health checks, module-sync, dashboard widgets). It used to be settable only
+// by editing the DB directly, which is how prod ended up stuck on migration
+// 040's local-dev defaults. Both fields are optional; send either or both.
 router.put("/modules/:id", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const db = getDB();
     const moduleId = parseInt(String(req.params.id), 10);
-    const { is_active } = req.body;
+    const { is_active, api_url } = req.body;
 
-    if (typeof is_active !== "boolean") {
+    if (is_active === undefined && api_url === undefined) {
+      return res
+        .status(400)
+        .json({ success: false, error: { message: "Provide is_active and/or api_url" } });
+    }
+    if (is_active !== undefined && typeof is_active !== "boolean") {
       return res.status(400).json({ success: false, error: { message: "is_active must be a boolean" } });
+    }
+    if (api_url !== undefined && api_url !== null && typeof api_url !== "string") {
+      return res
+        .status(400)
+        .json({ success: false, error: { message: "api_url must be a string or null" } });
+    }
+    // Reject anything the health check / sync callers can't actually fetch —
+    // a bad value here silently marks a healthy module as "down".
+    const trimmedUrl = typeof api_url === "string" ? api_url.trim() : api_url;
+    if (typeof trimmedUrl === "string" && trimmedUrl !== "") {
+      try {
+        const u = new URL(trimmedUrl);
+        if (u.protocol !== "http:" && u.protocol !== "https:") throw new Error("bad protocol");
+      } catch {
+        return res.status(400).json({
+          success: false,
+          error: { message: "api_url must be an absolute http(s) URL, e.g. http://localhost:6003/api/v1" },
+        });
+      }
     }
 
     const mod = await db("modules").where({ id: moduleId }).first();
@@ -479,7 +508,12 @@ router.put("/modules/:id", async (req: Request, res: Response, next: NextFunctio
       return res.status(404).json({ success: false, error: { message: "Module not found" } });
     }
 
-    await db("modules").where({ id: moduleId }).update({ is_active, updated_at: new Date() });
+    const patch: Record<string, unknown> = { updated_at: new Date() };
+    if (is_active !== undefined) patch.is_active = is_active;
+    // "" / null clears it, which lets the env bootstrap re-seed it on restart.
+    if (api_url !== undefined) patch.api_url = trimmedUrl === "" || trimmedUrl === null ? null : trimmedUrl;
+
+    await db("modules").where({ id: moduleId }).update(patch);
 
     const updated = await db("modules").where({ id: moduleId }).first();
     sendSuccess(res, updated);
