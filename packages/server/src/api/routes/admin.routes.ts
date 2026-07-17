@@ -12,6 +12,7 @@ import { config } from "../../config/index.js";
 import {
   getPlatformOverview,
   getOrgList,
+  getOrgStats,
   getOrgDetail,
   getRevenueAnalytics,
   getSystemHealth,
@@ -65,8 +66,31 @@ router.get("/organizations", async (req: Request, res: Response, next: NextFunct
     const sortBy = (req.query.sort_by as string) || undefined;
     const sortOrder = (req.query.sort_order as string) as "asc" | "desc" | undefined;
 
-    const result = await getOrgList({ page, per_page: perPage, search, sort_by: sortBy, sort_order: sortOrder });
+    const result = await getOrgList({
+      page,
+      per_page: perPage,
+      search,
+      sort_by: sortBy,
+      sort_order: sortOrder,
+      status: (req.query.status as string) || undefined,
+      date_from: (req.query.date_from as string) || undefined,
+      date_to: (req.query.date_to as string) || undefined,
+      country: (req.query.country as string) || undefined,
+      has_subscription: (req.query.has_subscription as string) || undefined,
+    });
     sendPaginated(res, result.data, result.total, result.page, result.per_page);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/v1/admin/organizations/stats — headline counters for the org list.
+// MUST stay above "/organizations/:id", otherwise Express matches "stats" as
+// the :id param and this 404s.
+router.get("/organizations/stats", async (_req: Request, res: Response, next: NextFunction) => {
+  try {
+    const stats = await getOrgStats();
+    sendSuccess(res, stats);
   } catch (err) {
     next(err);
   }
