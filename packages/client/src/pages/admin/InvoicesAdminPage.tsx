@@ -38,14 +38,14 @@ type Invoice = {
 };
 
 const STATUS_COLOR: Record<string, string> = {
-  draft: "bg-gray-100 text-gray-700",
-  sent: "bg-blue-100 text-blue-700",
+  draft: "bg-muted text-muted-foreground",
+  sent: "bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300",
   viewed: "bg-cyan-100 text-cyan-700",
-  partially_paid: "bg-amber-100 text-amber-700",
-  paid: "bg-emerald-100 text-emerald-700",
-  overdue: "bg-red-100 text-red-700",
-  void: "bg-gray-100 text-gray-500 line-through",
-  written_off: "bg-purple-100 text-purple-700",
+  partially_paid: "bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300",
+  paid: "bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300",
+  overdue: "bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300",
+  void: "bg-muted text-muted-foreground line-through",
+  written_off: "bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300",
 };
 
 const CURRENCY_SYMBOL: Record<string, string> = {
@@ -230,11 +230,11 @@ export default function InvoicesAdminPage() {
     <div className="space-y-6 p-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <Receipt className="h-6 w-6 text-brand-600" />
+          <h1 className="text-2xl font-bold text-foreground dark:text-gray-100 flex items-center gap-2">
+            <Receipt className="h-6 w-6 text-brand-600 dark:text-brand-400" />
             {t("invoicesAdmin.title")}
           </h1>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          <p className="mt-1 text-sm text-muted-foreground dark:text-muted-foreground">
             {t("invoicesAdmin.subtitle")}
           </p>
         </div>
@@ -259,26 +259,26 @@ export default function InvoicesAdminPage() {
       </div>
 
       {/* Filters */}
-      <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+      <div className="rounded-xl border border-border bg-card p-4 dark:border-gray-700 dark:bg-gray-900">
         <div className="flex flex-wrap items-end gap-3">
           <div className="flex-1 min-w-[220px]">
-            <label className="mb-1 block text-xs font-medium text-gray-600">{t("invoicesAdmin.filters.searchLabel")}</label>
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("invoicesAdmin.filters.searchLabel")}</label>
             <div className="relative">
-              <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
                 value={search}
                 onChange={(e) => { setSearch(e.target.value); setPage(1); }}
                 placeholder={t("invoicesAdmin.filters.searchPlaceholder")}
-                className="w-full rounded-lg border border-gray-200 bg-white pl-8 pr-3 py-2 text-sm"
+                className="w-full rounded-lg border border-border bg-card pl-8 pr-3 py-2 text-sm"
               />
             </div>
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600">{t("invoicesAdmin.filters.statusLabel")}</label>
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("invoicesAdmin.filters.statusLabel")}</label>
             <select
               value={status}
               onChange={(e) => { setStatus(e.target.value); setPage(1); }}
-              className="rounded-lg border border-gray-200 px-3 py-2 text-sm"
+              className="rounded-lg border border-border px-3 py-2 text-sm bg-card text-foreground"
             >
               <option value="">{t("invoicesAdmin.status.all")}</option>
               <option value="draft">{t("invoicesAdmin.status.draft")}</option>
@@ -291,21 +291,21 @@ export default function InvoicesAdminPage() {
               <option value="written_off">{t("invoicesAdmin.status.written_off")}</option>
             </select>
           </div>
-          <div className="ml-auto text-sm text-gray-500">{t("invoicesAdmin.invoiceCount", { count: total })}</div>
+          <div className="ml-auto text-sm text-muted-foreground">{t("invoicesAdmin.invoiceCount", { count: total })}</div>
         </div>
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+      <div className="overflow-x-auto rounded-xl border border-border bg-card dark:border-gray-700 dark:bg-gray-900">
         {listQ.isLoading ? (
-          <div className="flex items-center justify-center py-12 text-sm text-gray-400">
+          <div className="flex items-center justify-center py-12 text-sm text-muted-foreground">
             <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t("invoicesAdmin.loading")}
           </div>
         ) : rows.length === 0 ? (
-          <div className="py-12 text-center text-sm text-gray-400">{t("invoicesAdmin.empty")}</div>
+          <div className="py-12 text-center text-sm text-muted-foreground">{t("invoicesAdmin.empty")}</div>
         ) : (
           <table className="min-w-full text-sm">
-            <thead className="bg-gray-50 text-xs uppercase text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+            <thead className="bg-muted text-xs uppercase text-muted-foreground dark:bg-gray-800 dark:text-muted-foreground">
               <tr>
                 <th className="px-3 py-2 text-left">{t("invoicesAdmin.table.invoice")}</th>
                 <th className="px-3 py-2 text-left">{t("invoicesAdmin.table.org")}</th>
@@ -316,28 +316,28 @@ export default function InvoicesAdminPage() {
                 <th className="px-3 py-2 text-right">{t("invoicesAdmin.table.actions")}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+            <tbody className="divide-y divide-border dark:divide-gray-800">
               {rows.map((r) => (
                 <tr key={r.id}>
                   <td className="px-3 py-2 font-mono text-xs">{r.invoice_number}</td>
                   <td className="px-3 py-2">
                     {r.empcloud_organization_name ? (
                       <div>
-                        <div className="font-medium flex items-center gap-1 text-gray-900 dark:text-gray-100">
-                          <Building2 className="h-3.5 w-3.5 text-gray-400" />
+                        <div className="font-medium flex items-center gap-1 text-foreground dark:text-gray-100">
+                          <Building2 className="h-3.5 w-3.5 text-muted-foreground" />
                           {r.empcloud_organization_name}
                         </div>
-                        <div className="text-xs text-gray-500">{r.empcloud_organization_email}</div>
+                        <div className="text-xs text-muted-foreground">{r.empcloud_organization_email}</div>
                       </div>
                     ) : (
-                      <span className="text-xs text-gray-400 font-mono">
+                      <span className="text-xs text-muted-foreground font-mono">
                         {r.client_id ? `${r.client_id.slice(0, 8)}…` : "—"}
                       </span>
                     )}
                   </td>
                   <td className="px-3 py-2">
                     <span
-                      className={`rounded px-2 py-0.5 text-xs font-medium ${STATUS_COLOR[r.status] || "bg-gray-100 text-gray-600"}`}
+                      className={`rounded px-2 py-0.5 text-xs font-medium ${STATUS_COLOR[r.status] || "bg-muted text-muted-foreground"}`}
                     >
                       {t(`invoicesAdmin.status.${r.status}`, { defaultValue: r.status })}
                     </span>
@@ -348,10 +348,10 @@ export default function InvoicesAdminPage() {
                   <td className="px-3 py-2 text-right font-mono">
                     {fmtMoney(Number(r.amount_due), r.currency)}
                   </td>
-                  <td className="px-3 py-2 text-xs text-gray-600 dark:text-gray-400">
+                  <td className="px-3 py-2 text-xs text-muted-foreground dark:text-muted-foreground">
                     {fmtDate(r.issue_date)}
                     {r.due_date && r.due_date !== r.issue_date && (
-                      <div className="text-gray-400">{t("invoicesAdmin.table.dueDatePrefix")} {fmtDate(r.due_date)}</div>
+                      <div className="text-muted-foreground">{t("invoicesAdmin.table.dueDatePrefix")} {fmtDate(r.due_date)}</div>
                     )}
                   </td>
                   <td className="px-3 py-2 text-right">
@@ -359,7 +359,7 @@ export default function InvoicesAdminPage() {
                       {Number(r.amount_due) > 0 && r.status !== "void" && r.status !== "paid" && (
                         <button
                           onClick={() => setPayTarget(r)}
-                          className="text-emerald-600 hover:text-emerald-800"
+                          className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800"
                           title={t("invoicesAdmin.actions.markPaid")}
                         >
                           <CheckCircle2 className="h-4 w-4" />
@@ -367,7 +367,7 @@ export default function InvoicesAdminPage() {
                       )}
                       <button
                         onClick={() => sendEmail.mutate(r.id)}
-                        className="text-blue-600 hover:text-blue-800"
+                        className="text-blue-600 dark:text-blue-400 hover:text-blue-800"
                         title={t("invoicesAdmin.actions.sendEmail")}
                       >
                         <Send className="h-4 w-4" />
@@ -375,7 +375,7 @@ export default function InvoicesAdminPage() {
                       <button
                         onClick={() => openPdf(r.id)}
                         disabled={pdfLoadingId === r.id}
-                        className="text-gray-500 hover:text-gray-700 disabled:opacity-40"
+                        className="text-muted-foreground hover:text-foreground disabled:opacity-40"
                         title={t("invoicesAdmin.actions.pdf")}
                       >
                         {pdfLoadingId === r.id ? (
@@ -398,15 +398,15 @@ export default function InvoicesAdminPage() {
           <button
             disabled={page <= 1}
             onClick={() => setPage((p) => Math.max(1, p - 1))}
-            className="rounded border border-gray-200 px-3 py-1 text-sm disabled:opacity-40"
+            className="rounded border border-border px-3 py-1 text-sm disabled:opacity-40 bg-card text-foreground"
           >
             {t("invoicesAdmin.pagination.prev")}
           </button>
-          <span className="text-sm text-gray-600">{page} / {totalPages}</span>
+          <span className="text-sm text-muted-foreground">{page} / {totalPages}</span>
           <button
             disabled={page >= totalPages}
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            className="rounded border border-gray-200 px-3 py-1 text-sm disabled:opacity-40"
+            className="rounded border border-border px-3 py-1 text-sm disabled:opacity-40 bg-card text-foreground"
           >
             {t("invoicesAdmin.pagination.next")}
           </button>
@@ -416,7 +416,7 @@ export default function InvoicesAdminPage() {
       {/* Mark Paid Modal */}
       {payTarget && (
         <Modal title={t("invoicesAdmin.markPaid.title")} onClose={() => (markPaid.isPending ? null : setPayTarget(null))}>
-          <p className="text-sm text-gray-600 mb-3">
+          <p className="text-sm text-muted-foreground mb-3">
             Records a payment for the full outstanding amount{" "}
             <strong>{fmtMoney(Number(payTarget.amount_due), payTarget.currency)}</strong> against{" "}
             <strong>{payTarget.invoice_number}</strong>. emp-billing will flip the status to paid
@@ -475,7 +475,7 @@ export default function InvoicesAdminPage() {
       {/* Subscribe on behalf Modal */}
       {subOpen && (
         <Modal title={t("invoicesAdmin.subscribe.title")} onClose={() => (subscribe.isPending ? null : setSubOpen(false))} wide>
-          <p className="text-sm text-gray-600 mb-3">
+          <p className="text-sm text-muted-foreground mb-3">
             {t("invoicesAdmin.subscribe.description")}
           </p>
           <Field label={t("invoicesAdmin.subscribe.orgLabel")}>
@@ -503,12 +503,12 @@ export default function InvoicesAdminPage() {
                 autoComplete="off"
               />
               {orgDropdownOpen && (orgsQ.isLoading || filteredOrgs.length > 0 || orgSearch.trim()) && (
-                <div className="absolute z-20 mt-1 max-h-64 w-full overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-900">
+                <div className="absolute z-20 mt-1 max-h-64 w-full overflow-y-auto rounded-lg border border-border bg-card shadow-lg dark:border-gray-700 dark:bg-gray-900">
                   {orgsQ.isLoading && (
-                    <div className="px-3 py-2 text-sm text-gray-400">{t("invoicesAdmin.subscribe.orgDropdownLoading")}</div>
+                    <div className="px-3 py-2 text-sm text-muted-foreground">{t("invoicesAdmin.subscribe.orgDropdownLoading")}</div>
                   )}
                   {!orgsQ.isLoading && filteredOrgs.length === 0 && (
-                    <div className="px-3 py-2 text-sm text-gray-400">
+                    <div className="px-3 py-2 text-sm text-muted-foreground">
                       {t("invoicesAdmin.subscribe.orgNoMatches")}
                     </div>
                   )}
@@ -529,14 +529,14 @@ export default function InvoicesAdminPage() {
                             : ""
                         }`}
                       >
-                        <div className="font-medium text-gray-900 dark:text-gray-100">
+                        <div className="font-medium text-foreground dark:text-gray-100">
                           {o.name}
                         </div>
-                        <div className="text-xs text-gray-500">{o.email}</div>
+                        <div className="text-xs text-muted-foreground">{o.email}</div>
                       </button>
                     ))}
                   {filteredOrgs.length > 50 && (
-                    <div className="border-t border-gray-100 px-3 py-2 text-xs text-gray-400 dark:border-gray-800">
+                    <div className="border-t border-border px-3 py-2 text-xs text-muted-foreground dark:border-gray-800">
                       {t("invoicesAdmin.subscribe.orgMoreResults", { count: filteredOrgs.length - 50 })}
                     </div>
                   )}
@@ -544,7 +544,7 @@ export default function InvoicesAdminPage() {
               )}
             </div>
             {subForm.organization_id && (
-              <div className="mt-1 text-xs text-emerald-600">
+              <div className="mt-1 text-xs text-emerald-600 dark:text-emerald-400">
                 ✓ {t("invoicesAdmin.subscribe.orgSelected", { orgId: subForm.organization_id })}
               </div>
             )}
@@ -638,7 +638,7 @@ export default function InvoicesAdminPage() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="mb-2">
-      <label className="mb-1 block text-xs font-medium text-gray-600">{label}</label>
+      <label className="mb-1 block text-xs font-medium text-muted-foreground">{label}</label>
       {children}
     </div>
   );
@@ -657,10 +657,10 @@ function Modal({
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto">
-      <div className={`w-full ${wide ? "max-w-2xl" : "max-w-md"} my-8 rounded-xl bg-white p-6 shadow-xl dark:bg-gray-900`}>
+      <div className={`w-full ${wide ? "max-w-2xl" : "max-w-md"} my-8 rounded-xl bg-card p-6 shadow-xl dark:bg-gray-900`}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{title}</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <h3 className="text-lg font-semibold text-foreground dark:text-gray-100">{title}</h3>
+          <button onClick={onClose} className="text-muted-foreground hover:text-muted-foreground">
             <X className="h-5 w-5" />
           </button>
         </div>
