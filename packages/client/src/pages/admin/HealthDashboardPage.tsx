@@ -145,21 +145,21 @@ function OverallStatusBanner({ status, lastCheck }: { status: string; lastCheck:
   const { t } = useTranslation();
   const bannerConfig = {
     operational: {
-      bg: "bg-gradient-to-r from-green-50 to-emerald-50 border-green-200",
+      bg: "bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 dark:from-green-950/40 dark:to-emerald-950/40 dark:border-green-900",
       icon: <CheckCircle2 className="h-8 w-8 text-green-500" />,
       title: t("healthDashboard.overall.operational.title"),
       subtitle: t("healthDashboard.overall.operational.subtitle"),
       dotColor: "bg-green-500",
     },
     degraded: {
-      bg: "bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-200",
+      bg: "bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-200 dark:from-amber-950/40 dark:to-yellow-950/40 dark:border-amber-900",
       icon: <AlertTriangle className="h-8 w-8 text-amber-500" />,
       title: t("healthDashboard.overall.degraded.title"),
       subtitle: t("healthDashboard.overall.degraded.subtitle"),
       dotColor: "bg-amber-500",
     },
     major_outage: {
-      bg: "bg-gradient-to-r from-red-50 to-rose-50 border-red-200",
+      bg: "bg-gradient-to-r from-red-50 to-rose-50 border-red-200 dark:from-red-950/40 dark:to-rose-950/40 dark:border-red-900",
       icon: <XCircle className="h-8 w-8 text-red-500" />,
       title: t("healthDashboard.overall.majorOutage.title"),
       subtitle: t("healthDashboard.overall.majorOutage.subtitle"),
