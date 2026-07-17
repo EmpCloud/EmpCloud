@@ -233,6 +233,11 @@ export default function DashboardLayout() {
         <button
           onClick={handleLogout}
           aria-label={t('nav.signOut')}
+          // #tooltip — hover title so the icon-only collapsed sidebar is
+          // discoverable (matches the NavLink pattern). Only set when
+          // collapsed so the expanded button, whose visible text already
+          // reads "Sign out", doesn't show a redundant native tooltip.
+          title={isCollapsed ? t('nav.signOut') : undefined}
           className={`flex items-center ${isCollapsed ? "justify-center" : "gap-2"} w-full px-3 py-2 text-sm text-muted-foreground hover:bg-muted rounded-lg transition-colors`}
         >
           <LogOut className="h-4 w-4 flex-shrink-0" />
@@ -261,6 +266,7 @@ export default function DashboardLayout() {
         <button
           onClick={() => setSidebarCollapsed((c) => !c)}
           aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           className="hidden md:flex absolute top-1/2 -right-3 -translate-y-1/2 z-30 h-6 w-6 rounded-full bg-card border border-border text-muted-foreground hover:text-brand-600 hover:border-brand-300 shadow-sm items-center justify-center transition-colors"
         >
           {sidebarCollapsed ? (
