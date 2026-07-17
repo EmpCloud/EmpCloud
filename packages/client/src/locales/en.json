@@ -1316,7 +1316,9 @@
     "location": "Location",
     "updateCheckOut": "Update check-out",
     "checkedOutAt": "Checked out {{time}}",
-    "updateCheckOutHint": "Check out again to correct the time"
+    "updateCheckOutHint": "Check out again to correct the time",
+    "checkInSuccess": "Successfully checked in at {{time}}",
+    "checkOutSuccess": "Successfully checked out at {{time}}"
   },
   "manager": {
     "title": "My Team",

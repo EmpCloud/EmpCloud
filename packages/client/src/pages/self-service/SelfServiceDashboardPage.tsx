@@ -102,23 +102,46 @@ export default function SelfServiceDashboardPage() {
       "error",
       err?.response?.data?.error?.message ?? "Could not record attendance. Please try again.",
     );
+  // Shared success handler: refresh the attendance caches and confirm the
+  // action with a success toast that includes the recorded time so the
+  // employee sees exactly when they were clocked in / out.
+  const refreshAttendance = () => {
+    qc.invalidateQueries({ queryKey: ["my-attendance-today"] });
+    qc.invalidateQueries({ queryKey: ["attendance-today"] });
+    qc.invalidateQueries({ queryKey: ["attendance-history"] });
+    qc.invalidateQueries({ queryKey: ["attendance-me-policy"] });
+  };
+  const punchTime = (rec: any, field: "check_in" | "check_out") => {
+    const iso = rec?.[field] ?? rec?.[`${field}_time`];
+    return iso
+      ? new Date(iso).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true })
+      : new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true });
+  };
   const checkIn = useMutation({
     mutationFn: () => api.post("/attendance/check-in", { source: "manual" }).then((r) => r.data.data),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["my-attendance-today"] });
-      qc.invalidateQueries({ queryKey: ["attendance-today"] });
-      qc.invalidateQueries({ queryKey: ["attendance-history"] });
-      qc.invalidateQueries({ queryKey: ["attendance-me-policy"] });
+    onSuccess: (rec) => {
+      refreshAttendance();
+      showToast(
+        "success",
+        t("attendance.checkInSuccess", {
+          defaultValue: "Successfully checked in at {{time}}",
+          time: punchTime(rec, "check_in"),
+        }),
+      );
     },
     onError: onAttendanceError,
   });
   const checkOut = useMutation({
     mutationFn: () => api.post("/attendance/check-out", { source: "manual" }).then((r) => r.data.data),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["my-attendance-today"] });
-      qc.invalidateQueries({ queryKey: ["attendance-today"] });
-      qc.invalidateQueries({ queryKey: ["attendance-history"] });
-      qc.invalidateQueries({ queryKey: ["attendance-me-policy"] });
+    onSuccess: (rec) => {
+      refreshAttendance();
+      showToast(
+        "success",
+        t("attendance.checkOutSuccess", {
+          defaultValue: "Successfully checked out at {{time}}",
+          time: punchTime(rec, "check_out"),
+        }),
+      );
     },
     onError: onAttendanceError,
   });
