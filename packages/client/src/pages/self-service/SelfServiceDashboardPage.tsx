@@ -492,22 +492,13 @@ function AttendanceHeaderAction({
   const hasCheckedIn = !!ci;
   const hasCheckedOut = !!co;
 
-  if (hasCheckedOut) {
-    return (
-      <div className="inline-flex items-center gap-2 rounded-xl bg-green-50 dark:bg-green-950/40 border border-green-200 dark:border-green-900 px-4 py-2.5 text-sm font-medium text-green-700 dark:text-green-300">
-        <CheckCircle2 className="h-4 w-4" />
-        {t('attendance.attendanceComplete')}
-      </div>
-    );
-  }
-
   // Web check-in disabled by org / override — show a small explanation
   // pill instead of an actionable button. The user can still check out via
   // a biometric device or the mobile app if those channels are enabled.
   if (!dashboardAllowed) {
     return (
       <div
-        className="inline-flex items-center gap-2 rounded-xl bg-muted border border-border px-4 py-2.5 text-sm font-medium text-muted-foreground"
+        className="inline-flex items-center gap-2 rounded-md bg-muted border border-border px-4 py-2.5 text-sm font-medium text-muted-foreground"
         title="Use the EmpCloud mobile app or a biometric device to check in / out."
       >
         <Lock className="h-4 w-4" />
@@ -522,7 +513,7 @@ function AttendanceHeaderAction({
         type="button"
         onClick={onCheckIn}
         disabled={checkInPending}
-        className="inline-flex items-center gap-2 rounded-xl bg-green-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-green-700 hover:shadow transition-all disabled:opacity-50"
+        className="inline-flex items-center gap-2 rounded-md bg-green-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-green-700 hover:shadow transition-all disabled:opacity-50"
       >
         {checkInPending ? (
           <Loader2 className="h-4 w-4 animate-spin" />
@@ -534,19 +525,40 @@ function AttendanceHeaderAction({
     );
   }
 
+  // Checked in — always keep an actionable Check Out button visible, even
+  // AFTER a check-out. Check-in is naturally one-time (it's the first punch
+  // of the day and stays locked), but check-out is the LATEST punch and rolls
+  // forward on every tap (see attendance.service.ts). Keeping the button live
+  // lets an employee who checked out early / by mistake re-check-out at the
+  // correct time instead of being stuck with the wrong time. Once they've
+  // checked out at least once we relabel to "Update check-out" and show the
+  // recorded time so the second click clearly overwrites rather than looks
+  // like a fresh action.
+  const coText = co
+    ? new Date(co).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true })
+    : null;
   return (
-    <button
-      type="button"
-      onClick={onCheckOut}
-      disabled={checkOutPending}
-      className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-700 hover:shadow transition-all disabled:opacity-50"
-    >
-      {checkOutPending ? (
-        <Loader2 className="h-4 w-4 animate-spin" />
-      ) : (
-        <LogOut className="h-4 w-4" />
+    <div className="flex items-center gap-2.5">
+      {hasCheckedOut && coText && (
+        <span className="hidden sm:inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+          <CheckCircle2 className="h-3.5 w-3.5 text-green-600 dark:text-green-400" />
+          {t('attendance.checkedOutAt', { defaultValue: 'Checked out {{time}}', time: coText })}
+        </span>
       )}
-      {t('attendance.checkOut')}
-    </button>
+      <button
+        type="button"
+        onClick={onCheckOut}
+        disabled={checkOutPending}
+        title={hasCheckedOut ? t('attendance.updateCheckOutHint', { defaultValue: 'Check out again to correct the time' }) : undefined}
+        className="inline-flex items-center gap-2 rounded-md bg-red-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-700 hover:shadow transition-all disabled:opacity-50"
+      >
+        {checkOutPending ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <LogOut className="h-4 w-4" />
+        )}
+        {t('attendance.checkOut')}
+      </button>
+    </div>
   );
 }

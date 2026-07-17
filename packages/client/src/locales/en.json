@@ -1313,7 +1313,10 @@
       },
       "applyLeaveFailed": "Failed to apply leave"
     },
-    "location": "Location"
+    "location": "Location",
+    "updateCheckOut": "Update check-out",
+    "checkedOutAt": "Checked out {{time}}",
+    "updateCheckOutHint": "Check out again to correct the time"
   },
   "manager": {
     "title": "My Team",
