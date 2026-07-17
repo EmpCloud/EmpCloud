@@ -58,8 +58,8 @@ export default function SubscriptionMetricsPage() {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="flex flex-col items-center gap-2">
-          <div className="h-6 w-6 border-2 border-gray-200 border-t-gray-500 rounded-full animate-spin" />
-          <span className="text-sm text-gray-400">{t("subscriptionMetrics.loading")}</span>
+          <div className="h-6 w-6 border-2 border-border border-t-gray-500 rounded-full animate-spin" />
+          <span className="text-sm text-muted-foreground">{t("subscriptionMetrics.loading")}</span>
         </div>
       </div>
     );
@@ -70,12 +70,12 @@ export default function SubscriptionMetricsPage() {
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-green-50 flex items-center justify-center">
-            <CreditCard className="h-5 w-5 text-green-600" />
+          <div className="h-10 w-10 rounded-xl bg-green-50 dark:bg-green-950/40 flex items-center justify-center">
+            <CreditCard className="h-5 w-5 text-green-600 dark:text-green-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">{t("subscriptionMetrics.title")}</h1>
-            <p className="text-gray-500 mt-0.5 text-sm">
+            <h1 className="text-2xl font-bold text-foreground">{t("subscriptionMetrics.title")}</h1>
+            <p className="text-muted-foreground mt-0.5 text-sm">
               {t("subscriptionMetrics.subtitle")}
             </p>
           </div>
@@ -84,50 +84,50 @@ export default function SubscriptionMetricsPage() {
 
       {/* Top Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <div className="bg-card rounded-xl border border-border p-5">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center">
-              <Layers className="h-5 w-5 text-blue-600" />
+            <div className="h-10 w-10 rounded-lg bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center">
+              <Layers className="h-5 w-5 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">{t("subscriptionMetrics.stats.totalSeats")}</p>
-              <p className="text-xl font-bold text-gray-900">{(data?.total_seats ?? 0).toLocaleString()}</p>
+              <p className="text-sm text-muted-foreground">{t("subscriptionMetrics.stats.totalSeats")}</p>
+              <p className="text-xl font-bold text-foreground">{(data?.total_seats ?? 0).toLocaleString()}</p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <div className="bg-card rounded-xl border border-border p-5">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-green-50 flex items-center justify-center">
-              <Layers className="h-5 w-5 text-green-600" />
+            <div className="h-10 w-10 rounded-lg bg-green-50 dark:bg-green-950/40 flex items-center justify-center">
+              <Layers className="h-5 w-5 text-green-600 dark:text-green-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">{t("subscriptionMetrics.stats.usedSeats")}</p>
-              <p className="text-xl font-bold text-gray-900">{(data?.used_seats ?? 0).toLocaleString()}</p>
+              <p className="text-sm text-muted-foreground">{t("subscriptionMetrics.stats.usedSeats")}</p>
+              <p className="text-xl font-bold text-foreground">{(data?.used_seats ?? 0).toLocaleString()}</p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <div className="bg-card rounded-xl border border-border p-5">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-purple-50 flex items-center justify-center">
-              <PieChartIcon className="h-5 w-5 text-purple-600" />
+            <div className="h-10 w-10 rounded-lg bg-purple-50 dark:bg-purple-950/40 flex items-center justify-center">
+              <PieChartIcon className="h-5 w-5 text-purple-600 dark:text-purple-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">{t("subscriptionMetrics.stats.seatUtilization")}</p>
-              <p className="text-xl font-bold text-gray-900">{data?.overall_utilization ?? 0}%</p>
+              <p className="text-sm text-muted-foreground">{t("subscriptionMetrics.stats.seatUtilization")}</p>
+              <p className="text-xl font-bold text-foreground">{data?.overall_utilization ?? 0}%</p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <div className="bg-card rounded-xl border border-border p-5">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-amber-50 flex items-center justify-center">
-              <BarChart3 className="h-5 w-5 text-amber-600" />
+            <div className="h-10 w-10 rounded-lg bg-amber-50 dark:bg-amber-950/40 flex items-center justify-center">
+              <BarChart3 className="h-5 w-5 text-amber-600 dark:text-amber-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">{t("subscriptionMetrics.stats.activeUsers")}</p>
-              <p className="text-xl font-bold text-gray-900">
+              <p className="text-sm text-muted-foreground">{t("subscriptionMetrics.stats.activeUsers")}</p>
+              <p className="text-xl font-bold text-foreground">
                 {(growth?.active_users ?? 0).toLocaleString()}
               </p>
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-muted-foreground">
                 {t("subscriptionMetrics.stats.inactive", { count: growth?.inactive_users ?? 0 })}
               </p>
             </div>
@@ -138,8 +138,8 @@ export default function SubscriptionMetricsPage() {
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         {/* Plan Tier Distribution (Pie) */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("subscriptionMetrics.charts.planTierDistribution")}</h2>
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">{t("subscriptionMetrics.charts.planTierDistribution")}</h2>
           {data?.tier_distribution?.length > 0 ? (
             <div>
               <ResponsiveContainer width="100%" height={250}>
@@ -160,7 +160,7 @@ export default function SubscriptionMetricsPage() {
                       <Cell key={i} fill={TIER_COLORS[entry.plan_tier] || `#${((i * 4567) % 0xffffff).toString(16).padStart(6, "0")}`} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))", borderRadius: "0.5rem" }} labelStyle={{ color: "hsl(var(--foreground))" }} itemStyle={{ color: "hsl(var(--foreground))" }} />
                 </PieChart>
               </ResponsiveContainer>
               <div className="space-y-2 mt-4">
@@ -171,23 +171,23 @@ export default function SubscriptionMetricsPage() {
                         className="h-3 w-3 rounded-full"
                         style={{ backgroundColor: TIER_COLORS[tier.plan_tier] || "#6366f1" }}
                       />
-                      <span className="capitalize text-gray-700">{tier.plan_tier}</span>
+                      <span className="capitalize text-muted-foreground">{tier.plan_tier}</span>
                     </div>
-                    <span className="font-medium text-gray-900">{tier.count}</span>
+                    <span className="font-medium text-foreground">{tier.count}</span>
                   </div>
                 ))}
               </div>
             </div>
           ) : (
-            <div className="flex items-center justify-center h-[250px] text-gray-400 text-sm">
+            <div className="flex items-center justify-center h-[250px] text-muted-foreground text-sm">
               {t("subscriptionMetrics.empty.noData")}
             </div>
           )}
         </div>
 
         {/* Subscription Status (Pie) */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("subscriptionMetrics.charts.subscriptionStatus")}</h2>
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">{t("subscriptionMetrics.charts.subscriptionStatus")}</h2>
           {data?.status_distribution?.length > 0 ? (
             <div>
               <ResponsiveContainer width="100%" height={250}>
@@ -208,7 +208,7 @@ export default function SubscriptionMetricsPage() {
                       <Cell key={i} fill={STATUS_COLORS[entry.status] || `#${((i * 3456) % 0xffffff).toString(16).padStart(6, "0")}`} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))", borderRadius: "0.5rem" }} labelStyle={{ color: "hsl(var(--foreground))" }} itemStyle={{ color: "hsl(var(--foreground))" }} />
                 </PieChart>
               </ResponsiveContainer>
               <div className="space-y-2 mt-4">
@@ -219,23 +219,23 @@ export default function SubscriptionMetricsPage() {
                         className="h-3 w-3 rounded-full"
                         style={{ backgroundColor: STATUS_COLORS[item.status] || "#6366f1" }}
                       />
-                      <span className="capitalize text-gray-700">{item.status}</span>
+                      <span className="capitalize text-muted-foreground">{item.status}</span>
                     </div>
-                    <span className="font-medium text-gray-900">{item.count}</span>
+                    <span className="font-medium text-foreground">{item.count}</span>
                   </div>
                 ))}
               </div>
             </div>
           ) : (
-            <div className="flex items-center justify-center h-[250px] text-gray-400 text-sm">
+            <div className="flex items-center justify-center h-[250px] text-muted-foreground text-sm">
               {t("subscriptionMetrics.empty.noData")}
             </div>
           )}
         </div>
 
         {/* Billing Cycle (Pie) */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("subscriptionMetrics.charts.billingCycle")}</h2>
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">{t("subscriptionMetrics.charts.billingCycle")}</h2>
           {data?.cycle_distribution?.length > 0 ? (
             <div>
               <ResponsiveContainer width="100%" height={250}>
@@ -256,7 +256,7 @@ export default function SubscriptionMetricsPage() {
                       <Cell key={i} fill={CYCLE_COLORS[entry.billing_cycle] || `#${((i * 5678) % 0xffffff).toString(16).padStart(6, "0")}`} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))", borderRadius: "0.5rem" }} labelStyle={{ color: "hsl(var(--foreground))" }} itemStyle={{ color: "hsl(var(--foreground))" }} />
                 </PieChart>
               </ResponsiveContainer>
               <div className="space-y-2 mt-4">
@@ -267,15 +267,15 @@ export default function SubscriptionMetricsPage() {
                         className="h-3 w-3 rounded-full"
                         style={{ backgroundColor: CYCLE_COLORS[item.billing_cycle] || "#6366f1" }}
                       />
-                      <span className="capitalize text-gray-700">{item.billing_cycle}</span>
+                      <span className="capitalize text-muted-foreground">{item.billing_cycle}</span>
                     </div>
-                    <span className="font-medium text-gray-900">{item.count}</span>
+                    <span className="font-medium text-foreground">{item.count}</span>
                   </div>
                 ))}
               </div>
             </div>
           ) : (
-            <div className="flex items-center justify-center h-[250px] text-gray-400 text-sm">
+            <div className="flex items-center justify-center h-[250px] text-muted-foreground text-sm">
               {t("subscriptionMetrics.empty.noData")}
             </div>
           )}
@@ -283,8 +283,8 @@ export default function SubscriptionMetricsPage() {
       </div>
 
       {/* Seat Utilization by Tier */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-8">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("subscriptionMetrics.charts.seatUtilizationByTier")}</h2>
+      <div className="bg-card rounded-xl border border-border p-6 mb-8">
+        <h2 className="text-lg font-semibold text-foreground mb-4">{t("subscriptionMetrics.charts.seatUtilizationByTier")}</h2>
         {data?.tier_distribution?.length > 0 ? (
           <div className="space-y-4">
             {data.tier_distribution.map((tier: any) => (
@@ -295,26 +295,26 @@ export default function SubscriptionMetricsPage() {
                       className="h-3 w-3 rounded-full"
                       style={{ backgroundColor: TIER_COLORS[tier.plan_tier] || "#6366f1" }}
                     />
-                    <span className="text-sm font-medium text-gray-900 capitalize">{tier.plan_tier}</span>
+                    <span className="text-sm font-medium text-foreground capitalize">{tier.plan_tier}</span>
                   </div>
                   <div className="flex items-center gap-4 text-sm">
-                    <span className="text-gray-500">
+                    <span className="text-muted-foreground">
                       {t("subscriptionMetrics.seats", { count: tier.total_seats, used: tier.used_seats.toLocaleString(), total: tier.total_seats.toLocaleString() })}
                     </span>
                     <span
                       className={`font-medium ${
                         tier.utilization > 80
-                          ? "text-red-600"
+                          ? "text-red-600 dark:text-red-400"
                           : tier.utilization > 50
-                            ? "text-amber-600"
-                            : "text-green-600"
+                            ? "text-amber-600 dark:text-amber-400"
+                            : "text-green-600 dark:text-green-400"
                       }`}
                     >
                       {tier.utilization}%
                     </span>
                   </div>
                 </div>
-                <div className="h-3 rounded-full bg-gray-100 overflow-hidden">
+                <div className="h-3 rounded-full bg-muted overflow-hidden">
                   <div
                     className={`h-full rounded-full transition-all ${
                       tier.utilization > 80
@@ -330,7 +330,7 @@ export default function SubscriptionMetricsPage() {
             ))}
           </div>
         ) : (
-          <div className="flex items-center justify-center h-32 text-gray-400 text-sm">
+          <div className="flex items-center justify-center h-32 text-muted-foreground text-sm">
             {t("subscriptionMetrics.empty.noTierData")}
           </div>
         )}
@@ -338,14 +338,14 @@ export default function SubscriptionMetricsPage() {
 
       {/* Churn */}
       {growth?.churn?.length > 0 && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("subscriptionMetrics.charts.subscriptionChurn")}</h2>
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">{t("subscriptionMetrics.charts.subscriptionChurn")}</h2>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={growth.churn}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis dataKey="month" tick={{ fontSize: 11 }} />
-              <YAxis allowDecimals={false} />
-              <Tooltip />
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <XAxis dataKey="month" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} stroke="hsl(var(--border))" />
+              <YAxis allowDecimals={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} stroke="hsl(var(--border))" />
+              <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))", borderRadius: "0.5rem" }} labelStyle={{ color: "hsl(var(--foreground))" }} itemStyle={{ color: "hsl(var(--foreground))" }} />
               <Bar dataKey="count" name={t("subscriptionMetrics.churn.cancelledSeries")} fill="#ef4444" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
