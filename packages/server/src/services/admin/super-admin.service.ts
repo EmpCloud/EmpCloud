@@ -5,6 +5,9 @@
 
 import { getDB } from "../../db/connection.js";
 import { logger } from "../../utils/logger.js";
+// Single source of truth for module health (DB-driven, per-environment URLs).
+// health-check.service does not import this file, so there is no cycle.
+import { getServiceHealth } from "./health-check.service.js";
 
 // ---------------------------------------------------------------------------
 // Platform Overview
@@ -731,54 +734,46 @@ export async function getRecentActivity(limit: number = 30) {
 }
 
 // ---------------------------------------------------------------------------
-// System Health — check module servers
+// System Health — summary for the super-admin Overview dashboard widget
 // ---------------------------------------------------------------------------
 
-const MODULE_HEALTH_ENDPOINTS = [
-  { name: "EMP Cloud", slug: "empcloud", url: "http://localhost:3000/health" },
-  { name: "EMP Recruit", slug: "emp-recruit", url: "http://localhost:4500/health" },
-  { name: "EMP Performance", slug: "emp-performance", url: "http://localhost:4300/health" },
-  { name: "EMP Rewards", slug: "emp-rewards", url: "http://localhost:4600/health" },
-  { name: "EMP Exit", slug: "emp-exit", url: "http://localhost:4400/health" },
-  { name: "EMP Payroll", slug: "emp-payroll", url: "http://localhost:4100/health" },
-  { name: "EMP Billing", slug: "emp-billing", url: "http://localhost:4200/health" },
-];
-
-async function checkHealth(url: string): Promise<{ status: "healthy" | "down"; latency_ms: number }> {
-  const start = Date.now();
-  try {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 3000);
-    const response = await fetch(url, { signal: controller.signal });
-    clearTimeout(timer);
-    const latency = Date.now() - start;
-    if (response.ok) {
-      return { status: "healthy", latency_ms: latency };
-    }
-    return { status: "down", latency_ms: latency };
-  } catch {
-    return { status: "down", latency_ms: Date.now() - start };
-  }
-}
-
+/**
+ * Summary view of module health for the Overview dashboard widget
+ * (GET /api/v1/admin/health).
+ *
+ * This used to run its own health check against a HARDCODED list of dev ports
+ * (empcloud:3000, recruit:4500, payroll:4100, billing:4200, ...). Those ports
+ * only exist on a developer laptop, so on test/prod every call was refused
+ * instantly (~5ms -- far too fast to be a timeout) and the widget reported
+ * EVERY module as "Down" while the services were perfectly healthy. The
+ * detailed Service Health page never had this problem because it uses the
+ * DB-driven checker, which reads each module's real per-environment address.
+ *
+ * There is now a single source of truth: we delegate to getServiceHealth() and
+ * map its richer result onto this endpoint's original response shape, so the
+ * existing widget keeps working unchanged. Do NOT reintroduce a hardcoded
+ * endpoint list here.
+ */
 export async function getSystemHealth() {
-  const results = await Promise.all(
-    MODULE_HEALTH_ENDPOINTS.map(async (ep) => {
-      const health = await checkHealth(ep.url);
-      return {
-        name: ep.name,
-        slug: ep.slug,
-        url: ep.url,
-        ...health,
-      };
-    })
-  );
+  const detailed = await getServiceHealth();
 
-  const healthyCount = results.filter((r) => r.status === "healthy").length;
-  const totalCount = results.length;
+  // The widget's badge is two-state (healthy | everything-else-is-red), so a
+  // "degraded" module (e.g. reachable but returning 404) collapses to "down"
+  // here. The Service Health page still shows the precise state.
+  const modules = detailed.modules.map((m) => ({
+    name: m.name,
+    slug: m.slug,
+    port: m.port,
+    status: m.status === "healthy" ? "healthy" : "down",
+    latency_ms: m.responseTime ?? 0,
+    error: m.error,
+  }));
+
+  const healthyCount = modules.filter((m) => m.status === "healthy").length;
+  const totalCount = modules.length;
 
   return {
-    modules: results,
+    modules,
     healthy_count: healthyCount,
     total_count: totalCount,
     overall_status: healthyCount === totalCount ? "all_healthy" : healthyCount > 0 ? "degraded" : "down",
