@@ -267,7 +267,7 @@ export default function DashboardLayout() {
           onClick={() => setSidebarCollapsed((c) => !c)}
           aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className="hidden md:flex absolute top-1/2 -right-3 -translate-y-1/2 z-30 h-6 w-6 rounded-full bg-card border border-border text-muted-foreground hover:text-brand-600 hover:border-brand-300 shadow-sm items-center justify-center transition-colors"
+          className="sidebar-collapse-toggle hidden md:flex absolute top-1/2 -right-3 -translate-y-1/2 z-30 h-6 w-6 rounded-full bg-card border border-border text-muted-foreground hover:text-brand-600 hover:border-brand-300 shadow-sm items-center justify-center transition-colors"
         >
           {sidebarCollapsed ? (
             <ChevronRight className="h-3.5 w-3.5" />
