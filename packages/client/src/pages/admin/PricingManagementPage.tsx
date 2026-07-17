@@ -335,20 +335,20 @@ export default function PricingManagementPage() {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          <h1 className="text-2xl font-bold text-foreground dark:text-gray-100">
             {t("pricingManagement.title")}
           </h1>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          <p className="mt-1 text-sm text-muted-foreground dark:text-muted-foreground">
             {t("pricingManagement.subtitle")}
           </p>
         </div>
       </div>
 
       {/* ---------- Tiers ---------- */}
-      <section className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-900">
+      <section className="rounded-xl border border-border bg-card p-6 dark:border-gray-700 dark:bg-gray-900">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
-            <Tag className="h-5 w-5 text-brand-600" /> {t("pricingManagement.tiers.heading")}
+          <h2 className="flex items-center gap-2 text-lg font-semibold text-foreground dark:text-gray-100">
+            <Tag className="h-5 w-5 text-brand-600 dark:text-brand-400" /> {t("pricingManagement.tiers.heading")}
           </h2>
           <button
             onClick={openCreateTier}
@@ -358,15 +358,15 @@ export default function PricingManagementPage() {
           </button>
         </div>
         {tiersQ.isLoading ? (
-          <div className="flex items-center justify-center py-8 text-sm text-gray-400">
+          <div className="flex items-center justify-center py-8 text-sm text-muted-foreground">
             <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t("pricingManagement.loading")}
           </div>
         ) : tiers.length === 0 ? (
-          <div className="py-8 text-center text-sm text-gray-400">{t("pricingManagement.tiers.empty")}</div>
+          <div className="py-8 text-center text-sm text-muted-foreground">{t("pricingManagement.tiers.empty")}</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
-              <thead className="bg-gray-50 text-xs uppercase text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+              <thead className="bg-muted text-xs uppercase text-muted-foreground dark:bg-gray-800 dark:text-muted-foreground">
                 <tr>
                   <th className="px-3 py-2 text-left">{t("pricingManagement.tiers.col.slug")}</th>
                   <th className="px-3 py-2 text-left">{t("pricingManagement.tiers.col.name")}</th>
@@ -376,26 +376,26 @@ export default function PricingManagementPage() {
                   <th className="px-3 py-2 text-right">{t("pricingManagement.tiers.col.actions")}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+              <tbody className="divide-y divide-border dark:divide-gray-800">
                 {tiers.map((tier) => (
                   <tr key={tier.id}>
-                    <td className="px-3 py-2 font-mono text-xs text-gray-700 dark:text-gray-300">{tier.slug}</td>
-                    <td className="px-3 py-2 font-medium text-gray-900 dark:text-gray-100">{tier.name}</td>
-                    <td className="px-3 py-2 text-gray-500 dark:text-gray-400">{tier.description}</td>
-                    <td className="px-3 py-2 text-right text-gray-700 dark:text-gray-300">{tier.sort_order}</td>
+                    <td className="px-3 py-2 font-mono text-xs text-muted-foreground dark:text-muted-foreground/50">{tier.slug}</td>
+                    <td className="px-3 py-2 font-medium text-foreground dark:text-gray-100">{tier.name}</td>
+                    <td className="px-3 py-2 text-muted-foreground dark:text-muted-foreground">{tier.description}</td>
+                    <td className="px-3 py-2 text-right text-muted-foreground dark:text-muted-foreground/50">{tier.sort_order}</td>
                     <td className="px-3 py-2 text-center">
                       {tier.is_active ? (
-                        <span className="rounded bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200">
+                        <span className="rounded bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200">
                           {t("pricingManagement.status.active")}
                         </span>
                       ) : (
-                        <span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-500">{t("pricingManagement.status.inactive")}</span>
+                        <span className="rounded bg-muted px-2 py-0.5 text-xs text-muted-foreground">{t("pricingManagement.status.inactive")}</span>
                       )}
                     </td>
                     <td className="px-3 py-2 text-right">
                       <button
                         onClick={() => openEditTier(tier)}
-                        className="text-gray-500 hover:text-gray-700 mr-2"
+                        className="text-muted-foreground hover:text-foreground mr-2"
                         title={t("pricingManagement.actions.edit")}
                       >
                         <Pencil className="h-4 w-4 inline" />
@@ -420,10 +420,10 @@ export default function PricingManagementPage() {
       </section>
 
       {/* ---------- Pricing rows ---------- */}
-      <section className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-900">
+      <section className="rounded-xl border border-border bg-card p-6 dark:border-gray-700 dark:bg-gray-900">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
-            <Coins className="h-5 w-5 text-brand-600" /> {t("pricingManagement.pricingRows.heading")}
+          <h2 className="flex items-center gap-2 text-lg font-semibold text-foreground dark:text-gray-100">
+            <Coins className="h-5 w-5 text-brand-600 dark:text-brand-400" /> {t("pricingManagement.pricingRows.heading")}
           </h2>
           <button
             onClick={openCreatePrice}
@@ -434,15 +434,15 @@ export default function PricingManagementPage() {
           </button>
         </div>
         {pricingQ.isLoading ? (
-          <div className="flex items-center justify-center py-8 text-sm text-gray-400">
+          <div className="flex items-center justify-center py-8 text-sm text-muted-foreground">
             <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t("pricingManagement.loading")}
           </div>
         ) : pricing.length === 0 ? (
-          <div className="py-8 text-center text-sm text-gray-400">{t("pricingManagement.pricingRows.empty")}</div>
+          <div className="py-8 text-center text-sm text-muted-foreground">{t("pricingManagement.pricingRows.empty")}</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
-              <thead className="bg-gray-50 text-xs uppercase text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+              <thead className="bg-muted text-xs uppercase text-muted-foreground dark:bg-gray-800 dark:text-muted-foreground">
                 <tr>
                   <th className="px-3 py-2 text-left">{t("pricingManagement.pricingRows.col.tier")}</th>
                   <th className="px-3 py-2 text-left">{t("pricingManagement.pricingRows.col.currency")}</th>
@@ -453,28 +453,28 @@ export default function PricingManagementPage() {
                   <th className="px-3 py-2 text-right">{t("pricingManagement.pricingRows.col.actions")}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+              <tbody className="divide-y divide-border dark:divide-gray-800">
                 {pricing.map((p) => (
                   <tr key={p.id}>
-                    <td className="px-3 py-2 font-medium text-gray-900 dark:text-gray-100">
+                    <td className="px-3 py-2 font-medium text-foreground dark:text-gray-100">
                       {p.tier_name}{" "}
-                      <span className="text-xs text-gray-500 font-mono">({p.tier_slug})</span>
+                      <span className="text-xs text-muted-foreground font-mono">({p.tier_slug})</span>
                     </td>
-                    <td className="px-3 py-2 text-gray-700 dark:text-gray-300">{p.currency}</td>
+                    <td className="px-3 py-2 text-muted-foreground dark:text-muted-foreground/50">{p.currency}</td>
                     <td className="px-3 py-2 text-right font-mono">{formatPrice(p.price_per_seat, p.currency)}</td>
-                    <td className="px-3 py-2 text-gray-700 dark:text-gray-300">
-                      <Layers className="h-3 w-3 inline mr-1 text-gray-400" />
+                    <td className="px-3 py-2 text-muted-foreground dark:text-muted-foreground/50">
+                      <Layers className="h-3 w-3 inline mr-1 text-muted-foreground" />
                       {p.min_seats} – {p.max_seats == null ? "∞" : p.max_seats}
                     </td>
-                    <td className="px-3 py-2 text-gray-700 dark:text-gray-300">
-                      <CalendarClock className="h-3 w-3 inline mr-1 text-gray-400" />
+                    <td className="px-3 py-2 text-muted-foreground dark:text-muted-foreground/50">
+                      <CalendarClock className="h-3 w-3 inline mr-1 text-muted-foreground" />
                       {p.effective_from.slice(0, 10)}
                     </td>
-                    <td className="px-3 py-2 text-gray-500 dark:text-gray-400 text-xs">{p.notes}</td>
+                    <td className="px-3 py-2 text-muted-foreground dark:text-muted-foreground text-xs">{p.notes}</td>
                     <td className="px-3 py-2 text-right">
                       <button
                         onClick={() => openEditPrice(p)}
-                        className="text-gray-500 hover:text-gray-700 mr-2"
+                        className="text-muted-foreground hover:text-foreground mr-2"
                         title={t("pricingManagement.actions.edit")}
                       >
                         <Pencil className="h-4 w-4 inline" />
@@ -498,10 +498,10 @@ export default function PricingManagementPage() {
       </section>
 
       {/* ---------- Billing cycles ---------- */}
-      <section className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-900">
+      <section className="rounded-xl border border-border bg-card p-6 dark:border-gray-700 dark:bg-gray-900">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
-            <CalendarDays className="h-5 w-5 text-brand-600" /> {t("pricingManagement.billingCycles.heading")}
+          <h2 className="flex items-center gap-2 text-lg font-semibold text-foreground dark:text-gray-100">
+            <CalendarDays className="h-5 w-5 text-brand-600 dark:text-brand-400" /> {t("pricingManagement.billingCycles.heading")}
           </h2>
           <button
             onClick={() => openCycleModal()}
@@ -511,15 +511,15 @@ export default function PricingManagementPage() {
           </button>
         </div>
         {cyclesQ.isLoading ? (
-          <div className="flex items-center justify-center py-8 text-sm text-gray-400">
+          <div className="flex items-center justify-center py-8 text-sm text-muted-foreground">
             <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t("pricingManagement.loading")}
           </div>
         ) : cycles.length === 0 ? (
-          <div className="py-8 text-center text-sm text-gray-400">{t("pricingManagement.billingCycles.empty")}</div>
+          <div className="py-8 text-center text-sm text-muted-foreground">{t("pricingManagement.billingCycles.empty")}</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
-              <thead className="bg-gray-50 text-xs uppercase text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+              <thead className="bg-muted text-xs uppercase text-muted-foreground dark:bg-gray-800 dark:text-muted-foreground">
                 <tr>
                   <th className="px-3 py-2 text-left">{t("pricingManagement.billingCycles.col.cycle")}</th>
                   <th className="px-3 py-2 text-left">{t("pricingManagement.billingCycles.col.label")}</th>
@@ -529,11 +529,11 @@ export default function PricingManagementPage() {
                   <th className="px-3 py-2 text-right">{t("pricingManagement.billingCycles.col.actions")}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+              <tbody className="divide-y divide-border dark:divide-gray-800">
                 {cycles.map((c) => (
                   <tr key={c.id}>
-                    <td className="px-3 py-2 font-mono text-xs text-gray-700 dark:text-gray-300">{c.cycle}</td>
-                    <td className="px-3 py-2 font-medium text-gray-900 dark:text-gray-100">{c.label}</td>
+                    <td className="px-3 py-2 font-mono text-xs text-muted-foreground dark:text-muted-foreground/50">{c.cycle}</td>
+                    <td className="px-3 py-2 font-medium text-foreground dark:text-gray-100">{c.label}</td>
                     <td className="px-3 py-2 text-right text-emerald-700 dark:text-emerald-300">
                       {c.override_amount_per_seat != null && c.override_currency ? (
                         <span className="font-mono text-purple-700 dark:text-purple-300">
@@ -545,18 +545,18 @@ export default function PricingManagementPage() {
                         "—"
                       )}
                     </td>
-                    <td className="px-3 py-2 text-right text-gray-700 dark:text-gray-300">{c.months_in_cycle}</td>
+                    <td className="px-3 py-2 text-right text-muted-foreground dark:text-muted-foreground/50">{c.months_in_cycle}</td>
                     <td className="px-3 py-2 text-center">
                       {c.is_active ? (
-                        <span className="rounded bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">{t("pricingManagement.status.active")}</span>
+                        <span className="rounded bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-300">{t("pricingManagement.status.active")}</span>
                       ) : (
-                        <span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-500">{t("pricingManagement.status.inactive")}</span>
+                        <span className="rounded bg-muted px-2 py-0.5 text-xs text-muted-foreground">{t("pricingManagement.status.inactive")}</span>
                       )}
                     </td>
                     <td className="px-3 py-2 text-right">
                       <button
                         onClick={() => openCycleModal(c)}
-                        className="text-gray-500 hover:text-gray-700 mr-2"
+                        className="text-muted-foreground hover:text-foreground mr-2"
                         title={t("pricingManagement.actions.edit")}
                       >
                         <Pencil className="h-4 w-4 inline" />
@@ -587,46 +587,46 @@ export default function PricingManagementPage() {
         >
           <div className="space-y-3">
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-600">{t("pricingManagement.tierModal.field.slug")}</label>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("pricingManagement.tierModal.field.slug")}</label>
               <input
                 value={tierForm.slug}
                 onChange={(e) => setTierForm({ ...tierForm, slug: e.target.value.toLowerCase() })}
                 placeholder={t("pricingManagement.tierModal.field.slugPlaceholder")}
                 disabled={tierModal.mode === "edit"}
-                className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm disabled:bg-gray-100"
+                className="w-full rounded-lg border border-border px-3 py-2 text-sm disabled:bg-muted"
               />
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1 text-xs text-muted-foreground">
                 {t("pricingManagement.tierModal.field.slugHelp")}
               </p>
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-600">{t("pricingManagement.tierModal.field.name")}</label>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("pricingManagement.tierModal.field.name")}</label>
               <input
                 value={tierForm.name}
                 onChange={(e) => setTierForm({ ...tierForm, name: e.target.value })}
                 placeholder={t("pricingManagement.tierModal.field.namePlaceholder")}
-                className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                className="w-full rounded-lg border border-border px-3 py-2 text-sm bg-card text-foreground"
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-600">{t("pricingManagement.tierModal.field.description")}</label>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("pricingManagement.tierModal.field.description")}</label>
               <textarea
                 value={tierForm.description}
                 rows={2}
                 onChange={(e) => setTierForm({ ...tierForm, description: e.target.value })}
-                className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                className="w-full rounded-lg border border-border px-3 py-2 text-sm bg-card text-foreground"
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">{t("pricingManagement.tierModal.field.sortOrder")}</label>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("pricingManagement.tierModal.field.sortOrder")}</label>
                 <input
                   type="number"
                   value={tierForm.sort_order}
                   onChange={(e) =>
                     setTierForm({ ...tierForm, sort_order: Number(e.target.value) || 0 })
                   }
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                  className="w-full rounded-lg border border-border px-3 py-2 text-sm bg-card text-foreground"
                 />
               </div>
               <div className="flex items-end">
@@ -644,7 +644,7 @@ export default function PricingManagementPage() {
               <button
                 onClick={() => setTierModal(null)}
                 disabled={tierMutation.isPending}
-                className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm hover:bg-gray-50"
+                className="rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-muted"
               >
                 {t("pricingManagement.actions.cancel")}
               </button>
@@ -669,12 +669,12 @@ export default function PricingManagementPage() {
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">{t("pricingManagement.priceModal.field.tier")}</label>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("pricingManagement.priceModal.field.tier")}</label>
                 <select
                   value={priceForm.tier_id}
                   onChange={(e) => setPriceForm({ ...priceForm, tier_id: Number(e.target.value) })}
                   disabled={priceModal.mode === "edit"}
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm disabled:bg-gray-100"
+                  className="w-full rounded-lg border border-border px-3 py-2 text-sm disabled:bg-muted"
                 >
                   {tiers.map((tier) => (
                     <option key={tier.id} value={tier.id}>{tier.name} ({tier.slug})</option>
@@ -682,19 +682,19 @@ export default function PricingManagementPage() {
                 </select>
               </div>
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">{t("pricingManagement.priceModal.field.currency")}</label>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("pricingManagement.priceModal.field.currency")}</label>
                 <select
                   value={priceForm.currency}
                   onChange={(e) => setPriceForm({ ...priceForm, currency: e.target.value })}
                   disabled={priceModal.mode === "edit"}
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm disabled:bg-gray-100"
+                  className="w-full rounded-lg border border-border px-3 py-2 text-sm disabled:bg-muted"
                 >
                   {CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-600">
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">
                 {t("pricingManagement.priceModal.field.pricePerSeat")}
               </label>
               <input
@@ -703,57 +703,57 @@ export default function PricingManagementPage() {
                 min="0"
                 value={priceForm.price_per_seat_major}
                 onChange={(e) => setPriceForm({ ...priceForm, price_per_seat_major: e.target.value })}
-                className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm font-mono"
+                className="w-full rounded-lg border border-border px-3 py-2 text-sm font-mono bg-card text-foreground"
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">{t("pricingManagement.priceModal.field.minSeats")}</label>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("pricingManagement.priceModal.field.minSeats")}</label>
                 <input
                   type="number"
                   min={1}
                   value={priceForm.min_seats}
                   onChange={(e) => setPriceForm({ ...priceForm, min_seats: Number(e.target.value) || 1 })}
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                  className="w-full rounded-lg border border-border px-3 py-2 text-sm bg-card text-foreground"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">{t("pricingManagement.priceModal.field.maxSeats")}</label>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("pricingManagement.priceModal.field.maxSeats")}</label>
                 <input
                   type="number"
                   min={1}
                   value={priceForm.max_seats}
                   onChange={(e) => setPriceForm({ ...priceForm, max_seats: e.target.value })}
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                  className="w-full rounded-lg border border-border px-3 py-2 text-sm bg-card text-foreground"
                 />
               </div>
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-600">{t("pricingManagement.priceModal.field.effectiveFrom")}</label>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("pricingManagement.priceModal.field.effectiveFrom")}</label>
               <input
                 type="date"
                 value={priceForm.effective_from}
                 onChange={(e) => setPriceForm({ ...priceForm, effective_from: e.target.value })}
-                className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                className="w-full rounded-lg border border-border px-3 py-2 text-sm bg-card text-foreground"
               />
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1 text-xs text-muted-foreground">
                 {t("pricingManagement.priceModal.field.effectiveFromHelp")}
               </p>
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-600">{t("pricingManagement.priceModal.field.notes")}</label>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("pricingManagement.priceModal.field.notes")}</label>
               <input
                 value={priceForm.notes}
                 onChange={(e) => setPriceForm({ ...priceForm, notes: e.target.value })}
                 placeholder={t("pricingManagement.priceModal.field.notesPlaceholder")}
-                className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                className="w-full rounded-lg border border-border px-3 py-2 text-sm bg-card text-foreground"
               />
             </div>
             <div className="flex justify-end gap-2 pt-2">
               <button
                 onClick={() => setPriceModal(null)}
                 disabled={priceMutation.isPending}
-                className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm hover:bg-gray-50"
+                className="rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-muted"
               >
                 {t("pricingManagement.actions.cancel")}
               </button>
@@ -777,28 +777,28 @@ export default function PricingManagementPage() {
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">{t("pricingManagement.cycleModal.field.cycleSlug")}</label>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("pricingManagement.cycleModal.field.cycleSlug")}</label>
                 <input
                   value={cycleForm.cycle}
                   onChange={(e) => setCycleForm({ ...cycleForm, cycle: e.target.value.toLowerCase() })}
                   placeholder={t("pricingManagement.cycleModal.field.cycleSlugPlaceholder")}
                   disabled={cycleModal.mode === "edit"}
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm disabled:bg-gray-100"
+                  className="w-full rounded-lg border border-border px-3 py-2 text-sm disabled:bg-muted"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">{t("pricingManagement.cycleModal.field.label")}</label>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("pricingManagement.cycleModal.field.label")}</label>
                 <input
                   value={cycleForm.label}
                   onChange={(e) => setCycleForm({ ...cycleForm, label: e.target.value })}
                   placeholder={t("pricingManagement.cycleModal.field.labelPlaceholder")}
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                  className="w-full rounded-lg border border-border px-3 py-2 text-sm bg-card text-foreground"
                 />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">{t("pricingManagement.cycleModal.field.discountPct")}</label>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("pricingManagement.cycleModal.field.discountPct")}</label>
                 <input
                   type="number"
                   step="0.01"
@@ -806,29 +806,29 @@ export default function PricingManagementPage() {
                   max={100}
                   value={cycleForm.discount_pct}
                   onChange={(e) => setCycleForm({ ...cycleForm, discount_pct: Number(e.target.value) || 0 })}
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                  className="w-full rounded-lg border border-border px-3 py-2 text-sm bg-card text-foreground"
                 />
-                <p className="mt-1 text-xs text-gray-500">{t("pricingManagement.cycleModal.field.discountPctHelp")}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{t("pricingManagement.cycleModal.field.discountPctHelp")}</p>
               </div>
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">{t("pricingManagement.cycleModal.field.monthsPerCycle")}</label>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("pricingManagement.cycleModal.field.monthsPerCycle")}</label>
                 <input
                   type="number"
                   min={1}
                   value={cycleForm.months_in_cycle}
                   onChange={(e) => setCycleForm({ ...cycleForm, months_in_cycle: Number(e.target.value) || 1 })}
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                  className="w-full rounded-lg border border-border px-3 py-2 text-sm bg-card text-foreground"
                 />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">{t("pricingManagement.cycleModal.field.sortOrder")}</label>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("pricingManagement.cycleModal.field.sortOrder")}</label>
                 <input
                   type="number"
                   value={cycleForm.sort_order}
                   onChange={(e) => setCycleForm({ ...cycleForm, sort_order: Number(e.target.value) || 0 })}
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                  className="w-full rounded-lg border border-border px-3 py-2 text-sm bg-card text-foreground"
                 />
               </div>
               <div className="flex items-end">
@@ -846,16 +846,16 @@ export default function PricingManagementPage() {
             {/* Flat-amount override: overrides the discount math entirely
                 for one currency. Useful when the price sheet quotes the
                 annual / quarterly total directly instead of a discount %. */}
-            <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800/40">
-              <div className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <div className="rounded-lg border border-border bg-muted p-3 dark:border-gray-700 dark:bg-gray-800/40">
+              <div className="text-xs font-medium text-muted-foreground dark:text-muted-foreground/50 mb-2">
                 {t("pricingManagement.cycleModal.override.heading")}
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+              <p className="text-xs text-muted-foreground dark:text-muted-foreground mb-3">
                 {t("pricingManagement.cycleModal.override.help")}
               </p>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="mb-1 block text-xs font-medium text-gray-600">
+                  <label className="mb-1 block text-xs font-medium text-muted-foreground">
                     {t("pricingManagement.cycleModal.override.amount")}
                   </label>
                   <input
@@ -867,17 +867,17 @@ export default function PricingManagementPage() {
                       setCycleForm({ ...cycleForm, override_amount_major: e.target.value })
                     }
                     placeholder={t("pricingManagement.cycleModal.override.amountPlaceholder")}
-                    className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm font-mono"
+                    className="w-full rounded-lg border border-border px-3 py-2 text-sm font-mono bg-card text-foreground"
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs font-medium text-gray-600">{t("pricingManagement.cycleModal.override.currency")}</label>
+                  <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("pricingManagement.cycleModal.override.currency")}</label>
                   <select
                     value={cycleForm.override_currency}
                     onChange={(e) =>
                       setCycleForm({ ...cycleForm, override_currency: e.target.value })
                     }
-                    className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                    className="w-full rounded-lg border border-border px-3 py-2 text-sm bg-card text-foreground"
                   >
                     <option value="">{t("pricingManagement.cycleModal.override.currencyNone")}</option>
                     {CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
@@ -890,7 +890,7 @@ export default function PricingManagementPage() {
               <button
                 onClick={() => setCycleModal(null)}
                 disabled={cycleMutation.isPending}
-                className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm hover:bg-gray-50"
+                className="rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-muted"
               >
                 {t("pricingManagement.actions.cancel")}
               </button>
@@ -920,10 +920,10 @@ function Modal({
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl dark:bg-gray-900">
+      <div className="w-full max-w-lg rounded-xl bg-card p-6 shadow-xl dark:bg-gray-900">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{title}</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <h3 className="text-lg font-semibold text-foreground dark:text-gray-100">{title}</h3>
+          <button onClick={onClose} className="text-muted-foreground hover:text-muted-foreground">
             <X className="h-5 w-5" />
           </button>
         </div>
