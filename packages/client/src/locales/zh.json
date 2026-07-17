@@ -3321,7 +3321,8 @@
       }
     },
     "status": {
-      "active": "活跃"
+      "active": "活跃",
+      "inactive": "未激活"
     },
     "loading": "加载中...",
     "empty": "未找到组织",
