@@ -3309,6 +3309,37 @@
     "search": {
       "placeholder": "Search by name or email..."
     },
+    "stats": {
+      "total": "Total Organizations",
+      "today": "Registered Today",
+      "thisWeek": "Registered This Week",
+      "thisMonth": "Registered This Month",
+      "active": "Active",
+      "inactive": "Inactive",
+      "totalEmployees": "Total Employees",
+      "mrr": "Monthly Recurring Revenue"
+    },
+    "filters": {
+      "search": "Search",
+      "registered": "Registered",
+      "from": "From",
+      "to": "To",
+      "statusAll": "All statuses",
+      "subscription": "Subscription",
+      "subAll": "All",
+      "subWith": "With subscription",
+      "subWithout": "Without subscription",
+      "country": "Country",
+      "clear": "Clear",
+      "period": {
+        "all": "All time",
+        "today": "Today",
+        "week": "This week",
+        "month": "This month",
+        "year": "This year",
+        "custom": "Custom range"
+      }
+    },
     "table": {
       "headers": {
         "organization": "Organization",
