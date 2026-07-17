@@ -377,7 +377,15 @@
     "changePassword": "Passwort ändern",
     "viewAttendance": "Anwesenheit ansehen",
     "attendanceGrid": "Anwesenheitsraster",
-    "attendanceSettings": "Anwesenheitseinstellungen"
+    "attendanceSettings": "Anwesenheitseinstellungen",
+    "section": {
+      "account": "Konto",
+      "administration": "Verwaltung",
+      "attendance_and_leave": "Anwesenheit & Urlaub",
+      "communication": "Kommunikation",
+      "people_and_hr": "Personen & HR",
+      "workplace_and_community": "Arbeitsplatz & Community"
+    }
   },
   "common": {
     "save": "Speichern",
