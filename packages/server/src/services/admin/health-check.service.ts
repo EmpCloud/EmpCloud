@@ -59,14 +59,19 @@ export interface HealthCheckResult {
 // Module definitions
 // ---------------------------------------------------------------------------
 
-// Modules are loaded from the `modules` DB table at check time (migration
-// 040 added `api_url`, which is populated per environment by the admin
-// "Module Registry" page). Previously this list was hardcoded with
-// http://localhost:<dev_port>/health URLs, so prod -- where modules live on
-// totally different ports / behind public HTTPS domains -- saw every
-// service as "stopped" because the dev-port localhost calls all timed out.
-// Reading from the DB makes the dashboard correct across local, test, and
-// prod with no code change per environment.
+// Modules are loaded from the `modules` DB table at check time; the health URL
+// is derived from each row's `api_url` (added by migration 040). Previously the
+// list was hardcoded with http://localhost:<dev_port>/health URLs, so prod --
+// where modules live on totally different ports -- saw every service as down.
+//
+// IMPORTANT: `api_url` is per-environment DATA, and getting it wrong reports a
+// perfectly healthy module as "down" (a dev port nothing listens on refuses the
+// connection instantly, ~5ms -- it does not even look like a timeout). It is
+// populated in two ways, in this order of authority:
+//   1. <MODULE>_MODULE_URL env vars, applied on every boot (see index.ts).
+//   2. PUT /api/v1/admin/modules/:id { api_url } for a one-off override.
+// Migration 040 seeds local-dev defaults as a last resort for fresh installs;
+// on test/prod the env vars above are what keep this correct.
 
 type DbModule = {
   name: string;

@@ -14,6 +14,14 @@ import {
   ExternalLink,
   PlusCircle,
   X,
+  Users,
+  IndianRupee,
+  CalendarDays,
+  CalendarRange,
+  CalendarClock,
+  CheckCircle2,
+  XCircle,
+  RotateCcw,
 } from "lucide-react";
 
 function formatINR(paise: number): string {
@@ -26,6 +34,96 @@ function formatINR(paise: number): string {
 
 type SortField = "name" | "created_at" | "user_count" | "subscription_count" | "monthly_spend";
 
+/** Registration-window presets. "custom" reveals the two date inputs. */
+type Period = "all" | "today" | "week" | "month" | "year" | "custom";
+
+const isoDate = (d: Date) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
+/**
+ * Resolve a preset to a {from,to} date pair (local time, inclusive both ends).
+ * Week starts Monday to match the server-side stats (MySQL WEEKDAY()).
+ */
+function periodRange(p: Period): { from?: string; to?: string } {
+  const now = new Date();
+  const today = isoDate(now);
+  switch (p) {
+    case "today":
+      return { from: today, to: today };
+    case "week": {
+      const d = new Date(now);
+      d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); // Monday of this week
+      return { from: isoDate(d), to: today };
+    }
+    case "month":
+      return { from: `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`, to: today };
+    case "year":
+      return { from: `${now.getFullYear()}-01-01`, to: today };
+    default:
+      return {};
+  }
+}
+
+/** Shared input/select styling so every filter control matches the table card. */
+const FIELD_CLS =
+  "bg-card text-foreground rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500";
+
+const TONES: Record<string, string> = {
+  blue: "bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400",
+  emerald: "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400",
+  violet: "bg-violet-50 text-violet-600 dark:bg-violet-950/40 dark:text-violet-400",
+  amber: "bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400",
+  rose: "bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400",
+  sky: "bg-sky-50 text-sky-600 dark:bg-sky-950/40 dark:text-sky-400",
+  brand: "bg-brand-50 text-brand-600 dark:bg-brand-950/40 dark:text-brand-400",
+};
+
+/**
+ * Headline counter. When `onClick` is supplied the card doubles as a filter
+ * shortcut (e.g. "Registered Today" applies the today window) and shows a ring
+ * while that filter is the active one.
+ */
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+  tone,
+  active,
+  onClick,
+}: {
+  icon: React.ElementType;
+  label: string;
+  value?: number | string;
+  tone?: string;
+  active?: boolean;
+  onClick?: () => void;
+}) {
+  const clickable = Boolean(onClick);
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={!clickable}
+      aria-pressed={clickable ? Boolean(active) : undefined}
+      className={`flex items-center gap-3 rounded-xl border bg-card px-4 py-3 text-left transition-colors ${
+        active ? "border-brand-500 ring-1 ring-brand-500" : "border-border"
+      } ${clickable ? "cursor-pointer hover:bg-muted/50" : "cursor-default"}`}
+    >
+      <div
+        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${TONES[tone || "blue"] || TONES.blue}`}
+      >
+        <Icon className="h-4 w-4" />
+      </div>
+      <div className="min-w-0">
+        <p className="truncate text-xs text-muted-foreground">{label}</p>
+        <p className="text-lg font-semibold tabular-nums text-foreground">
+          {value === undefined || value === null ? "—" : value}
+        </p>
+      </div>
+    </button>
+  );
+}
+
 export default function OrgListPage() {
   const { t } = useTranslation();
   const qc = useQueryClient();
@@ -34,6 +132,13 @@ export default function OrgListPage() {
   const [searchInput, setSearchInput] = useState("");
   const [sortBy, setSortBy] = useState<SortField>("created_at");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  // Filters
+  const [status, setStatus] = useState("");
+  const [period, setPeriod] = useState<Period>("all");
+  const [customFrom, setCustomFrom] = useState("");
+  const [customTo, setCustomTo] = useState("");
+  const [country, setCountry] = useState("");
+  const [hasSub, setHasSub] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [createForm, setCreateForm] = useState({
     org_name: "",
@@ -51,6 +156,7 @@ export default function OrgListPage() {
       api.post("/auth/register", data).then((r) => r.data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-orgs"] });
+      qc.invalidateQueries({ queryKey: ["admin-org-stats"] });
       setShowCreateModal(false);
       setCreateForm({
         org_name: "",
@@ -70,8 +176,26 @@ export default function OrgListPage() {
     },
   });
 
+  // Presets resolve to a date range; "custom" uses the two date inputs.
+  const range =
+    period === "custom"
+      ? { from: customFrom || undefined, to: customTo || undefined }
+      : periodRange(period);
+
   const { data, isLoading } = useQuery({
-    queryKey: ["admin-orgs", page, search, sortBy, sortOrder],
+    queryKey: [
+      "admin-orgs",
+      page,
+      search,
+      sortBy,
+      sortOrder,
+      status,
+      period,
+      customFrom,
+      customTo,
+      country,
+      hasSub,
+    ],
     queryFn: () =>
       api
         .get("/admin/organizations", {
@@ -81,13 +205,45 @@ export default function OrgListPage() {
             search: search || undefined,
             sort_by: sortBy,
             sort_order: sortOrder,
+            status: status || undefined,
+            date_from: range.from,
+            date_to: range.to,
+            country: country || undefined,
+            has_subscription: hasSub || undefined,
           },
         })
         .then((r) => r.data),
   });
 
+  // Headline counters are platform-wide (not affected by the filters above).
+  const { data: statsRes } = useQuery({
+    queryKey: ["admin-org-stats"],
+    queryFn: () => api.get("/admin/organizations/stats").then((r) => r.data),
+  });
+  const stats = statsRes?.data;
+
   const orgs = data?.data || [];
   const meta = data?.meta || { page: 1, total_pages: 1, total: 0 };
+
+  const filtersActive = Boolean(status || period !== "all" || country || hasSub || search);
+
+  /** Every filter change resets to page 1 so you never land on an empty page. */
+  function changeFilter(fn: () => void) {
+    fn();
+    setPage(1);
+  }
+
+  function clearFilters() {
+    setStatus("");
+    setPeriod("all");
+    setCustomFrom("");
+    setCustomTo("");
+    setCountry("");
+    setHasSub("");
+    setSearch("");
+    setSearchInput("");
+    setPage(1);
+  }
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -271,19 +427,193 @@ export default function OrgListPage() {
         </div>
       )}
 
-      {/* Search */}
-      <form onSubmit={handleSearch} className="mb-6">
-        <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input
-            type="text"
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            placeholder={t("orgList.search.placeholder")}
-            className="bg-card text-foreground w-full pl-10 pr-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-          />
+      {/* Stats — platform-wide counters. The date/status ones double as filter
+          shortcuts, so clicking "Registered Today" filters the table below. */}
+      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+        <StatCard
+          icon={Building2}
+          tone="blue"
+          label={t("orgList.stats.total", { defaultValue: "Total Organizations" })}
+          value={stats?.total}
+          active={period === "all" && !status}
+          onClick={() => changeFilter(() => { setPeriod("all"); setStatus(""); })}
+        />
+        <StatCard
+          icon={CalendarDays}
+          tone="emerald"
+          label={t("orgList.stats.today", { defaultValue: "Registered Today" })}
+          value={stats?.today}
+          active={period === "today"}
+          onClick={() => changeFilter(() => setPeriod(period === "today" ? "all" : "today"))}
+        />
+        <StatCard
+          icon={CalendarRange}
+          tone="violet"
+          label={t("orgList.stats.thisWeek", { defaultValue: "Registered This Week" })}
+          value={stats?.this_week}
+          active={period === "week"}
+          onClick={() => changeFilter(() => setPeriod(period === "week" ? "all" : "week"))}
+        />
+        <StatCard
+          icon={CalendarClock}
+          tone="amber"
+          label={t("orgList.stats.thisMonth", { defaultValue: "Registered This Month" })}
+          value={stats?.this_month}
+          active={period === "month"}
+          onClick={() => changeFilter(() => setPeriod(period === "month" ? "all" : "month"))}
+        />
+        <StatCard
+          icon={CheckCircle2}
+          tone="emerald"
+          label={t("orgList.stats.active", { defaultValue: "Active" })}
+          value={stats?.active}
+          active={status === "active"}
+          onClick={() => changeFilter(() => setStatus(status === "active" ? "" : "active"))}
+        />
+        <StatCard
+          icon={XCircle}
+          tone="rose"
+          label={t("orgList.stats.inactive", { defaultValue: "Inactive" })}
+          value={stats?.inactive}
+          active={status === "inactive"}
+          onClick={() => changeFilter(() => setStatus(status === "inactive" ? "" : "inactive"))}
+        />
+        <StatCard
+          icon={Users}
+          tone="sky"
+          label={t("orgList.stats.totalEmployees", { defaultValue: "Total Employees" })}
+          value={stats?.total_users}
+        />
+        <StatCard
+          icon={IndianRupee}
+          tone="brand"
+          label={t("orgList.stats.mrr", { defaultValue: "Monthly Recurring Revenue" })}
+          value={stats ? formatINR(stats.mrr) : undefined}
+        />
+      </div>
+
+      {/* Filters */}
+      <div className="mb-6 rounded-xl border border-border bg-card p-4">
+        <div className="flex flex-wrap items-end gap-3">
+          <form onSubmit={handleSearch} className="min-w-[220px] flex-1">
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">
+              {t("orgList.filters.search", { defaultValue: "Search" })}
+            </label>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="text"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                placeholder={t("orgList.search.placeholder")}
+                className={`${FIELD_CLS} w-full pl-10`}
+              />
+            </div>
+          </form>
+
+          <div>
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">
+              {t("orgList.filters.registered", { defaultValue: "Registered" })}
+            </label>
+            <select
+              value={period}
+              onChange={(e) => changeFilter(() => setPeriod(e.target.value as Period))}
+              className={FIELD_CLS}
+            >
+              <option value="all">{t("orgList.filters.period.all", { defaultValue: "All time" })}</option>
+              <option value="today">{t("orgList.filters.period.today", { defaultValue: "Today" })}</option>
+              <option value="week">{t("orgList.filters.period.week", { defaultValue: "This week" })}</option>
+              <option value="month">{t("orgList.filters.period.month", { defaultValue: "This month" })}</option>
+              <option value="year">{t("orgList.filters.period.year", { defaultValue: "This year" })}</option>
+              <option value="custom">{t("orgList.filters.period.custom", { defaultValue: "Custom range" })}</option>
+            </select>
+          </div>
+
+          {period === "custom" && (
+            <>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">
+                  {t("orgList.filters.from", { defaultValue: "From" })}
+                </label>
+                <input
+                  type="date"
+                  value={customFrom}
+                  max={customTo || undefined}
+                  onChange={(e) => changeFilter(() => setCustomFrom(e.target.value))}
+                  className={FIELD_CLS}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">
+                  {t("orgList.filters.to", { defaultValue: "To" })}
+                </label>
+                <input
+                  type="date"
+                  value={customTo}
+                  min={customFrom || undefined}
+                  onChange={(e) => changeFilter(() => setCustomTo(e.target.value))}
+                  className={FIELD_CLS}
+                />
+              </div>
+            </>
+          )}
+
+          <div>
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">
+              {t("orgList.table.headers.status")}
+            </label>
+            <select
+              value={status}
+              onChange={(e) => changeFilter(() => setStatus(e.target.value))}
+              className={FIELD_CLS}
+            >
+              <option value="">{t("orgList.filters.statusAll", { defaultValue: "All statuses" })}</option>
+              <option value="active">{t("orgList.status.active")}</option>
+              <option value="inactive">{t("orgList.status.inactive")}</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">
+              {t("orgList.filters.subscription", { defaultValue: "Subscription" })}
+            </label>
+            <select
+              value={hasSub}
+              onChange={(e) => changeFilter(() => setHasSub(e.target.value))}
+              className={FIELD_CLS}
+            >
+              <option value="">{t("orgList.filters.subAll", { defaultValue: "All" })}</option>
+              <option value="true">{t("orgList.filters.subWith", { defaultValue: "With subscription" })}</option>
+              <option value="false">{t("orgList.filters.subWithout", { defaultValue: "Without subscription" })}</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">
+              {t("orgList.filters.country", { defaultValue: "Country" })}
+            </label>
+            <input
+              type="text"
+              value={country}
+              onChange={(e) => changeFilter(() => setCountry(e.target.value.toUpperCase().slice(0, 2)))}
+              placeholder="IN"
+              maxLength={2}
+              className={`${FIELD_CLS} w-20`}
+            />
+          </div>
+
+          {filtersActive && (
+            <button
+              type="button"
+              onClick={clearFilters}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+              {t("orgList.filters.clear", { defaultValue: "Clear" })}
+            </button>
+          )}
         </div>
-      </form>
+      </div>
 
       {/* Table */}
       <div className="bg-card rounded-xl border border-border overflow-hidden">
