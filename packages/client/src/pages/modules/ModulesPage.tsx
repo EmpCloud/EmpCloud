@@ -116,7 +116,7 @@ function SubscribeModal({ module, onClose, onSubscribe, isLoading }: SubscribeMo
         <div className="flex items-center justify-between p-6 border-b border-border">
           <div>
             <h2 className="text-xl font-bold text-foreground">Subscribe to {module.name}</h2>
-            <p className="text-sm text-muted-foreground mt-1">Configure your subscription</p>
+            <p className="text-[13px] text-muted-foreground mt-1">Configure your subscription</p>
           </div>
           <button onClick={onClose} className="text-muted-foreground hover:text-muted-foreground">
             <X className="h-5 w-5" />
@@ -126,15 +126,15 @@ function SubscribeModal({ module, onClose, onSubscribe, isLoading }: SubscribeMo
         <div className="p-6 space-y-6">
           {/* Plan Tier Selection */}
           <div>
-            <label className="flex items-center gap-2 text-sm font-medium text-muted-foreground mb-3">
+            <label className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground mb-3">
               <CreditCard className="h-4 w-4" /> Select Plan
             </label>
             {pricingQ.isLoading ? (
-              <div className="flex items-center justify-center py-6 text-sm text-muted-foreground">
+              <div className="flex items-center justify-center py-6 text-[13px] text-muted-foreground">
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading plans...
               </div>
             ) : tiers.length === 0 ? (
-              <div className="rounded-xl border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/40 p-3 text-sm text-amber-800 dark:text-amber-200">
+              <div className="rounded-xl border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/40 p-3 text-[13px] text-amber-800 dark:text-amber-200">
                 No plans are currently published for this currency. Contact your administrator.
               </div>
             ) : (
@@ -145,15 +145,15 @@ function SubscribeModal({ module, onClose, onSubscribe, isLoading }: SubscribeMo
                     <button
                       key={plan.slug}
                       onClick={() => setPlanTier(plan.slug)}
-                      className={`p-3 rounded-xl border-2 text-left transition-all ${
+                      className={`p-3 rounded-lg border-2 text-left transition-all ${
                         isSelected
                           ? "border-brand-500 bg-brand-50 dark:bg-brand-950/40 ring-1 ring-brand-200"
                           : "border-border hover:border-brand-300 dark:hover:border-brand-800"
                       }`}
                     >
-                      <div className="font-semibold text-sm text-foreground">{plan.name}</div>
-                      <div className="text-xs text-muted-foreground mt-1">{plan.description}</div>
-                      <div className="text-sm font-bold text-brand-600 dark:text-brand-400 mt-2">
+                      <div className="font-semibold text-[13px] text-foreground">{plan.name}</div>
+                      <div className="text-[11px] text-muted-foreground mt-1">{plan.description}</div>
+                      <div className="text-[13px] font-bold text-brand-600 dark:text-brand-400 mt-2 tabular-nums">
                         {plan.price_per_seat != null
                           ? `${formatMoney(plan.price_per_seat, currency)}/seat/mo`
                           : "Not available"}
@@ -167,7 +167,7 @@ function SubscribeModal({ module, onClose, onSubscribe, isLoading }: SubscribeMo
 
           {/* Number of Seats */}
           <div>
-            <label className="flex items-center gap-2 text-sm font-medium text-muted-foreground mb-3">
+            <label className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground mb-3">
               <Users className="h-4 w-4" /> Number of Seats (Licenses)
             </label>
             <div className="flex items-center gap-4">
@@ -185,15 +185,15 @@ function SubscribeModal({ module, onClose, onSubscribe, isLoading }: SubscribeMo
                 max={10000}
                 value={totalSeats}
                 onChange={e => setTotalSeats(Math.max(1, Number(e.target.value)))}
-                className="bg-card text-foreground w-20 px-3 py-2 border border-border rounded-lg text-center text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                className="bg-card text-foreground w-20 px-3 py-2 border border-border rounded-md text-center text-[13px] font-medium focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
               />
             </div>
-            <p className="text-xs text-muted-foreground mt-1">Each seat allows one employee to access this module</p>
+            <p className="text-[11px] text-muted-foreground mt-1">Each seat allows one employee to access this module</p>
           </div>
 
           {/* Billing Cycle */}
           <div>
-            <label className="flex items-center gap-2 text-sm font-medium text-muted-foreground mb-3">
+            <label className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground mb-3">
               <Calendar className="h-4 w-4" /> Billing Cycle
             </label>
             <div className={`grid gap-3`} style={{ gridTemplateColumns: `repeat(${Math.max(1, Math.min(cycles.length, 4))}, minmax(0, 1fr))` }}>
@@ -203,15 +203,15 @@ function SubscribeModal({ module, onClose, onSubscribe, isLoading }: SubscribeMo
                   <button
                     key={cycle.cycle}
                     onClick={() => setBillingCycle(cycle.cycle)}
-                    className={`p-3 rounded-xl border-2 text-center transition-all ${
+                    className={`p-3 rounded-lg border-2 text-center transition-all ${
                       isSelected
                         ? "border-brand-500 bg-brand-50 dark:bg-brand-950/40 ring-1 ring-brand-200"
                         : "border-border hover:border-brand-300 dark:hover:border-brand-800"
                     }`}
                   >
-                    <div className="font-semibold text-sm text-foreground">{cycle.label}</div>
+                    <div className="font-semibold text-[13px] text-foreground">{cycle.label}</div>
                     {Number(cycle.discount_pct) > 0 && (
-                      <div className="text-xs text-green-600 dark:text-green-400 font-medium mt-1">
+                      <div className="text-[11px] text-green-600 dark:text-green-400 font-medium mt-1">
                         Save {Number(cycle.discount_pct)}%
                       </div>
                     )}
@@ -223,29 +223,29 @@ function SubscribeModal({ module, onClose, onSubscribe, isLoading }: SubscribeMo
 
           {/* Price Summary */}
           <div className="bg-muted rounded-xl p-4 space-y-2">
-            <div className="flex justify-between text-sm text-muted-foreground">
+            <div className="flex justify-between text-[13px] text-muted-foreground">
               <span>Plan</span>
               <span className="font-medium">{selectedTier?.name || "—"}</span>
             </div>
-            <div className="flex justify-between text-sm text-muted-foreground">
+            <div className="flex justify-between text-[13px] text-muted-foreground">
               <span>Price per seat</span>
-              <span>{formatMoney(monthlyPerSeat, currency)}/mo</span>
+              <span className="tabular-nums">{formatMoney(monthlyPerSeat, currency)}/mo</span>
             </div>
-            <div className="flex justify-between text-sm text-muted-foreground">
+            <div className="flex justify-between text-[13px] text-muted-foreground">
               <span>Seats</span>
-              <span>{totalSeats} users</span>
+              <span className="tabular-nums">{totalSeats} users</span>
             </div>
-            <div className="flex justify-between text-sm text-muted-foreground">
+            <div className="flex justify-between text-[13px] text-muted-foreground">
               <span>Billing cycle</span>
               <span>{selectedCycle?.label || "—"}</span>
             </div>
             {selectedCycle && Number(selectedCycle.discount_pct) > 0 && (
-              <div className="flex justify-between text-sm text-green-600 dark:text-green-400">
+              <div className="flex justify-between text-[13px] text-green-600 dark:text-green-400">
                 <span>Discount</span>
-                <span>-{Number(selectedCycle.discount_pct)}%</span>
+                <span className="tabular-nums">-{Number(selectedCycle.discount_pct)}%</span>
               </div>
             )}
-            <div className="border-t border-border pt-2 mt-2 flex justify-between text-lg font-bold text-foreground">
+            <div className="border-t border-border pt-2 mt-2 flex justify-between text-lg font-bold text-foreground tabular-nums">
               <span>Total</span>
               <span>
                 {formatMoney(totalAmount, currency)}
@@ -263,13 +263,13 @@ function SubscribeModal({ module, onClose, onSubscribe, isLoading }: SubscribeMo
 
         {/* Footer */}
         <div className="flex items-center justify-between p-6 border-t border-border bg-muted rounded-b-2xl">
-          <button onClick={onClose} className="text-sm text-muted-foreground hover:text-foreground">
+          <button onClick={onClose} className="text-[13px] text-muted-foreground hover:text-foreground">
             Cancel
           </button>
           <button
             onClick={handleSubmit}
             disabled={isLoading}
-            className="flex items-center gap-2 bg-brand-600 text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 transition-colors"
+            className="flex items-center gap-2 bg-brand-600 text-white px-6 py-2.5 rounded-md text-[13px] font-medium hover:bg-brand-700 disabled:opacity-50 transition-colors"
           >
             {isLoading
               ? "Subscribing..."
@@ -349,12 +349,12 @@ export default function ModulesPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-foreground">{t('modulesPage.title')}</h1>
-        <p className="text-muted-foreground mt-1">{t('modulesPage.subtitle')}</p>
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">{t('modulesPage.title')}</h1>
+        <p className="text-[13px] text-muted-foreground mt-0.5">{t('modulesPage.subtitle')}</p>
       </div>
 
       {toast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-green-600 text-white px-5 py-3 rounded-xl shadow-lg text-sm font-medium flex items-center gap-2">
+        <div className="fixed bottom-6 right-6 z-50 bg-green-600 text-white px-5 py-3 rounded-xl shadow-lg text-[13px] font-medium flex items-center gap-2">
           <Check className="h-4 w-4" />
           {toast}
         </div>
@@ -370,14 +370,14 @@ export default function ModulesPage() {
       )}
 
       {/* EMP AI Banner */}
-      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl p-6 mb-8 text-white">
+      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg p-4 mb-8 text-white">
         <div className="flex items-center gap-4">
           <div className="h-12 w-12 rounded-xl bg-white/20 flex items-center justify-center">
             <Sparkles className="h-6 w-6 text-white" />
           </div>
           <div>
             <h2 className="text-lg font-bold">{t('modulesPage.aiBannerTitle')}</h2>
-            <p className="text-purple-100 text-sm mt-1">
+            <p className="text-purple-100 text-[13px] mt-1">
               {t('modulesPage.aiBannerDesc')}
             </p>
           </div>
@@ -402,7 +402,7 @@ export default function ModulesPage() {
           return (
             <div
               key={mod.id}
-              className={`bg-card rounded-xl border p-6 transition-colors ${
+              className={`bg-card rounded-lg border p-4 transition-colors ${
                 isHRMS
                   ? "border-brand-300 dark:border-brand-800 bg-brand-50/30 dark:bg-brand-950/20 ring-1 ring-brand-100 dark:ring-brand-900"
                   : "border-border hover:border-brand-300 dark:hover:border-brand-800"
@@ -422,21 +422,21 @@ export default function ModulesPage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
                     <h3 className="font-semibold text-foreground text-lg">{displayName}</h3>
-                    <span className="text-xs text-muted-foreground">{mod.slug}</span>
+                    <span className="text-[11px] text-muted-foreground">{mod.slug}</span>
                     {isHRMS && (
-                      <span className="text-xs bg-brand-100 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300 px-2 py-0.5 rounded-full font-medium">
+                      <span className="text-[11px] bg-brand-100 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300 px-2 py-0.5 rounded-md font-medium">
                         {t('modulesPage.coreIncludedFree')}
                       </span>
                     )}
                     {!!mod.has_free_tier && !isHRMS && (
-                      <span className="text-xs bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300 px-2 py-0.5 rounded-full">{t('modulesPage.freeTier')}</span>
+                      <span className="text-[11px] bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300 px-2 py-0.5 rounded-md">{t('modulesPage.freeTier')}</span>
                     )}
                     {!mod.is_active && (
-                      <span className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">{t('modulesPage.comingSoon')}</span>
+                      <span className="text-[11px] bg-muted text-muted-foreground px-2 py-0.5 rounded-md">{t('modulesPage.comingSoon')}</span>
                     )}
                   </div>
 
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <p className="text-[13px] text-muted-foreground leading-relaxed">
                     {isExpanded ? displayDescription : descPreview}
                     {!isExpanded && hasMore && "..."}
                   </p>
@@ -450,7 +450,7 @@ export default function ModulesPage() {
                   {isSubscribed && activeSub && (
                     <Link
                       to={`/users?module=${mod.slug}`}
-                      className="mt-3 inline-flex items-center gap-2 text-xs font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700 hover:underline"
+                      className="mt-3 inline-flex items-center gap-2 text-[11px] font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700 hover:underline"
                     >
                       <Users className="h-3.5 w-3.5" />
                       {t('modulesPage.seatsAssigned', { used: activeSub.used_seats, total: activeSub.total_seats })}
@@ -460,7 +460,7 @@ export default function ModulesPage() {
                   {hasMore && (
                     <button
                       onClick={() => setExpandedId(isExpanded ? null : mod.id)}
-                      className="text-xs text-brand-600 dark:text-brand-400 hover:text-brand-700 font-medium mt-2 flex items-center gap-0.5"
+                      className="text-[11px] text-brand-600 dark:text-brand-400 hover:text-brand-700 font-medium mt-2 flex items-center gap-0.5"
                     >
                       {isExpanded ? (
                         <>{t('dashboard.showLess')} <ChevronUp className="h-3 w-3" /></>
@@ -473,28 +473,28 @@ export default function ModulesPage() {
 
                 <div className="flex-shrink-0 ml-4">
                   {isHRMS ? (
-                    <span className="flex items-center gap-1.5 text-sm font-medium text-brand-600 dark:text-brand-400">
+                    <span className="flex items-center gap-1.5 text-[13px] font-medium text-brand-600 dark:text-brand-400">
                       <Check className="h-4 w-4" /> {t('modulesPage.active')}
                     </span>
                   ) : isSubscribed ? (
                     <div className="flex flex-col items-end gap-2">
-                      <span className="flex items-center gap-1.5 text-sm font-medium text-green-600 dark:text-green-400">
+                      <span className="flex items-center gap-1.5 text-[13px] font-medium text-green-600 dark:text-green-400">
                         <Check className="h-4 w-4" /> {t('modulesPage.subscribed')}
                       </span>
                       {canManageSubscriptions && (
                         confirmUnsubscribe === mod.id ? (
                           <div className="flex items-center gap-2">
-                            <span className="text-xs text-muted-foreground">{t('modulesPage.areYouSure')}</span>
+                            <span className="text-[11px] text-muted-foreground">{t('modulesPage.areYouSure')}</span>
                             <button
                               onClick={() => handleUnsubscribe(mod.id)}
                               disabled={cancelSub.isPending}
-                              className="text-xs bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 disabled:opacity-50"
+                              className="text-[11px] bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 disabled:opacity-50"
                             >
                               {cancelSub.isPending ? t('modulesPage.cancelling') : t('modulesPage.yesCancel')}
                             </button>
                             <button
                               onClick={() => setConfirmUnsubscribe(null)}
-                              className="text-xs text-muted-foreground hover:text-foreground px-2 py-1"
+                              className="text-[11px] text-muted-foreground hover:text-foreground px-2 py-1"
                             >
                               {t('common.no')}
                             </button>
@@ -502,7 +502,7 @@ export default function ModulesPage() {
                         ) : (
                           <button
                             onClick={() => setConfirmUnsubscribe(mod.id)}
-                            className="text-xs text-red-500 hover:text-red-700 font-medium"
+                            className="text-[11px] text-red-500 hover:text-red-700 font-medium"
                           >
                             {t('modulesPage.unsubscribe')}
                           </button>
@@ -513,13 +513,13 @@ export default function ModulesPage() {
                     <button
                       onClick={() => setSubscribeModule(mod)}
                       disabled={!mod.is_active}
-                      className="flex items-center gap-1.5 text-sm font-medium bg-brand-600 text-white px-4 py-2 rounded-lg hover:bg-brand-700 disabled:opacity-50 transition-colors"
+                      className="flex items-center gap-1.5 text-[13px] font-medium bg-brand-600 text-white px-4 py-2 rounded-md hover:bg-brand-700 disabled:opacity-50 transition-colors"
                     >
                       <Plus className="h-4 w-4" />
                       {t('modulesPage.subscribe')}
                     </button>
                   ) : (
-                    <span className="text-xs text-muted-foreground">{t('modulesPage.notSubscribed')}</span>
+                    <span className="text-[11px] text-muted-foreground">{t('modulesPage.notSubscribed')}</span>
                   )}
                 </div>
               </div>

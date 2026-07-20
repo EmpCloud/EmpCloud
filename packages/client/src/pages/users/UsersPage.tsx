@@ -569,19 +569,19 @@ export default function UsersPage() {
     <div>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Users</h1>
-          <p className="text-gray-500 mt-1">Manage your organization's team members.</p>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">Users</h1>
+          <p className="text-[13px] text-muted-foreground mt-0.5">Manage your organization's team members.</p>
         </div>
         <div className="flex items-center gap-3">
           <button
             onClick={() => setShowCsvImport(true)}
-            className="flex items-center gap-2 border border-gray-300 text-gray-700 px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50"
+            className="flex items-center gap-2 border border-border text-foreground px-4 py-2.5 rounded-md text-[13px] font-medium hover:bg-muted transition-colors"
           >
             <FileSpreadsheet className="h-4 w-4" /> Import Users
           </button>
           <button
             onClick={() => setShowInvite(!showInvite)}
-            className="flex items-center gap-2 bg-brand-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-brand-700 shadow-sm shadow-brand-200 transition-all"
+            className="flex items-center gap-2 bg-brand-600 text-white px-5 py-2.5 rounded-md text-[13px] font-semibold hover:bg-brand-700 shadow-sm shadow-brand-200 transition-all"
           >
             <UserPlus className="h-5 w-5" /> Invite Employee
           </button>
@@ -593,17 +593,17 @@ export default function UsersPage() {
 
       {/* Invite form */}
       {showInvite && (
-        <form onSubmit={handleInvite} className="bg-white rounded-xl border border-gray-200 p-6 mb-6 space-y-4">
+        <form onSubmit={handleInvite} className="bg-card rounded-lg border border-border p-4 mb-6 space-y-4">
           <div className="flex items-end gap-4">
             <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+              <label className="block text-[13px] font-medium text-foreground mb-1">Email *</label>
               <input type="email" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" placeholder="colleague@company.com" required />
+                className="w-full px-3 py-2 border border-border rounded-md text-[13px] bg-card text-foreground" placeholder="colleague@company.com" required />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+              <label className="block text-[13px] font-medium text-foreground mb-1">Role</label>
               <select value={inviteRole} onChange={(e) => setInviteRole(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                className="px-3 py-2 border border-border rounded-md text-[13px] bg-card text-foreground">
                 <option value="employee">Employee</option>
                 <option value="manager">Manager</option>
                 <option value="hr_admin">HR Admin</option>
@@ -611,43 +611,43 @@ export default function UsersPage() {
               </select>
             </div>
             <button type="button" onClick={() => setShowAdvancedInvite(!showAdvancedInvite)}
-              className="text-sm text-brand-600 hover:underline whitespace-nowrap pb-2">
+              className="text-[13px] text-brand-600 hover:underline whitespace-nowrap pb-2">
               {showAdvancedInvite ? "Less options" : "More options"}
             </button>
             <button type="submit" disabled={inviteUser.isPending}
-              className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50">
+              className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700 disabled:opacity-50">
               <Mail className="h-4 w-4" /> Send Invite
             </button>
           </div>
           {showAdvancedInvite && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2 border-t border-gray-100">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2 border-t border-border">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                <label className="block text-[13px] font-medium text-foreground mb-1">First Name</label>
                 <input type="text" value={inviteFirstName} onChange={(e) => setInviteFirstName(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" placeholder="John" />
+                  className="w-full px-3 py-2 border border-border rounded-md text-[13px] bg-card text-foreground" placeholder="John" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                <label className="block text-[13px] font-medium text-foreground mb-1">Last Name</label>
                 <input type="text" value={inviteLastName} onChange={(e) => setInviteLastName(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" placeholder="Doe" />
+                  className="w-full px-3 py-2 border border-border rounded-md text-[13px] bg-card text-foreground" placeholder="Doe" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Designation</label>
+                <label className="block text-[13px] font-medium text-foreground mb-1">Designation</label>
                 <input type="text" value={inviteDesignation} onChange={(e) => setInviteDesignation(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" placeholder="Software Engineer" />
+                  className="w-full px-3 py-2 border border-border rounded-md text-[13px] bg-card text-foreground" placeholder="Software Engineer" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                <label className="block text-[13px] font-medium text-foreground mb-1">Department</label>
                 <select value={inviteDeptId} onChange={(e) => setInviteDeptId(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                  className="w-full px-3 py-2 border border-border rounded-md text-[13px] bg-card text-foreground">
                   <option value="">Select department</option>
                   {departments.map((d: any) => <option key={d.id} value={d.id}>{d.name}</option>)}
                 </select>
               </div>
               <div className="col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Reporting Manager</label>
+                <label className="block text-[13px] font-medium text-foreground mb-1">Reporting Manager</label>
                 <select value={inviteManagerId} onChange={(e) => setInviteManagerId(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                  className="w-full px-3 py-2 border border-border rounded-md text-[13px] bg-card text-foreground">
                   <option value="">No manager (top level)</option>
                   {(allUsersData?.data || []).map((u: any) => (
                     <option key={u.id} value={u.id}>{u.first_name} {u.last_name} — {u.designation || u.role}</option>
@@ -657,42 +657,42 @@ export default function UsersPage() {
             </div>
           )}
           {inviteError && (
-            <p className="text-sm text-red-600 mt-2">{inviteError}</p>
+            <p className="text-[13px] text-red-600 dark:text-red-400 mt-2">{inviteError}</p>
           )}
         </form>
       )}
 
       {/* Search */}
       <div className="relative mb-4">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <input
           type="text"
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm"
+          className="w-full pl-10 pr-4 py-2 border border-border rounded-md text-[13px] bg-card text-foreground"
           placeholder="Search by name, email, or employee code..."
         />
       </div>
 
       {/* Pending Invitations */}
       {invitations.length > 0 && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
-          <h3 className="text-sm font-semibold text-amber-800 mb-2">Pending Invitations ({invitations.length})</h3>
+        <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 rounded-lg p-4 mb-4">
+          <h3 className="text-[13px] font-semibold text-amber-800 dark:text-amber-200 mb-2 tabular-nums">Pending Invitations ({invitations.length})</h3>
           <div className="space-y-2">
             {invitations.map((inv: any) => (
-              <div key={inv.id} className="flex items-center justify-between bg-white rounded-lg px-4 py-2 border border-amber-100">
+              <div key={inv.id} className="flex items-center justify-between bg-card rounded-md px-4 py-2 border border-amber-100 dark:border-amber-900/60">
                 <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-full bg-amber-100 flex items-center justify-center text-sm font-semibold text-amber-700">
+                  <div className="h-8 w-8 rounded-full bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center text-[13px] font-semibold text-amber-700 dark:text-amber-300">
                     <Mail className="h-4 w-4" />
                   </div>
                   <div>
-                    <span className="text-sm font-medium text-gray-900">{inv.email}</span>
-                    <span className="text-xs text-gray-500 ml-2 capitalize">{(inv.role || "employee").replace(/_/g, " ")}</span>
+                    <span className="text-[13px] font-medium text-foreground">{inv.email}</span>
+                    <span className="text-[11px] text-muted-foreground ml-2 capitalize">{(inv.role || "employee").replace(/_/g, " ")}</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-full font-medium">Pending</span>
-                  <span className="text-xs text-gray-400">
+                  <span className="text-[11px] bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 px-2 py-1 rounded-md font-medium">Pending</span>
+                  <span className="text-[11px] text-muted-foreground tabular-nums">
                     Invited {inv.created_at ? new Date(inv.created_at).toLocaleDateString() : ""}
                   </span>
                 </div>
@@ -703,39 +703,39 @@ export default function UsersPage() {
       )}
 
       {/* Users table */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto -mx-4 lg:mx-0">
+      <div className="bg-card rounded-lg border border-border overflow-x-auto -mx-4 lg:mx-0">
         <table className="min-w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
+          <thead className="bg-muted border-b border-border">
             <tr>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Name</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Email</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Role</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Status</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">Name</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">Email</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">Role</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">Status</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border">
             {isLoading ? (
-              <tr><td colSpan={4} className="px-6 py-8 text-center text-gray-400">Loading...</td></tr>
+              <tr><td colSpan={4} className="px-4 py-8 text-center text-[13px] text-muted-foreground">Loading...</td></tr>
             ) : users.length === 0 ? (
-              <tr><td colSpan={4} className="px-6 py-8 text-center text-gray-400">No users found</td></tr>
+              <tr><td colSpan={4} className="px-4 py-8 text-center text-[13px] text-muted-foreground">No users found</td></tr>
             ) : (
               users.map((u: any) => (
-                <tr key={u.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4">
+                <tr key={u.id} className="hover:bg-muted/50 transition-colors">
+                  <td className="px-4 py-2.5">
                     <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-brand-100 flex items-center justify-center text-sm font-semibold text-brand-700">
+                      <div className="h-8 w-8 rounded-full bg-brand-100 dark:bg-brand-950/40 flex items-center justify-center text-[13px] font-semibold text-brand-700 dark:text-brand-300">
                         {u.first_name?.[0]}{u.last_name?.[0]}
                       </div>
-                      <span className="text-sm font-medium text-gray-900">{u.first_name || ""} {u.last_name || ""}</span>
+                      <span className="text-[13px] font-medium text-foreground">{u.first_name || ""} {u.last_name || ""}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{u.email}</td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-2.5 text-[13px] text-muted-foreground">{u.email}</td>
+                  <td className="px-4 py-2.5">
                     {isOrgAdmin && u.id !== user?.id ? (
                       <select
                         value={u.role}
                         onChange={(e) => updateRoleMut.mutate({ userId: u.id, role: e.target.value })}
-                        className="text-xs border border-gray-200 rounded-full px-2 py-1 bg-gray-50 text-gray-700 capitalize cursor-pointer hover:bg-gray-100"
+                        className="text-[11px] border border-border rounded-md px-2 py-1 bg-muted text-foreground capitalize cursor-pointer hover:bg-muted-foreground/10"
                         disabled={updateRoleMut.isPending}
                       >
                         <option value="employee">Employee</option>
@@ -744,14 +744,14 @@ export default function UsersPage() {
                         <option value="org_admin">Org Admin</option>
                       </select>
                     ) : (
-                      <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full capitalize">
+                      <span className="text-[11px] bg-muted text-muted-foreground px-2 py-1 rounded-md capitalize">
                         {u.role.replace(/_/g, " ")}
                       </span>
                     )}
                   </td>
-                  <td className="px-6 py-4">
-                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                      u.status === 1 ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
+                  <td className="px-4 py-2.5">
+                    <span className={`text-[11px] px-2 py-1 rounded-md font-medium ${
+                      u.status === 1 ? "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300" : "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300"
                     }`}>
                       {u.status === 1 ? "Active" : "Inactive"}
                     </span>
@@ -764,22 +764,22 @@ export default function UsersPage() {
 
         {/* Pagination */}
         {meta && meta.total_pages > 1 && (
-          <div className="flex items-center justify-between px-6 py-3 border-t border-gray-200">
-            <p className="text-sm text-gray-500">
+          <div className="flex items-center justify-between px-4 py-2.5 border-t border-border">
+            <p className="text-[13px] text-muted-foreground tabular-nums">
               Page {meta.page} of {meta.total_pages} ({meta.total} total)
             </p>
             <div className="flex gap-2">
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
+                className="px-3 py-1 text-[13px] border border-border rounded-md disabled:opacity-50 hover:bg-muted transition-colors"
               >
                 Previous
               </button>
               <button
                 onClick={() => setPage((p) => p + 1)}
                 disabled={page >= meta.total_pages}
-                className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
+                className="px-3 py-1 text-[13px] border border-border rounded-md disabled:opacity-50 hover:bg-muted transition-colors"
               >
                 Next
               </button>
