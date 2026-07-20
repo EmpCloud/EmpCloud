@@ -250,15 +250,15 @@ export default function HolidaysPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t("holidays.title")}</h1>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("holidays.title")}</h1>
           <p className="text-muted-foreground mt-1">{t("holidays.subtitle")}</p>
         </div>
         {isHR && (
           <button
             onClick={() => (showAdd ? closeForm() : (setEditId(null), setShowAdd(true)))}
-            className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
+            className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700"
           >
             <Plus className="h-4 w-4" /> {t("holidays.addHoliday")}
           </button>
@@ -267,8 +267,8 @@ export default function HolidaysPage() {
 
       {/* Add Holiday Form */}
       {showAdd && isHR && (
-        <form onSubmit={handleSubmit} className="bg-card rounded-xl border border-border p-6 mb-6">
-          <h2 className="text-lg font-semibold text-foreground mb-4">
+        <form onSubmit={handleSubmit} className="bg-card rounded-lg border border-border p-4 mb-6">
+          <h2 className="text-base font-semibold text-foreground mb-4">
             {editId != null ? t("holidays.editHoliday") : t("holidays.addHoliday")}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -278,7 +278,7 @@ export default function HolidaysPage() {
                 type="text"
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
-                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
                 required
               />
             </div>
@@ -288,7 +288,7 @@ export default function HolidaysPage() {
                 type="date"
                 value={form.start_date}
                 onChange={(e) => setForm({ ...form, start_date: e.target.value })}
-                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
                 required
               />
             </div>
@@ -298,7 +298,7 @@ export default function HolidaysPage() {
                 type="date"
                 value={form.end_date}
                 onChange={(e) => setForm({ ...form, end_date: e.target.value })}
-                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
               />
             </div>
             <div>
@@ -307,7 +307,7 @@ export default function HolidaysPage() {
                 type="text"
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
-                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
                 placeholder={t("holidays.optional")}
               />
             </div>
@@ -345,7 +345,7 @@ export default function HolidaysPage() {
             <button
               type="submit"
               disabled={isSaving}
-              className="bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
+              className="bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700 disabled:opacity-50"
             >
               {editId != null
                 ? isSaving
@@ -361,7 +361,7 @@ export default function HolidaysPage() {
       )}
 
       {/* Holiday List */}
-      <div className="bg-card rounded-xl border border-border overflow-hidden">
+      <div className="bg-card rounded-lg border border-border overflow-hidden">
         {isLoading ? (
           <div className="px-6 py-8 text-center text-muted-foreground">{t("holidays.loading")}</div>
         ) : sortedHolidays.length === 0 ? (
@@ -375,15 +375,15 @@ export default function HolidaysPage() {
             {sortedHolidays.map((h) => (
               <li
                 key={h.id}
-                className={`flex items-center justify-between px-6 py-4 ${isPast(h.start_date) ? "opacity-60" : ""}`}
+                className={`flex items-center justify-between px-4 py-2.5 ${isPast(h.start_date) ? "opacity-60" : ""}`}
               >
                 <div className="flex items-center gap-4">
-                  <div className="flex-shrink-0 h-10 w-10 rounded-lg bg-brand-50 dark:bg-brand-950/40 flex items-center justify-center">
+                  <div className="flex-shrink-0 h-10 w-10 rounded-md bg-brand-50 dark:bg-brand-950/40 flex items-center justify-center">
                     <CalendarDays className="h-5 w-5 text-brand-600 dark:text-brand-400" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <p className="text-sm font-semibold text-foreground">{h.title}</p>
+                      <p className="text-[13px] font-semibold text-foreground">{h.title}</p>
                       {(() => {
                         const parsed = parseHolidayType(h.description, t);
                         if (!parsed.label || !parsed.type) return null;
@@ -414,17 +414,17 @@ export default function HolidaysPage() {
                 </div>
                 <div className="flex items-center gap-3">
                   {isPast(h.start_date) && (
-                    <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{t("holidays.past")}</span>
+                    <span className="text-[11px] text-muted-foreground bg-muted px-2 py-0.5 rounded-md">{t("holidays.past")}</span>
                   )}
                   {(() => {
                     const mandatory = !!Number(h.is_mandatory);
                     const saving = savingMandatoryId === h.id;
                     // HR can click to toggle. Non-HR sees a plain badge.
                     const baseCls =
-                      "text-[10px] uppercase tracking-wide font-medium px-2 py-0.5 rounded-full border";
+                      "text-[10px] uppercase tracking-wide font-medium px-2 py-0.5 rounded-md border";
                     const colorCls = mandatory
-                      ? "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200"
-                      : "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200";
+                      ? "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-900/50"
+                      : "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-900/50";
                     const label = mandatory ? t("holidays.mandatory") : t("holidays.optionalBadge");
                     if (!isHR) {
                       return <span className={`${baseCls} ${colorCls}`}>{label}</span>;

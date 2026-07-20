@@ -89,7 +89,7 @@ export default function WellnessPage() {
     <div className="max-w-7xl mx-auto space-y-8">
       {enrollMessage && (
         <div
-          className={`p-3 rounded-lg border text-sm ${
+          className={`p-3 rounded-md border text-sm ${
             enrollMessage.type === "success"
               ? "bg-green-50 dark:bg-green-950/40 border-green-200 dark:border-green-900 text-green-700 dark:text-green-300"
               : "bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-900 text-red-700 dark:text-red-300"
@@ -101,7 +101,7 @@ export default function WellnessPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t("wellnessPage.header.title")}</h1>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("wellnessPage.header.title")}</h1>
           <p className="text-muted-foreground mt-1">
             {t("wellnessPage.header.subtitle")}
           </p>
@@ -130,15 +130,15 @@ export default function WellnessPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Link
             to="/wellness/check-in"
-            className="block text-left w-full bg-card rounded-xl border border-border p-4 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="block text-left w-full bg-card rounded-lg border border-border p-4 transition-colors duration-150 hover:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-green-100 dark:bg-green-950/40 flex items-center justify-center">
+              <div className="h-10 w-10 rounded-md bg-green-100 dark:bg-green-950/40 flex items-center justify-center">
                 <Heart className="h-5 w-5 text-green-600 dark:text-green-400" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">{t("wellnessPage.stats.checkInStreak")}</p>
-                <p className="text-xl font-bold text-foreground">
+                <p className="text-xl font-semibold tabular-nums text-foreground">
                   {t("wellnessPage.stats.checkInStreakValue", { count: summaryData.checkin_streak })}
                 </p>
               </div>
@@ -146,38 +146,38 @@ export default function WellnessPage() {
           </Link>
           <Link
             to="/wellness/my"
-            className="block text-left w-full bg-card rounded-xl border border-border p-4 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="block text-left w-full bg-card rounded-lg border border-border p-4 transition-colors duration-150 hover:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-blue-100 dark:bg-blue-950/40 flex items-center justify-center">
+              <div className="h-10 w-10 rounded-md bg-blue-100 dark:bg-blue-950/40 flex items-center justify-center">
                 <Dumbbell className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">{t("wellnessPage.stats.activePrograms")}</p>
-                <p className="text-xl font-bold text-foreground">{summaryData.enrolled_programs?.length || 0}</p>
+                <p className="text-xl font-semibold tabular-nums text-foreground">{summaryData.enrolled_programs?.length || 0}</p>
               </div>
             </div>
           </Link>
           <Link
             to="/wellness/my"
-            className="block text-left w-full bg-card rounded-xl border border-border p-4 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="block text-left w-full bg-card rounded-lg border border-border p-4 transition-colors duration-150 hover:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-purple-100 dark:bg-purple-950/40 flex items-center justify-center">
+              <div className="h-10 w-10 rounded-md bg-purple-100 dark:bg-purple-950/40 flex items-center justify-center">
                 <Trophy className="h-5 w-5 text-purple-600 dark:text-purple-400" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">{t("wellnessPage.stats.goalsCompleted")}</p>
-                <p className="text-xl font-bold text-foreground">{summaryData.completed_goals_count || 0}</p>
+                <p className="text-xl font-semibold tabular-nums text-foreground">{summaryData.completed_goals_count || 0}</p>
               </div>
             </div>
           </Link>
           <Link
             to="/wellness/check-in"
-            className="block text-left w-full bg-card rounded-xl border border-border p-4 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="block text-left w-full bg-card rounded-lg border border-border p-4 transition-colors duration-150 hover:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-amber-100 dark:bg-amber-950/40 flex items-center justify-center">
+              <div className="h-10 w-10 rounded-md bg-amber-100 dark:bg-amber-950/40 flex items-center justify-center">
                 <Sparkles className="h-5 w-5 text-amber-600 dark:text-amber-400" />
               </div>
               <div>
@@ -197,7 +197,7 @@ export default function WellnessPage() {
             setTypeFilter(e.target.value);
             setPage(1);
           }}
-          className="px-3 py-2 border border-border rounded-lg text-sm bg-card"
+          className="px-3 py-2 border border-border rounded-md text-[13px] bg-card"
         >
           <option value="">{t("wellnessPage.filter.allTypes")}</option>
           {Object.entries(PROGRAM_TYPE_CONFIG).map(([key, { label }]) => (
@@ -215,7 +215,7 @@ export default function WellnessPage() {
       {isLoading ? (
         <div className="text-center py-12 text-muted-foreground">{t("wellnessPage.list.loading")}</div>
       ) : programs.length === 0 ? (
-        <div className="text-center py-12 bg-card rounded-xl border border-border">
+        <div className="text-center py-12 bg-card rounded-lg border border-border">
           <Heart className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
           <p className="text-muted-foreground">{t("wellnessPage.list.empty")}</p>
         </div>
@@ -230,25 +230,25 @@ export default function WellnessPage() {
             return (
               <div
                 key={program.id}
-                className="bg-card rounded-xl border border-border p-6 hover:shadow-md transition-shadow"
+                className="bg-card rounded-lg border border-border p-4 hover:border-brand-400 transition-colors duration-150"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className={`h-10 w-10 rounded-lg ${boxBgClasses} flex items-center justify-center`}>
+                    <div className={`h-10 w-10 rounded-md ${boxBgClasses} flex items-center justify-center`}>
                       <Icon className={`h-5 w-5 ${iconTextClasses}`} />
                     </div>
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${cfg.color}`}>
+                    <span className={`px-2 py-0.5 rounded-md text-[11px] font-medium ${cfg.color}`}>
                       {t(`wellnessPage.programType.${program.program_type}`, { defaultValue: cfg.label })}
                     </span>
                   </div>
                   {program.points_reward > 0 && (
-                    <span className="text-xs font-medium text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-full">
+                    <span className="text-[11px] tabular-nums font-medium text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-md">
                       {t("wellnessPage.card.pointsReward", { count: program.points_reward })}
                     </span>
                   )}
                 </div>
 
-                <h3 className="text-lg font-semibold text-foreground mb-2">{program.title}</h3>
+                <h3 className="text-base font-semibold text-foreground mb-2">{program.title}</h3>
                 {program.description && (
                   <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{program.description}</p>
                 )}
@@ -271,7 +271,7 @@ export default function WellnessPage() {
                 {enrolledProgramIds.has(program.id) ? (
                   <button
                     disabled
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-900 rounded-lg text-sm font-medium cursor-not-allowed"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-900 rounded-md text-[13px] font-medium cursor-not-allowed"
                   >
                     {t("wellnessPage.card.enrolledButton")}
                   </button>
