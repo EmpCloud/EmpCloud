@@ -71,32 +71,32 @@ export default function LeaveCalendarPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Leave Calendar</h1>
-          <p className="text-gray-500 mt-1">View approved leaves across your organization.</p>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">Leave Calendar</h1>
+          <p className="text-[13px] text-muted-foreground mt-0.5">View approved leaves across your organization.</p>
         </div>
       </div>
 
       {/* Month Navigation */}
       <div className="flex items-center justify-between mb-4">
-        <button onClick={prevMonth} className="p-2 hover:bg-gray-100 rounded-lg">
-          <ChevronLeft className="h-5 w-5 text-gray-600" />
+        <button onClick={prevMonth} className="p-2 hover:bg-muted rounded-md transition-colors">
+          <ChevronLeft className="h-5 w-5 text-muted-foreground" />
         </button>
-        <h2 className="text-lg font-semibold text-gray-900">
+        <h2 className="text-base font-semibold tabular-nums text-foreground">
           {MONTH_NAMES[month - 1]} {year}
         </h2>
-        <button onClick={nextMonth} className="p-2 hover:bg-gray-100 rounded-lg">
-          <ChevronRight className="h-5 w-5 text-gray-600" />
+        <button onClick={nextMonth} className="p-2 hover:bg-muted rounded-md transition-colors">
+          <ChevronRight className="h-5 w-5 text-muted-foreground" />
         </button>
       </div>
 
       {/* Calendar Grid */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div className="bg-card rounded-lg border border-border overflow-hidden">
         {/* Day headers */}
-        <div className="grid grid-cols-7 border-b border-gray-200 bg-gray-50">
+        <div className="grid grid-cols-7 border-b border-border bg-muted/50">
           {DAY_NAMES.map((d) => (
-            <div key={d} className="text-center text-xs font-medium text-gray-500 uppercase py-3">
+            <div key={d} className="text-center text-[11px] font-semibold text-muted-foreground uppercase tracking-wider py-2.5">
               {d}
             </div>
           ))}
@@ -104,7 +104,7 @@ export default function LeaveCalendarPage() {
 
         {/* Day cells */}
         {isLoading ? (
-          <div className="py-20 text-center text-gray-400">Loading calendar...</div>
+          <div className="py-20 text-center text-muted-foreground">Loading calendar...</div>
         ) : (
           <div className="grid grid-cols-7">
             {cells.map((day, idx) => {
@@ -117,17 +117,17 @@ export default function LeaveCalendarPage() {
               return (
                 <div
                   key={idx}
-                  className={`min-h-[100px] border-b border-r border-gray-100 p-2 ${
-                    day ? "bg-white" : "bg-gray-50"
+                  className={`min-h-[100px] border-b border-r border-border p-2 ${
+                    day ? "bg-card" : "bg-muted/40"
                   }`}
                 >
                   {day && (
                     <>
                       <span
-                        className={`text-sm font-medium ${
+                        className={`text-[13px] font-medium tabular-nums ${
                           isToday
                             ? "bg-brand-600 text-white rounded-full w-7 h-7 flex items-center justify-center"
-                            : "text-gray-700"
+                            : "text-foreground"
                         }`}
                       >
                         {day}
@@ -147,7 +147,7 @@ export default function LeaveCalendarPage() {
                           </div>
                         ))}
                         {dayLeaves.length > 3 && (
-                          <div className="text-[10px] text-gray-400 px-1.5">
+                          <div className="text-[10px] tabular-nums text-muted-foreground px-1.5">
                             +{dayLeaves.length - 3} more
                           </div>
                         )}
