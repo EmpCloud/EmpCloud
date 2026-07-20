@@ -172,14 +172,14 @@ export default function ShiftsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t('attendance.shifts.title')}</h1>
-          <p className="text-muted-foreground mt-1">{t('attendance.shifts.subtitle')}</p>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">{t('attendance.shifts.title')}</h1>
+          <p className="text-[13px] text-muted-foreground mt-0.5">{t('attendance.shifts.subtitle')}</p>
         </div>
         <button
           onClick={() => { resetForm(); setShowForm(true); }}
-          className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
+          className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700 transition-colors"
         >
           <Plus className="h-4 w-4" /> {t('attendance.shifts.addShift')}
         </button>
@@ -190,16 +190,16 @@ export default function ShiftsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <form
             onSubmit={handleSubmit}
-            className="bg-card rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto"
+            className="bg-card rounded-lg shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto"
           >
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-border">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-brand-50 dark:bg-brand-950/40 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-md bg-brand-50 dark:bg-brand-950/40 flex items-center justify-center">
                   <Clock className="h-5 w-5 text-brand-600 dark:text-brand-400" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-foreground">{editId ? t('attendance.shifts.editShift') : t('attendance.shifts.createShift')}</h3>
+                  <h3 className="text-base font-semibold text-foreground">{editId ? t('attendance.shifts.editShift') : t('attendance.shifts.createShift')}</h3>
                   <p className="text-xs text-muted-foreground">{t('attendance.shifts.modalSubtitle')}</p>
                 </div>
               </div>
@@ -212,7 +212,7 @@ export default function ShiftsPage() {
             <div className="px-6 py-5 space-y-5">
               {/* Shift Name */}
               <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1">
+                <label className="block text-[13px] font-medium text-muted-foreground mb-1">
                   {t('attendance.shifts.shiftName')} <span className="text-red-500" aria-hidden="true">*</span>
                 </label>
                 <input
@@ -220,7 +220,7 @@ export default function ShiftsPage() {
                   value={form.name}
                   onChange={(e) => set("name", e.target.value)}
                   placeholder={t('attendance.shifts.shiftNamePlaceholder')}
-                  className="bg-card text-foreground w-full px-3 py-2.5 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                   required
                   aria-required="true"
                 />
@@ -229,22 +229,22 @@ export default function ShiftsPage() {
               {/* Timing Row */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-muted-foreground mb-1">{t('attendance.shifts.startTime')}</label>
+                  <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t('attendance.shifts.startTime')}</label>
                   <input
                     type="time"
                     value={form.start_time}
                     onChange={(e) => set("start_time", e.target.value)}
-                    className="bg-card text-foreground w-full px-3 py-2.5 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-muted-foreground mb-1">{t('attendance.shifts.endTime')}</label>
+                  <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t('attendance.shifts.endTime')}</label>
                   <input
                     type="time"
                     value={form.end_time}
                     onChange={(e) => set("end_time", e.target.value)}
-                    className="bg-card text-foreground w-full px-3 py-2.5 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                     required
                   />
                 </div>
@@ -253,32 +253,32 @@ export default function ShiftsPage() {
               {/* Break & Grace */}
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-muted-foreground mb-1">{t('attendance.shifts.breakLabel')}</label>
+                  <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t('attendance.shifts.breakLabel')}</label>
                   <input
                     type="number"
                     value={form.break_minutes}
                     onChange={(e) => set("break_minutes", Number(e.target.value))}
-                    className="bg-card text-foreground w-full px-3 py-2.5 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                     min={0}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-muted-foreground mb-1">{t('attendance.shifts.graceLate')}</label>
+                  <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t('attendance.shifts.graceLate')}</label>
                   <input
                     type="number"
                     value={form.grace_minutes_late}
                     onChange={(e) => set("grace_minutes_late", Number(e.target.value))}
-                    className="bg-card text-foreground w-full px-3 py-2.5 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                     min={0}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-muted-foreground mb-1">{t('attendance.shifts.graceEarly')}</label>
+                  <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t('attendance.shifts.graceEarly')}</label>
                   <input
                     type="number"
                     value={form.grace_minutes_early}
                     onChange={(e) => set("grace_minutes_early", Number(e.target.value))}
-                    className="bg-card text-foreground w-full px-3 py-2.5 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                     min={0}
                   />
                 </div>
@@ -290,14 +290,14 @@ export default function ShiftsPage() {
                   record on check-out the next day. 0 = use the system
                   default (12h fallback). */}
               <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1">
+                <label className="block text-[13px] font-medium text-muted-foreground mb-1">
                   Max overtime (minutes)
                 </label>
                 <input
                   type="number"
                   value={form.max_overtime_minutes}
                   onChange={(e) => set("max_overtime_minutes", Number(e.target.value))}
-                  className="bg-card text-foreground w-full md:w-1/3 px-3 py-2.5 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                  className="bg-card text-foreground w-full md:w-1/3 px-3 py-2 border border-border rounded-md text-[13px] focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                   min={0}
                   max={1440}
                 />
@@ -315,7 +315,7 @@ export default function ShiftsPage() {
                   it on every new employee. Ticking one auto-clears the
                   other. */}
               <div className="flex items-center gap-4">
-                <label className="flex items-center gap-2.5 px-4 py-2.5 border border-border rounded-lg cursor-pointer hover:bg-muted transition">
+                <label className="flex items-center gap-2.5 px-4 py-2.5 border border-border rounded-md cursor-pointer hover:bg-muted transition-colors">
                   <input
                     type="checkbox"
                     checked={form.is_night_shift}
@@ -327,9 +327,9 @@ export default function ShiftsPage() {
                     className="rounded border-border text-brand-600 dark:text-brand-400 focus:ring-brand-500"
                   />
                   <Moon className="h-4 w-4 text-indigo-500" />
-                  <span className="text-sm text-muted-foreground">{t('attendance.shifts.nightShift')}</span>
+                  <span className="text-[13px] text-muted-foreground">{t('attendance.shifts.nightShift')}</span>
                 </label>
-                <label className="flex items-center gap-2.5 px-4 py-2.5 border border-border rounded-lg cursor-pointer hover:bg-muted transition">
+                <label className="flex items-center gap-2.5 px-4 py-2.5 border border-border rounded-md cursor-pointer hover:bg-muted transition-colors">
                   <input
                     type="checkbox"
                     checked={form.is_default}
@@ -341,13 +341,13 @@ export default function ShiftsPage() {
                     className="rounded border-border text-brand-600 dark:text-brand-400 focus:ring-brand-500"
                   />
                   <Sun className="h-4 w-4 text-amber-500" />
-                  <span className="text-sm text-muted-foreground">{t('attendance.shifts.defaultShift')}</span>
+                  <span className="text-[13px] text-muted-foreground">{t('attendance.shifts.defaultShift')}</span>
                 </label>
               </div>
 
               {/* Working Days */}
-              <div className="bg-muted rounded-xl p-4">
-                <label className="block text-sm font-medium text-muted-foreground mb-3">{t('attendance.shifts.workingDays')}</label>
+              <div className="bg-muted rounded-lg p-4">
+                <label className="block text-[13px] font-medium text-muted-foreground mb-3">{t('attendance.shifts.workingDays')}</label>
                 <div className="flex gap-2 justify-between">
                   {DAY_KEYS.map((dayKey, idx) => {
                     const state = getDayState(idx);
@@ -356,7 +356,7 @@ export default function ShiftsPage() {
                         key={idx}
                         type="button"
                         onClick={() => cycleDayState(idx)}
-                        className={`flex-1 py-3 rounded-xl text-xs font-medium border-2 transition flex flex-col items-center gap-1 ${
+                        className={`flex-1 py-3 rounded-md text-xs font-medium border-2 transition flex flex-col items-center gap-1 ${
                           state === "full"
                             ? "bg-brand-600 text-white border-brand-600 shadow-sm"
                             : state === "half"
@@ -377,18 +377,18 @@ export default function ShiftsPage() {
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-border bg-muted rounded-b-2xl">
+            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-border bg-muted rounded-b-lg">
               <button
                 type="button"
                 onClick={resetForm}
-                className="px-5 py-2.5 text-sm font-medium text-muted-foreground border border-border rounded-lg hover:bg-muted transition"
+                className="px-5 py-2 text-[13px] font-medium text-muted-foreground border border-border rounded-md hover:bg-muted transition-colors"
               >
                 {t('common.cancel')}
               </button>
               <button
                 type="submit"
                 disabled={isPending}
-                className="px-5 py-2.5 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 disabled:opacity-50 transition"
+                className="px-5 py-2 text-[13px] font-medium text-white bg-brand-600 rounded-md hover:bg-brand-700 disabled:opacity-50 transition-colors"
               >
                 {isPending ? t('attendance.shifts.saving') : editId ? t('attendance.shifts.updateShift') : t('attendance.shifts.createShift')}
               </button>
@@ -398,33 +398,33 @@ export default function ShiftsPage() {
       )}
 
       {/* Shifts Table */}
-      <div className="bg-card rounded-xl border border-border overflow-x-auto -mx-4 lg:mx-0">
+      <div className="bg-card rounded-lg border border-border overflow-x-auto -mx-4 lg:mx-0">
         <table className="min-w-full">
-          <thead className="bg-muted border-b border-border">
+          <thead className="bg-muted/50 border-b border-border">
             <tr>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('attendance.shifts.table.name')}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('attendance.shifts.table.timing')}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('attendance.shifts.table.break')}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('attendance.shifts.table.workingDays')}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('attendance.shifts.table.type')}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('attendance.shifts.table.actions')}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t('attendance.shifts.table.name')}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t('attendance.shifts.table.timing')}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t('attendance.shifts.table.break')}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t('attendance.shifts.table.workingDays')}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t('attendance.shifts.table.type')}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t('attendance.shifts.table.actions')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
             {isLoading ? (
-              <tr><td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">{t('common.loading')}</td></tr>
+              <tr><td colSpan={6} className="px-4 py-8 text-center text-[13px] text-muted-foreground">{t('common.loading')}</td></tr>
             ) : shifts.length === 0 ? (
-              <tr><td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">{t('attendance.shifts.noShifts')}</td></tr>
+              <tr><td colSpan={6} className="px-4 py-8 text-center text-[13px] text-muted-foreground">{t('attendance.shifts.noShifts')}</td></tr>
             ) : (
               shifts.map((s: any) => (
-                <tr key={s.id} className="hover:bg-muted">
-                  <td className="px-6 py-4">
-                    <span className="text-sm font-medium text-foreground">{s.name}</span>
-                    {s.is_default ? <span className="ml-2 text-xs bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300 px-2 py-0.5 rounded-full">{t('attendance.shifts.defaultBadge')}</span> : null}
+                <tr key={s.id} className="hover:bg-muted/50 transition-colors">
+                  <td className="px-4 py-2.5">
+                    <span className="text-[13px] font-medium text-foreground">{s.name}</span>
+                    {s.is_default ? <span className="ml-2 text-[11px] bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300 px-2 py-0.5 rounded-md">{t('attendance.shifts.defaultBadge')}</span> : null}
                   </td>
-                  <td className="px-6 py-4 text-sm text-muted-foreground">{toInputTime(s.start_time)} - {toInputTime(s.end_time)}</td>
-                  <td className="px-6 py-4 text-sm text-muted-foreground">{s.break_minutes}m</td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-2.5 text-[13px] tabular-nums text-muted-foreground">{toInputTime(s.start_time)} - {toInputTime(s.end_time)}</td>
+                  <td className="px-4 py-2.5 text-[13px] tabular-nums text-muted-foreground">{s.break_minutes}m</td>
+                  <td className="px-4 py-2.5">
                     <div className="flex gap-1">
                       {DAY_KEYS.map((dayKey, idx) => {
                         const workDays = (s.working_days || "1,2,3,4,5").split(",").filter(Boolean).map(Number);
@@ -436,7 +436,7 @@ export default function ShiftsPage() {
                           <span
                             key={idx}
                             title={isHalf ? t('attendance.shifts.halfDay') : isWorking ? t('attendance.shifts.fullDay') : t('attendance.shifts.dayOff')}
-                            className={`w-7 h-7 flex items-center justify-center rounded text-xs font-medium ${
+                            className={`w-7 h-7 flex items-center justify-center rounded-md text-xs font-medium ${
                               isHalf
                                 ? "bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300"
                                 : isWorking
@@ -450,15 +450,15 @@ export default function ShiftsPage() {
                       })}
                     </div>
                   </td>
-                  <td className="px-6 py-4">
-                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${s.is_night_shift ? "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300" : "bg-yellow-50 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300"}`}>
+                  <td className="px-4 py-2.5">
+                    <span className={`text-[11px] px-2 py-0.5 rounded-md font-medium ${s.is_night_shift ? "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300" : "bg-yellow-50 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300"}`}>
                       {s.is_night_shift ? t('attendance.shifts.typeNight') : t('attendance.shifts.typeDay')}
                     </span>
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <button onClick={() => handleEdit(s)} className="text-muted-foreground hover:text-brand-600"><Pencil className="h-4 w-4" /></button>
-                      <button onClick={() => setDeleteShiftId(s.id)} className="text-muted-foreground hover:text-red-600"><Trash2 className="h-4 w-4" /></button>
+                  <td className="px-4 py-2.5">
+                    <div className="flex items-center gap-1">
+                      <button onClick={() => handleEdit(s)} className="p-1.5 rounded-md text-muted-foreground hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:text-brand-600 transition-colors"><Pencil className="h-4 w-4" /></button>
+                      <button onClick={() => setDeleteShiftId(s.id)} className="p-1.5 rounded-md text-muted-foreground hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-600 transition-colors"><Trash2 className="h-4 w-4" /></button>
                     </div>
                   </td>
                 </tr>
