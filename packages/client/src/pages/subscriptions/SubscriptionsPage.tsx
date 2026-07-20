@@ -51,7 +51,7 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
         <div className="flex items-center justify-between p-6 border-b">
           <div>
             <h2 className="text-lg font-bold text-gray-900">{t("subscriptionsPage.editModal.title")}</h2>
-            <p className="text-sm text-gray-500">{moduleName}</p>
+            <p className="text-[13px] text-gray-500">{moduleName}</p>
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
             <X className="h-5 w-5" />
@@ -61,13 +61,13 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
         <div className="p-6 space-y-5">
           {/* Plan Tier */}
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-2 block">{t("subscriptionsPage.editModal.planTierLabel")}</label>
+            <label className="text-[13px] font-medium text-gray-700 mb-2 block">{t("subscriptionsPage.editModal.planTierLabel")}</label>
             <div className="grid grid-cols-3 gap-2">
               {plans.map(plan => (
                 <button
                   key={plan.value}
                   onClick={() => setPlanTier(plan.value)}
-                  className={`py-2 px-3 rounded-lg border-2 text-sm font-medium transition-all ${
+                  className={`py-2 px-3 rounded-md border-2 text-[13px] font-medium transition-all ${
                     planTier === plan.value
                       ? "border-brand-500 bg-brand-50 text-brand-700"
                       : "border-gray-200 text-gray-600 hover:border-gray-300"
@@ -81,13 +81,13 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
 
           {/* Total Seats */}
           <div>
-            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+            <label className="flex items-center gap-2 text-[13px] font-medium text-gray-700 mb-2">
               <Users className="h-4 w-4" /> {t("subscriptionsPage.editModal.totalSeatsLabel")}
             </label>
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setTotalSeats(Math.max(1, totalSeats - 1))}
-                className="h-10 w-10 rounded-lg border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-50"
+                className="h-10 w-10 rounded-md border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-50"
               >
                 -
               </button>
@@ -97,26 +97,26 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
                 max={10000}
                 value={totalSeats}
                 onChange={e => setTotalSeats(Math.max(1, Number(e.target.value)))}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-center text-lg font-semibold focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-center text-lg font-semibold tabular-nums focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
               />
               <button
                 onClick={() => setTotalSeats(totalSeats + 1)}
-                className="h-10 w-10 rounded-lg border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-50"
+                className="h-10 w-10 rounded-md border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-50"
               >
                 +
               </button>
             </div>
             <div className="flex justify-between mt-1">
-              <p className="text-xs text-gray-400">{t("subscriptionsPage.editModal.currentlyUsing", { seats: subscription.used_seats })}</p>
+              <p className="text-[11px] text-gray-400">{t("subscriptionsPage.editModal.currentlyUsing", { seats: subscription.used_seats })}</p>
               {seatsReduced && (
-                <p className="text-xs text-red-500 font-medium">{t("subscriptionsPage.editModal.cannotReduceBelow", { seats: subscription.used_seats })}</p>
+                <p className="text-[11px] text-red-500 font-medium">{t("subscriptionsPage.editModal.cannotReduceBelow", { seats: subscription.used_seats })}</p>
               )}
             </div>
           </div>
 
           {/* Billing Cycle */}
           <div>
-            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+            <label className="flex items-center gap-2 text-[13px] font-medium text-gray-700 mb-2">
               <Calendar className="h-4 w-4" /> {t("subscriptionsPage.editModal.billingCycleLabel")}
             </label>
             <div className="grid grid-cols-3 gap-2">
@@ -124,7 +124,7 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
                 <button
                   key={cycle.value}
                   onClick={() => setBillingCycle(cycle.value)}
-                  className={`py-2 px-3 rounded-lg border-2 text-sm font-medium transition-all ${
+                  className={`py-2 px-3 rounded-md border-2 text-[13px] font-medium transition-all ${
                     billingCycle === cycle.value
                       ? "border-brand-500 bg-brand-50 text-brand-700"
                       : "border-gray-200 text-gray-600 hover:border-gray-300"
@@ -138,7 +138,7 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
 
           {/* Change Summary */}
           {hasChanges && (
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm">
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-[13px]">
               <p className="font-medium text-amber-800 mb-1">{t("subscriptionsPage.editModal.changesHeading")}</p>
               <ul className="text-amber-700 space-y-0.5">
                 {planTier !== subscription.plan_tier && (
@@ -162,7 +162,7 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
 
           {/* Trial-end warning */}
           {willEndTrial && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-[13px]">
               <p className="font-medium text-red-800 mb-1">{t("subscriptionsPage.editModal.trialWarning.title")}</p>
               <p className="text-red-700">
                 {seatsIncreasing && t("subscriptionsPage.editModal.trialWarning.reason.seats")}
@@ -175,11 +175,11 @@ function EditSubscriptionModal({ subscription, moduleName, onClose, onSave, isLo
         </div>
 
         <div className="flex items-center justify-between p-6 border-t bg-gray-50 rounded-b-2xl">
-          <button onClick={onClose} className="text-sm text-gray-500 hover:text-gray-700">{t("subscriptionsPage.editModal.cancel")}</button>
+          <button onClick={onClose} className="text-[13px] text-gray-500 hover:text-gray-700">{t("subscriptionsPage.editModal.cancel")}</button>
           <button
             onClick={() => onSave(subscription.id, { plan_tier: planTier, total_seats: totalSeats, billing_cycle: billingCycle })}
             disabled={isLoading || !hasChanges || seatsReduced}
-            className="flex items-center gap-2 bg-brand-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 transition-colors"
+            className="flex items-center gap-2 bg-brand-600 text-white px-5 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700 disabled:opacity-50 transition-colors"
           >
             {isLoading ? t("subscriptionsPage.editModal.saving") : t("subscriptionsPage.editModal.save")}
           </button>
@@ -227,12 +227,12 @@ export default function SubscriptionsPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">{t("subscriptionsPage.header.title")}</h1>
-        <p className="text-gray-500 mt-1">{t("subscriptionsPage.header.subtitle")}</p>
+        <h1 className="text-xl font-semibold tracking-tight text-gray-900">{t("subscriptionsPage.header.title")}</h1>
+        <p className="text-[13px] text-gray-500 mt-0.5">{t("subscriptionsPage.header.subtitle")}</p>
       </div>
 
       {toast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-green-600 text-white px-5 py-3 rounded-xl shadow-lg text-sm font-medium flex items-center gap-2">
+        <div className="fixed bottom-6 right-6 z-50 bg-green-600 text-white px-5 py-3 rounded-xl shadow-lg text-[13px] font-medium flex items-center gap-2">
           <Check className="h-4 w-4" />{toast}
         </div>
       )}
@@ -252,13 +252,13 @@ export default function SubscriptionsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setCancelConfirm(null)}>
           <div className="bg-white rounded-xl shadow-xl p-6 max-w-sm mx-4" onClick={e => e.stopPropagation()}>
             <h3 className="text-lg font-bold text-gray-900 mb-2">{t("subscriptionsPage.cancelModal.title")}</h3>
-            <p className="text-sm text-gray-500 mb-4">{t("subscriptionsPage.cancelModal.body")}</p>
+            <p className="text-[13px] text-gray-500 mb-4">{t("subscriptionsPage.cancelModal.body")}</p>
             <div className="flex gap-3 justify-end">
-              <button onClick={() => setCancelConfirm(null)} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800">{t("subscriptionsPage.cancelModal.keep")}</button>
+              <button onClick={() => setCancelConfirm(null)} className="px-4 py-2 text-[13px] text-gray-600 hover:text-gray-800">{t("subscriptionsPage.cancelModal.keep")}</button>
               <button
                 onClick={() => handleCancel(cancelConfirm)}
                 disabled={cancelSub.isPending}
-                className="px-4 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                className="px-4 py-2 text-[13px] bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50"
               >
                 {cancelSub.isPending ? t("subscriptionsPage.cancelModal.confirming") : t("subscriptionsPage.cancelModal.confirm")}
               </button>
@@ -269,21 +269,21 @@ export default function SubscriptionsPage() {
 
       <Link
         to="/billing"
-        className="flex items-center justify-between bg-brand-50 border border-brand-200 rounded-xl px-6 py-4 mb-6 hover:bg-brand-100 transition-colors group"
+        className="flex items-center justify-between bg-brand-50 border border-brand-200 rounded-lg px-6 py-4 mb-6 hover:bg-brand-100 transition-colors group"
       >
-        <p className="text-sm font-medium text-brand-700">{t("subscriptionsPage.billing.viewInvoicesLink")}</p>
+        <p className="text-[13px] font-medium text-brand-700">{t("subscriptionsPage.billing.viewInvoicesLink")}</p>
         <ArrowRight className="h-4 w-4 text-brand-600 group-hover:translate-x-1 transition-transform" />
       </Link>
 
       {billing && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+        <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
           <div className="flex items-center gap-3 mb-2">
             <TrendingUp className="h-5 w-5 text-brand-600" />
             <h2 className="font-semibold text-gray-900">{t("subscriptionsPage.billing.monthlyCostHeading")}</h2>
           </div>
-          <p className="text-3xl font-bold text-gray-900">
+          <p className="text-3xl font-semibold text-gray-900 tabular-nums">
             {formatCurrency(billing.total_monthly_cost, billing.currency)}
-            <span className="text-sm font-normal text-gray-500">{t("subscriptionsPage.billing.perMonthSuffix")}</span>
+            <span className="text-[13px] font-normal text-gray-500">{t("subscriptionsPage.billing.perMonthSuffix")}</span>
           </p>
         </div>
       )}
@@ -292,7 +292,7 @@ export default function SubscriptionsPage() {
         {subscriptions?.map((sub: any) => {
           const mod = moduleMap.get(sub.module_id) as any;
           return (
-            <div key={sub.id} className="bg-white rounded-xl border border-gray-200 p-6">
+            <div key={sub.id} className="bg-white rounded-lg border border-gray-200 p-4">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-lg bg-brand-50 flex items-center justify-center">
@@ -300,11 +300,11 @@ export default function SubscriptionsPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900">{mod?.name || t("subscriptionsPage.moduleFallback")}</h3>
-                    <p className="text-xs text-gray-500">{mod?.slug}</p>
+                    <p className="text-[11px] text-gray-500">{mod?.slug}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                  <span className={`text-[11px] px-2 py-1 rounded-md font-medium ${
                     sub.status === "active" ? "bg-green-50 text-green-700" :
                     sub.status === "trial" ? "bg-yellow-50 text-yellow-700" :
                     sub.status === "cancelled" ? "bg-gray-100 text-gray-500" :
@@ -316,14 +316,14 @@ export default function SubscriptionsPage() {
                     <>
                       <button
                         onClick={() => setEditingSub(sub)}
-                        className="p-1.5 text-gray-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors"
+                        className="p-1.5 text-gray-400 hover:text-brand-600 hover:bg-brand-50 rounded-md transition-colors"
                         title={t("subscriptionsPage.card.tooltip.edit")}
                       >
                         <Pencil className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => setCancelConfirm(sub.id)}
-                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
                         title={t("subscriptionsPage.card.tooltip.cancel")}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -340,14 +340,14 @@ export default function SubscriptionsPage() {
                 const daysLeft = Math.ceil(msLeft / 86400000);
                 if (daysLeft <= 0) {
                   return (
-                    <div className="mt-3 bg-red-50 border border-red-200 rounded-lg px-3 py-2 text-xs text-red-700">
+                    <div className="mt-3 bg-red-50 border border-red-200 rounded-lg px-3 py-2 text-[11px] text-red-700">
                       {t("subscriptionsPage.trial.expired")}
                     </div>
                   );
                 }
                 const tone = daysLeft <= 3 ? "amber" : "blue";
                 return (
-                  <div className={`mt-3 ${tone === "amber" ? "bg-amber-50 border-amber-200 text-amber-700" : "bg-blue-50 border-blue-200 text-blue-700"} border rounded-lg px-3 py-2 text-xs flex items-center gap-1.5`}>
+                  <div className={`mt-3 ${tone === "amber" ? "bg-amber-50 border-amber-200 text-amber-700" : "bg-blue-50 border-blue-200 text-blue-700"} border rounded-lg px-3 py-2 text-[11px] flex items-center gap-1.5`}>
                     <Calendar className="h-3.5 w-3.5" />
                     {t("subscriptionsPage.trial.endsIn", { count: daysLeft, date: trialEnd.toLocaleDateString() })}
                   </div>
@@ -356,8 +356,8 @@ export default function SubscriptionsPage() {
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 pt-4 border-t border-gray-100">
                 <div>
-                  <p className="text-xs text-gray-500">{t("subscriptionsPage.card.field.plan")}</p>
-                  <p className="text-sm font-medium text-gray-900 capitalize">{t(`subscriptionsPage.planTier.${sub.plan_tier}`, { defaultValue: sub.plan_tier })}</p>
+                  <p className="text-[11px] text-gray-500">{t("subscriptionsPage.card.field.plan")}</p>
+                  <p className="text-[13px] font-medium text-gray-900 capitalize">{t(`subscriptionsPage.planTier.${sub.plan_tier}`, { defaultValue: sub.plan_tier })}</p>
                 </div>
                 {/* #1448 — Seat tile is now a link to /users?module=<slug> so
                     admins can quickly see which employees have this seat. */}
@@ -365,11 +365,11 @@ export default function SubscriptionsPage() {
                   to={`/users?module=${mod?.slug || ""}`}
                   className="group"
                 >
-                  <p className="text-xs text-gray-500 group-hover:text-brand-600">{t("subscriptionsPage.card.field.seats")}</p>
-                  <p className="text-sm font-medium text-gray-900 group-hover:text-brand-700 group-hover:underline">
+                  <p className="text-[11px] text-gray-500 group-hover:text-brand-600">{t("subscriptionsPage.card.field.seats")}</p>
+                  <p className="text-[13px] font-medium text-gray-900 group-hover:text-brand-700 group-hover:underline tabular-nums">
                     {sub.used_seats}/{sub.total_seats}
                     {sub.used_seats >= sub.total_seats && (
-                      <span className="text-xs text-red-500 ml-1">{t("subscriptionsPage.card.seatsFull")}</span>
+                      <span className="text-[11px] text-red-500 ml-1">{t("subscriptionsPage.card.seatsFull")}</span>
                     )}
                   </p>
                   {/* Seat usage bar */}
@@ -381,14 +381,14 @@ export default function SubscriptionsPage() {
                   </div>
                 </Link>
                 <div>
-                  <p className="text-xs text-gray-500">{t("subscriptionsPage.card.field.pricePerSeat")}</p>
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-[11px] text-gray-500">{t("subscriptionsPage.card.field.pricePerSeat")}</p>
+                  <p className="text-[13px] font-medium text-gray-900 tabular-nums">
                     {formatCurrency(Number(sub.price_per_seat), sub.currency)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500">{t("subscriptionsPage.card.field.billingCycle")}</p>
-                  <p className="text-sm font-medium text-gray-900 capitalize">{t(`subscriptionsPage.billingCycle.${sub.billing_cycle}`, { defaultValue: sub.billing_cycle })}</p>
+                  <p className="text-[11px] text-gray-500">{t("subscriptionsPage.card.field.billingCycle")}</p>
+                  <p className="text-[13px] font-medium text-gray-900 capitalize">{t(`subscriptionsPage.billingCycle.${sub.billing_cycle}`, { defaultValue: sub.billing_cycle })}</p>
                 </div>
               </div>
             </div>
