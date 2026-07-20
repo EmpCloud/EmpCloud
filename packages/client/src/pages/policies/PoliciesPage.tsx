@@ -133,27 +133,27 @@ function EmployeePoliciesView() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-foreground">{t("policies.page.title")}</h1>
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("policies.page.title")}</h1>
         <p className="text-muted-foreground mt-1">{t("policies.page.subtitleEmployee")}</p>
       </div>
 
       {pendingIds.size > 0 && (
-        <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 rounded-xl p-4 mb-6 text-sm text-amber-800 dark:text-amber-200">
+        <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 rounded-lg p-4 mb-6 text-sm text-amber-800 dark:text-amber-200">
           {t("policies.page.pendingBanner", { count: pendingIds.size })}
         </div>
       )}
 
       <div className="space-y-4">
         {isLoading ? (
-          <div className="bg-card rounded-xl border border-border p-8 text-center text-muted-foreground">{t("policies.page.loading")}</div>
+          <div className="bg-card rounded-lg border border-border p-8 text-center text-muted-foreground">{t("policies.page.loading")}</div>
         ) : policies.length === 0 ? (
-          <div className="bg-card rounded-xl border border-border p-8 text-center text-muted-foreground">{t("policies.page.emptyEmployee")}</div>
+          <div className="bg-card rounded-lg border border-border p-8 text-center text-muted-foreground">{t("policies.page.emptyEmployee")}</div>
         ) : (
           policies.map((p: any) => {
             const isPending = pendingIds.has(p.id);
             const isOpen = expanded === p.id;
             return (
-              <div key={p.id} className="bg-card rounded-xl border border-border overflow-hidden">
+              <div key={p.id} className="bg-card rounded-lg border border-border overflow-hidden">
                 <button
                   onClick={() => setExpanded(isOpen ? null : p.id)}
                   className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-muted"
@@ -163,16 +163,16 @@ function EmployeePoliciesView() {
                     <div>
                       <span className="text-sm font-semibold text-foreground">{policyTitle(p, untitled)}</span>
                       {p.category && (
-                        <span className="ml-2 text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">{p.category}</span>
+                        <span className="ml-2 text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-md">{p.category}</span>
                       )}
                       <span className="ml-2 text-xs text-muted-foreground">v{p.version}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     {isPending ? (
-                      <span className="text-xs bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 px-2 py-1 rounded-full font-medium">{t("policies.page.pending")}</span>
+                      <span className="text-[11px] bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 px-2 py-0.5 rounded-md font-medium">{t("policies.page.pending")}</span>
                     ) : (
-                      <span className="text-xs bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300 px-2 py-1 rounded-full font-medium">{t("policies.page.acknowledged")}</span>
+                      <span className="text-[11px] bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300 px-2 py-0.5 rounded-md font-medium">{t("policies.page.acknowledged")}</span>
                     )}
                     {isOpen ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
                   </div>
@@ -193,7 +193,7 @@ function EmployeePoliciesView() {
                       <button
                         onClick={() => acknowledge.mutate(p.id)}
                         disabled={acknowledge.isPending}
-                        className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
+                        className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700 disabled:opacity-50"
                       >
                         <Check className="h-4 w-4" /> {t("policies.page.acknowledgePolicy")}
                       </button>
@@ -323,9 +323,9 @@ function HRPoliciesView() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t("policies.page.title")}</h1>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("policies.page.title")}</h1>
           <p className="text-muted-foreground mt-1">{t("policies.page.subtitleHr")}</p>
         </div>
         <button
@@ -341,7 +341,7 @@ function HRPoliciesView() {
               setShowCreate(true);
             }
           }}
-          className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
+          className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700"
         >
           <Plus className="h-4 w-4" /> {t("policies.page.newPolicy")}
         </button>
@@ -349,13 +349,13 @@ function HRPoliciesView() {
 
       {/* Create / edit form */}
       {showCreate && (
-        <form onSubmit={handleSubmit} className="bg-card rounded-xl border border-border p-6 mb-6 space-y-4">
+        <form onSubmit={handleSubmit} className="bg-card rounded-lg border border-border p-4 mb-6 space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-base font-semibold text-foreground">
               {editingId != null ? t("policies.page.editPolicy") : t("policies.page.createPolicy")}
             </h2>
             {editingId != null && (
-              <span className="text-xs text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 px-2 py-0.5 rounded-full">
+              <span className="text-xs text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 px-2 py-0.5 rounded-md">
                 {t("policies.page.editingHint")}
               </span>
             )}
@@ -367,7 +367,7 @@ function HRPoliciesView() {
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
                 placeholder={t("policies.page.titlePlaceholder")}
                 required
               />
@@ -378,7 +378,7 @@ function HRPoliciesView() {
                 type="text"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
                 placeholder={t("policies.page.categoryPlaceholder")}
               />
             </div>
@@ -388,7 +388,7 @@ function HRPoliciesView() {
                 type="date"
                 value={effectiveDate}
                 onChange={(e) => setEffectiveDate(e.target.value)}
-                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
               />
             </div>
             <div className="col-span-2">
@@ -404,14 +404,14 @@ function HRPoliciesView() {
             <button
               type="button"
               onClick={resetForm}
-              className="px-4 py-2 text-sm border border-border rounded-lg hover:bg-muted"
+              className="px-4 py-2 text-[13px] border border-border rounded-md hover:bg-muted"
             >
               {t("policies.page.cancel")}
             </button>
             <button
               type="submit"
               disabled={isSavingPolicy || !title.trim() || isRichTextEmpty(content)}
-              className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {editingId != null ? (
                 <><Pencil className="h-4 w-4" /> {isSavingPolicy ? t("policies.page.saving") : t("policies.page.saveChanges")}</>
@@ -424,16 +424,16 @@ function HRPoliciesView() {
       )}
 
       {/* Policies table */}
-      <div className="bg-card rounded-xl border border-border overflow-x-auto -mx-4 lg:mx-0">
+      <div className="bg-card rounded-lg border border-border overflow-x-auto -mx-4 lg:mx-0">
         <table className="min-w-full">
           <thead className="bg-muted border-b border-border">
             <tr>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("policies.page.colTitle")}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("policies.page.colCategory")}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("policies.page.colVersion")}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("policies.page.colEffectiveDate")}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("policies.page.colAcknowledgments")}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("policies.page.colActions")}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t("policies.page.colTitle")}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t("policies.page.colCategory")}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t("policies.page.colVersion")}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t("policies.page.colEffectiveDate")}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t("policies.page.colAcknowledgments")}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t("policies.page.colActions")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
@@ -444,26 +444,26 @@ function HRPoliciesView() {
             ) : (
               policies.map((p: any) => (
                 <React.Fragment key={p.id}>
-                  <tr className="hover:bg-muted">
-                    <td className="px-6 py-4">
+                  <tr className="hover:bg-muted/50 transition-colors">
+                    <td className="px-4 py-2.5">
                       <div className="flex items-center gap-2">
                         <FileText className="h-4 w-4 text-brand-600 dark:text-brand-400" />
                         <span className="text-sm font-medium text-foreground">{policyTitle(p, untitled)}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-2.5">
                       {p.category ? (
-                        <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-full">{p.category}</span>
+                        <span className="text-[11px] bg-muted text-muted-foreground px-2 py-0.5 rounded-md">{p.category}</span>
                       ) : (
                         <span className="text-xs text-muted-foreground">-</span>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-sm text-muted-foreground">v{p.version}</td>
-                    <td className="px-6 py-4 text-sm text-muted-foreground">{p.effective_date || "-"}</td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-2.5 text-sm text-muted-foreground">v{p.version}</td>
+                    <td className="px-4 py-2.5 text-sm text-muted-foreground">{p.effective_date || "-"}</td>
+                    <td className="px-4 py-2.5">
                       <span className="text-sm font-medium text-brand-700 dark:text-brand-300">{p.acknowledgment_count ?? 0}</span>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-2.5">
                       <div className="flex items-center gap-3">
                         <button
                           onClick={() => {
@@ -510,13 +510,13 @@ function HRPoliciesView() {
                   {viewContentFor === p.id && (
                     <tr>
                       <td colSpan={6} className="p-0">
-                        <div className="mx-4 my-2 bg-muted border border-border rounded-xl shadow-lg animate-in slide-in-from-top-2 duration-200">
+                        <div className="mx-4 my-2 bg-muted border border-border rounded-lg shadow-lg animate-in slide-in-from-top-2 duration-200">
                           <div className="flex items-center justify-between px-5 py-3 border-b border-border">
                             <div className="flex items-center gap-2">
                               <FileText className="h-4 w-4 text-brand-600 dark:text-brand-400" />
                               <h3 className="text-sm font-semibold text-foreground">{policyTitle(p, untitled)}</h3>
                               {p.category && (
-                                <span className="text-xs bg-card text-muted-foreground px-2 py-0.5 rounded-full border border-border">{p.category}</span>
+                                <span className="text-xs bg-card text-muted-foreground px-2 py-0.5 rounded-md border border-border">{p.category}</span>
                               )}
                               <span className="text-xs text-muted-foreground">v{p.version}</span>
                             </div>
@@ -547,7 +547,7 @@ function HRPoliciesView() {
                   {viewAckFor === p.id && (
                     <tr>
                       <td colSpan={6} className="p-0">
-                        <div className="mx-4 my-2 bg-muted border border-border rounded-xl shadow-lg animate-in slide-in-from-top-2 duration-200">
+                        <div className="mx-4 my-2 bg-muted border border-border rounded-lg shadow-lg animate-in slide-in-from-top-2 duration-200">
                           <div className="flex items-center justify-between px-5 py-3 border-b border-border">
                             <div className="flex items-center gap-2">
                               <Users className="h-4 w-4 text-muted-foreground" />
@@ -632,7 +632,7 @@ function HRPoliciesView() {
             onClick={() => setConfirmDeleteId(null)}
           >
             <div
-              className="w-full max-w-md rounded-xl bg-card shadow-xl"
+              className="w-full max-w-md rounded-lg bg-card shadow-xl"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="px-6 py-4 border-b border-border">
@@ -677,7 +677,7 @@ function HRPoliciesView() {
                     });
                   }}
                   disabled={deletePolicy.isPending}
-                  className="flex items-center gap-1 text-sm bg-red-600 text-white px-3 py-1.5 rounded-lg hover:bg-red-700 disabled:opacity-50"
+                  className="flex items-center gap-1 text-[13px] bg-red-600 text-white px-3 py-1.5 rounded-md hover:bg-red-700 disabled:opacity-50"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                   {deletePolicy.isPending ? t("policies.page.deleting") : t("policies.page.delete")}
