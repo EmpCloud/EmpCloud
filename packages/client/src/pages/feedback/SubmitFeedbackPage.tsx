@@ -42,18 +42,18 @@ export default function SubmitFeedbackPage() {
   if (submitted) {
     return (
       <div>
-        <div className="flex items-center gap-3 mb-8">
-          <h1 className="text-2xl font-bold text-foreground">{t("submitFeedback.page.title")}</h1>
+        <div className="flex items-center gap-3 mb-6">
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("submitFeedback.page.title")}</h1>
         </div>
-        <div className="bg-card rounded-xl border border-border p-8 text-center max-w-lg mx-auto">
+        <div className="bg-card rounded-lg border border-border p-8 text-center max-w-lg mx-auto">
           <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
-          <h2 className="text-lg font-semibold text-foreground mb-2">{t("submitFeedback.success.title")}</h2>
-          <p className="text-sm text-muted-foreground mb-6">
+          <h2 className="text-base font-semibold text-foreground mb-2">{t("submitFeedback.success.title")}</h2>
+          <p className="text-[13px] text-muted-foreground mb-6">
             {t("submitFeedback.success.description")}
           </p>
           <button
             onClick={() => setSubmitted(false)}
-            className="bg-brand-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
+            className="bg-brand-600 text-white px-6 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700 transition-colors"
           >
             {t("submitFeedback.success.submitAnother")}
           </button>
@@ -64,29 +64,29 @@ export default function SubmitFeedbackPage() {
 
   return (
     <div>
-      <div className="flex items-center gap-3 mb-8">
-        <h1 className="text-2xl font-bold text-foreground">{t("submitFeedback.page.title")}</h1>
+      <div className="flex items-center gap-3 mb-6">
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("submitFeedback.page.title")}</h1>
       </div>
 
-      <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 rounded-xl p-4 mb-6 max-w-2xl">
+      <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 rounded-lg p-4 mb-6 max-w-2xl">
         <div className="flex items-start gap-3">
           <MessageSquarePlus className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5" />
           <div>
-            <p className="text-sm font-medium text-amber-800 dark:text-amber-200">{t("submitFeedback.anonymousBanner.title")}</p>
-            <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
+            <p className="text-[13px] font-medium text-amber-800 dark:text-amber-200">{t("submitFeedback.anonymousBanner.title")}</p>
+            <p className="text-[11px] text-amber-600 dark:text-amber-400 mt-1">
               {t("submitFeedback.anonymousBanner.description")}
             </p>
           </div>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-card rounded-xl border border-border p-6 max-w-2xl space-y-5">
+      <form onSubmit={handleSubmit} className="bg-card rounded-lg border border-border p-4 max-w-2xl space-y-5">
         <div>
-          <label className="block text-sm font-medium text-muted-foreground mb-1">{t("submitFeedback.field.category")} <span className="text-red-500">*</span></label>
+          <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t("submitFeedback.field.category")} <span className="text-red-500">*</span></label>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+            className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
           >
             {CATEGORIES.map((c) => (
               <option key={c.value} value={c.value}>
@@ -97,23 +97,23 @@ export default function SubmitFeedbackPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-muted-foreground mb-1">{t("submitFeedback.field.subject")} <span className="text-red-500">*</span></label>
+          <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t("submitFeedback.field.subject")} <span className="text-red-500">*</span></label>
           <input
             type="text"
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
-            className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+            className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
             placeholder={t("submitFeedback.field.subjectPlaceholder")}
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-muted-foreground mb-1">{t("submitFeedback.field.message")} <span className="text-red-500">*</span></label>
+          <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t("submitFeedback.field.message")} <span className="text-red-500">*</span></label>
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm min-h-[160px]"
+            className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] min-h-[160px]"
             placeholder={t("submitFeedback.field.messagePlaceholder")}
             required
           />
@@ -127,7 +127,7 @@ export default function SubmitFeedbackPage() {
               onChange={(e) => setIsUrgent(e.target.checked)}
               className="h-4 w-4 rounded border-border text-red-600 dark:text-red-400 focus:ring-red-500"
             />
-            <span className="text-sm text-muted-foreground flex items-center gap-1.5">
+            <span className="text-[13px] text-muted-foreground flex items-center gap-1.5">
               <AlertTriangle className="h-4 w-4 text-red-500" />
               {t("submitFeedback.field.markUrgent")}
             </span>
@@ -138,7 +138,7 @@ export default function SubmitFeedbackPage() {
           <button
             type="submit"
             disabled={submitMutation.isPending}
-            className="flex items-center gap-2 bg-brand-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
+            className="flex items-center gap-2 bg-brand-600 text-white px-5 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700 disabled:opacity-50 transition-colors"
           >
             <Send className="h-4 w-4" />
             {submitMutation.isPending ? t("submitFeedback.action.submitting") : t("submitFeedback.action.submit")}
@@ -146,7 +146,7 @@ export default function SubmitFeedbackPage() {
         </div>
 
         {submitMutation.isError && (
-          <p className="text-sm text-red-600 dark:text-red-400 mt-2">
+          <p className="text-[13px] text-red-600 dark:text-red-400 mt-2">
             {t("submitFeedback.error.submitFailed")}
           </p>
         )}
