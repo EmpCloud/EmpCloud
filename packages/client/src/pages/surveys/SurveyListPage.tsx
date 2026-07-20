@@ -81,14 +81,14 @@ export default function SurveyListPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t("surveys.list.title")}</h1>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("surveys.list.title")}</h1>
           <p className="text-muted-foreground mt-1">{t("surveys.list.subtitle")}</p>
         </div>
         <Link
           to="/surveys/builder"
-          className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
+          className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700"
         >
           <Plus className="h-4 w-4" /> {t("surveys.list.new")}
         </Link>
@@ -99,7 +99,7 @@ export default function SurveyListPage() {
         <select
           value={statusFilter}
           onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-          className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm"
+          className="bg-card text-foreground px-3 py-2 border border-border rounded-md text-[13px]"
         >
           <option value="">{t("surveys.list.allStatuses")}</option>
           <option value="draft">{t("surveys.list.status.draft")}</option>
@@ -110,7 +110,7 @@ export default function SurveyListPage() {
         <select
           value={typeFilter}
           onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }}
-          className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm"
+          className="bg-card text-foreground px-3 py-2 border border-border rounded-md text-[13px]"
         >
           <option value="">{t("surveys.list.allTypes")}</option>
           <option value="pulse">{t("surveys.list.type.pulse")}</option>
@@ -123,18 +123,18 @@ export default function SurveyListPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-card rounded-xl border border-border overflow-hidden">
+      <div className="bg-card rounded-lg border border-border overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-[13px]">
             <thead>
               <tr className="border-b border-border bg-muted">
-                <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase">{t("surveys.list.colTitle")}</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase">{t("surveys.list.colType")}</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase">{t("surveys.list.colStatus")}</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase">{t("surveys.list.colAnonymous")}</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase">{t("surveys.list.colResponses")}</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase">{t("surveys.list.colDates")}</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase">{t("surveys.list.colActions")}</th>
+                <th className="text-left px-4 py-2.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{t("surveys.list.colTitle")}</th>
+                <th className="text-left px-4 py-2.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{t("surveys.list.colType")}</th>
+                <th className="text-left px-4 py-2.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{t("surveys.list.colStatus")}</th>
+                <th className="text-left px-4 py-2.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{t("surveys.list.colAnonymous")}</th>
+                <th className="text-left px-4 py-2.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{t("surveys.list.colResponses")}</th>
+                <th className="text-left px-4 py-2.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{t("surveys.list.colDates")}</th>
+                <th className="text-left px-4 py-2.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{t("surveys.list.colActions")}</th>
               </tr>
             </thead>
             <tbody>
@@ -150,33 +150,33 @@ export default function SurveyListPage() {
                 </tr>
               ) : (
                 surveys.map((s: any) => (
-                  <tr key={s.id} className="border-b border-border hover:bg-muted">
-                    <td className="px-6 py-4">
+                  <tr key={s.id} className="border-b border-border hover:bg-muted/50 transition-colors">
+                    <td className="px-4 py-2.5">
                       <p className="font-medium text-foreground">{s.title}</p>
                       {s.description && (
                         <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{s.description}</p>
                       )}
                     </td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex text-xs font-medium px-2 py-0.5 rounded-full ${TYPE_BADGE[s.type] || TYPE_BADGE.custom}`}>
+                    <td className="px-4 py-2.5">
+                      <span className={`inline-flex text-[11px] font-medium px-2 py-0.5 rounded-md ${TYPE_BADGE[s.type] || TYPE_BADGE.custom}`}>
                         {t(`surveys.list.type.${s.type}`, { defaultValue: s.type })}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex text-xs font-medium px-2 py-0.5 rounded-full ${STATUS_BADGE[s.status] || STATUS_BADGE.draft}`}>
+                    <td className="px-4 py-2.5">
+                      <span className={`inline-flex text-[11px] font-medium px-2 py-0.5 rounded-md ${STATUS_BADGE[s.status] || STATUS_BADGE.draft}`}>
                         {t(`surveys.list.status.${s.status}`, { defaultValue: s.status })}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-muted-foreground">
+                    <td className="px-4 py-2.5 text-muted-foreground">
                       {s.is_anonymous ? t("surveys.list.yes") : t("surveys.list.no")}
                     </td>
-                    <td className="px-6 py-4 text-muted-foreground">{s.response_count}</td>
-                    <td className="px-6 py-4 text-xs text-muted-foreground">
+                    <td className="px-4 py-2.5 text-muted-foreground">{s.response_count}</td>
+                    <td className="px-4 py-2.5 text-xs text-muted-foreground">
                       {s.start_date && <div>{t("surveys.list.start", { date: new Date(s.start_date).toLocaleDateString() })}</div>}
                       {s.end_date && <div>{t("surveys.list.end", { date: new Date(s.end_date).toLocaleDateString() })}</div>}
                       {!s.start_date && !s.end_date && <span>-</span>}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-2.5">
                       <div className="flex items-center gap-1">
                         {s.status === "draft" && (
                           <>
@@ -258,21 +258,21 @@ export default function SurveyListPage() {
         <div className="flex items-center justify-between mt-6">
           {/* #1533 — Show the per-page count alongside the total so admins can
               tell at a glance how many surveys are in view, not just the total. */}
-          <p className="text-sm text-muted-foreground">
+          <p className="text-[13px] tabular-nums text-muted-foreground">
             {t("surveys.list.showing", { shown: surveys.length, total: meta.total, page: meta.page, total_pages: meta.total_pages })}
           </p>
           <div className="flex gap-2">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="bg-card text-foreground px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50"
+              className="bg-card text-foreground px-3 py-1.5 text-[13px] border border-border rounded-md hover:bg-muted transition-colors disabled:opacity-50"
             >
               {t("surveys.list.previous")}
             </button>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={page >= meta.total_pages}
-              className="bg-card text-foreground px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50"
+              className="bg-card text-foreground px-3 py-1.5 text-[13px] border border-border rounded-md hover:bg-muted transition-colors disabled:opacity-50"
             >
               {t("surveys.list.next")}
             </button>

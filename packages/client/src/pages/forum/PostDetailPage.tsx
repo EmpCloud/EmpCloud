@@ -173,7 +173,7 @@ export default function PostDetailPage() {
                 </span>
                 <span className="text-xs text-muted-foreground">{timeAgo(reply.created_at, t)}</span>
                 {Boolean(reply.is_accepted) && (
-                  <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-950/40 px-2 py-0.5 rounded-full">
+                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-950/40 px-2 py-0.5 rounded-md">
                     <CheckCircle2 className="h-3 w-3" /> {t("postDetail.reply.acceptedAnswer")}
                   </span>
                 )}
@@ -246,7 +246,7 @@ export default function PostDetailPage() {
       <div className="flex items-center gap-3 mb-6">
         <button
           onClick={() => navigate(-1)}
-          className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-muted-foreground transition-colors"
+          className="p-2 rounded-md hover:bg-muted text-muted-foreground hover:text-muted-foreground transition-colors"
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
@@ -259,7 +259,7 @@ export default function PostDetailPage() {
       </div>
 
       {/* Post */}
-      <div className="bg-card rounded-xl border border-border p-6 mb-6">
+      <div className="bg-card rounded-lg border border-border p-4 mb-6">
         <div className="flex items-start gap-4">
           <div className="h-12 w-12 rounded-full bg-brand-100 dark:bg-brand-950/40 flex items-center justify-center flex-shrink-0">
             <span className="text-base font-semibold text-brand-700 dark:text-brand-300">
@@ -270,7 +270,7 @@ export default function PostDetailPage() {
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-2 flex-wrap">
-              <span className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${typeConfig.color}`}>
+              <span className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-md ${typeConfig.color}`}>
                 <TypeIcon className="h-3 w-3" />
                 {t(`postDetail.${typeConfig.labelKey}`)}
               </span>
@@ -286,7 +286,7 @@ export default function PostDetailPage() {
               )}
             </div>
 
-            <h1 className="text-xl font-bold text-foreground mb-1">{post.title}</h1>
+            <h1 className="text-xl font-semibold tracking-tight text-foreground mb-1">{post.title}</h1>
 
             <div className="flex items-center gap-3 text-xs text-muted-foreground mb-4">
               <span className="font-medium text-muted-foreground">
@@ -372,8 +372,8 @@ export default function PostDetailPage() {
       </div>
 
       {/* Replies */}
-      <div className="bg-card rounded-xl border border-border p-6">
-        <h2 className="text-lg font-semibold text-foreground mb-2">
+      <div className="bg-card rounded-lg border border-border p-4">
+        <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">
           {t("postDetail.replies.heading", { count: replies.length })}
         </h2>
 
@@ -416,14 +416,14 @@ export default function PostDetailPage() {
                   value={replyContent}
                   onChange={(e) => setReplyContent(e.target.value)}
                   placeholder={t("postDetail.form.placeholder")}
-                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm min-h-[80px] focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-y"
+                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] min-h-[80px] focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-y"
                   required
                 />
                 <div className="flex justify-end mt-2">
                   <button
                     type="submit"
                     disabled={submitReply.isPending || !replyContent.trim()}
-                    className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
+                    className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700 disabled:opacity-50"
                   >
                     <Send className="h-4 w-4" />
                     {submitReply.isPending ? t("postDetail.form.posting") : t("postDetail.form.submit")}
