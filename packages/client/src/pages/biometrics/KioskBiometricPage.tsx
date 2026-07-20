@@ -109,20 +109,20 @@ export default function KioskBiometricPage() {
       <button
         type="button"
         onClick={() => navigate("/biometrics")}
-        className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+        className="mb-4 inline-flex items-center gap-1 text-[13px] text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="h-4 w-4" /> {t("kioskPin.backToBiometrics")}
       </button>
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-foreground">{t("kioskPin.title")}</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("kioskPin.title")}</h1>
+        <p className="mt-0.5 text-[13px] text-muted-foreground">
           {t("kioskPin.subtitle")}
         </p>
       </div>
 
       {/* Status card */}
-      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+      <div className="rounded-lg border border-border bg-card p-4 shadow-sm">
         <div className="flex items-start gap-4">
           <div
             className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-lg ${
@@ -132,11 +132,11 @@ export default function KioskBiometricPage() {
             <Fingerprint className="h-6 w-6" />
           </div>
           <div className="flex-1">
-            <p className="text-sm font-medium text-muted-foreground">{t("kioskPin.status")}</p>
+            <p className="text-[13px] font-medium text-muted-foreground">{t("kioskPin.status")}</p>
             <p className="text-lg font-semibold text-foreground">
               {isLoading ? t("kioskPin.loading") : status ? t("kioskPin.enabled") : t("kioskPin.disabled")}
             </p>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <p className="mt-1 text-[11px] text-muted-foreground">
               {status
                 ? t("kioskPin.statusOnHint")
                 : t("kioskPin.statusOffHint")}
@@ -153,7 +153,7 @@ export default function KioskBiometricPage() {
                 setMode("enable");
               }}
               disabled={isLoading}
-              className="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-700 disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-md bg-brand-600 px-4 py-2 text-[13px] font-medium text-white shadow-sm hover:bg-brand-700 disabled:opacity-50"
             >
               <ShieldCheck className="h-4 w-4" /> {t("kioskPin.enableBiometric")}
             </button>
@@ -166,7 +166,7 @@ export default function KioskBiometricPage() {
                   reset();
                   setMode("change");
                 }}
-                className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-muted"
+                className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-4 py-2 text-[13px] font-medium text-muted-foreground hover:bg-muted/50 transition-colors"
               >
                 <KeyRound className="h-4 w-4" /> {t("kioskPin.changePin")}
               </button>
@@ -176,7 +176,7 @@ export default function KioskBiometricPage() {
                   reset();
                   setMode("disable");
                 }}
-                className="inline-flex items-center gap-2 rounded-lg border border-red-300 bg-card px-4 py-2 text-sm font-medium text-red-700 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/40"
+                className="inline-flex items-center gap-2 rounded-md border border-red-300 dark:border-red-900 bg-card px-4 py-2 text-[13px] font-medium text-red-700 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/40"
               >
                 <ShieldOff className="h-4 w-4" /> {t("kioskPin.disableBiometric")}
               </button>
@@ -202,13 +202,13 @@ export default function KioskBiometricPage() {
           stays close to the status card and the page remains keyboard-only
           friendly. */}
       {mode && (
-        <div className="mt-6 rounded-xl border border-border bg-card p-6 shadow-sm">
+        <div className="mt-6 rounded-lg border border-border bg-card p-4 shadow-sm">
           <h2 className="text-base font-semibold text-foreground">
             {mode === "enable" && t("kioskPin.panelEnableTitle")}
             {mode === "change" && t("kioskPin.panelChangeTitle")}
             {mode === "disable" && t("kioskPin.panelDisableTitle")}
           </h2>
-          <p className="mt-1 text-xs text-muted-foreground">
+          <p className="mt-1 text-[11px] text-muted-foreground">
             {mode === "disable"
               ? t("kioskPin.panelDisableHint")
               : t("kioskPin.panelSetHint")}
@@ -231,20 +231,20 @@ export default function KioskBiometricPage() {
               />
             )}
             {error && (
-              <div className="rounded-md bg-red-50 dark:bg-red-950/40 px-3 py-2 text-sm text-red-700 dark:text-red-300">{error}</div>
+              <div className="rounded-md bg-red-50 dark:bg-red-950/40 px-3 py-2 text-[13px] text-red-700 dark:text-red-300">{error}</div>
             )}
             <div className="flex items-center justify-end gap-2 pt-2">
               <button
                 type="button"
                 onClick={reset}
-                className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-muted"
+                className="rounded-md border border-border bg-card px-4 py-2 text-[13px] font-medium text-muted-foreground hover:bg-muted/50 transition-colors"
               >
                 {t("kioskPin.cancel")}
               </button>
               <button
                 type="submit"
                 disabled={submitMutation.isPending}
-                className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white shadow-sm disabled:opacity-50 ${
+                className={`inline-flex items-center gap-2 rounded-md px-4 py-2 text-[13px] font-medium text-white shadow-sm disabled:opacity-50 ${
                   mode === "disable" ? "bg-red-600 hover:bg-red-700" : "bg-brand-600 hover:bg-brand-700"
                 }`}
               >
@@ -334,24 +334,24 @@ function LivenessSettingsCard() {
     !!baseline && (baseline.enabled !== enabled || baseline.level !== level);
 
   return (
-    <div className="mt-6 rounded-xl border border-border bg-card p-6 shadow-sm">
+    <div className="mt-6 rounded-lg border border-border bg-card p-4 shadow-sm">
       <div className="flex items-start gap-4">
         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300">
           <Eye className="h-6 w-6" />
         </div>
         <div className="flex-1">
           <h2 className="text-base font-semibold text-foreground">{t("kioskPin.livenessTitle")}</h2>
-          <p className="mt-1 text-xs text-muted-foreground">
+          <p className="mt-1 text-[11px] text-muted-foreground">
             {t("kioskPin.livenessDesc")}
           </p>
         </div>
       </div>
 
       {/* Enable toggle */}
-      <div className="mt-5 flex items-center justify-between rounded-lg border border-border bg-muted px-4 py-3">
+      <div className="mt-5 flex items-center justify-between rounded-md border border-border bg-muted px-4 py-3">
         <div>
-          <p className="text-sm font-medium text-foreground">{t("kioskPin.enableLiveness")}</p>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-[13px] font-medium text-foreground">{t("kioskPin.enableLiveness")}</p>
+          <p className="text-[11px] text-muted-foreground">
             {isLoading ? t("kioskPin.loading") : enabled ? t("kioskPin.livenessOnHint") : t("kioskPin.livenessOffHint")}
           </p>
         </div>
@@ -386,10 +386,10 @@ function LivenessSettingsCard() {
       {enabled && <LivenessLevelSlider level={level} onChange={setLevel} disabled={isLoading || saveMutation.isPending} />}
 
       {error && (
-        <div className="mt-3 rounded-md bg-red-50 dark:bg-red-950/40 px-3 py-2 text-sm text-red-700 dark:text-red-300">{error}</div>
+        <div className="mt-3 rounded-md bg-red-50 dark:bg-red-950/40 px-3 py-2 text-[13px] text-red-700 dark:text-red-300">{error}</div>
       )}
       {saved && (
-        <div className="mt-3 rounded-md bg-green-50 dark:bg-green-950/40 px-3 py-2 text-sm text-green-700 dark:text-green-300">
+        <div className="mt-3 rounded-md bg-green-50 dark:bg-green-950/40 px-3 py-2 text-[13px] text-green-700 dark:text-green-300">
           {t("kioskPin.livenessSaved")}
         </div>
       )}
@@ -399,7 +399,7 @@ function LivenessSettingsCard() {
           type="button"
           onClick={() => saveMutation.mutate()}
           disabled={!dirty || isLoading || saveMutation.isPending}
-          className="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex items-center gap-2 rounded-md bg-brand-600 px-4 py-2 text-[13px] font-medium text-white shadow-sm hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {saveMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
           {t("kioskPin.save")}
@@ -432,14 +432,14 @@ function LivenessLevelSlider({
   const idx = Math.max(0, LIVENESS_LEVELS.findIndex((l) => l.value === level));
   const current = LIVENESS_LEVELS[idx] || LIVENESS_LEVELS[1];
   return (
-    <div className="mt-3 rounded-lg border border-border bg-card px-4 py-4">
+    <div className="mt-3 rounded-md border border-border bg-card px-4 py-4">
       <div className="flex items-baseline justify-between">
-        <label className="block text-sm font-medium text-foreground" htmlFor="liveness-level-slider">
+        <label className="block text-[13px] font-medium text-foreground" htmlFor="liveness-level-slider">
           {t("kioskPin.sensitivityLevel")}
         </label>
-        <span className={`text-sm font-semibold ${current.cls}`}>{t(current.labelKey)}</span>
+        <span className={`text-[13px] font-semibold ${current.cls}`}>{t(current.labelKey)}</span>
       </div>
-      <p className="mt-1 text-xs text-muted-foreground">{t(current.descKey)}</p>
+      <p className="mt-1 text-[11px] text-muted-foreground">{t(current.descKey)}</p>
 
       <div className="mt-4">
         <input
@@ -529,14 +529,14 @@ function LinkedOrganizationsCard() {
   });
 
   return (
-    <div className="mt-6 rounded-xl border border-border bg-card p-6 shadow-sm">
+    <div className="mt-6 rounded-lg border border-border bg-card p-4 shadow-sm">
       <div className="flex items-start gap-4">
         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300">
           <Link2 className="h-6 w-6" />
         </div>
         <div className="flex-1">
           <h2 className="text-base font-semibold text-foreground">{t("kioskPin.linkedOrgsTitle")}</h2>
-          <p className="mt-1 text-xs text-muted-foreground">
+          <p className="mt-1 text-[11px] text-muted-foreground">
             {t("kioskPin.linkedOrgsDesc")}
           </p>
         </div>
@@ -545,22 +545,22 @@ function LinkedOrganizationsCard() {
       {/* Existing links */}
       <div className="mt-5 space-y-2">
         {isLoading ? (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2 text-[13px] text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" /> {t("kioskPin.loading")}
           </div>
         ) : linked.length === 0 ? (
-          <p className="text-sm text-muted-foreground">{t("kioskPin.noOrgsLinked")}</p>
+          <p className="text-[13px] text-muted-foreground">{t("kioskPin.noOrgsLinked")}</p>
         ) : (
           linked.map((row) => (
             <div
               key={row.email}
-              className="flex items-center justify-between rounded-lg border border-border bg-muted px-3 py-2"
+              className="flex items-center justify-between rounded-md border border-border bg-muted px-3 py-2"
             >
               <div className="flex items-center gap-2 min-w-0">
                 <Building2 className="h-4 w-4 shrink-0 text-muted-foreground" />
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-foreground truncate">{row.email}</p>
-                  <p className="text-xs text-muted-foreground truncate">
+                  <p className="text-[13px] font-medium text-foreground truncate">{row.email}</p>
+                  <p className="text-[11px] text-muted-foreground truncate">
                     {row.organization_name
                       ? row.organization_name
                       : row.organization_id == null
@@ -602,19 +602,19 @@ function LinkedOrganizationsCard() {
           value={newEmail}
           onChange={(e) => setNewEmail(e.target.value)}
           placeholder="admin@othercompany.com"
-          className="flex-1 rounded-lg border border-border bg-card text-foreground px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+          className="flex-1 rounded-md border border-border bg-card text-foreground px-3 py-2 text-[13px] focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
         />
         <button
           type="submit"
           disabled={addMutation.isPending}
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
+          className="inline-flex items-center justify-center gap-2 rounded-md bg-brand-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-brand-700 disabled:opacity-50"
         >
           {addMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
           {t("kioskPin.linkOrganization")}
         </button>
       </form>
       {error && (
-        <div className="mt-2 rounded-md bg-red-50 dark:bg-red-950/40 px-3 py-2 text-sm text-red-700 dark:text-red-300">{error}</div>
+        <div className="mt-2 rounded-md bg-red-50 dark:bg-red-950/40 px-3 py-2 text-[13px] text-red-700 dark:text-red-300">{error}</div>
       )}
     </div>
   );
@@ -634,7 +634,7 @@ function PinField({
 }) {
   return (
     <div>
-      <label className="mb-1 block text-xs font-medium text-muted-foreground">{label}</label>
+      <label className="mb-1 block text-[11px] font-medium text-muted-foreground">{label}</label>
       <input
         type="password"
         inputMode="numeric"
@@ -645,7 +645,7 @@ function PinField({
         value={value}
         onChange={(e) => onChange(e.target.value.replace(/\D/g, "").slice(0, 6))}
         placeholder="••••••"
-        className="w-40 rounded-lg border border-border px-3 py-2 text-center text-xl tracking-[0.5em] text-foreground focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+        className="w-40 rounded-md border border-border px-3 py-2 text-center text-xl tracking-[0.5em] text-foreground focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
       />
     </div>
   );

@@ -387,7 +387,7 @@ export default function OnboardingWizard() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-50">
+      <div className="flex items-center justify-center h-screen bg-muted/50">
         <Loader2 className="h-8 w-8 animate-spin text-brand-600" />
       </div>
     );
@@ -400,31 +400,31 @@ export default function OnboardingWizard() {
     : "translate-x-0 opacity-100";
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-muted/50 flex flex-col">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
+      <div className="bg-card border-b border-border px-6 py-4">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Building2 className="h-7 w-7 text-brand-600" />
-            <span className="text-lg font-bold text-gray-900">EMP Cloud Setup</span>
+            <span className="text-base font-semibold tracking-tight text-foreground">EMP Cloud Setup</span>
           </div>
         </div>
       </div>
 
       {/* Progress */}
-      <div className="bg-white border-b border-gray-100 px-6 py-6">
+      <div className="bg-card border-b border-border px-6 py-6">
         <div className="max-w-3xl mx-auto">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-700">
+            <span className="text-[13px] font-medium text-foreground tabular-nums">
               Step {activeStep} of 5
             </span>
-            <span className="text-sm text-gray-500">
+            <span className="text-[13px] text-muted-foreground tabular-nums">
               {Math.round((activeStep / 5) * 100)}% complete
             </span>
           </div>
 
           {/* Progress bar */}
-          <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden mb-6">
+          <div className="w-full h-2 bg-muted rounded-full overflow-hidden mb-6">
             <div
               className="h-full bg-brand-600 rounded-full transition-all duration-500 ease-out"
               style={{ width: `${(activeStep / 5) * 100}%` }}
@@ -443,7 +443,7 @@ export default function OnboardingWizard() {
                   {idx > 0 && (
                     <div
                       className={`hidden sm:block w-12 md:w-20 h-0.5 mx-1 transition-colors duration-300 ${
-                        stepNum <= activeStep ? "bg-brand-600" : "bg-gray-200"
+                        stepNum <= activeStep ? "bg-brand-600" : "bg-muted"
                       }`}
                     />
                   )}
@@ -454,7 +454,7 @@ export default function OnboardingWizard() {
                           ? "bg-brand-600 text-white"
                           : isActive
                             ? "bg-brand-600 text-white ring-4 ring-brand-100"
-                            : "bg-gray-100 text-gray-400"
+                            : "bg-muted text-muted-foreground"
                       }`}
                     >
                       {isCompleted ? (
@@ -464,8 +464,8 @@ export default function OnboardingWizard() {
                       )}
                     </div>
                     <span
-                      className={`text-xs font-medium hidden sm:block ${
-                        isActive ? "text-brand-600" : isCompleted ? "text-gray-700" : "text-gray-400"
+                      className={`text-[11px] font-medium hidden sm:block ${
+                        isActive ? "text-brand-600" : isCompleted ? "text-foreground" : "text-muted-foreground"
                       }`}
                     >
                       {status?.steps[idx]?.name || `Step ${stepNum}`}
@@ -481,13 +481,13 @@ export default function OnboardingWizard() {
       {/* Step Content */}
       <div className="flex-1 px-4 py-8">
         <div className={`max-w-2xl mx-auto transition-all duration-200 ease-out ${slideClass}`}>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="bg-card rounded-lg shadow-sm border border-border overflow-hidden">
             {/* Step header */}
             <div className="px-8 pt-8 pb-4">
-              <h2 className="text-xl font-bold text-gray-900">
+              <h2 className="text-xl font-semibold tracking-tight text-foreground">
                 {status?.steps[activeStep - 1]?.name || `Step ${activeStep}`}
               </h2>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-[13px] text-muted-foreground mt-0.5">
                 {STEP_DESCRIPTIONS[activeStep - 1]}
               </p>
             </div>
@@ -580,13 +580,13 @@ export default function OnboardingWizard() {
             </div>
 
             {/* Step footer */}
-            <div className="px-8 py-5 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+            <div className="px-8 py-5 bg-muted/50 border-t border-border flex items-center justify-between">
               <div>
                 {activeStep > 1 ? (
                   <button
                     onClick={handleBack}
                     disabled={submitting}
-                    className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 text-[13px] font-medium text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
                   >
                     <ChevronLeft className="h-4 w-4" />
                     Back
@@ -601,7 +601,7 @@ export default function OnboardingWizard() {
                   onClick={handleNext}
                   disabled={submitting || (activeStep === 4 && modules.length > 0 && selectedModuleCount === 0)}
                   title={activeStep === 4 && modules.length > 0 && selectedModuleCount === 0 ? "Select at least one module to continue" : undefined}
-                  className="inline-flex items-center gap-2 bg-brand-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="inline-flex items-center gap-2 bg-brand-600 text-white px-5 py-2.5 rounded-md text-[13px] font-medium hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
                   {activeStep === 5 ? (
@@ -688,44 +688,44 @@ function Step1CompanyInfo({
   return (
     <div className="space-y-5 pt-2">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+        <label className="block text-[13px] font-medium text-foreground mb-1">Company Name</label>
         <input
           type="text"
           value={companyName}
           onChange={(e) => setCompanyName(e.target.value)}
-          className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+          className="w-full px-3 py-2.5 border border-border rounded-md text-[13px] bg-card text-foreground focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
           placeholder="Acme Corp"
         />
       </div>
 
       <div className="grid grid-cols-3 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
+          <label className="block text-[13px] font-medium text-foreground mb-1">Country</label>
           <input
             type="text"
             value={country}
             onChange={(e) => setCountry(e.target.value)}
-            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+            className="w-full px-3 py-2.5 border border-border rounded-md text-[13px] bg-card text-foreground focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
             placeholder="IN"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
+          <label className="block text-[13px] font-medium text-foreground mb-1">State</label>
           <input
             type="text"
             value={state}
             onChange={(e) => setState(e.target.value)}
-            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+            className="w-full px-3 py-2.5 border border-border rounded-md text-[13px] bg-card text-foreground focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
             placeholder="Karnataka"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+          <label className="block text-[13px] font-medium text-foreground mb-1">City</label>
           <input
             type="text"
             value={city}
             onChange={(e) => setCity(e.target.value)}
-            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+            className="w-full px-3 py-2.5 border border-border rounded-md text-[13px] bg-card text-foreground focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
             placeholder="Bengaluru"
           />
         </div>
@@ -733,11 +733,11 @@ function Step1CompanyInfo({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Timezone</label>
+          <label className="block text-[13px] font-medium text-foreground mb-1">Timezone</label>
           <select
             value={timezone}
             onChange={(e) => setTimezone(e.target.value)}
-            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none bg-white"
+            className="w-full px-3 py-2.5 border border-border rounded-md text-[13px] focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none bg-card text-foreground"
           >
             {TIMEZONES.map((tz) => (
               <option key={tz} value={tz}>
@@ -747,11 +747,11 @@ function Step1CompanyInfo({
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Language</label>
+          <label className="block text-[13px] font-medium text-foreground mb-1">Language</label>
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
-            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none bg-white"
+            className="w-full px-3 py-2.5 border border-border rounded-md text-[13px] focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none bg-card text-foreground"
           >
             {LANGUAGES.map((lang) => (
               <option key={lang.value} value={lang.value}>
@@ -763,16 +763,16 @@ function Step1CompanyInfo({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Company Logo <span className="text-gray-400 font-normal">(optional)</span>
+        <label className="block text-[13px] font-medium text-foreground mb-1">
+          Company Logo <span className="text-muted-foreground font-normal">(optional)</span>
         </label>
         <div
-          className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer ${
+          className={`border-2 border-dashed rounded-md p-4 text-center transition-colors cursor-pointer ${
             dragOver
               ? "border-brand-500 bg-brand-50"
               : logoPreview
-                ? "border-gray-200 bg-gray-50"
-                : "border-gray-200 hover:border-gray-300"
+                ? "border-border bg-muted/50"
+                : "border-border hover:border-brand-400"
           }`}
           onClick={() => fileInputRef.current?.click()}
           onDragOver={(e) => {
@@ -794,7 +794,7 @@ function Step1CompanyInfo({
                 alt="Company logo preview"
                 className="h-20 w-20 object-contain rounded"
               />
-              <p className="text-xs text-gray-500">
+              <p className="text-[11px] text-muted-foreground">
                 {logoFile?.name}{" "}
                 <button
                   type="button"
@@ -811,11 +811,11 @@ function Step1CompanyInfo({
             </div>
           ) : (
             <>
-              <Building2 className="h-8 w-8 text-gray-300 mx-auto mb-2" />
-              <p className="text-sm text-gray-500">
+              <Building2 className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
+              <p className="text-[13px] text-muted-foreground">
                 Drag &amp; drop your logo here, or click to browse
               </p>
-              <p className="text-xs text-gray-400 mt-1">PNG, JPG, WebP, SVG up to 2MB</p>
+              <p className="text-[11px] text-muted-foreground mt-1">PNG, JPG, WebP, SVG up to 2MB</p>
             </>
           )}
           <input
@@ -830,7 +830,7 @@ function Step1CompanyInfo({
           />
         </div>
         {logoError && (
-          <p className="mt-2 text-xs text-red-600">{logoError}</p>
+          <p className="mt-2 text-[11px] text-red-600">{logoError}</p>
         )}
       </div>
     </div>
@@ -858,7 +858,7 @@ function Step2Departments({
 }) {
   return (
     <div className="space-y-5 pt-2">
-      <p className="text-sm text-gray-500">
+      <p className="text-[13px] text-muted-foreground">
         Select the departments you want to create. You can always add more later.
       </p>
 
@@ -869,15 +869,15 @@ function Step2Departments({
             <button
               key={dept}
               onClick={() => toggleDept(dept)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg border text-sm font-medium transition-all text-left ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg border text-[13px] font-medium transition-all text-left ${
                 isSelected
                   ? "border-brand-500 bg-brand-50 text-brand-700"
-                  : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"
+                  : "border-border bg-card text-muted-foreground hover:border-brand-400"
               }`}
             >
               <div
                 className={`w-5 h-5 rounded flex items-center justify-center flex-shrink-0 transition-colors ${
-                  isSelected ? "bg-brand-600 text-white" : "bg-gray-100"
+                  isSelected ? "bg-brand-600 text-white" : "bg-muted"
                 }`}
               >
                 {isSelected && <Check className="h-3.5 w-3.5" />}
@@ -894,13 +894,13 @@ function Step2Departments({
           value={customDept}
           onChange={(e) => setCustomDept(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && addCustomDept()}
-          className="flex-1 px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+          className="flex-1 px-3 py-2.5 border border-border rounded-md text-[13px] bg-card text-foreground focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
           placeholder="Add custom department..."
         />
         <button
           onClick={addCustomDept}
           disabled={!customDept.trim()}
-          className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 disabled:opacity-50 transition-colors"
+          className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-muted text-foreground rounded-md text-[13px] font-medium hover:bg-muted-foreground/10 disabled:opacity-50 transition-colors"
         >
           <Plus className="h-4 w-4" />
           Add
@@ -927,7 +927,7 @@ function Step3InviteTeam({
 }) {
   return (
     <div className="space-y-5 pt-2">
-      <p className="text-sm text-gray-500">
+      <p className="text-[13px] text-muted-foreground">
         Invite your team members by email. They will receive an invitation to join your organization.
       </p>
 
@@ -938,13 +938,13 @@ function Step3InviteTeam({
               type="email"
               value={inv.email}
               onChange={(e) => updateInvitation(idx, "email", e.target.value)}
-              className="flex-1 px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+              className="flex-1 px-3 py-2.5 border border-border rounded-md text-[13px] bg-card text-foreground focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
               placeholder="colleague@company.com"
             />
             <select
               value={inv.role}
               onChange={(e) => updateInvitation(idx, "role", e.target.value)}
-              className="w-36 px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none bg-white"
+              className="w-36 px-3 py-2.5 border border-border rounded-md text-[13px] focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none bg-card text-foreground"
             >
               <option value="employee">Employee</option>
               <option value="manager">Manager</option>
@@ -954,7 +954,7 @@ function Step3InviteTeam({
             {invitations.length > 1 && (
               <button
                 onClick={() => removeInvitation(idx)}
-                className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                className="p-2 text-muted-foreground hover:text-red-500 transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -965,7 +965,7 @@ function Step3InviteTeam({
 
       <button
         onClick={addInvitation}
-        className="inline-flex items-center gap-1.5 text-sm font-medium text-brand-600 hover:text-brand-700 transition-colors"
+        className="inline-flex items-center gap-1.5 text-[13px] font-medium text-brand-600 hover:text-brand-700 transition-colors"
       >
         <Plus className="h-4 w-4" />
         Add another person
@@ -996,9 +996,9 @@ function Step4Modules({
   if (modules.length === 0) {
     return (
       <div className="pt-2 text-center py-12">
-        <Package className="h-10 w-10 text-gray-300 mx-auto mb-3" />
-        <p className="text-sm text-gray-500">No modules available at the moment.</p>
-        <p className="text-xs text-gray-400 mt-1">
+        <Package className="h-10 w-10 text-muted-foreground/50 mx-auto mb-3" />
+        <p className="text-[13px] text-muted-foreground">No modules available at the moment.</p>
+        <p className="text-[11px] text-muted-foreground mt-1">
           You can subscribe to modules later from the Modules page.
         </p>
       </div>
@@ -1015,27 +1015,27 @@ function Step4Modules({
 
   return (
     <div className="space-y-5 pt-2">
-      <p className="text-sm text-gray-500">
+      <p className="text-[13px] text-muted-foreground">
         Choose the modules your organization needs, then set the plan tier and number of licenses for each.
       </p>
 
       {selectedCount === 0 && (
-        <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-amber-200 bg-amber-50 text-sm text-amber-800">
+        <div className="flex items-center gap-2 px-3 py-2.5 rounded-md border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/40 text-[13px] text-amber-800 dark:text-amber-200">
           <Package className="h-4 w-4 shrink-0" />
           Select at least one module to continue — this step can't be skipped.
         </div>
       )}
 
-      <label className="flex items-start gap-3 p-3 rounded-lg border border-gray-200 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors">
+      <label className="flex items-start gap-3 p-3 rounded-lg border border-border bg-muted/50 cursor-pointer hover:bg-muted transition-colors">
         <input
           type="checkbox"
           checked={skipTrial}
           onChange={(e) => setSkipTrial(e.target.checked)}
-          className="mt-0.5 rounded border-gray-300"
+          className="mt-0.5 rounded border-border"
         />
         <div>
-          <div className="text-sm font-medium text-gray-900">Skip trial — start paid subscription immediately</div>
-          <div className="text-xs text-gray-500 mt-0.5">
+          <div className="text-[13px] font-medium text-foreground">Skip trial — start paid subscription immediately</div>
+          <div className="text-[11px] text-muted-foreground mt-0.5">
             When checked, subscriptions are activated right away and an invoice is generated for each module. Leave unchecked to get a 14-day free trial.
           </div>
         </div>
@@ -1046,7 +1046,7 @@ function Step4Modules({
           <div
             key={mod.id}
             className={`rounded-lg border transition-all ${
-              mod.selected ? "border-brand-500 bg-brand-50" : "border-gray-200 bg-white"
+              mod.selected ? "border-brand-500 dark:bg-brand-950/40 bg-brand-50" : "border-border bg-card"
             }`}
           >
             <button
@@ -1055,26 +1055,26 @@ function Step4Modules({
             >
               <div
                 className={`w-5 h-5 rounded mt-0.5 flex items-center justify-center flex-shrink-0 transition-colors ${
-                  mod.selected ? "bg-brand-600 text-white" : "bg-gray-100"
+                  mod.selected ? "bg-brand-600 text-white" : "bg-muted"
                 }`}
               >
                 {mod.selected && <Check className="h-3.5 w-3.5" />}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium text-gray-900">{mod.name}</div>
+                <div className="text-[13px] font-medium text-foreground">{mod.name}</div>
                 {mod.description && (
-                  <div className="text-xs text-gray-500 mt-0.5 line-clamp-2">{mod.description}</div>
+                  <div className="text-[11px] text-muted-foreground mt-0.5 line-clamp-2">{mod.description}</div>
                 )}
               </div>
             </button>
             {mod.selected && (
               <div className="px-4 pb-4 pt-1 grid grid-cols-1 sm:grid-cols-2 gap-3 border-t border-brand-100">
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Plan tier</label>
+                  <label className="block text-[11px] font-medium text-foreground mb-1">Plan tier</label>
                   <select
                     value={mod.plan_tier}
                     onChange={(e) => updateModulePlan(mod.id, e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                    className="w-full px-3 py-2 border border-border rounded-md text-[13px] bg-card text-foreground focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
                   >
                     {PLAN_TIERS.map((p) => (
                       <option key={p.value} value={p.value}>{p.label}</option>
@@ -1082,14 +1082,14 @@ function Step4Modules({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Licenses (seats)</label>
+                  <label className="block text-[11px] font-medium text-foreground mb-1">Licenses (seats)</label>
                   <input
                     type="number"
                     min={1}
                     max={10000}
                     value={mod.total_seats}
                     onChange={(e) => updateModuleSeats(mod.id, Math.max(1, Number(e.target.value) || 1))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                    className="w-full px-3 py-2 border border-border rounded-md text-[13px] bg-card text-foreground focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
                   />
                 </div>
               </div>
@@ -1133,8 +1133,8 @@ function Step5QuickSetup({
     <div className="space-y-6 pt-2">
       {/* Leave Types */}
       <div>
-        <h3 className="text-sm font-semibold text-gray-900 mb-1">Default Leave Types</h3>
-        <p className="text-xs text-gray-500 mb-3">
+        <h3 className="text-[13px] font-semibold text-foreground mb-1">Default Leave Types</h3>
+        <p className="text-[11px] text-muted-foreground mb-3">
           Set up the standard leave types for your organization. You can customize these later.
         </p>
 
@@ -1143,20 +1143,20 @@ function Step5QuickSetup({
             <div
               key={lt.code}
               className={`flex items-center gap-4 p-3 rounded-lg border transition-colors ${
-                lt.enabled ? "border-gray-200 bg-white" : "border-gray-100 bg-gray-50 opacity-60"
+                lt.enabled ? "border-border bg-card" : "border-border bg-muted/50 opacity-60"
               }`}
             >
               <button
                 onClick={() => toggleLeaveType(idx)}
                 className={`w-5 h-5 rounded flex items-center justify-center flex-shrink-0 transition-colors ${
-                  lt.enabled ? "bg-brand-600 text-white" : "bg-gray-200"
+                  lt.enabled ? "bg-brand-600 text-white" : "bg-muted"
                 }`}
               >
                 {lt.enabled && <Check className="h-3.5 w-3.5" />}
               </button>
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium text-gray-900">{leaveTypeLabel(t, lt)}</div>
-                <div className="text-xs text-gray-500">{lt.code}</div>
+                <div className="text-[13px] font-medium text-foreground">{leaveTypeLabel(t, lt)}</div>
+                <div className="text-[11px] text-muted-foreground">{lt.code}</div>
               </div>
               <div className="flex items-center gap-2">
                 <input
@@ -1166,9 +1166,9 @@ function Step5QuickSetup({
                   value={lt.annual_quota}
                   onChange={(e) => updateLeaveQuota(idx, parseInt(e.target.value) || 0)}
                   disabled={!lt.enabled}
-                  className="w-16 px-2 py-1.5 border border-gray-300 rounded text-sm text-center focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none disabled:opacity-50"
+                  className="w-16 px-2 py-1.5 border border-border rounded text-[13px] text-center focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none disabled:opacity-50"
                 />
-                <span className="text-xs text-gray-500">days/yr</span>
+                <span className="text-[11px] text-muted-foreground">days/yr</span>
               </div>
             </div>
           ))}
@@ -1177,48 +1177,48 @@ function Step5QuickSetup({
 
       {/* Default Shift */}
       <div>
-        <h3 className="text-sm font-semibold text-gray-900 mb-1">Default Work Shift</h3>
-        <p className="text-xs text-gray-500 mb-3">
+        <h3 className="text-[13px] font-semibold text-foreground mb-1">Default Work Shift</h3>
+        <p className="text-[11px] text-muted-foreground mb-3">
           Set up the default working hours for your team.
         </p>
 
-        <div className="p-4 rounded-lg border border-gray-200 bg-white space-y-4">
+        <div className="p-4 rounded-lg border border-border bg-card space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Shift Name</label>
+            <label className="block text-[13px] font-medium text-foreground mb-1">Shift Name</label>
             <input
               type="text"
               value={shiftName}
               onChange={(e) => setShiftName(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+              className="w-full px-3 py-2 border border-border rounded-md text-[13px] bg-card text-foreground focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
             />
           </div>
 
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
+              <label className="block text-[13px] font-medium text-foreground mb-1">Start Time</label>
               <input
                 type="time"
                 value={shiftStart}
                 onChange={(e) => setShiftStart(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                className="w-full px-3 py-2 border border-border rounded-md text-[13px] bg-card text-foreground focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">End Time</label>
+              <label className="block text-[13px] font-medium text-foreground mb-1">End Time</label>
               <input
                 type="time"
                 value={shiftEnd}
                 onChange={(e) => setShiftEnd(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                className="w-full px-3 py-2 border border-border rounded-md text-[13px] bg-card text-foreground focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Work Days</label>
+              <label className="block text-[13px] font-medium text-foreground mb-1">Work Days</label>
               <input
                 type="text"
                 value={workDays}
                 readOnly
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-600"
+                className="w-full px-3 py-2 border border-border rounded-md text-[13px] bg-muted/50 text-muted-foreground"
               />
             </div>
           </div>
