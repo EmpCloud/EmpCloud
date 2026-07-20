@@ -5,6 +5,9 @@
 
 import { getDB } from "../../db/connection.js";
 import { logger } from "../../utils/logger.js";
+// Single source of truth for module health (DB-driven, per-environment URLs).
+// health-check.service does not import this file, so there is no cycle.
+import { getServiceHealth } from "./health-check.service.js";
 
 // ---------------------------------------------------------------------------
 // Platform Overview
@@ -65,6 +68,73 @@ export async function getPlatformOverview() {
 }
 
 // ---------------------------------------------------------------------------
+// Organization Stats (headline counters for the super-admin org list)
+// ---------------------------------------------------------------------------
+
+/**
+ * Headline counters for /admin/organizations. All windows are computed in the
+ * DB's timezone off `organizations.created_at`, and every count applies the
+ * same `id > 0` sentinel guard as the rest of this service so the reserved
+ * platform org never inflates a number.
+ *
+ * Week starts Monday (MySQL WEEKDAY() is 0 for Monday).
+ */
+export async function getOrgStats() {
+  const db = getDB();
+  const orgs = () => db("organizations").where("id", ">", 0);
+
+  const [total] = await orgs().count("id as count");
+  const [active] = await orgs().where("is_active", true).count("id as count");
+  const [inactive] = await orgs().where("is_active", false).count("id as count");
+  const [today] = await orgs().where("created_at", ">=", db.raw("CURDATE()")).count("id as count");
+  const [thisWeek] = await orgs()
+    .where("created_at", ">=", db.raw("DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)"))
+    .count("id as count");
+  const [thisMonth] = await orgs()
+    .where("created_at", ">=", db.raw("DATE_FORMAT(NOW(), '%Y-%m-01')"))
+    .count("id as count");
+  const [thisYear] = await orgs()
+    .where("created_at", ">=", db.raw("DATE_FORMAT(NOW(), '%Y-01-01')"))
+    .count("id as count");
+
+  const [userCount] = await db("users").where("organization_id", ">", 0).count("id as count");
+
+  // Same MRR normalisation as getPlatformOverview: price_per_seat is the
+  // effective per-cycle amount, so divide by months_in_cycle for true MRR.
+  const [mrrResult] = await db("org_subscriptions as s")
+    .leftJoin("billing_cycle_discounts as b", "s.billing_cycle", "b.cycle")
+    .whereIn("s.status", ["active", "trial"])
+    .where("s.organization_id", ">", 0)
+    .select(
+      db.raw(
+        "COALESCE(SUM((s.price_per_seat * s.total_seats) / COALESCE(b.months_in_cycle, 1)), 0) as mrr",
+      ),
+    );
+
+  const [withSub] = await db("org_subscriptions")
+    .where("organization_id", ">", 0)
+    .whereIn("status", ["active", "trial"])
+    .countDistinct("organization_id as count");
+
+  const totalOrgs = Number(total.count);
+  const subscribed = Number(withSub.count);
+
+  return {
+    total: totalOrgs,
+    active: Number(active.count),
+    inactive: Number(inactive.count),
+    today: Number(today.count),
+    this_week: Number(thisWeek.count),
+    this_month: Number(thisMonth.count),
+    this_year: Number(thisYear.count),
+    total_users: Number(userCount.count),
+    mrr: Number(mrrResult.mrr),
+    with_subscription: subscribed,
+    without_subscription: Math.max(0, totalOrgs - subscribed),
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Organization List (paginated, searchable, sortable)
 // ---------------------------------------------------------------------------
 
@@ -74,6 +144,15 @@ export async function getOrgList(params: {
   search?: string;
   sort_by?: string;
   sort_order?: "asc" | "desc";
+  /** "active" | "inactive" — maps onto organizations.is_active */
+  status?: string;
+  /** Registration window (YYYY-MM-DD). date_to is inclusive of the whole day. */
+  date_from?: string;
+  date_to?: string;
+  /** ISO country code stored on organizations.country (e.g. "IN") */
+  country?: string;
+  /** "true" = has an active/trial subscription, "false" = has none */
+  has_subscription?: string;
 }) {
   const db = getDB();
   const page = params.page || 1;
@@ -93,6 +172,40 @@ export async function getOrgList(params: {
       this.where("o.name", "like", `%${params.search}%`)
         .orWhere("o.email", "like", `%${params.search}%`);
     });
+  }
+
+  // --- Filters -------------------------------------------------------------
+  // Activation status (organizations stores this as the boolean is_active).
+  if (params.status === "active") baseQuery = baseQuery.where("o.is_active", true);
+  else if (params.status === "inactive") baseQuery = baseQuery.where("o.is_active", false);
+
+  // Registration window. date_to is inclusive of the whole day, so compare
+  // against the following midnight rather than truncating created_at.
+  if (params.date_from) baseQuery = baseQuery.where("o.created_at", ">=", params.date_from);
+  if (params.date_to) {
+    baseQuery = baseQuery.where(
+      "o.created_at",
+      "<",
+      db.raw("DATE_ADD(?, INTERVAL 1 DAY)", [params.date_to]),
+    );
+  }
+
+  if (params.country) baseQuery = baseQuery.where("o.country", params.country);
+
+  // Has an active/trial subscription (EXISTS keeps the row count intact —
+  // a join here would multiply orgs by their subscription rows). Built as an
+  // explicit correlated sub-query (not a callback) so it does not depend on
+  // knex binding the builder to `this`.
+  if (params.has_subscription === "true" || params.has_subscription === "false") {
+    const subQuery = db
+      .select(db.raw("1"))
+      .from("org_subscriptions as s2")
+      .whereRaw("s2.organization_id = o.id")
+      .whereIn("s2.status", ["active", "trial"]);
+    baseQuery =
+      params.has_subscription === "true"
+        ? baseQuery.whereExists(subQuery)
+        : baseQuery.whereNotExists(subQuery);
   }
 
   const [totalResult] = await baseQuery.clone().count("o.id as count");
@@ -621,54 +734,46 @@ export async function getRecentActivity(limit: number = 30) {
 }
 
 // ---------------------------------------------------------------------------
-// System Health — check module servers
+// System Health — summary for the super-admin Overview dashboard widget
 // ---------------------------------------------------------------------------
 
-const MODULE_HEALTH_ENDPOINTS = [
-  { name: "EMP Cloud", slug: "empcloud", url: "http://localhost:3000/health" },
-  { name: "EMP Recruit", slug: "emp-recruit", url: "http://localhost:4500/health" },
-  { name: "EMP Performance", slug: "emp-performance", url: "http://localhost:4300/health" },
-  { name: "EMP Rewards", slug: "emp-rewards", url: "http://localhost:4600/health" },
-  { name: "EMP Exit", slug: "emp-exit", url: "http://localhost:4400/health" },
-  { name: "EMP Payroll", slug: "emp-payroll", url: "http://localhost:4100/health" },
-  { name: "EMP Billing", slug: "emp-billing", url: "http://localhost:4200/health" },
-];
-
-async function checkHealth(url: string): Promise<{ status: "healthy" | "down"; latency_ms: number }> {
-  const start = Date.now();
-  try {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 3000);
-    const response = await fetch(url, { signal: controller.signal });
-    clearTimeout(timer);
-    const latency = Date.now() - start;
-    if (response.ok) {
-      return { status: "healthy", latency_ms: latency };
-    }
-    return { status: "down", latency_ms: latency };
-  } catch {
-    return { status: "down", latency_ms: Date.now() - start };
-  }
-}
-
+/**
+ * Summary view of module health for the Overview dashboard widget
+ * (GET /api/v1/admin/health).
+ *
+ * This used to run its own health check against a HARDCODED list of dev ports
+ * (empcloud:3000, recruit:4500, payroll:4100, billing:4200, ...). Those ports
+ * only exist on a developer laptop, so on test/prod every call was refused
+ * instantly (~5ms -- far too fast to be a timeout) and the widget reported
+ * EVERY module as "Down" while the services were perfectly healthy. The
+ * detailed Service Health page never had this problem because it uses the
+ * DB-driven checker, which reads each module's real per-environment address.
+ *
+ * There is now a single source of truth: we delegate to getServiceHealth() and
+ * map its richer result onto this endpoint's original response shape, so the
+ * existing widget keeps working unchanged. Do NOT reintroduce a hardcoded
+ * endpoint list here.
+ */
 export async function getSystemHealth() {
-  const results = await Promise.all(
-    MODULE_HEALTH_ENDPOINTS.map(async (ep) => {
-      const health = await checkHealth(ep.url);
-      return {
-        name: ep.name,
-        slug: ep.slug,
-        url: ep.url,
-        ...health,
-      };
-    })
-  );
+  const detailed = await getServiceHealth();
 
-  const healthyCount = results.filter((r) => r.status === "healthy").length;
-  const totalCount = results.length;
+  // The widget's badge is two-state (healthy | everything-else-is-red), so a
+  // "degraded" module (e.g. reachable but returning 404) collapses to "down"
+  // here. The Service Health page still shows the precise state.
+  const modules = detailed.modules.map((m) => ({
+    name: m.name,
+    slug: m.slug,
+    port: m.port,
+    status: m.status === "healthy" ? "healthy" : "down",
+    latency_ms: m.responseTime ?? 0,
+    error: m.error,
+  }));
+
+  const healthyCount = modules.filter((m) => m.status === "healthy").length;
+  const totalCount = modules.length;
 
   return {
-    modules: results,
+    modules,
     healthy_count: healthyCount,
     total_count: totalCount,
     overall_status: healthyCount === totalCount ? "all_healthy" : healthyCount > 0 ? "degraded" : "down",
