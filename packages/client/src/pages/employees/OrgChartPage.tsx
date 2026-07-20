@@ -98,7 +98,7 @@ function NodeCard({
         e.stopPropagation();
         onNavigate(node.id);
       }}
-      className={`group relative w-[200px] overflow-hidden rounded-2xl border bg-card text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md ${
+      className={`group relative w-[200px] overflow-hidden rounded-xl border bg-card text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${
         isHighlighted
           ? "border-brand-300 ring-2 ring-brand-100"
           : "border-border hover:border-brand-200 dark:hover:border-brand-800"
@@ -117,10 +117,10 @@ function NodeCard({
               firstName={first}
               lastName={last}
               size="lg"
-              ring={hasChildren ? "ring-brand-100" : "ring-gray-100"}
+              ring={hasChildren ? "ring-brand-100" : "ring-border"}
             />
             {hasChildren && (
-              <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-brand-500 text-[9px] font-bold text-white ring-2 ring-white">
+              <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-brand-500 text-[9px] font-bold text-white ring-2 ring-card">
                 {node.children.length}
               </span>
             )}
@@ -264,7 +264,7 @@ function MobileTreeNode({
         )}
         <button
           onClick={() => navigate(`/employees/${node.id}`)}
-          className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted transition-colors group"
+          className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-muted/50 transition-colors group"
         >
           <div className="h-10 w-10 rounded-full bg-brand-100 dark:bg-brand-950/40 flex items-center justify-center text-sm font-semibold text-brand-700 dark:text-brand-300 shrink-0">
             {getInitials(node.name)}
@@ -627,12 +627,12 @@ export default function OrgChartPage() {
       <div className="mb-4 shrink-0 space-y-4">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-100 to-violet-100 text-indigo-600 dark:text-indigo-400">
-              <Network className="h-6 w-6" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-md bg-gradient-to-br from-indigo-100 to-violet-100 text-indigo-600 dark:text-indigo-400">
+              <Network className="h-5 w-5" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-foreground">{t("orgChart.title")}</h1>
-              <p className="mt-0.5 text-sm text-muted-foreground">
+              <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("orgChart.title")}</h1>
+              <p className="mt-0.5 text-[13px] text-muted-foreground">
                 {t("orgChart.subtitle")}
               </p>
             </div>
@@ -644,7 +644,7 @@ export default function OrgChartPage() {
               <button
                 type="button"
                 onClick={() => setStatModal("people")}
-                className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 shadow-sm transition hover:border-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 shadow-sm transition hover:border-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 focus:outline-none focus:ring-2 focus:ring-indigo-200"
                 title={t("orgChart.viewAllPeople")}
               >
                 <Users className="h-4 w-4 text-indigo-500" />
@@ -656,7 +656,7 @@ export default function OrgChartPage() {
               <button
                 type="button"
                 onClick={() => setStatModal("managers")}
-                className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 shadow-sm transition hover:border-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+                className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 shadow-sm transition hover:border-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 focus:outline-none focus:ring-2 focus:ring-emerald-200"
                 title={t("orgChart.viewAllManagers")}
               >
                 <Briefcase className="h-4 w-4 text-emerald-500" />
@@ -668,7 +668,7 @@ export default function OrgChartPage() {
               <button
                 type="button"
                 onClick={() => setStatModal("departments")}
-                className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 shadow-sm transition hover:border-amber-300 hover:bg-amber-50 dark:hover:bg-amber-950/40 focus:outline-none focus:ring-2 focus:ring-amber-200"
+                className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 shadow-sm transition hover:border-amber-300 hover:bg-amber-50 dark:hover:bg-amber-950/40 focus:outline-none focus:ring-2 focus:ring-amber-200"
                 title={t("orgChart.viewAllDepartments")}
               >
                 <Building2 className="h-4 w-4 text-amber-500" />
@@ -692,7 +692,7 @@ export default function OrgChartPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={t("orgChart.searchPlaceholder")}
-              className="w-full rounded-lg border border-border bg-card py-2 pl-9 pr-9 text-sm outline-none transition focus:border-brand-300 dark:focus:border-brand-800 focus:ring-2 focus:ring-brand-100"
+              className="w-full rounded-md border border-border bg-card py-2 pl-9 pr-9 text-[13px] outline-none transition focus:border-brand-300 dark:focus:border-brand-800 focus:ring-2 focus:ring-brand-100"
             />
             {search && (
               <button
@@ -707,7 +707,7 @@ export default function OrgChartPage() {
               </button>
             )}
             {searchResults.length > 0 && (
-              <div className="absolute z-30 mt-1 w-full overflow-hidden rounded-lg border border-border bg-card shadow-lg">
+              <div className="absolute z-30 mt-1 w-full overflow-hidden rounded-md border border-border bg-card shadow-lg">
                 {searchResults.map((p) => (
                   <button
                     key={p.id}
@@ -740,7 +740,7 @@ export default function OrgChartPage() {
               onClick={() => exportChart("png")}
               disabled={exporting !== null}
               title={t("orgChart.downloadPng")}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-sm text-muted-foreground shadow-sm transition hover:border-brand-300 dark:hover:border-brand-800 hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:text-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-2 text-sm text-muted-foreground shadow-sm transition hover:border-brand-300 dark:hover:border-brand-800 hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:text-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {exporting === "png" ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -754,7 +754,7 @@ export default function OrgChartPage() {
               onClick={() => exportChart("pdf")}
               disabled={exporting !== null}
               title={t("orgChart.downloadPdf")}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-sm text-muted-foreground shadow-sm transition hover:border-brand-300 dark:hover:border-brand-800 hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:text-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-2 text-sm text-muted-foreground shadow-sm transition hover:border-brand-300 dark:hover:border-brand-800 hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:text-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {exporting === "pdf" ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -781,7 +781,7 @@ export default function OrgChartPage() {
           {/* ====== Desktop: pannable / zoomable viewport ====== */}
           <div
             ref={containerRef}
-            className="hidden lg:block relative flex-1 h-[calc(100vh-16rem)] overflow-hidden rounded-xl border border-border bg-gradient-to-br from-muted to-background dark:from-gray-900 dark:to-gray-800"
+            className="hidden lg:block relative flex-1 h-[calc(100vh-16rem)] overflow-hidden rounded-lg border border-border bg-gradient-to-br from-muted to-background dark:from-gray-900 dark:to-gray-800"
             style={{
               cursor: isDragging ? "grabbing" : "grab",
               backgroundImage:
@@ -799,7 +799,7 @@ export default function OrgChartPage() {
                 onClick={() =>
                   setScale((s) => Math.min(2.5, s + 0.15))
                 }
-                className="h-9 w-9 rounded-lg bg-card border border-border shadow-sm flex items-center justify-center hover:bg-muted text-muted-foreground"
+                className="h-9 w-9 rounded-md bg-card border border-border shadow-sm flex items-center justify-center hover:bg-muted text-muted-foreground"
                 title={t("orgChart.zoomIn")}
               >
                 <Plus className="h-4 w-4" />
@@ -811,14 +811,14 @@ export default function OrgChartPage() {
                 onClick={() =>
                   setScale((s) => Math.max(0.15, s - 0.15))
                 }
-                className="h-9 w-9 rounded-lg bg-card border border-border shadow-sm flex items-center justify-center hover:bg-muted text-muted-foreground"
+                className="h-9 w-9 rounded-md bg-card border border-border shadow-sm flex items-center justify-center hover:bg-muted text-muted-foreground"
                 title={t("orgChart.zoomOut")}
               >
                 <Minus className="h-4 w-4" />
               </button>
               <button
                 onClick={toggleFullscreen}
-                className="h-9 w-9 rounded-lg bg-card border border-border shadow-sm flex items-center justify-center hover:bg-muted text-muted-foreground mt-1"
+                className="h-9 w-9 rounded-md bg-card border border-border shadow-sm flex items-center justify-center hover:bg-muted text-muted-foreground mt-1"
                 title={t("orgChart.fullscreen")}
               >
                 <Maximize2 className="h-4 w-4" />
@@ -852,7 +852,7 @@ export default function OrgChartPage() {
 
           {/* ====== Mobile / Tablet: vertical list tree ====== */}
           <div
-            className="lg:hidden bg-card rounded-xl border border-border p-4 overflow-auto"
+            className="lg:hidden bg-card rounded-lg border border-border p-4 overflow-auto"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
@@ -924,13 +924,13 @@ function StatListModal({
     <Dialog.Root open={open} onOpenChange={(v) => !v && onClose()}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-black/40 data-[state=open]:animate-in data-[state=open]:fade-in-0" />
-        <Dialog.Content className="fixed left-1/2 top-1/2 z-50 flex max-h-[80vh] w-full max-w-xl -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-xl bg-card shadow-xl data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95">
+        <Dialog.Content className="fixed left-1/2 top-1/2 z-50 flex max-h-[80vh] w-full max-w-xl -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-lg bg-card shadow-xl data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95">
           <div className="flex items-center justify-between border-b border-border px-6 py-4">
             <Dialog.Title className="text-base font-semibold text-foreground">
               {title}
             </Dialog.Title>
             <Dialog.Close asChild>
-              <button className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-muted-foreground">
+              <button className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-muted-foreground">
                 <X className="h-4 w-4" />
               </button>
             </Dialog.Close>
@@ -947,7 +947,7 @@ function StatListModal({
                     ? t("orgChart.filterDepartments")
                     : t("orgChart.filterPeople")
                 }
-                className="w-full rounded-lg border border-border bg-card py-2 pl-9 pr-3 text-sm outline-none focus:border-brand-300 dark:focus:border-brand-800 focus:ring-2 focus:ring-brand-100"
+                className="w-full rounded-md border border-border bg-card py-2 pl-9 pr-3 text-[13px] outline-none focus:border-brand-300 dark:focus:border-brand-800 focus:ring-2 focus:ring-brand-100"
               />
             </div>
           </div>
@@ -986,13 +986,13 @@ function PersonList({
     return <p className="px-4 py-8 text-center text-sm text-muted-foreground">{t("orgChart.noMatches")}</p>;
   }
   return (
-    <ul className="divide-y divide-gray-100">
+    <ul className="divide-y divide-border">
       {people.map((p) => (
         <li key={p.id}>
           <button
             type="button"
             onClick={() => onNavigate(p.id)}
-            className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-muted"
+            className="flex w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-muted/50 transition-colors"
           >
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-300 to-violet-400 text-[11px] font-semibold text-white">
               {getInitials(p.name)}
@@ -1005,7 +1005,7 @@ function PersonList({
               </p>
             </div>
             {p.children.length > 0 && (
-              <span className="shrink-0 rounded-full bg-brand-50 dark:bg-brand-950/40 px-2 py-0.5 text-[10px] font-semibold text-brand-600 dark:text-brand-400">
+              <span className="shrink-0 rounded-md bg-brand-50 dark:bg-brand-950/40 px-2 py-0.5 text-[10px] font-semibold text-brand-600 dark:text-brand-400">
                 {t("orgChart.reportsBadge", { count: p.children.length })}
               </span>
             )}
@@ -1029,7 +1029,7 @@ function DepartmentList({
     return <p className="px-4 py-8 text-center text-sm text-muted-foreground">{t("orgChart.noMatches")}</p>;
   }
   return (
-    <ul className="divide-y divide-gray-100">
+    <ul className="divide-y divide-border">
       {departments.map((d) => {
         const expanded = openDept === d.name;
         return (
@@ -1037,9 +1037,9 @@ function DepartmentList({
             <button
               type="button"
               onClick={() => setOpenDept(expanded ? null : d.name)}
-              className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-muted"
+              className="flex w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-muted/50 transition-colors"
             >
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300">
                 <Building2 className="h-4 w-4" />
               </div>
               <div className="min-w-0 flex-1">
