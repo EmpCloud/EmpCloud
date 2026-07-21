@@ -82,12 +82,12 @@ export default function AssetDashboardPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t("assetDashboard.title")}</h1>
-          <p className="text-sm text-muted-foreground mt-1">{t("assetDashboard.subtitle")}</p>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("assetDashboard.title")}</h1>
+          <p className="text-[13px] text-muted-foreground mt-0.5">{t("assetDashboard.subtitle")}</p>
         </div>
         <Link
           to="/assets"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors text-sm font-medium"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 text-white rounded-md hover:bg-brand-700 transition-colors text-[13px] font-medium"
         >
           {t("assetDashboard.viewAllAssets")}
           <ArrowRight className="h-4 w-4" />
@@ -102,15 +102,15 @@ export default function AssetDashboardPage() {
             <Link
               key={card.label}
               to={card.to}
-              className="block text-left w-full bg-card rounded-xl border border-border p-4 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="block text-left w-full bg-card rounded-lg border border-border p-4 transition-colors duration-150 hover:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
             >
               <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-lg ${card.color}`}>
+                <div className={`p-2 rounded-md ${card.color}`}>
                   <Icon className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-foreground">{card.value}</p>
-                  <p className="text-xs text-muted-foreground">{card.label}</p>
+                  <p className="text-2xl font-semibold tabular-nums leading-none text-foreground">{card.value}</p>
+                  <p className="mt-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{card.label}</p>
                 </div>
               </div>
             </Link>
@@ -124,7 +124,7 @@ export default function AssetDashboardPage() {
           status was added. Linking to the unfiltered list lets the admin
           inspect the offending rows directly. */}
       {unaccounted > 0 && (
-        <div className="rounded-lg border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-950/40 px-4 py-2 text-sm text-amber-800 dark:text-amber-200 flex items-center justify-between">
+        <div className="rounded-lg border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-950/40 px-4 py-2 text-[13px] tabular-nums text-amber-800 dark:text-amber-200 flex items-center justify-between">
           <span>
             {t("assetDashboard.unaccounted", { count: unaccounted })}
           </span>
@@ -134,7 +134,7 @@ export default function AssetDashboardPage() {
 
       {/* Expiring Warranties Alert */}
       {stats.expiring_warranties && stats.expiring_warranties.length > 0 && (
-        <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 rounded-xl p-4">
+        <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 rounded-lg p-4">
           <div className="flex items-center gap-2 mb-3">
             <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
             <h2 className="text-sm font-semibold text-amber-800 dark:text-amber-200">
@@ -143,7 +143,7 @@ export default function AssetDashboardPage() {
           </div>
           <div className="space-y-2">
             {stats.expiring_warranties.slice(0, 5).map((asset: any) => (
-              <div key={asset.id} className="flex items-center justify-between text-sm">
+              <div key={asset.id} className="flex items-center justify-between text-[13px]">
                 <div>
                   <Link
                     to={`/assets/${asset.id}`}
@@ -166,10 +166,10 @@ export default function AssetDashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Category Breakdown */}
-        <div className="bg-card rounded-xl border border-border p-6">
+        <div className="bg-card rounded-lg border border-border p-4">
           <div className="flex items-center gap-2 mb-4">
             <BarChart3 className="h-5 w-5 text-muted-foreground" />
-            <h2 className="text-lg font-semibold text-foreground">{t("assetDashboard.byCategory")}</h2>
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("assetDashboard.byCategory")}</h2>
           </div>
           {stats.category_breakdown && stats.category_breakdown.length > 0 ? (
             <div className="space-y-3">
@@ -179,7 +179,7 @@ export default function AssetDashboardPage() {
                   <div key={cat.category}>
                     <div className="flex items-center justify-between text-sm mb-1">
                       <span className="text-muted-foreground">{cat.category}</span>
-                      <span className="text-muted-foreground">{cat.count} ({pct}%)</span>
+                      <span className="tabular-nums text-muted-foreground">{cat.count} ({pct}%)</span>
                     </div>
                     <div className="w-full bg-muted rounded-full h-2">
                       <div
@@ -197,10 +197,10 @@ export default function AssetDashboardPage() {
         </div>
 
         {/* Top Assignees */}
-        <div className="bg-card rounded-xl border border-border p-6">
+        <div className="bg-card rounded-lg border border-border p-4">
           <div className="flex items-center gap-2 mb-4">
             <UserCheck className="h-5 w-5 text-muted-foreground" />
-            <h2 className="text-lg font-semibold text-foreground">{t("assetDashboard.topAssignees")}</h2>
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("assetDashboard.topAssignees")}</h2>
           </div>
           {stats.top_assignees && stats.top_assignees.length > 0 ? (
             <div className="space-y-3">
@@ -208,7 +208,7 @@ export default function AssetDashboardPage() {
                 <Link
                   key={assignee.user_id}
                   to={`/assets?assigned_to=${assignee.user_id}`}
-                  className="flex items-center justify-between rounded-lg p-2 -m-2 transition-all hover:bg-muted focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="flex items-center justify-between rounded-md p-2 -m-2 transition-colors hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-brand-500"
                 >
                   <div className="flex items-center gap-3">
                     <div className="h-8 w-8 rounded-full bg-brand-100 dark:bg-brand-950/40 flex items-center justify-center text-xs font-semibold text-brand-700 dark:text-brand-300">
@@ -227,10 +227,10 @@ export default function AssetDashboardPage() {
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-card rounded-xl border border-border p-6">
+      <div className="bg-card rounded-lg border border-border p-4">
         <div className="flex items-center gap-2 mb-4">
           <Clock className="h-5 w-5 text-muted-foreground" />
-          <h2 className="text-lg font-semibold text-foreground">{t("assetDashboard.recentActivity")}</h2>
+          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("assetDashboard.recentActivity")}</h2>
         </div>
         {stats.recent_activity && stats.recent_activity.length > 0 ? (
           <div className="space-y-3">

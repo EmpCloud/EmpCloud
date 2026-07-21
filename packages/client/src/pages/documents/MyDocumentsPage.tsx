@@ -60,19 +60,19 @@ function getVerificationBadge(doc: any, t: TFunction) {
   switch (status) {
     case "verified":
       return (
-        <span className="flex items-center gap-1 text-xs text-green-700 bg-green-50 px-2 py-1 rounded-full w-fit">
+        <span className="flex items-center gap-1 text-[11px] text-green-700 dark:text-green-300 bg-green-50 dark:bg-green-950/40 px-2 py-0.5 rounded-md w-fit">
           <CheckCircle className="h-3 w-3" /> {t("myDocuments.status.verified")}
         </span>
       );
     case "rejected":
       return (
-        <span className="flex items-center gap-1 text-xs text-red-700 bg-red-50 px-2 py-1 rounded-full w-fit">
+        <span className="flex items-center gap-1 text-[11px] text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/40 px-2 py-0.5 rounded-md w-fit">
           <XCircle className="h-3 w-3" /> {t("myDocuments.status.rejected")}
         </span>
       );
     default:
       return (
-        <span className="flex items-center gap-1 text-xs text-amber-700 bg-amber-50 px-2 py-1 rounded-full w-fit">
+        <span className="flex items-center gap-1 text-[11px] text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-md w-fit">
           <Clock className="h-3 w-3" /> {t("myDocuments.status.pending")}
         </span>
       );
@@ -131,16 +131,16 @@ export default function MyDocumentsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t("myDocuments.page.title")}</h1>
-          <p className="text-gray-500 mt-1">
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("myDocuments.page.title")}</h1>
+          <p className="text-[13px] text-muted-foreground mt-0.5">
             {t("myDocuments.page.subtitle")}
           </p>
         </div>
         <button
           onClick={() => setShowUpload(!showUpload)}
-          className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
+          className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700"
         >
           <Upload className="h-4 w-4" /> {t("myDocuments.actions.uploadDocument")}
         </button>
@@ -150,51 +150,51 @@ export default function MyDocumentsPage() {
       {showUpload && (
         <form
           onSubmit={handleUpload}
-          className="bg-white rounded-xl border border-gray-200 p-6 mb-6"
+          className="bg-card rounded-lg border border-border p-4 mb-6"
         >
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-gray-900">{t("myDocuments.upload.heading")}</h3>
+            <h3 className="text-sm font-semibold text-foreground">{t("myDocuments.upload.heading")}</h3>
             <button
               type="button"
               onClick={() => setShowUpload(false)}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-muted-foreground hover:text-foreground transition-colors"
             >
               <X className="h-4 w-4" />
             </button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-[13px] font-medium text-foreground mb-1">
                 {t("myDocuments.upload.fileLabel")}
               </label>
               <input
                 type="file"
                 accept=".pdf,.jpg,.jpeg,.png,.docx"
                 onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
-                className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100"
+                className="w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-[13px] font-medium text-foreground mb-1">
                 {t("myDocuments.upload.nameLabel")}
               </label>
               <input
                 type="text"
                 value={uploadName}
                 onChange={(e) => setUploadName(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="w-full px-3 py-2 border border-border rounded-md text-[13px]"
                 placeholder={t("myDocuments.upload.namePlaceholder")}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-[13px] font-medium text-foreground mb-1">
                 {t("myDocuments.upload.categoryLabel")}
               </label>
               <select
                 value={uploadCategory}
                 onChange={(e) => setUploadCategory(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="w-full px-3 py-2 border border-border rounded-md text-[13px]"
                 required
               >
                 <option value="">{t("myDocuments.upload.categoryPlaceholder")}</option>
@@ -206,14 +206,14 @@ export default function MyDocumentsPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-[13px] font-medium text-foreground mb-1">
                 {t("myDocuments.upload.expiryLabel")}
               </label>
               <input
                 type="date"
                 value={uploadExpiry}
                 onChange={(e) => setUploadExpiry(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="w-full px-3 py-2 border border-border rounded-md text-[13px]"
               />
             </div>
           </div>
@@ -221,7 +221,7 @@ export default function MyDocumentsPage() {
             <button
               type="submit"
               disabled={uploadDoc.isPending}
-              className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
+              className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700 disabled:opacity-50"
             >
               <Upload className="h-4 w-4" />{" "}
               {uploadDoc.isPending
@@ -235,14 +235,14 @@ export default function MyDocumentsPage() {
       {/* Documents List */}
       <div className="space-y-3">
         {isLoading ? (
-          <div className="text-center py-12 text-gray-400">{t("myDocuments.list.loading")}</div>
+          <div className="text-center py-12 text-muted-foreground">{t("myDocuments.list.loading")}</div>
         ) : docs.length === 0 ? (
           <div className="text-center py-12">
-            <FileText className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-            <p className="text-gray-400">{t("myDocuments.list.empty")}</p>
+            <FileText className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
+            <p className="text-muted-foreground">{t("myDocuments.list.empty")}</p>
             <button
               onClick={() => setShowUpload(true)}
-              className="mt-3 text-sm text-brand-600 font-medium hover:text-brand-800"
+              className="mt-3 text-[13px] text-brand-600 dark:text-brand-400 font-medium hover:text-brand-800 dark:hover:text-brand-300"
             >
               {t("myDocuments.list.uploadFirst")}
             </button>
@@ -257,38 +257,38 @@ export default function MyDocumentsPage() {
             return (
               <div
                 key={doc.id}
-                className={`bg-white rounded-xl border p-4 ${
+                className={`bg-card rounded-lg border p-4 ${
                   expiryStatus === "expired"
-                    ? "border-red-200"
+                    ? "border-red-200 dark:border-red-900/50"
                     : expiryStatus === "warning"
-                      ? "border-orange-200"
-                      : "border-gray-200"
+                      ? "border-orange-200 dark:border-orange-900/50"
+                      : "border-border"
                 }`}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-3">
                     <div
-                      className={`h-10 w-10 rounded-lg flex items-center justify-center ${
+                      className={`h-10 w-10 rounded-md flex items-center justify-center ${
                         expiryStatus === "expired"
-                          ? "bg-red-50"
+                          ? "bg-red-50 dark:bg-red-950/40"
                           : expiryStatus === "warning"
-                            ? "bg-orange-50"
-                            : "bg-gray-50"
+                            ? "bg-orange-50 dark:bg-orange-950/40"
+                            : "bg-muted"
                       }`}
                     >
                       <FileText
                         className={`h-5 w-5 ${
                           expiryStatus === "expired"
-                            ? "text-red-500"
+                            ? "text-red-500 dark:text-red-400"
                             : expiryStatus === "warning"
-                              ? "text-orange-500"
-                              : "text-gray-400"
+                              ? "text-orange-500 dark:text-orange-400"
+                              : "text-muted-foreground"
                         }`}
                       />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-900">{doc.name}</p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-[13px] font-medium text-foreground">{doc.name}</p>
+                      <p className="text-[11px] tabular-nums text-muted-foreground">
                         {doc.category_name} &middot;{" "}
                         {doc.file_size
                           ? `${(doc.file_size / 1024).toFixed(0)} KB`
@@ -297,12 +297,12 @@ export default function MyDocumentsPage() {
                       </p>
                       {doc.expires_at && (
                         <p
-                          className={`text-xs mt-1 flex items-center gap-1 ${
+                          className={`text-[11px] tabular-nums mt-1 flex items-center gap-1 ${
                             expiryStatus === "expired"
-                              ? "text-red-600"
+                              ? "text-red-600 dark:text-red-400"
                               : expiryStatus === "warning"
-                                ? "text-orange-600"
-                                : "text-gray-400"
+                                ? "text-orange-600 dark:text-orange-400"
+                                : "text-muted-foreground"
                           }`}
                         >
                           {expiryStatus === "expired" && (
@@ -339,14 +339,14 @@ export default function MyDocumentsPage() {
                             showToast("error", t("myDocuments.toast.downloadFailed"));
                           }
                         }}
-                        className="text-xs text-brand-600 hover:text-brand-800 font-medium"
+                        className="text-[11px] text-brand-600 dark:text-brand-400 hover:text-brand-800 dark:hover:text-brand-300 font-medium"
                       >
                         {t("myDocuments.doc.download")}
                       </button>
                       {(doc.verification_status === "rejected" || isRejected) && (
                         <button
                           onClick={() => setShowUpload(true)}
-                          className="text-xs text-brand-600 hover:text-brand-800 font-medium"
+                          className="text-[11px] text-brand-600 dark:text-brand-400 hover:text-brand-800 dark:hover:text-brand-300 font-medium"
                         >
                           {t("myDocuments.doc.reupload")}
                         </button>
@@ -363,7 +363,7 @@ export default function MyDocumentsPage() {
       {/* Pagination */}
       {meta && meta.total_pages > 1 && (
         <div className="flex items-center justify-between mt-4">
-          <p className="text-sm text-gray-500">
+          <p className="text-[13px] tabular-nums text-muted-foreground">
             {t("myDocuments.pagination.summary", {
               page: meta.page,
               totalPages: meta.total_pages,
@@ -374,14 +374,14 @@ export default function MyDocumentsPage() {
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
+              className="px-3 py-1.5 text-[13px] border border-border rounded-md disabled:opacity-50 hover:bg-muted transition-colors"
             >
               {t("myDocuments.pagination.previous")}
             </button>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={page >= meta.total_pages}
-              className="px-3 py-1 text-sm border border-gray-300 rounded-lg disabled:opacity-50"
+              className="px-3 py-1.5 text-[13px] border border-border rounded-md disabled:opacity-50 hover:bg-muted transition-colors"
             >
               {t("myDocuments.pagination.next")}
             </button>

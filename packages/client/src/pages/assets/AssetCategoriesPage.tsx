@@ -99,12 +99,12 @@ export default function AssetCategoriesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t("assetCategories.header.title")}</h1>
-          <p className="text-sm text-muted-foreground mt-1">{t("assetCategories.header.subtitle")}</p>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("assetCategories.header.title")}</h1>
+          <p className="text-[13px] text-muted-foreground mt-0.5">{t("assetCategories.header.subtitle")}</p>
         </div>
         <button
           onClick={() => { resetForm(); setShowForm(true); }}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors text-sm font-medium"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 text-white rounded-md hover:bg-brand-700 transition-colors text-[13px] font-medium"
         >
           <Plus className="h-4 w-4" />
           {t("assetCategories.actions.addCategory")}
@@ -121,21 +121,21 @@ export default function AssetCategoriesPage() {
           <p className="text-muted-foreground">{t("assetCategories.list.empty")}</p>
         </div>
       ) : (
-        <div className="bg-card rounded-xl border border-border overflow-hidden">
+        <div className="bg-card rounded-lg border border-border overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-muted border-b border-border">
-                <th className="text-left px-4 py-3 font-medium text-muted-foreground">{t("assetCategories.table.name")}</th>
-                <th className="text-left px-4 py-3 font-medium text-muted-foreground">{t("assetCategories.table.description")}</th>
-                <th className="text-right px-4 py-3 font-medium text-muted-foreground">{t("assetCategories.table.actions")}</th>
+              <tr className="bg-muted/50 border-b border-border">
+                <th className="text-left px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("assetCategories.table.name")}</th>
+                <th className="text-left px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("assetCategories.table.description")}</th>
+                <th className="text-right px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("assetCategories.table.actions")}</th>
               </tr>
             </thead>
             <tbody>
               {categories.map((cat: any) => (
-                <tr key={cat.id} className="border-b border-border hover:bg-muted">
-                  <td className="px-4 py-3 font-medium text-foreground">{cat.name}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{cat.description || "-"}</td>
-                  <td className="px-4 py-3 text-right">
+                <tr key={cat.id} className="border-b border-border hover:bg-muted/50 transition-colors">
+                  <td className="px-4 py-2.5 font-medium text-foreground">{cat.name}</td>
+                  <td className="px-4 py-2.5 text-muted-foreground">{cat.description || "-"}</td>
+                  <td className="px-4 py-2.5 text-right">
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => startEdit(cat)}
@@ -166,7 +166,7 @@ export default function AssetCategoriesPage() {
       {/* Create / Edit Modal */}
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-card rounded-xl shadow-xl w-full max-w-md mx-4">
+          <div className="bg-card rounded-lg shadow-xl w-full max-w-md mx-4">
             <div className="flex items-center justify-between px-6 py-4 border-b border-border">
               <h2 className="text-lg font-semibold text-foreground">
                 {editingId ? t("assetCategories.form.editTitle") : t("assetCategories.form.newTitle")}
@@ -177,37 +177,37 @@ export default function AssetCategoriesPage() {
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1">{t("assetCategories.form.nameLabel")}</label>
+                <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t("assetCategories.form.nameLabel")}</label>
                 <input
                   type="text"
                   required
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
-                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500"
                   placeholder={t("assetCategories.form.namePlaceholder")}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1">{t("assetCategories.form.descriptionLabel")}</label>
+                <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t("assetCategories.form.descriptionLabel")}</label>
                 <textarea
                   value={formDescription}
                   onChange={(e) => setFormDescription(e.target.value)}
                   rows={3}
-                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
               <div className="flex justify-end gap-3 pt-2">
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="px-4 py-2 text-sm text-muted-foreground border border-border rounded-lg hover:bg-muted"
+                  className="px-4 py-2 text-[13px] text-muted-foreground border border-border rounded-md hover:bg-muted/50 transition-colors"
                 >
                   {t("assetCategories.form.cancel")}
                 </button>
                 <button
                   type="submit"
                   disabled={createCategory.isPending || updateCategory.isPending}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-4 py-2 text-[13px] font-medium text-white bg-brand-600 rounded-md hover:bg-brand-700 disabled:opacity-50"
                 >
                   <Check className="h-4 w-4" />
                   {editingId ? t("assetCategories.form.update") : t("assetCategories.form.create")}
@@ -225,7 +225,7 @@ export default function AssetCategoriesPage() {
           onClick={() => !deleteCategory.isPending && setDeleteTarget(null)}
         >
           <div
-            className="w-full max-w-md rounded-xl bg-card shadow-xl"
+            className="w-full max-w-md rounded-lg bg-card shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="px-6 py-5">
@@ -242,16 +242,16 @@ export default function AssetCategoriesPage() {
               </div>
             </div>
             {deleteError && (
-              <div className="mx-6 mb-4 rounded-lg bg-red-50 dark:bg-red-950/40 p-3 text-sm text-red-700 dark:text-red-300">
+              <div className="mx-6 mb-4 rounded-md bg-red-50 dark:bg-red-950/40 p-3 text-[13px] text-red-700 dark:text-red-300">
                 {deleteError}
               </div>
             )}
-            <div className="flex justify-end gap-3 rounded-b-xl border-t border-border bg-muted px-6 py-4">
+            <div className="flex justify-end gap-3 rounded-b-lg border-t border-border bg-muted px-6 py-4">
               <button
                 type="button"
                 onClick={() => setDeleteTarget(null)}
                 disabled={deleteCategory.isPending}
-                className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-card disabled:opacity-50"
+                className="rounded-md border border-border px-4 py-2 text-[13px] font-medium text-muted-foreground hover:bg-card disabled:opacity-50"
               >
                 {t("assetCategories.delete.cancel")}
               </button>
@@ -259,7 +259,7 @@ export default function AssetCategoriesPage() {
                 type="button"
                 onClick={() => deleteCategory.mutate(deleteTarget.id)}
                 disabled={deleteCategory.isPending}
-                className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+                className="flex items-center gap-2 rounded-md bg-red-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-red-700 disabled:opacity-50"
               >
                 {deleteCategory.isPending ? (
                   <>
