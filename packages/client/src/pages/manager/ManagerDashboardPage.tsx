@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
@@ -14,6 +15,35 @@ import {
   XCircle,
   ChevronRight,
 } from "lucide-react";
+
+// Compact panel primitive — the enterprise card: 8px radius, hairline border,
+// an uppercase section-label header. Shared with the self-service dashboard;
+// body has no padding by default so lists/tables sit flush against the header.
+function Panel({
+  title,
+  action,
+  bodyClassName = "",
+  id,
+  children,
+}: {
+  title: string;
+  action?: ReactNode;
+  bodyClassName?: string;
+  id?: string;
+  children: ReactNode;
+}) {
+  return (
+    <section id={id} className="bg-card border border-border rounded-lg overflow-hidden scroll-mt-4">
+      <header className="flex items-center justify-between gap-2 px-4 py-2.5 border-b border-border">
+        <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground truncate">
+          {title}
+        </h2>
+        {action}
+      </header>
+      <div className={bodyClassName}>{children}</div>
+    </section>
+  );
+}
 
 interface TeamMember {
   id: number;
@@ -138,47 +168,44 @@ export default function ManagerDashboardPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-foreground">{t('manager.title')}</h1>
-        <p className="text-muted-foreground mt-1">
+      <div className="mb-6">
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">{t('manager.title')}</h1>
+        <p className="text-[13px] text-muted-foreground mt-0.5">
           {t('manager.subtitle')}
         </p>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
+      {/* Stat tiles — compact KPI treatment: icon chip, big tabular number,
+          uppercase micro-label. Each is a jump-link to its section below. */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 mb-6">
         {statCards.map((s) => (
           <button
             key={s.key}
             type="button"
             onClick={() => scrollToSection(s.section)}
             aria-label={`Jump to ${s.label}`}
-            className="bg-card rounded-xl border border-border p-5 text-left transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="group bg-card rounded-lg border border-border p-3 text-left transition-colors duration-150 hover:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
-            <div className="flex items-center gap-3">
-              <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${s.color}`}>
-                <s.icon className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-foreground">
-                  {statsLoading ? "..." : s.value}
-                </p>
-                <p className="text-xs text-muted-foreground">{s.label}</p>
-              </div>
+            <div className="flex items-center justify-between">
+              <span className={`flex h-8 w-8 items-center justify-center rounded-md ${s.color}`}>
+                <s.icon className="h-4 w-4" />
+              </span>
             </div>
+            <p className="mt-2.5 text-2xl font-semibold tabular-nums leading-none text-foreground">
+              {statsLoading ? "—" : s.value}
+            </p>
+            <p className="mt-1.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground truncate">
+              {s.label}
+            </p>
           </button>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
         {/* Team Attendance Today */}
-        <div id="team-attendance" className="bg-card rounded-xl border border-border overflow-hidden scroll-mt-4">
-          <div className="px-6 py-4 border-b border-border">
-            <h2 className="text-lg font-semibold text-foreground">{t('manager.teamAttendanceToday')}</h2>
-          </div>
-          <div className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
+        <Panel id="team-attendance" title={t('manager.teamAttendanceToday')} bodyClassName="divide-y divide-border max-h-80 overflow-y-auto">
             {attendance?.present?.length === 0 && attendance?.absent?.length === 0 ? (
-              <div className="px-6 py-8 text-center text-muted-foreground">{t('manager.noTeamMembers')}</div>
+              <div className="px-4 py-8 text-center text-[13px] text-muted-foreground">{t('manager.noTeamMembers')}</div>
             ) : (
               <>
                 {(attendance?.present || []).map((r: any) => (
@@ -234,17 +261,12 @@ export default function ManagerDashboardPage() {
                 ))}
               </>
             )}
-          </div>
-        </div>
+        </Panel>
 
         {/* Team Leave Calendar (this week) */}
-        <div className="bg-card rounded-xl border border-border overflow-hidden">
-          <div className="px-6 py-4 border-b border-border">
-            <h2 className="text-lg font-semibold text-foreground">{t('manager.teamLeaveCalendar')}</h2>
-          </div>
-          <div className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
+        <Panel title={t('manager.teamLeaveCalendar')} bodyClassName="divide-y divide-border max-h-80 overflow-y-auto">
             {calendar.length === 0 ? (
-              <div className="px-6 py-8 text-center text-muted-foreground">
+              <div className="px-4 py-8 text-center text-[13px] text-muted-foreground">
                 {t('manager.noApprovedLeaves')}
               </div>
             ) : (
@@ -269,79 +291,81 @@ export default function ManagerDashboardPage() {
                       </p>
                     </div>
                   </div>
-                  <span className="text-xs text-muted-foreground">{Number(leave.days_count)}d</span>
+                  <span className="text-[11px] tabular-nums text-muted-foreground">{Number(leave.days_count)}d</span>
                 </div>
               ))
             )}
-          </div>
-        </div>
+        </Panel>
       </div>
 
       {/* Pending Leave Requests */}
-      <div id="pending-leaves" className="bg-card rounded-xl border border-border overflow-hidden mb-8 scroll-mt-4">
-        <div className="px-6 py-4 border-b border-border flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-foreground">{t('manager.pendingLeaveRequests')}</h2>
-          <span className="text-xs bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 px-2 py-1 rounded-full font-medium">
+      <Panel
+        id="pending-leaves"
+        title={t('manager.pendingLeaveRequests')}
+        bodyClassName="overflow-x-auto"
+        action={
+          <span className="text-[11px] bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 px-2 py-0.5 rounded-full font-medium">
             {t('manager.pendingBadge', { count: pendingLeaves.length })}
           </span>
-        </div>
-        <table className="min-w-full">
-          <thead className="bg-muted border-b border-border">
+        }
+      >
+        <table className="min-w-full text-[13px]">
+          <thead className="bg-muted/60 border-b border-border">
             <tr>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('manager.table.employee')}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('manager.table.type')}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('manager.table.dates')}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('manager.table.days')}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('manager.table.reason')}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('manager.table.actions')}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wide px-4 py-2.5">{t('manager.table.employee')}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wide px-4 py-2.5">{t('manager.table.type')}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wide px-4 py-2.5">{t('manager.table.dates')}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wide px-4 py-2.5">{t('manager.table.days')}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wide px-4 py-2.5">{t('manager.table.reason')}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wide px-4 py-2.5">{t('manager.table.actions')}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border">
             {pendingLeaves.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">
+                <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
                   {t('manager.noPendingRequests')}
                 </td>
               </tr>
             ) : (
               pendingLeaves.map((leave) => (
-                <tr key={leave.id} className="hover:bg-muted">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-brand-100 dark:bg-brand-950/40 flex items-center justify-center text-sm font-semibold text-brand-700 dark:text-brand-300">
+                <tr key={leave.id} className="hover:bg-muted/50 transition-colors">
+                  <td className="px-4 py-2.5">
+                    <div className="flex items-center gap-2.5">
+                      <div className="h-8 w-8 shrink-0 rounded-full bg-brand-100 dark:bg-brand-950/40 flex items-center justify-center text-xs font-semibold text-brand-700 dark:text-brand-300">
                         {leave.first_name?.[0]}{leave.last_name?.[0]}
                       </div>
-                      <div>
-                        <p className="text-sm font-medium text-foreground">
+                      <div className="min-w-0">
+                        <p className="font-medium text-foreground truncate">
                           {leave.first_name} {leave.last_name}
                         </p>
-                        <p className="text-xs text-muted-foreground">{leave.emp_code || ""}</p>
+                        <p className="text-[11px] text-muted-foreground truncate">{leave.emp_code || ""}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-muted-foreground">
+                  <td className="px-4 py-2.5 text-muted-foreground">
                     {leave.leave_type_name ? leaveTypeLabel(t, { code: leave.leave_type_code, name: leave.leave_type_name }) : "-"}
                     {/* #1609 — guard with Boolean(): MySQL tinyint 0 renders as literal "0". */}
-                    {Boolean(leave.is_half_day) && <span className="ml-1 text-xs text-muted-foreground">{t('manager.halfSuffix')}</span>}
+                    {Boolean(leave.is_half_day) && <span className="ml-1 text-[11px] text-muted-foreground">{t('manager.halfSuffix')}</span>}
                   </td>
-                  <td className="px-6 py-4 text-sm text-muted-foreground">
+                  <td className="px-4 py-2.5 text-muted-foreground whitespace-nowrap">
                     {leave.start_date} &mdash; {leave.end_date}
                   </td>
-                  <td className="px-6 py-4 text-sm text-muted-foreground font-medium">
+                  <td className="px-4 py-2.5 text-foreground font-medium tabular-nums">
                     {Number(leave.days_count)}
                   </td>
                   <td
-                    className="px-6 py-4 text-sm text-muted-foreground max-w-xs truncate cursor-help"
+                    className="px-4 py-2.5 text-muted-foreground max-w-xs truncate cursor-help"
                     title={leave.reason || ""}
                   >
                     {leave.reason}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-2.5">
                     <div className="flex flex-col gap-2">
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => setActionId(actionId === leave.id ? null : leave.id)}
-                          className="text-xs bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300 px-2 py-1 rounded hover:bg-green-100 dark:hover:bg-green-950/40"
+                          className="text-[11px] font-medium bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300 px-2.5 py-1 rounded-md hover:bg-brand-100 dark:hover:bg-brand-900/50 transition-colors"
                         >
                           {t('manager.review')}
                         </button>
@@ -353,21 +377,21 @@ export default function ManagerDashboardPage() {
                             value={remarks}
                             onChange={(e) => setRemarks(e.target.value)}
                             placeholder={t('manager.remarksPlaceholder')}
-                            className="px-2 py-1 border border-gray-300 rounded text-xs flex-1 min-w-0"
+                            className="bg-card text-foreground px-2 py-1 border border-border rounded-md text-xs flex-1 min-w-0 focus:outline-none focus:ring-2 focus:ring-brand-500"
                           />
                           <button
                             onClick={() => approveMut.mutate(leave.id)}
                             disabled={approveMut.isPending}
-                            className="text-xs bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 disabled:opacity-50 whitespace-nowrap"
+                            className="inline-flex items-center gap-1 text-xs font-medium bg-green-600 text-white px-2.5 py-1 rounded-md hover:bg-green-700 disabled:opacity-50 whitespace-nowrap transition-colors"
                           >
-                            <CheckCircle2 className="h-3 w-3 inline mr-1" />{t('manager.approve')}
+                            <CheckCircle2 className="h-3 w-3" />{t('manager.approve')}
                           </button>
                           <button
                             onClick={() => rejectMut.mutate(leave.id)}
                             disabled={rejectMut.isPending}
-                            className="text-xs bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 disabled:opacity-50 whitespace-nowrap"
+                            className="inline-flex items-center gap-1 text-xs font-medium bg-red-600 text-white px-2.5 py-1 rounded-md hover:bg-red-700 disabled:opacity-50 whitespace-nowrap transition-colors"
                           >
-                            <XCircle className="h-3 w-3 inline mr-1" />{t('manager.reject')}
+                            <XCircle className="h-3 w-3" />{t('manager.reject')}
                           </button>
                         </div>
                       )}
@@ -378,45 +402,42 @@ export default function ManagerDashboardPage() {
             )}
           </tbody>
         </table>
-      </div>
+      </Panel>
 
       {/* Direct Reports List */}
-      <div id="direct-reports" className="bg-card rounded-xl border border-border overflow-hidden scroll-mt-4">
-        <div className="px-6 py-4 border-b border-border">
-          <h2 className="text-lg font-semibold text-foreground">{t('manager.directReports')}</h2>
-        </div>
-        <div className="divide-y divide-gray-100">
+      <div className="mt-4">
+      <Panel id="direct-reports" title={t('manager.directReports')} bodyClassName="divide-y divide-border">
           {teamLoading ? (
-            <div className="px-6 py-8 text-center text-muted-foreground">{t('manager.loadingTeam')}</div>
+            <div className="px-4 py-8 text-center text-[13px] text-muted-foreground">{t('manager.loadingTeam')}</div>
           ) : team.length === 0 ? (
-            <div className="px-6 py-8 text-center text-muted-foreground">
+            <div className="px-4 py-8 text-center text-[13px] text-muted-foreground">
               {t('manager.noDirectReports')}
             </div>
           ) : (
             team.map((member) => (
               <div
                 key={member.id}
-                className="flex items-center justify-between px-6 py-4 hover:bg-muted cursor-pointer"
+                className="flex items-center justify-between gap-3 px-4 py-2.5 hover:bg-muted/50 cursor-pointer transition-colors"
                 onClick={() => window.location.href = `/employees/${member.id}`}
               >
-                <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 rounded-full bg-brand-100 dark:bg-brand-950/40 flex items-center justify-center text-sm font-semibold text-brand-700 dark:text-brand-300">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="h-9 w-9 shrink-0 rounded-full bg-brand-100 dark:bg-brand-950/40 flex items-center justify-center text-xs font-semibold text-brand-700 dark:text-brand-300">
                     {member.first_name?.[0]}{member.last_name?.[0]}
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-foreground">
+                  <div className="min-w-0">
+                    <p className="text-[13px] font-medium text-foreground truncate">
                       {member.first_name} {member.last_name}
                     </p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-[11px] text-muted-foreground truncate">
                       {member.designation || member.role} {member.emp_code ? `| ${member.emp_code}` : ""}
                     </p>
                   </div>
                 </div>
-                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground/60" />
               </div>
             ))
           )}
-        </div>
+      </Panel>
       </div>
     </div>
   );
