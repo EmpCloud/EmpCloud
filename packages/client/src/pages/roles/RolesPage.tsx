@@ -112,16 +112,16 @@ export default function RolesPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
+          <h1 className="text-xl font-semibold tracking-tight text-foreground flex items-center gap-2">
             <Shield className="h-6 w-6 text-brand-600 dark:text-brand-400" />
             {tx("title")}
           </h1>
-          <p className="text-muted-foreground mt-1">{tx("subtitle")}</p>
+          <p className="text-[13px] text-muted-foreground mt-0.5">{tx("subtitle")}</p>
         </div>
         <button
           type="button"
           onClick={() => setEditing({ role: null, mode: "create" })}
-          className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
+          className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700"
         >
           <Plus className="h-4 w-4" /> {tx("newCustomRole")}
         </button>
@@ -134,13 +134,13 @@ export default function RolesPage() {
         subtitle={tx("systemRolesSubtitle") as string}
       />
       {isLoading ? (
-        <div className="flex items-center gap-2 text-muted-foreground text-sm py-6">
+        <div className="flex items-center gap-2 text-muted-foreground text-[13px] py-6">
           <Loader2 className="h-4 w-4 animate-spin" /> {tx("loadingRoles")}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
           {systemRoles.length === 0 && (
-            <p className="text-sm text-muted-foreground col-span-2">
+            <p className="text-[13px] text-muted-foreground col-span-2">
               {tx("noSystemRoles")}
             </p>
           )}
@@ -165,7 +165,7 @@ export default function RolesPage() {
         subtitle={tx("customRolesSubtitle") as string}
       />
       {customRoles.length === 0 ? (
-        <div className="border border-dashed border-border rounded-lg p-6 text-center text-sm text-muted-foreground">
+        <div className="border border-dashed border-border rounded-lg p-4 text-center text-[13px] text-muted-foreground">
           {tx("noCustomRolesPrefix")}{" "}
           <button
             onClick={() => setEditing({ role: null, mode: "create" })}
@@ -229,10 +229,10 @@ function SectionHeader({
 }) {
   return (
     <div className="mb-3">
-      <h2 className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
+      <h2 className="text-[13px] font-semibold text-muted-foreground flex items-center gap-2">
         {icon} {title}
       </h2>
-      <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>
+      <p className="text-[11px] text-muted-foreground mt-0.5 tabular-nums">{subtitle}</p>
     </div>
   );
 }
@@ -264,7 +264,7 @@ function RoleCard({
   const isSystem = role.type === 0;
 
   return (
-    <div className="border border-border rounded-xl bg-card p-4 hover:border-brand-500 dark:hover:border-brand-400 transition-colors">
+    <div className="border border-border rounded-lg bg-card p-4 hover:border-brand-500 dark:hover:border-brand-400 transition-colors duration-150">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
@@ -284,9 +284,9 @@ function RoleCard({
             )}
           </div>
           {displayDescription && (
-            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{displayDescription}</p>
+            <p className="text-[11px] text-muted-foreground mt-1 line-clamp-2">{displayDescription}</p>
           )}
-          <p className="text-xs text-muted-foreground mt-2">
+          <p className="text-[11px] text-muted-foreground mt-2 tabular-nums">
             {tx("permissionsCount", { count: role.permissions.length })}
           </p>
         </div>
@@ -436,7 +436,7 @@ function RoleBuilderModal({
                   ? tx("editSystemRoleTitle")
                   : tx("editRoleTitle")}
             </h2>
-            <p className="text-xs text-muted-foreground mt-0.5">
+            <p className="text-[11px] text-muted-foreground mt-0.5 tabular-nums">
               {tx("permissionsSelected", { selected: selectedCount, total: totalCount })}
             </p>
           </div>
@@ -454,10 +454,10 @@ function RoleBuilderModal({
           {/* Name + description */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">
+              <label className="block text-[13px] font-medium text-muted-foreground mb-1">
                 {tx("roleNameLabel")}
                 {isSystemRole && (
-                  <span className="text-xs font-normal text-muted-foreground ml-2">{tx("roleNameLocked")}</span>
+                  <span className="text-[11px] font-normal text-muted-foreground ml-2">{tx("roleNameLocked")}</span>
                 )}
               </label>
               <input
@@ -470,21 +470,21 @@ function RoleBuilderModal({
                 onChange={(e) => setName(e.target.value)}
                 disabled={isSystemRole}
                 placeholder={tx("roleNamePlaceholder") as string}
-                className={`w-full border border-border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 ${
+                className={`w-full border border-border rounded-md px-3 py-2 text-[13px] focus:ring-2 focus:ring-brand-500 ${
                   isSystemRole ? "bg-muted text-muted-foreground cursor-not-allowed" : "bg-card text-foreground"
                 }`}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">
-                {tx("descriptionLabel")} <span className="text-xs font-normal text-muted-foreground">{tx("descriptionOptional")}</span>
+              <label className="block text-[13px] font-medium text-muted-foreground mb-1">
+                {tx("descriptionLabel")} <span className="text-[11px] font-normal text-muted-foreground">{tx("descriptionOptional")}</span>
               </label>
               <input
                 type="text"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder={tx("descriptionPlaceholder") as string}
-                className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 bg-card text-foreground"
+                className="w-full border border-border rounded-md px-3 py-2 text-[13px] focus:ring-2 focus:ring-brand-500 bg-card text-foreground"
               />
             </div>
           </div>
@@ -497,14 +497,14 @@ function RoleBuilderModal({
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={tx("searchPermissionsPlaceholder") as string}
-              className="bg-card text-foreground w-full pl-10 pr-4 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500"
+              className="bg-card text-foreground w-full pl-10 pr-4 py-2 border border-border rounded-md text-[13px] focus:ring-2 focus:ring-brand-500"
             />
           </div>
 
           {/* Permission groups */}
           <div className="border border-border rounded-lg divide-y divide-border">
             {filteredGroups.length === 0 && (
-              <div className="px-4 py-6 text-center text-sm text-muted-foreground">
+              <div className="px-4 py-6 text-center text-[13px] text-muted-foreground">
                 {tx("noPermissionsMatch", { query: search })}
               </div>
             )}
@@ -530,8 +530,8 @@ function RoleBuilderModal({
                       onChange={() => toggleGroup(perms)}
                       className="accent-brand-600"
                     />
-                    <span className="font-medium text-sm text-foreground flex-1">{group}</span>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="font-medium text-[13px] text-foreground flex-1">{group}</span>
+                    <span className="text-[11px] text-muted-foreground tabular-nums">
                       {groupSelectedCount} / {perms.length}
                     </span>
                   </div>
@@ -550,7 +550,7 @@ function RoleBuilderModal({
                           />
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2">
-                              <span className="text-sm text-foreground">{p.label}</span>
+                              <span className="text-[13px] text-foreground">{p.label}</span>
                               <span className="text-[10px] font-mono text-muted-foreground">{p.key}</span>
                               {p.scope && (
                                 <span
@@ -566,7 +566,7 @@ function RoleBuilderModal({
                                 </span>
                               )}
                             </div>
-                            <p className="text-xs text-muted-foreground">{p.description}</p>
+                            <p className="text-[11px] text-muted-foreground">{p.description}</p>
                           </div>
                         </label>
                       ))}
@@ -581,13 +581,13 @@ function RoleBuilderModal({
         {/* Footer */}
         <div className="border-t border-border px-6 py-3 flex items-center justify-between gap-3">
           {mutation.isError && (
-            <span className="text-xs text-red-600 dark:text-red-400">{extractApiError(mutation.error)}</span>
+            <span className="text-[11px] text-red-600 dark:text-red-400">{extractApiError(mutation.error)}</span>
           )}
           <div className="ml-auto flex items-center gap-2">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-muted-foreground border border-border rounded-lg hover:bg-muted"
+              className="px-4 py-2 text-[13px] font-medium text-muted-foreground border border-border rounded-md hover:bg-muted"
             >
               {t("common.cancel")}
             </button>
@@ -595,7 +595,7 @@ function RoleBuilderModal({
               type="button"
               onClick={handleSave}
               disabled={!name.trim() || mutation.isPending}
-              className="px-4 py-2 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 disabled:opacity-50 flex items-center gap-2"
+              className="px-4 py-2 text-[13px] font-medium text-white bg-brand-600 rounded-md hover:bg-brand-700 disabled:opacity-50 flex items-center gap-2"
             >
               {mutation.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -651,14 +651,14 @@ function ConfirmDialog({
             </div>
             <h3 className="text-lg font-semibold text-foreground">{title}</h3>
           </div>
-          <p className="text-sm text-muted-foreground">{body}</p>
-          {error && <p className="text-sm text-red-600 dark:text-red-400 mt-3">{error}</p>}
+          <p className="text-[13px] text-muted-foreground">{body}</p>
+          {error && <p className="text-[13px] text-red-600 dark:text-red-400 mt-3">{error}</p>}
         </div>
         <div className="flex justify-end gap-2 px-6 py-3 border-t border-border">
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 text-sm font-medium text-muted-foreground border border-border rounded-lg hover:bg-muted"
+            className="px-4 py-2 text-[13px] font-medium text-muted-foreground border border-border rounded-md hover:bg-muted"
           >
             {t("common.cancel")}
           </button>
@@ -666,7 +666,7 @@ function ConfirmDialog({
             type="button"
             onClick={onConfirm}
             disabled={isPending}
-            className={`px-4 py-2 text-sm font-medium text-white rounded-lg disabled:opacity-50 flex items-center gap-2 ${
+            className={`px-4 py-2 text-[13px] font-medium text-white rounded-md disabled:opacity-50 flex items-center gap-2 ${
               isReset ? "bg-amber-600 hover:bg-amber-700" : "bg-red-600 hover:bg-red-700"
             }`}
           >
