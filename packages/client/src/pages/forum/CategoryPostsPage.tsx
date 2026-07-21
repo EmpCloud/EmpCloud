@@ -75,7 +75,7 @@ export default function CategoryPostsPage() {
       <div className="flex items-center gap-3 mb-6">
         <Link
           to="/forum"
-          className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-muted-foreground transition-colors"
+          className="p-2 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="h-5 w-5" />
         </Link>
@@ -85,7 +85,7 @@ export default function CategoryPostsPage() {
               <span className="text-2xl">{category.icon}</span>
             )}
             <div>
-              <h1 className="text-2xl font-bold text-foreground">
+              <h1 className="text-xl font-semibold tracking-tight text-foreground">
                 {category?.name || t("categoryPosts.header.defaultCategoryName")}
               </h1>
               {category?.description && (
@@ -96,7 +96,7 @@ export default function CategoryPostsPage() {
         </div>
         <Link
           to={`/forum/new?category=${id}`}
-          className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
+          className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700 transition-colors"
         >
           <Plus className="h-4 w-4" /> {t("categoryPosts.header.newPost")}
         </Link>
@@ -109,7 +109,7 @@ export default function CategoryPostsPage() {
           <select
             value={postType}
             onChange={(e) => { setPostType(e.target.value); setPage(1); }}
-            className="bg-card text-foreground px-3 py-1.5 border border-border rounded-lg text-sm"
+            className="bg-card text-foreground px-3 py-1.5 border border-border rounded-md text-[13px]"
           >
             <option value="">{t("categoryPosts.filters.allTypes")}</option>
             <option value="discussion">{t("categoryPosts.filters.discussions")}</option>
@@ -119,7 +119,7 @@ export default function CategoryPostsPage() {
           </select>
         </div>
 
-        <div className="flex gap-1 bg-muted rounded-lg p-1">
+        <div className="flex gap-1 bg-muted rounded-md p-1">
           {[
             { key: "recent", labelKey: "categoryPosts.sort.recent" },
             { key: "popular", labelKey: "categoryPosts.sort.popular" },
@@ -144,11 +144,11 @@ export default function CategoryPostsPage() {
       {/* Posts */}
       <div className="space-y-3">
         {isLoading ? (
-          <div className="bg-card rounded-xl border border-border p-8 text-center text-muted-foreground">
+          <div className="bg-card rounded-lg border border-border p-8 text-center text-[13px] text-muted-foreground">
             {t("categoryPosts.list.loading")}
           </div>
         ) : posts.length === 0 ? (
-          <div className="bg-card rounded-xl border border-border p-8 text-center text-muted-foreground">
+          <div className="bg-card rounded-lg border border-border p-8 text-center text-[13px] text-muted-foreground">
             {t("categoryPosts.list.empty")}
           </div>
         ) : (
@@ -159,7 +159,7 @@ export default function CategoryPostsPage() {
               <Link
                 key={post.id}
                 to={`/forum/post/${post.id}`}
-                className="block bg-card rounded-xl border border-border p-5 hover:shadow-md hover:border-brand-200 dark:hover:border-brand-900 transition-all"
+                className="block bg-card rounded-lg border border-border p-4 hover:border-brand-400 transition-colors duration-150"
               >
                 <div className="flex items-start gap-4">
                   <div className="h-10 w-10 rounded-full bg-brand-100 dark:bg-brand-950/40 flex items-center justify-center flex-shrink-0">
@@ -171,7 +171,7 @@ export default function CategoryPostsPage() {
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <span className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${typeConfig.color}`}>
+                      <span className={`inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-md ${typeConfig.color}`}>
                         <TypeIcon className="h-3 w-3" />
                         {t(typeConfig.labelKey)}
                       </span>
@@ -187,12 +187,12 @@ export default function CategoryPostsPage() {
                       )}
                     </div>
 
-                    <h3 className="text-sm font-semibold text-foreground mb-1">{post.title}</h3>
-                    <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
+                    <h3 className="text-[13px] font-semibold text-foreground mb-1">{post.title}</h3>
+                    <p className="text-[11px] text-muted-foreground line-clamp-2 mb-2">
                       {post.content?.replace(/<[^>]*>/g, "").slice(0, 200)}
                     </p>
 
-                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-4 text-[11px] tabular-nums text-muted-foreground">
                       <span>{post.author_first_name} {post.author_last_name}</span>
                       <span>{timeAgo(post.created_at, t)}</span>
                       <span className="flex items-center gap-1"><Eye className="h-3 w-3" /> {post.view_count}</span>
@@ -210,7 +210,7 @@ export default function CategoryPostsPage() {
       {/* Pagination */}
       {meta && meta.total_pages > 1 && (
         <div className="flex items-center justify-between mt-6">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-[13px] tabular-nums text-muted-foreground">
             {t("categoryPosts.pagination.pageInfo", {
               page: meta.page,
               totalPages: meta.total_pages,
@@ -221,14 +221,14 @@ export default function CategoryPostsPage() {
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="bg-card text-foreground px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50"
+              className="bg-card text-foreground px-3 py-1.5 text-[13px] border border-border rounded-md disabled:opacity-50 hover:bg-muted transition-colors"
             >
               {t("categoryPosts.pagination.previous")}
             </button>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={page >= meta.total_pages}
-              className="bg-card text-foreground px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50"
+              className="bg-card text-foreground px-3 py-1.5 text-[13px] border border-border rounded-md disabled:opacity-50 hover:bg-muted transition-colors"
             >
               {t("categoryPosts.pagination.next")}
             </button>

@@ -215,11 +215,11 @@ export default function SurveyBuilderPage() {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="flex items-center gap-3 mb-8">
-        <button onClick={() => navigate("/surveys/list")} className="p-2 rounded-lg hover:bg-muted text-muted-foreground">
+        <button onClick={() => navigate("/surveys/list")} className="p-2 rounded-md hover:bg-muted text-muted-foreground">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <div>
-          <h1 className="text-2xl font-bold text-foreground">
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">
             {editId ? t("surveyBuilder.header.editTitle") : t("surveyBuilder.header.createTitle")}
           </h1>
           <p className="text-muted-foreground mt-0.5">{t("surveyBuilder.header.subtitle")}</p>
@@ -227,38 +227,38 @@ export default function SurveyBuilderPage() {
       </div>
 
       {/* Survey Details */}
-      <div className="bg-card rounded-xl border border-border p-6 mb-6">
-        <h2 className="text-lg font-semibold text-foreground mb-4">{t("surveyBuilder.details.heading")}</h2>
+      <div className="bg-card rounded-lg border border-border p-4 mb-6">
+        <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-4">{t("surveyBuilder.details.heading")}</h2>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-1">{t("surveyBuilder.details.titleLabel")}</label>
+            <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t("surveyBuilder.details.titleLabel")}</label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+              className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
               placeholder={t("surveyBuilder.details.titlePlaceholder")}
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-1">{t("surveyBuilder.details.descriptionLabel")}</label>
+            <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t("surveyBuilder.details.descriptionLabel")}</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm min-h-[80px]"
+              className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] min-h-[80px]"
               placeholder={t("surveyBuilder.details.descriptionPlaceholder")}
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("surveyBuilder.details.typeLabel")}</label>
+              <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t("surveyBuilder.details.typeLabel")}</label>
               <select
                 value={type}
                 onChange={(e) => setType(e.target.value)}
-                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
               >
                 {SURVEY_TYPES.map((st) => (
                   <option key={st.value} value={st.value}>{t(`surveyBuilder.${st.labelKey}`, { defaultValue: st.labelDefault })}</option>
@@ -267,11 +267,11 @@ export default function SurveyBuilderPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("surveyBuilder.details.targetAudienceLabel")}</label>
+              <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t("surveyBuilder.details.targetAudienceLabel")}</label>
               <select
                 value={targetType}
                 onChange={(e) => setTargetType(e.target.value)}
-                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
               >
                 <option value="all">{t("surveyBuilder.target.all")}</option>
                 <option value="department">{t("surveyBuilder.target.department")}</option>
@@ -281,11 +281,11 @@ export default function SurveyBuilderPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("surveyBuilder.details.recurrenceLabel")}</label>
+              <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t("surveyBuilder.details.recurrenceLabel")}</label>
               <select
                 value={recurrence}
                 onChange={(e) => setRecurrence(e.target.value)}
-                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
               >
                 <option value="none">{t("surveyBuilder.recurrence.none")}</option>
                 <option value="weekly">{t("surveyBuilder.recurrence.weekly")}</option>
@@ -301,24 +301,24 @@ export default function SurveyBuilderPage() {
                 labels now say "Start Date & Time" and there's a helper line
                 under each input making the expectation explicit. */}
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("surveyBuilder.details.startDateLabel")}</label>
+              <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t("surveyBuilder.details.startDateLabel")}</label>
               <input
                 type="datetime-local"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
               />
               <p className="text-xs text-muted-foreground mt-1">{t("surveyBuilder.details.dateTimeHelper")}</p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("surveyBuilder.details.endDateLabel")}</label>
+              <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t("surveyBuilder.details.endDateLabel")}</label>
               <input
                 type="datetime-local"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
                 min={startDate || undefined}
-                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
               />
               <p className="text-xs text-muted-foreground mt-1">{t("surveyBuilder.details.dateTimeHelper")}</p>
             </div>
@@ -340,9 +340,9 @@ export default function SurveyBuilderPage() {
       </div>
 
       {/* Questions Builder */}
-      <div className="bg-card rounded-xl border border-border p-6 mb-6">
+      <div className="bg-card rounded-lg border border-border p-4 mb-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-foreground">{t("surveyBuilder.questions.heading")}</h2>
+          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("surveyBuilder.questions.heading")}</h2>
           <button
             onClick={addQuestion}
             className="flex items-center gap-1.5 text-sm font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300"
@@ -364,7 +364,7 @@ export default function SurveyBuilderPage() {
                   >
                     <GripVertical className="h-4 w-4" />
                   </button>
-                  <span className="text-xs text-muted-foreground font-mono">{idx + 1}</span>
+                  <span className="text-xs text-muted-foreground font-mono tabular-nums">{idx + 1}</span>
                 </div>
 
                 <div className="flex-1 space-y-3">
@@ -373,7 +373,7 @@ export default function SurveyBuilderPage() {
                       type="text"
                       value={q.question_text}
                       onChange={(e) => updateQuestion(idx, "question_text", e.target.value)}
-                      className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                      className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
                       placeholder={t("surveyBuilder.questions.textPlaceholder")}
                     />
                   </div>
@@ -384,7 +384,7 @@ export default function SurveyBuilderPage() {
                       <select
                         value={q.question_type}
                         onChange={(e) => updateQuestion(idx, "question_type", e.target.value)}
-                        className="bg-card text-foreground w-full px-3 py-1.5 border border-border rounded-lg text-sm"
+                        className="bg-card text-foreground w-full px-3 py-1.5 border border-border rounded-md text-[13px]"
                       >
                         {QUESTION_TYPES.map((qt) => (
                           <option key={qt.value} value={qt.value}>{t(`surveyBuilder.${qt.labelKey}`, { defaultValue: qt.labelDefault })}</option>
@@ -417,7 +417,7 @@ export default function SurveyBuilderPage() {
                           const opts = e.target.value.split("\n");
                           updateQuestion(idx, "options", opts.length > 0 ? opts : null);
                         }}
-                        className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm min-h-[60px]"
+                        className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] min-h-[60px]"
                         placeholder={t("surveyBuilder.questions.optionsPlaceholder")}
                       />
                     </div>
@@ -448,21 +448,21 @@ export default function SurveyBuilderPage() {
       <div className="flex items-center justify-end gap-3 pb-8">
         <button
           onClick={() => navigate("/surveys/list")}
-          className="px-4 py-2 text-sm border border-border rounded-lg text-muted-foreground hover:bg-muted"
+          className="px-4 py-2 text-[13px] border border-border rounded-md text-muted-foreground hover:bg-muted"
         >
           {t("surveyBuilder.actions.cancel")}
         </button>
         <button
           onClick={handleSaveDraft}
           disabled={isPending || !title.trim()}
-          className="flex items-center gap-2 px-4 py-2 text-sm border border-border rounded-lg text-muted-foreground hover:bg-muted disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 text-[13px] border border-border rounded-md text-muted-foreground hover:bg-muted disabled:opacity-50"
         >
           <Save className="h-4 w-4" /> {t("surveyBuilder.actions.saveDraft")}
         </button>
         <button
           onClick={handlePublish}
           disabled={isPending || !title.trim() || questions.every((q) => !q.question_text.trim())}
-          className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
+          className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700 disabled:opacity-50"
         >
           <Play className="h-4 w-4" /> {t("surveyBuilder.actions.savePublish")}
         </button>
@@ -572,7 +572,7 @@ function QuestionPreview({ question }: { question: Question }) {
         <p className="text-sm text-muted-foreground mb-2">{question_text}</p>
         <textarea
           disabled
-          className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-card min-h-[60px]"
+          className="w-full px-3 py-2 border border-border rounded-md text-[13px] bg-card min-h-[60px]"
           placeholder={t("surveyBuilder.preview.textPlaceholder")}
         />
       </div>

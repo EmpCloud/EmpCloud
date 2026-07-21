@@ -54,26 +54,26 @@ export default function CreatePostPage() {
       <div className="flex items-center gap-3 mb-6">
         <button
           onClick={() => navigate(-1)}
-          className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-muted-foreground transition-colors"
+          className="p-2 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
-        <h1 className="text-2xl font-bold text-foreground">{t("forum.create.title")}</h1>
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("forum.create.title")}</h1>
       </div>
 
       <form
         onSubmit={handleSubmit}
-        className="bg-card rounded-xl border border-border p-6 space-y-5"
+        className="bg-card rounded-lg border border-border p-4 space-y-5"
       >
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-1">
+            <label className="block text-[13px] font-medium text-muted-foreground mb-1">
               {t("forum.create.category")} <span className="text-red-500">*</span>
             </label>
             <select
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
-              className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+              className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
               required
             >
               <option value="">{t("forum.create.selectCategory")}</option>
@@ -89,13 +89,13 @@ export default function CreatePostPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-1">
+            <label className="block text-[13px] font-medium text-muted-foreground mb-1">
               {t("forum.create.postType")}
             </label>
             <select
               value={postType}
               onChange={(e) => setPostType(e.target.value)}
-              className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+              className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
             >
               <option value="discussion">{t("forum.page.postType.discussion")}</option>
               <option value="question">{t("forum.page.postType.question")}</option>
@@ -106,14 +106,14 @@ export default function CreatePostPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-muted-foreground mb-1">
+          <label className="block text-[13px] font-medium text-muted-foreground mb-1">
             {t("forum.create.fieldTitle")} <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+            className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
             placeholder={t("forum.create.titlePlaceholder")}
             maxLength={255}
             required
@@ -121,13 +121,13 @@ export default function CreatePostPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-muted-foreground mb-1">
+          <label className="block text-[13px] font-medium text-muted-foreground mb-1">
             {t("forum.create.content")} <span className="text-red-500">*</span>
           </label>
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm min-h-[200px] resize-y"
+            className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] min-h-[200px] resize-y"
             placeholder={
               postType === "question"
                 ? t("forum.create.contentPlaceholderQuestion")
@@ -140,14 +140,14 @@ export default function CreatePostPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-muted-foreground mb-1">
+          <label className="block text-[13px] font-medium text-muted-foreground mb-1">
             {t("forum.create.tags")} <span className="text-xs text-muted-foreground">{t("forum.create.tagsHint")}</span>
           </label>
           <input
             type="text"
             value={tagsInput}
             onChange={(e) => setTagsInput(e.target.value)}
-            className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+            className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
             placeholder={t("forum.create.tagsPlaceholder")}
           />
           {tagsInput && (
@@ -159,7 +159,7 @@ export default function CreatePostPage() {
                 .map((tag) => (
                   <span
                     key={tag}
-                    className="bg-muted text-muted-foreground px-2 py-0.5 rounded text-xs"
+                    className="bg-muted text-muted-foreground px-2 py-0.5 rounded-md text-[11px]"
                   >
                     #{tag}
                   </span>
@@ -169,7 +169,7 @@ export default function CreatePostPage() {
         </div>
 
         {createPost.isError && (
-          <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-300 text-sm rounded-lg px-4 py-3">
+          <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-300 text-[13px] rounded-md px-4 py-3">
             {t("forum.create.error")}
           </div>
         )}
@@ -178,14 +178,14 @@ export default function CreatePostPage() {
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="px-4 py-2 text-sm border border-border rounded-lg text-muted-foreground hover:bg-muted"
+            className="px-4 py-2 text-[13px] border border-border rounded-md text-muted-foreground hover:bg-muted transition-colors"
           >
             {t("forum.create.cancel")}
           </button>
           <button
             type="submit"
             disabled={createPost.isPending}
-            className="flex items-center gap-2 bg-brand-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
+            className="flex items-center gap-2 bg-brand-600 text-white px-5 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700 transition-colors disabled:opacity-50"
           >
             <Send className="h-4 w-4" />
             {createPost.isPending ? t("forum.create.publishing") : t("forum.create.publish")}

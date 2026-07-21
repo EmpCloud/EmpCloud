@@ -47,17 +47,17 @@ export default function SurveyRespondPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-foreground">{t("surveyRespond.title")}</h1>
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("surveyRespond.title")}</h1>
         <p className="text-muted-foreground mt-1">{t("surveyRespond.subtitle")}</p>
       </div>
 
       {/* Pending Surveys */}
       <div className="mb-8">
-        <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+        <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
           <Clock className="h-5 w-5 text-orange-500" />
           {t("surveyRespond.pending")}
           {pendingSurveys.length > 0 && (
-            <span className="bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300 text-xs font-medium px-2 py-0.5 rounded-full">
+            <span className="bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300 text-[11px] font-semibold px-2 py-0.5 rounded-md">
               {pendingSurveys.length}
             </span>
           )}
@@ -66,7 +66,7 @@ export default function SurveyRespondPage() {
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[1, 2].map((i) => (
-              <div key={i} className="bg-card rounded-xl border border-border p-6 animate-pulse">
+              <div key={i} className="bg-card rounded-lg border border-border p-4 animate-pulse">
                 <div className="flex items-center gap-2 mb-3">
                   <div className="h-5 w-16 bg-muted rounded-full" />
                 </div>
@@ -77,7 +77,7 @@ export default function SurveyRespondPage() {
             ))}
           </div>
         ) : pendingSurveys.length === 0 ? (
-          <div className="bg-card rounded-xl border border-border p-12 text-center">
+          <div className="bg-card rounded-lg border border-border p-12 text-center">
             <ClipboardList className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
             <p className="text-lg font-medium text-muted-foreground mb-1">{t("surveyRespond.noActive")}</p>
             <p className="text-sm text-muted-foreground">{t("surveyRespond.noActiveHint")}</p>
@@ -85,11 +85,11 @@ export default function SurveyRespondPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {pendingSurveys.map((s: any) => (
-              <div key={s.id} className="bg-card rounded-xl border border-border p-6 hover:shadow-md transition-shadow">
+              <div key={s.id} className="bg-card rounded-lg border border-border p-4 hover:border-brand-400 transition-colors duration-150">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                      <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-md ${
                         s.type === "enps" ? "bg-indigo-100 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300" :
                         s.type === "pulse" ? "bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300" :
                         s.type === "engagement" ? "bg-teal-100 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300" :
@@ -114,7 +114,7 @@ export default function SurveyRespondPage() {
                 </div>
                 <button
                   onClick={() => setSelectedSurveyId(s.id)}
-                  className="mt-4 w-full flex items-center justify-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
+                  className="mt-4 w-full flex items-center justify-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700"
                 >
                   <Send className="h-4 w-4" /> {t("surveyRespond.takeSurvey")}
                 </button>
@@ -127,11 +127,11 @@ export default function SurveyRespondPage() {
       {/* Completed Surveys */}
       {completedSurveys.length > 0 && (
         <div className="mb-8">
-          <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
             <CheckCircle className="h-5 w-5 text-green-500" />
             {t("surveyRespond.completed")}
           </h2>
-          <div className="bg-card rounded-xl border border-border overflow-hidden">
+          <div className="bg-card rounded-lg border border-border overflow-hidden">
             {completedSurveys.map((s: any) => (
               <div key={s.id} className="flex items-center justify-between px-6 py-4 border-b border-border last:border-0">
                 <div>
@@ -150,26 +150,26 @@ export default function SurveyRespondPage() {
       {/* My Past Responses */}
       {myResponses && myResponses.length > 0 && (
         <div>
-          <h2 className="text-lg font-semibold text-foreground mb-4">{t("surveyRespond.responseHistory")}</h2>
-          <div className="bg-card rounded-xl border border-border overflow-hidden">
+          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-4">{t("surveyRespond.responseHistory")}</h2>
+          <div className="bg-card rounded-lg border border-border overflow-hidden">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border bg-muted">
-                  <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase">{t("surveyRespond.colSurvey")}</th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase">{t("surveyRespond.colType")}</th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase">{t("surveyRespond.colSubmitted")}</th>
-                  <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase">{t("surveyRespond.colAnonymous")}</th>
+                  <th className="text-left px-4 py-2.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{t("surveyRespond.colSurvey")}</th>
+                  <th className="text-left px-4 py-2.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{t("surveyRespond.colType")}</th>
+                  <th className="text-left px-4 py-2.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{t("surveyRespond.colSubmitted")}</th>
+                  <th className="text-left px-4 py-2.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{t("surveyRespond.colAnonymous")}</th>
                 </tr>
               </thead>
               <tbody>
                 {myResponses.map((r: any) => (
                   <tr key={r.response_id} className="border-b border-border">
-                    <td className="px-6 py-3 text-muted-foreground">{r.title}</td>
-                    <td className="px-6 py-3 text-muted-foreground">{surveyTypeLabel(r.type, t)}</td>
-                    <td className="px-6 py-3 text-muted-foreground">
+                    <td className="px-4 py-2.5 text-muted-foreground">{r.title}</td>
+                    <td className="px-4 py-2.5 text-muted-foreground">{surveyTypeLabel(r.type, t)}</td>
+                    <td className="px-4 py-2.5 text-muted-foreground">
                       {new Date(r.submitted_at).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-3 text-muted-foreground">
+                    <td className="px-4 py-2.5 text-muted-foreground">
                       {r.is_anonymous ? t("surveyRespond.yes") : t("surveyRespond.no")}
                     </td>
                   </tr>
@@ -238,7 +238,7 @@ function SurveyFillForm({
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
         <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
-        <h2 className="text-xl font-bold text-foreground mb-2">{t("surveyRespond.thankYou")}</h2>
+        <h2 className="text-xl font-semibold tracking-tight text-foreground mb-2">{t("surveyRespond.thankYou")}</h2>
         <p className="text-muted-foreground">{t("surveyRespond.submittedSuccess")}</p>
       </div>
     );
@@ -257,9 +257,9 @@ function SurveyFillForm({
         &larr; {t("surveyRespond.backToSurveys")}
       </button>
 
-      <div className="bg-card rounded-xl border border-border p-6 mb-6">
+      <div className="bg-card rounded-lg border border-border p-4 mb-6">
         <div className="flex items-center gap-2 mb-2">
-          <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+          <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-md ${
             survey.type === "enps" ? "bg-indigo-100 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300" :
             survey.type === "pulse" ? "bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300" :
             "bg-muted text-muted-foreground"
@@ -270,7 +270,7 @@ function SurveyFillForm({
             <span className="text-xs text-muted-foreground">{t("surveyRespond.responsesAnonymous")}</span>
           )}
         </div>
-        <h1 className="text-xl font-bold text-foreground">{survey.title}</h1>
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">{survey.title}</h1>
         {survey.description && (
           <p className="text-muted-foreground mt-2">{survey.description}</p>
         )}
@@ -279,9 +279,9 @@ function SurveyFillForm({
       {/* Questions */}
       <div className="space-y-4">
         {questions.map((q: any, idx: number) => (
-          <div key={q.id} className="bg-card rounded-xl border border-border p-6">
+          <div key={q.id} className="bg-card rounded-lg border border-border p-4">
             <div className="flex items-start gap-3">
-              <span className="text-sm font-mono text-muted-foreground mt-0.5">{idx + 1}.</span>
+              <span className="text-[13px] tabular-nums font-mono text-muted-foreground mt-0.5">{idx + 1}.</span>
               <div className="flex-1">
                 <p className="text-sm font-medium text-foreground mb-3">
                   {q.question_text}
@@ -302,14 +302,14 @@ function SurveyFillForm({
       <div className="flex items-center justify-end gap-3 mt-6 pb-8">
         <button
           onClick={onBack}
-          className="px-4 py-2 text-sm border border-border rounded-lg text-muted-foreground hover:bg-muted"
+          className="px-4 py-2 text-[13px] border border-border rounded-md text-muted-foreground hover:bg-muted"
         >
           {t("surveyRespond.cancel")}
         </button>
         <button
           onClick={handleSubmit}
           disabled={submitMutation.isPending}
-          className="flex items-center gap-2 bg-brand-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
+          className="flex items-center gap-2 bg-brand-600 text-white px-6 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700 disabled:opacity-50"
         >
           <Send className="h-4 w-4" /> {t("surveyRespond.submitResponse")}
         </button>
@@ -463,7 +463,7 @@ function QuestionInput({
       <textarea
         value={value?.text_value || ""}
         onChange={(e) => onChange({ text_value: e.target.value })}
-        className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm min-h-[80px]"
+        className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] min-h-[80px]"
         placeholder={t("surveyRespond.textPlaceholder")}
       />
     );

@@ -49,13 +49,13 @@ export default function SurveyResultsPage() {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
-        <Link to="/surveys/list" className="p-2 rounded-lg hover:bg-muted text-muted-foreground">
+        <Link to="/surveys/list" className="p-2 rounded-md hover:bg-muted text-muted-foreground">
           <ArrowLeft className="h-5 w-5" />
         </Link>
         <div className="flex-1">
-          <h1 className="text-2xl font-bold text-foreground">{data.title}</h1>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">{data.title}</h1>
           <div className="flex items-center gap-3 mt-1">
-            <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+            <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-md ${
               data.status === "active" ? "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300" :
               data.status === "closed" ? "bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300" :
               "bg-muted text-muted-foreground"
@@ -67,7 +67,7 @@ export default function SurveyResultsPage() {
         </div>
         <button
           onClick={exportCSV}
-          className="flex items-center gap-2 px-3 py-2 border border-border rounded-lg text-sm text-muted-foreground hover:bg-muted"
+          className="flex items-center gap-2 px-3 py-2 border border-border rounded-md text-[13px] text-muted-foreground hover:bg-muted"
         >
           <Download className="h-4 w-4" /> {t("surveyResults.actions.exportCsv")}
         </button>
@@ -83,15 +83,15 @@ export default function SurveyResultsPage() {
               ?.scrollIntoView({ behavior: "smooth", block: "start" })
           }
           aria-label={t("surveyResults.a11y.jumpToPerQuestion")}
-          className="bg-card rounded-xl border border-border p-5 text-left transition hover:border-brand-400 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          className="bg-card rounded-lg border border-border p-4 text-left transition-colors duration-150 hover:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
         >
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-blue-100 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+            <div className="h-8 w-8 rounded-md bg-blue-100 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center">
               <Users className="h-5 w-5" />
             </div>
             <div>
               <p className="text-xs text-muted-foreground">{t("surveyResults.summary.totalResponses")}</p>
-              <p className="text-xl font-bold text-foreground">{data.response_count}</p>
+              <p className="text-2xl font-semibold tabular-nums leading-none text-foreground">{data.response_count}</p>
             </div>
           </div>
         </button>
@@ -104,15 +104,15 @@ export default function SurveyResultsPage() {
               ?.scrollIntoView({ behavior: "smooth", block: "start" })
           }
           aria-label={t("surveyResults.a11y.jumpToQuestionsBreakdown")}
-          className="bg-card rounded-xl border border-border p-5 text-left transition hover:border-brand-400 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          className="bg-card rounded-lg border border-border p-4 text-left transition-colors duration-150 hover:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
         >
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-purple-100 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+            <div className="h-8 w-8 rounded-md bg-purple-100 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 flex items-center justify-center">
               <BarChart3 className="h-5 w-5" />
             </div>
             <div>
               <p className="text-xs text-muted-foreground">{t("surveyResults.summary.questions")}</p>
-              <p className="text-xl font-bold text-foreground">{data.questions.length}</p>
+              <p className="text-2xl font-semibold tabular-nums leading-none text-foreground">{data.questions.length}</p>
             </div>
           </div>
         </button>
@@ -126,13 +126,13 @@ export default function SurveyResultsPage() {
                 ?.scrollIntoView({ behavior: "smooth", block: "start" })
             }
             aria-label={t("surveyResults.a11y.jumpToEnpsBreakdown")}
-            className="bg-card rounded-xl border border-border p-5 text-left transition hover:border-brand-400 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="bg-card rounded-lg border border-border p-4 text-left transition-colors duration-150 hover:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
             <div className="flex items-center gap-3">
-              <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${
+              <div className={`h-8 w-8 rounded-md flex items-center justify-center ${
                 data.overall_enps.score >= 0 ? "bg-green-100 dark:bg-green-950/40 text-green-600 dark:text-green-400" : "bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400"
               }`}>
-                <span className="text-lg font-bold">{data.overall_enps.score >= 0 ? "+" : ""}{data.overall_enps.score}</span>
+                <span className="text-lg font-semibold tabular-nums">{data.overall_enps.score >= 0 ? "+" : ""}{data.overall_enps.score}</span>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">{t("surveyResults.summary.enpsScore")}</p>
@@ -147,16 +147,16 @@ export default function SurveyResultsPage() {
 
       {/* eNPS Breakdown */}
       {data.overall_enps && (
-        <div id="enps-breakdown" className="bg-card rounded-xl border border-border p-6 mb-6 scroll-mt-4">
-          <h2 className="text-lg font-semibold text-foreground mb-4">{t("surveyResults.enps.breakdownTitle")}</h2>
+        <div id="enps-breakdown" className="bg-card rounded-lg border border-border p-4 mb-6 scroll-mt-4">
+          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-4">{t("surveyResults.enps.breakdownTitle")}</h2>
           <div className="grid grid-cols-3 gap-4">
             <div className="text-center p-4 bg-green-50 dark:bg-green-950/40 rounded-lg">
-              <p className="text-2xl font-bold text-green-600 dark:text-green-400">{data.overall_enps.promoters}</p>
+              <p className="text-2xl font-semibold tabular-nums text-green-600 dark:text-green-400">{data.overall_enps.promoters}</p>
               <p className="text-sm text-green-700 dark:text-green-300 font-medium">{t("surveyResults.enps.promoters")}</p>
               <p className="text-xs text-green-600 dark:text-green-400">{data.overall_enps.promoter_pct}%</p>
             </div>
             <div className="text-center p-4 bg-yellow-50 dark:bg-yellow-950/40 rounded-lg">
-              <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{data.overall_enps.passives}</p>
+              <p className="text-2xl font-semibold tabular-nums text-yellow-600 dark:text-yellow-400">{data.overall_enps.passives}</p>
               <p className="text-sm text-yellow-700 dark:text-yellow-300 font-medium">{t("surveyResults.enps.passives")}</p>
               <p className="text-xs text-yellow-600 dark:text-yellow-400">
                 {data.overall_enps.total > 0
@@ -165,7 +165,7 @@ export default function SurveyResultsPage() {
               </p>
             </div>
             <div className="text-center p-4 bg-red-50 dark:bg-red-950/40 rounded-lg">
-              <p className="text-2xl font-bold text-red-600 dark:text-red-400">{data.overall_enps.detractors}</p>
+              <p className="text-2xl font-semibold tabular-nums text-red-600 dark:text-red-400">{data.overall_enps.detractors}</p>
               <p className="text-sm text-red-700 dark:text-red-300 font-medium">{t("surveyResults.enps.detractors")}</p>
               <p className="text-xs text-red-600 dark:text-red-400">{data.overall_enps.detractor_pct}%</p>
             </div>
@@ -205,9 +205,9 @@ export default function SurveyResultsPage() {
       {/* Per-Question Results */}
       <div id="per-question-results" className="space-y-4 pb-8 scroll-mt-4">
         {data.questions.map((q: any, idx: number) => (
-          <div key={q.question_id} className="bg-card rounded-xl border border-border p-6">
+          <div key={q.question_id} className="bg-card rounded-lg border border-border p-4">
             <div className="flex items-start gap-3 mb-4">
-              <span className="text-sm font-mono text-muted-foreground">{idx + 1}.</span>
+              <span className="text-[13px] tabular-nums font-mono text-muted-foreground">{idx + 1}.</span>
               <div className="flex-1">
                 <p className="font-medium text-foreground">{q.question_text}</p>
                 <p className="text-xs text-muted-foreground mt-0.5">
