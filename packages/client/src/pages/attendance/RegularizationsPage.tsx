@@ -271,14 +271,14 @@ export default function RegularizationsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t('attendance.regularizations.title')}</h1>
-          <p className="text-muted-foreground mt-1">{t('attendance.regularizations.subtitle')}</p>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">{t('attendance.regularizations.title')}</h1>
+          <p className="text-[13px] text-muted-foreground mt-0.5">{t('attendance.regularizations.subtitle')}</p>
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
+          className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700 transition-colors"
         >
           <Plus className="h-4 w-4" /> {t('attendance.regularizations.newRequest')}
         </button>
@@ -286,23 +286,23 @@ export default function RegularizationsPage() {
 
       {/* Submit Form */}
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-card rounded-xl border border-border p-6 mb-6">
-          <h3 className="text-lg font-semibold text-foreground mb-4">{t('attendance.regularizations.submitTitle')}</h3>
+        <form onSubmit={handleSubmit} className="bg-card rounded-lg border border-border p-4 mb-4">
+          <h3 className="text-base font-semibold text-foreground mb-3">{t('attendance.regularizations.submitTitle')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">{t('attendance.regularizations.date')} <span className="text-red-500">*</span></label>
-              <input type="date" value={form.date} onChange={(e) => handleDateChange(e.target.value)} max={new Date().toISOString().slice(0, 10)} className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm" required />
+              <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t('attendance.regularizations.date')} <span className="text-red-500">*</span></label>
+              <input type="date" value={form.date} onChange={(e) => handleDateChange(e.target.value)} max={new Date().toISOString().slice(0, 10)} className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]" required />
             </div>
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">{t('attendance.regularizations.reason')} <span className="text-red-500">*</span></label>
-              <input type="text" value={form.reason} onChange={(e) => setField("reason", e.target.value)} className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm" placeholder={t('attendance.regularizations.reasonPlaceholder')} required />
+              <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t('attendance.regularizations.reason')} <span className="text-red-500">*</span></label>
+              <input type="text" value={form.reason} onChange={(e) => setField("reason", e.target.value)} className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]" placeholder={t('attendance.regularizations.reasonPlaceholder')} required />
             </div>
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">{t('attendance.regularizations.requestedCheckIn')}</label>
-              <input type="datetime-local" value={form.requested_check_in} onChange={(e) => setField("requested_check_in", e.target.value)} className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm" />
+              <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t('attendance.regularizations.requestedCheckIn')}</label>
+              <input type="datetime-local" value={form.requested_check_in} onChange={(e) => setField("requested_check_in", e.target.value)} className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">{t('attendance.regularizations.requestedCheckOut')}</label>
+              <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t('attendance.regularizations.requestedCheckOut')}</label>
               {/* #1559 — `min` ties the check-out picker to the current check-in value
                   so users can't even pick an earlier time from the popover; the
                   handleSubmit check below is the authoritative enforcement. */}
@@ -311,18 +311,18 @@ export default function RegularizationsPage() {
                 value={form.requested_check_out}
                 min={form.requested_check_in || undefined}
                 onChange={(e) => setField("requested_check_out", e.target.value)}
-                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
               />
             </div>
           </div>
           {formError && (
-            <div className="mt-3 rounded-lg border border-red-200 bg-red-50 dark:bg-red-950/40 px-3 py-2 text-sm text-red-700 dark:text-red-300">
+            <div className="mt-3 rounded-md border border-red-200 dark:border-red-900/40 bg-red-50 dark:bg-red-950/40 px-3 py-2 text-[13px] text-red-700 dark:text-red-300">
               {formError}
             </div>
           )}
           <div className="mt-4 flex gap-2">
-            <button type="submit" disabled={submitReg.isPending} className="bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50">{t('attendance.regularizations.submit')}</button>
-            <button type="button" onClick={() => { setShowForm(false); setFormError(null); }} className="bg-card text-foreground px-4 py-2 border border-border rounded-lg text-sm">{t('common.cancel')}</button>
+            <button type="submit" disabled={submitReg.isPending} className="bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700 disabled:opacity-50 transition-colors">{t('attendance.regularizations.submit')}</button>
+            <button type="button" onClick={() => { setShowForm(false); setFormError(null); }} className="bg-card text-foreground px-4 py-2 border border-border rounded-md text-[13px] hover:bg-muted transition-colors">{t('common.cancel')}</button>
           </div>
         </form>
       )}
@@ -333,7 +333,7 @@ export default function RegularizationsPage() {
           <button
             key={tabItem.key}
             onClick={() => { setTab(tabItem.key); setPage(1); }}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+            className={`px-4 py-2 text-[13px] font-medium rounded-md transition-colors ${
               tab === tabItem.key ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -343,7 +343,7 @@ export default function RegularizationsPage() {
       </div>
 
       {filtersActive && (
-        <div className="bg-card rounded-xl border border-border p-3 mb-4 flex flex-wrap items-end gap-3">
+        <div className="bg-card rounded-lg border border-border p-3 mb-4 flex flex-wrap items-end gap-2.5">
           <div>
             <label className="block text-xs font-medium text-muted-foreground mb-1">Search employee</label>
             <input
@@ -351,7 +351,7 @@ export default function RegularizationsPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Name, email, code"
-              className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm w-56"
+              className="bg-card text-foreground px-3 py-2 border border-border rounded-md text-[13px] w-56"
             />
           </div>
           <div>
@@ -359,7 +359,7 @@ export default function RegularizationsPage() {
             <select
               value={locationId ?? ""}
               onChange={(e) => { setLocationId(e.target.value ? Number(e.target.value) : undefined); setPage(1); }}
-              className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm"
+              className="bg-card text-foreground px-3 py-2 border border-border rounded-md text-[13px]"
             >
               <option value="">All locations</option>
               {locations.map((l: any) => (
@@ -371,7 +371,7 @@ export default function RegularizationsPage() {
             <button
               type="button"
               onClick={() => { setLocationId(undefined); setSearch(""); setAppliedSearch(""); setPage(1); }}
-              className="px-3 py-2 text-sm text-muted-foreground border border-border rounded-lg hover:bg-muted"
+              className="px-3 py-2 text-[13px] text-muted-foreground border border-border rounded-md hover:bg-muted transition-colors"
             >
               Clear
             </button>
@@ -380,57 +380,57 @@ export default function RegularizationsPage() {
       )}
 
       {/* Table */}
-      <div className="bg-card rounded-xl border border-border overflow-x-auto -mx-4 lg:mx-0">
+      <div className="bg-card rounded-lg border border-border overflow-x-auto -mx-4 lg:mx-0">
         <table className="min-w-full">
-          <thead className="bg-muted border-b border-border">
+          <thead className="bg-muted/50 border-b border-border">
             <tr>
-              {tab !== "my" && <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('attendance.regularizations.table.employee')}</th>}
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('attendance.regularizations.table.date')}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('attendance.regularizations.table.originalInOut')}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('attendance.regularizations.table.requestedInOut')}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('attendance.regularizations.table.reason')}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('attendance.regularizations.table.status')}</th>
-              {tab === "pending" && <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('attendance.regularizations.table.actions')}</th>}
+              {tab !== "my" && <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t('attendance.regularizations.table.employee')}</th>}
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t('attendance.regularizations.table.date')}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t('attendance.regularizations.table.originalInOut')}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t('attendance.regularizations.table.requestedInOut')}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t('attendance.regularizations.table.reason')}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t('attendance.regularizations.table.status')}</th>
+              {tab === "pending" && <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t('attendance.regularizations.table.actions')}</th>}
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
             {isLoading ? (
-              <tr><td colSpan={7} className="px-6 py-8 text-center text-muted-foreground">{t('common.loading')}</td></tr>
+              <tr><td colSpan={7} className="px-4 py-8 text-center text-[13px] text-muted-foreground">{t('common.loading')}</td></tr>
             ) : records.length === 0 ? (
-              <tr><td colSpan={7} className="px-6 py-8 text-center text-muted-foreground">{t('attendance.regularizations.noRecords')}</td></tr>
+              <tr><td colSpan={7} className="px-4 py-8 text-center text-[13px] text-muted-foreground">{t('attendance.regularizations.noRecords')}</td></tr>
             ) : (
               records.map((r: RegRow) => (
                 <tr
                   key={r.id}
                   onClick={() => setSelectedRow(r)}
-                  className="hover:bg-muted cursor-pointer"
+                  className="hover:bg-muted/50 transition-colors cursor-pointer"
                   title={t('attendance.regularizations.viewDetails')}
                 >
                   {tab !== "my" && (
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-2.5">
                       <div>
-                        <p className="text-sm font-medium text-foreground">{r.first_name} {r.last_name}</p>
-                        <p className="text-xs text-muted-foreground">{r.emp_code || r.email}</p>
+                        <p className="text-[13px] font-medium text-foreground">{r.first_name} {r.last_name}</p>
+                        <p className="text-[11px] text-muted-foreground">{r.emp_code || r.email}</p>
                       </div>
                     </td>
                   )}
-                  <td className="px-6 py-4 text-sm text-foreground">
+                  <td className="px-4 py-2.5 text-[13px] tabular-nums text-foreground">
                     {new Date(r.date).toLocaleDateString()}
                     {r.location_name && (
                       <div className="text-[10px] text-muted-foreground mt-0.5">{r.location_name}{r.location_timezone ? ` · ${r.location_timezone}` : ""}</div>
                     )}
                   </td>
-                  <td className="px-6 py-4 text-xs text-muted-foreground">
+                  <td className="px-4 py-2.5 text-[11px] tabular-nums text-muted-foreground">
                     <div>{fmtTimeAtTZ(r.original_check_in, rowTZ(r))}</div>
                     <div>{fmtTimeAtTZ(r.original_check_out, rowTZ(r))}</div>
                   </td>
-                  <td className="px-6 py-4 text-xs text-muted-foreground">
+                  <td className="px-4 py-2.5 text-[11px] tabular-nums text-muted-foreground">
                     <div>{fmtTimeAtTZ(r.requested_check_in, rowTZ(r))}</div>
                     <div>{fmtTimeAtTZ(r.requested_check_out, rowTZ(r))}</div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-muted-foreground max-w-[200px] truncate">{r.reason}</td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full font-medium ${
+                  <td className="px-4 py-2.5 text-[13px] text-muted-foreground max-w-[200px] truncate">{r.reason}</td>
+                  <td className="px-4 py-2.5">
+                    <span className={`inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-md font-medium ${
                       r.status === "pending" ? "bg-yellow-50 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300"
                         : r.status === "approved" ? "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300"
                         : "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300"
@@ -438,22 +438,22 @@ export default function RegularizationsPage() {
                       {r.status === "pending" ? <Clock className="h-3 w-3" /> : r.status === "approved" ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
                       {r.status === "pending" ? t('attendance.regularizations.statusPending') : r.status === "approved" ? t('attendance.regularizations.statusApproved') : t('attendance.regularizations.statusRejected')}
                     </span>
-                    {r.rejection_reason && <p className="text-xs text-red-500 mt-1 max-w-[200px] truncate">{r.rejection_reason}</p>}
+                    {r.rejection_reason && <p className="text-[11px] text-red-500 mt-1 max-w-[200px] truncate">{r.rejection_reason}</p>}
                   </td>
                   {tab === "pending" && (
-                    <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
+                    <td className="px-4 py-2.5" onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => handleApprove(r.id)}
                           disabled={processReg.isPending}
-                          className="flex items-center gap-1 text-xs bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300 px-3 py-1.5 rounded-lg hover:bg-green-100 dark:hover:bg-green-950/40 disabled:opacity-50"
+                          className="flex items-center gap-1 text-[11px] bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300 px-3 py-1.5 rounded-md hover:bg-green-100 dark:hover:bg-green-950/40 disabled:opacity-50 transition-colors"
                         >
                           <Check className="h-3 w-3" /> {t('attendance.regularizations.approve')}
                         </button>
                         <button
                           onClick={() => handleReject(r.id)}
                           disabled={processReg.isPending}
-                          className="flex items-center gap-1 text-xs bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 px-3 py-1.5 rounded-lg hover:bg-red-100 dark:hover:bg-red-950/40 disabled:opacity-50"
+                          className="flex items-center gap-1 text-[11px] bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 px-3 py-1.5 rounded-md hover:bg-red-100 dark:hover:bg-red-950/40 disabled:opacity-50 transition-colors"
                         >
                           <X className="h-3 w-3" /> {t('attendance.regularizations.reject')}
                         </button>
@@ -467,11 +467,11 @@ export default function RegularizationsPage() {
         </table>
 
         {meta && meta.total_pages > 1 && (
-          <div className="flex items-center justify-between px-6 py-3 border-t border-border">
-            <p className="text-sm text-muted-foreground">{t('attendance.pagination', { page: meta.page, totalPages: meta.total_pages, total: meta.total })}</p>
+          <div className="flex items-center justify-between px-4 py-2.5 border-t border-border">
+            <p className="text-[13px] tabular-nums text-muted-foreground">{t('attendance.pagination', { page: meta.page, totalPages: meta.total_pages, total: meta.total })}</p>
             <div className="flex gap-2">
-              <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="bg-card text-foreground px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50">{t('attendance.previous')}</button>
-              <button onClick={() => setPage((p) => p + 1)} disabled={page >= meta.total_pages} className="bg-card text-foreground px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50">{t('attendance.next')}</button>
+              <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="bg-card text-foreground px-3 py-1.5 text-[13px] border border-border rounded-md disabled:opacity-50 hover:bg-muted transition-colors">{t('attendance.previous')}</button>
+              <button onClick={() => setPage((p) => p + 1)} disabled={page >= meta.total_pages} className="bg-card text-foreground px-3 py-1.5 text-[13px] border border-border rounded-md disabled:opacity-50 hover:bg-muted transition-colors">{t('attendance.next')}</button>
             </div>
           </div>
         )}
@@ -485,24 +485,24 @@ export default function RegularizationsPage() {
           onClick={() => setSelectedRow(null)}
         >
           <div
-            className="w-full max-w-lg rounded-xl bg-card shadow-xl"
+            className="w-full max-w-lg rounded-lg bg-card shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between border-b border-border px-6 py-4">
               <div>
-                <h3 className="text-lg font-semibold text-foreground">{t('attendance.regularizations.detailTitle')}</h3>
-                <p className="text-xs text-muted-foreground mt-0.5">{new Date(selectedRow.date).toLocaleDateString()}</p>
+                <h3 className="text-base font-semibold text-foreground">{t('attendance.regularizations.detailTitle')}</h3>
+                <p className="text-xs tabular-nums text-muted-foreground mt-0.5">{new Date(selectedRow.date).toLocaleDateString()}</p>
               </div>
               <button
                 type="button"
                 onClick={() => setSelectedRow(null)}
-                className="rounded-lg p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+                className="rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                 aria-label={t('common.close')}
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <dl className="divide-y divide-border text-sm">
+            <dl className="divide-y divide-border text-[13px]">
               {tab !== "my" && (selectedRow.first_name || selectedRow.last_name) && (
                 <div className="grid grid-cols-3 gap-4 px-6 py-3">
                   <dt className="text-muted-foreground">{t('attendance.regularizations.table.employee')}</dt>
@@ -546,7 +546,7 @@ export default function RegularizationsPage() {
               <div className="grid grid-cols-3 gap-4 px-6 py-3">
                 <dt className="text-muted-foreground">{t('attendance.regularizations.table.status')}</dt>
                 <dd className="col-span-2">
-                  <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full font-medium ${
+                  <span className={`inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-md font-medium ${
                     selectedRow.status === "pending" ? "bg-yellow-50 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300"
                       : selectedRow.status === "approved" ? "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300"
                       : "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300"
@@ -563,14 +563,14 @@ export default function RegularizationsPage() {
                 </div>
               )}
             </dl>
-            <div className="flex justify-end gap-2 rounded-b-xl border-t border-border bg-muted px-6 py-3">
+            <div className="flex justify-end gap-2 rounded-b-lg border-t border-border bg-muted px-6 py-3">
               {selectedRow.status === "pending" && tab === "pending" && (
                 <>
                   <button
                     type="button"
                     onClick={() => { handleReject(selectedRow.id); setSelectedRow(null); }}
                     disabled={processReg.isPending}
-                    className="flex items-center gap-1 text-sm bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 px-3 py-1.5 rounded-lg hover:bg-red-100 dark:hover:bg-red-950/40 disabled:opacity-50"
+                    className="flex items-center gap-1 text-[13px] bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 px-3 py-1.5 rounded-md hover:bg-red-100 dark:hover:bg-red-950/40 disabled:opacity-50 transition-colors"
                   >
                     <X className="h-3.5 w-3.5" /> {t('attendance.regularizations.reject')}
                   </button>
@@ -578,7 +578,7 @@ export default function RegularizationsPage() {
                     type="button"
                     onClick={() => { handleApprove(selectedRow.id); setSelectedRow(null); }}
                     disabled={processReg.isPending}
-                    className="flex items-center gap-1 text-sm bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300 px-3 py-1.5 rounded-lg hover:bg-green-100 dark:hover:bg-green-950/40 disabled:opacity-50"
+                    className="flex items-center gap-1 text-[13px] bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300 px-3 py-1.5 rounded-md hover:bg-green-100 dark:hover:bg-green-950/40 disabled:opacity-50 transition-colors"
                   >
                     <Check className="h-3.5 w-3.5" /> {t('attendance.regularizations.approve')}
                   </button>
@@ -587,7 +587,7 @@ export default function RegularizationsPage() {
               <button
                 type="button"
                 onClick={() => setSelectedRow(null)}
-                className="px-3 py-1.5 text-sm border border-border rounded-lg hover:bg-card"
+                className="px-3 py-1.5 text-[13px] border border-border rounded-md hover:bg-card transition-colors"
               >
                 {t('common.close')}
               </button>
@@ -602,12 +602,12 @@ export default function RegularizationsPage() {
           rejection. The reason is optional. */}
       {rejectTarget !== null && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-md rounded-xl bg-card p-6 shadow-xl">
-            <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+          <div className="w-full max-w-md rounded-lg bg-card p-6 shadow-xl">
+            <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
               <X className="h-5 w-5 text-red-600 dark:text-red-400" />
               {t('attendance.regularizations.reject')}
             </h3>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="mt-1 text-[13px] text-muted-foreground">
               {t('attendance.regularizations.rejectionPrompt')}
             </p>
             <textarea
@@ -616,14 +616,14 @@ export default function RegularizationsPage() {
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
               placeholder={t('attendance.regularizations.rejectionPlaceholder')}
-              className="mt-3 w-full rounded-lg border border-border bg-card text-foreground px-3 py-2 text-sm focus:border-rose-500 focus:outline-none focus:ring-1 focus:ring-rose-500"
+              className="mt-3 w-full rounded-md border border-border bg-card text-foreground px-3 py-2 text-[13px] focus:border-rose-500 focus:outline-none focus:ring-1 focus:ring-rose-500"
             />
             <div className="mt-4 flex justify-end gap-2">
               <button
                 type="button"
                 onClick={() => { setRejectTarget(null); setRejectReason(""); }}
                 disabled={processReg.isPending}
-                className="px-3 py-1.5 text-sm border border-border rounded-lg hover:bg-muted disabled:opacity-50"
+                className="px-3 py-1.5 text-[13px] border border-border rounded-md hover:bg-muted disabled:opacity-50 transition-colors"
               >
                 {t('common.cancel')}
               </button>
@@ -631,7 +631,7 @@ export default function RegularizationsPage() {
                 type="button"
                 onClick={confirmReject}
                 disabled={processReg.isPending}
-                className="px-3 py-1.5 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                className="px-3 py-1.5 text-[13px] bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50 transition-colors"
               >
                 {processReg.isPending ? t('common.loading') : t('attendance.regularizations.reject')}
               </button>
