@@ -355,14 +355,14 @@ export default function ProbationPage() {
   return (
     <div>
       {/* Header */}
-      <div className="mb-8 flex items-start justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 flex items-center justify-center">
-            <Shield className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+        <div className="flex items-center gap-2.5">
+          <div className="h-9 w-9 rounded-md bg-indigo-50 dark:bg-indigo-950/40 flex items-center justify-center">
+            <Shield className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">{t("probation.title")}</h1>
-            <p className="text-muted-foreground mt-0.5 text-sm">
+            <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("probation.title")}</h1>
+            <p className="text-[13px] text-muted-foreground mt-0.5">
               {t("probation.subtitle")}
             </p>
           </div>
@@ -371,7 +371,7 @@ export default function ProbationPage() {
           <button
             type="button"
             onClick={openTemplateEditor}
-            className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-muted-foreground bg-card border border-border rounded-lg hover:bg-muted transition-colors shrink-0"
+            className="inline-flex items-center gap-2 px-3 py-2 text-[13px] font-medium text-muted-foreground bg-card border border-border rounded-md hover:bg-muted transition-colors shrink-0"
           >
             <Mail className="h-4 w-4" />
             {t("probation.customizeEmail")}
@@ -379,8 +379,8 @@ export default function ProbationPage() {
         )}
       </div>
 
-      {/* Dashboard Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      {/* Dashboard Cards — compact KPI tiles that also act as view filters. */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 mb-4">
         {dashboardCards.map((card) => {
           const isActive = cardFilter === card.filter;
           return (
@@ -388,19 +388,15 @@ export default function ProbationPage() {
               key={card.label}
               type="button"
               onClick={() => selectCard(isActive ? "all" : card.filter)}
-              className={`text-left bg-card rounded-xl border p-5 transition-all hover:shadow-md ${
-                isActive ? "border-brand-500 ring-2 ring-brand-100" : "border-border"
+              className={`text-left bg-card rounded-lg border p-3 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-brand-500 ${
+                isActive ? "border-brand-500 ring-1 ring-brand-500/30" : "border-border hover:border-brand-400"
               }`}
             >
-              <div className="flex items-center gap-3">
-                <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${card.color}`}>
-                  <card.icon className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">{card.label}</p>
-                  <p className="text-xl font-bold text-foreground">{card.value}</p>
-                </div>
-              </div>
+              <span className={`flex h-8 w-8 items-center justify-center rounded-md ${card.color}`}>
+                <card.icon className="h-4 w-4" />
+              </span>
+              <p className="mt-2.5 text-2xl font-semibold tabular-nums leading-none text-foreground">{card.value}</p>
+              <p className="mt-1.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground truncate">{card.label}</p>
             </button>
           );
         })}
@@ -420,10 +416,10 @@ export default function ProbationPage() {
 
       {/* Upcoming Confirmations */}
       {upcoming && upcoming.length > 0 && (
-        <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 rounded-xl p-5 mb-6">
+        <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 rounded-lg p-4 mb-4">
           <div className="flex items-center gap-2 mb-3">
             <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-            <h2 className="font-semibold text-amber-900">
+            <h2 className="font-semibold text-amber-800 dark:text-amber-200">
               {t("probation.upcomingConfirmations", { count: upcoming.length })}
             </h2>
           </div>
@@ -454,7 +450,7 @@ export default function ProbationPage() {
       )}
 
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-4">
+      <div className="flex flex-col sm:flex-row gap-2 mb-4 bg-card border border-border rounded-lg p-2">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
@@ -462,7 +458,7 @@ export default function ProbationPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t("probation.searchPlaceholder")}
-            className="bg-card text-foreground w-full pl-10 pr-4 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none"
+            className="bg-card text-foreground w-full pl-9 pr-4 py-2 border border-border rounded-md text-[13px] focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none"
           />
         </div>
         <select
@@ -471,7 +467,7 @@ export default function ProbationPage() {
             setDepartmentId(e.target.value);
             setPage(1);
           }}
-          className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none"
+          className="bg-card text-foreground px-3 py-2 border border-border rounded-md text-[13px] focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none"
         >
           <option value="">{t("probation.allDepartments")}</option>
           {(departments || []).map((d: any) => (
@@ -486,7 +482,7 @@ export default function ProbationPage() {
             setLocationId(e.target.value);
             setPage(1);
           }}
-          className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none"
+          className="bg-card text-foreground px-3 py-2 border border-border rounded-md text-[13px] focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none"
         >
           <option value="">{t("probation.allLocations")}</option>
           {(locations || []).map((l: any) => (
@@ -498,30 +494,32 @@ export default function ProbationPage() {
       </div>
 
       {/* Main Table */}
-      <div className="bg-card rounded-xl border border-border p-6">
-        <h2 className="text-lg font-semibold text-foreground mb-4">
-          {cardFilter === "confirmed_this_month"
-            ? t("probation.cardConfirmedThisMonth")
-            : t("probation.employeesOnProbation")}
-        </h2>
+      <div className="bg-card rounded-lg border border-border overflow-hidden">
+        <div className="px-4 py-2.5 border-b border-border">
+          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            {cardFilter === "confirmed_this_month"
+              ? t("probation.cardConfirmedThisMonth")
+              : t("probation.employeesOnProbation")}
+          </h2>
+        </div>
 
         {isLoading ? (
           <div className="flex items-center justify-center h-32">
-            <div className="h-6 w-6 border-2 border-border border-t-gray-500 rounded-full animate-spin" />
+            <div className="h-6 w-6 border-2 border-border border-t-brand-500 rounded-full animate-spin" />
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-[13px]">
               <thead>
-                <tr className="border-b border-border bg-muted">
-                  <th className="text-left py-3 px-4 font-medium text-muted-foreground">{t("probation.colEmployee")}</th>
-                  <th className="text-left py-3 px-4 font-medium text-muted-foreground">{t("probation.colDepartment")}</th>
-                  <th className="text-left py-3 px-4 font-medium text-muted-foreground">{t("probation.colLocation")}</th>
-                  <th className="text-left py-3 px-4 font-medium text-muted-foreground">{t("probation.colJoinDate")}</th>
-                  <th className="text-left py-3 px-4 font-medium text-muted-foreground">{t("probation.colProbationEnds")}</th>
-                  <th className="text-left py-3 px-4 font-medium text-muted-foreground">{t("probation.colDaysRemaining")}</th>
-                  <th className="text-left py-3 px-4 font-medium text-muted-foreground">{t("probation.colStatus")}</th>
-                  <th className="text-right py-3 px-4 font-medium text-muted-foreground">{t("probation.colActions")}</th>
+                <tr className="border-b border-border bg-muted/60">
+                  <th className="text-left py-2.5 px-4 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{t("probation.colEmployee")}</th>
+                  <th className="text-left py-2.5 px-4 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{t("probation.colDepartment")}</th>
+                  <th className="text-left py-2.5 px-4 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{t("probation.colLocation")}</th>
+                  <th className="text-left py-2.5 px-4 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{t("probation.colJoinDate")}</th>
+                  <th className="text-left py-2.5 px-4 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{t("probation.colProbationEnds")}</th>
+                  <th className="text-left py-2.5 px-4 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{t("probation.colDaysRemaining")}</th>
+                  <th className="text-left py-2.5 px-4 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{t("probation.colStatus")}</th>
+                  <th className="text-right py-2.5 px-4 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{t("probation.colActions")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -530,7 +528,7 @@ export default function ProbationPage() {
                   const daysColor = getDaysColor(Number(emp.days_remaining));
                   return (
                     <tr key={emp.id} className="border-b border-border hover:bg-muted/50">
-                      <td className="py-3 px-4">
+                      <td className="py-2.5 px-4">
                         <div className="flex items-center gap-3">
                           <div className="h-8 w-8 rounded-full bg-brand-100 dark:bg-brand-950/40 flex items-center justify-center shrink-0">
                             <span className="text-xs font-semibold text-brand-700 dark:text-brand-300">
@@ -545,31 +543,31 @@ export default function ProbationPage() {
                           </div>
                         </div>
                       </td>
-                      <td className="py-3 px-4 text-muted-foreground">
+                      <td className="py-2.5 px-4 text-muted-foreground">
                         {emp.department_name || "-"}
                       </td>
-                      <td className="py-3 px-4 text-muted-foreground">
+                      <td className="py-2.5 px-4 text-muted-foreground">
                         {emp.location_name || "-"}
                       </td>
-                      <td className="py-3 px-4 text-muted-foreground text-xs">
+                      <td className="py-2.5 px-4 text-muted-foreground text-xs tabular-nums">
                         {formatDate(emp.date_of_joining)}
                       </td>
-                      <td className="py-3 px-4 text-muted-foreground text-xs">
+                      <td className="py-2.5 px-4 text-muted-foreground text-xs tabular-nums">
                         {formatDate(emp.probation_end_date)}
                       </td>
-                      <td className="py-3 px-4">
+                      <td className="py-2.5 px-4">
                         <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${daysColor}`}>
                           {Number(emp.days_remaining) < 0
                             ? t("probation.daysOverdue", { count: Math.abs(emp.days_remaining) })
                             : t("probation.daysShort", { count: emp.days_remaining })}
                         </span>
                       </td>
-                      <td className="py-3 px-4">
+                      <td className="py-2.5 px-4">
                         <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${status.bg} ${status.text}`}>
                           {status.label}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-right">
+                      <td className="py-2.5 px-4 text-right">
                         {emp.probation_status === "confirmed" || !canManage ? (
                           <span className="text-xs text-muted-foreground">-</span>
                         ) : (
