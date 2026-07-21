@@ -270,16 +270,16 @@ export default function AttendancePage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t("attendance.my.title")}</h1>
-          <p className="text-muted-foreground mt-1">{t("attendance.my.subtitle")}</p>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("attendance.my.title")}</h1>
+          <p className="text-[13px] text-muted-foreground mt-0.5">{t("attendance.my.subtitle")}</p>
         </div>
       </div>
 
       {/* Today's Status + Actions */}
-      <div className="bg-card rounded-xl border border-border p-6 mb-6">
-        <h2 className="text-lg font-semibold text-foreground mb-4">{t("attendance.my.today", { date: now.toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "long", day: "numeric" }) })}</h2>
+      <div className="bg-card rounded-lg border border-border p-4 mb-4">
+        <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-3">{t("attendance.my.today", { date: now.toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "long", day: "numeric" }) })}</h2>
         <div className="flex flex-wrap items-center gap-4">
           {todayLoading ? (
             <div className="flex items-center gap-4 animate-pulse">
@@ -289,21 +289,21 @@ export default function AttendancePage() {
             </div>
           ) : (
             <>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 text-[13px] text-muted-foreground">
                 <Clock className="h-4 w-4" />
-                <span>{t("attendance.my.checkInLabel")}: {todayRecord?.check_in ? new Date(todayRecord.check_in).toLocaleTimeString() : t("attendance.my.notYet")}</span>
+                <span>{t("attendance.my.checkInLabel")}: <span className="tabular-nums">{todayRecord?.check_in ? new Date(todayRecord.check_in).toLocaleTimeString() : t("attendance.my.notYet")}</span></span>
               </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 text-[13px] text-muted-foreground">
                 <Clock className="h-4 w-4" />
-                <span>{t("attendance.my.checkOutLabel")}: {todayRecord?.check_out ? new Date(todayRecord.check_out).toLocaleTimeString() : t("attendance.my.notYet")}</span>
+                <span>{t("attendance.my.checkOutLabel")}: <span className="tabular-nums">{todayRecord?.check_out ? new Date(todayRecord.check_out).toLocaleTimeString() : t("attendance.my.notYet")}</span></span>
               </div>
               {todayRecord?.worked_minutes != null && (
-                <div className="text-sm text-muted-foreground">
+                <div className="text-[13px] tabular-nums text-muted-foreground">
                   {t("attendance.my.workedLabel")}: {Math.floor(todayRecord.worked_minutes / 60)}h {todayRecord.worked_minutes % 60}m
                 </div>
               )}
               {todayRecord?.status && (
-                <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                <span className={`text-[11px] px-2 py-0.5 rounded-md font-medium ${
                   todayRecord.status === "present" ? "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300"
                     : todayRecord.status === "checked_in" ? "bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300"
                     : todayRecord.status === "half_day" ? "bg-yellow-50 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300"
@@ -317,7 +317,7 @@ export default function AttendancePage() {
           <div className="ml-auto flex gap-2">
             {!dashboardAllowed && !hasCheckedOut ? (
               <span
-                className="inline-flex items-center gap-2 text-xs text-muted-foreground bg-muted border border-border px-3 py-2 rounded-lg"
+                className="inline-flex items-center gap-2 text-[11px] text-muted-foreground bg-muted border border-border px-3 py-2 rounded-md"
                 title={t("attendance.my.webDisabledTooltip")}
               >
                 <Lock className="h-3.5 w-3.5" />
@@ -329,7 +329,7 @@ export default function AttendancePage() {
                   <button
                     onClick={() => checkIn.mutate()}
                     disabled={checkIn.isPending}
-                    className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 disabled:opacity-50"
+                    className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-green-700 disabled:opacity-50 transition-colors"
                   >
                     <LogIn className="h-4 w-4" /> {t("attendance.my.checkIn")}
                   </button>
@@ -338,13 +338,13 @@ export default function AttendancePage() {
                   <button
                     onClick={() => checkOut.mutate()}
                     disabled={checkOut.isPending}
-                    className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-700 disabled:opacity-50"
+                    className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-red-700 disabled:opacity-50 transition-colors"
                   >
                     <LogOut className="h-4 w-4" /> {t("attendance.my.checkOut")}
                   </button>
                 )}
                 {hasCheckedOut && (
-                  <span className="text-sm text-muted-foreground py-2">{t("attendance.my.completed")}</span>
+                  <span className="text-[13px] text-muted-foreground py-2">{t("attendance.my.completed")}</span>
                 )}
               </>
             )}
@@ -356,7 +356,7 @@ export default function AttendancePage() {
       <div className="flex justify-end mb-4">
         <button
           onClick={() => setShowRegForm(!showRegForm)}
-          className="flex items-center gap-2 bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-amber-700"
+          className="flex items-center gap-2 bg-amber-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-amber-700 transition-colors"
         >
           {showRegForm ? <AlertCircle className="h-4 w-4" /> : <PlusCircle className="h-4 w-4" />}
           {showRegForm ? t("attendance.my.cancel") : t("attendance.my.requestRegularization")}
@@ -364,17 +364,17 @@ export default function AttendancePage() {
       </div>
 
       {showRegForm && (
-        <form ref={regFormRef} onSubmit={handleRegSubmit} className="bg-card rounded-xl border border-amber-200 dark:border-amber-900/40 p-6 mb-6">
-          <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+        <form ref={regFormRef} onSubmit={handleRegSubmit} className="bg-card rounded-lg border border-amber-200 dark:border-amber-900/40 p-4 mb-4">
+          <h2 className="text-base font-semibold text-foreground mb-3 flex items-center gap-2">
             <AlertCircle className="h-5 w-5 text-amber-500" />
             {t("attendance.my.regFormTitle")}
           </h2>
-          <p className="text-sm text-muted-foreground mb-4">
+          <p className="text-[13px] text-muted-foreground mb-4">
             {t("attendance.my.regFormHint")}
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">
+              <label className="block text-[13px] font-medium text-muted-foreground mb-1">
                 {t("attendance.my.fieldDate")} <span className="text-red-500">*</span>
               </label>
               <input
@@ -382,12 +382,12 @@ export default function AttendancePage() {
                 value={regForm.date}
                 onChange={(e) => setRegField("date", e.target.value)}
                 max={new Date().toISOString().slice(0, 10)}
-                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">
+              <label className="block text-[13px] font-medium text-muted-foreground mb-1">
                 {t("attendance.my.fieldReason")} <span className="text-red-500">*</span>
               </label>
               <input
@@ -395,23 +395,23 @@ export default function AttendancePage() {
                 value={regForm.reason}
                 onChange={(e) => setRegField("reason", e.target.value)}
                 placeholder={t("attendance.my.reasonPlaceholder")}
-                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">
+              <label className="block text-[13px] font-medium text-muted-foreground mb-1">
                 {t("attendance.my.fieldRequestedCheckIn")}
               </label>
               <input
                 type="datetime-local"
                 value={regForm.requested_check_in}
                 onChange={(e) => setRegField("requested_check_in", e.target.value)}
-                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">
+              <label className="block text-[13px] font-medium text-muted-foreground mb-1">
                 {t("attendance.my.fieldRequestedCheckOut")}
               </label>
               {/* `min` ties the check-out picker to the current check-in value so users
@@ -422,17 +422,17 @@ export default function AttendancePage() {
                 value={regForm.requested_check_out}
                 min={regForm.requested_check_in || undefined}
                 onChange={(e) => setRegField("requested_check_out", e.target.value)}
-                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
               />
             </div>
           </div>
           {regFormError && (
-            <div className="mt-3 rounded-lg border border-red-200 dark:border-red-900/40 bg-red-50 dark:bg-red-950/40 px-3 py-2 text-sm text-red-700 dark:text-red-300">
+            <div className="mt-3 rounded-md border border-red-200 dark:border-red-900/40 bg-red-50 dark:bg-red-950/40 px-3 py-2 text-[13px] text-red-700 dark:text-red-300">
               {regFormError}
             </div>
           )}
           {submitRegularization.isError && !regFormError && (
-            <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/40 text-red-700 dark:text-red-300 text-sm rounded-lg px-4 py-3 mt-4">
+            <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/40 text-red-700 dark:text-red-300 text-[13px] rounded-md px-4 py-3 mt-4">
               {(submitRegularization.error && typeof submitRegularization.error === "object" && "response" in submitRegularization.error
                 ? (submitRegularization.error as any).response?.data?.error?.message
                 : null) || t("attendance.my.errorSubmit")}
@@ -442,7 +442,7 @@ export default function AttendancePage() {
             <button
               type="submit"
               disabled={submitRegularization.isPending}
-              className="flex items-center gap-2 bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-amber-700 disabled:opacity-50"
+              className="flex items-center gap-2 bg-amber-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-amber-700 disabled:opacity-50 transition-colors"
             >
               {submitRegularization.isPending ? t("attendance.my.submitting") : t("attendance.my.submitRequest")}
             </button>
@@ -451,30 +451,30 @@ export default function AttendancePage() {
       )}
 
       {/* My Regularization Requests — #1919 */}
-      <div className="bg-card rounded-xl border border-border mb-6">
-        <div className="px-6 py-4 border-b border-border flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-foreground">{t("attendance.my.myRequests")}</h2>
+      <div className="bg-card rounded-lg border border-border mb-4">
+        <div className="px-4 py-2.5 border-b border-border flex items-center justify-between">
+          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("attendance.my.myRequests")}</h2>
           {myRegRequests.length > 0 && (
-            <span className="text-xs text-muted-foreground">{t("attendance.my.showingLatest", { count: myRegRequests.length })}</span>
+            <span className="text-[11px] text-muted-foreground">{t("attendance.my.showingLatest", { count: myRegRequests.length })}</span>
           )}
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full">
-            <thead className="bg-muted border-b border-border">
+            <thead className="bg-muted/50 border-b border-border">
               <tr>
-                <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("attendance.my.colDate")}</th>
-                <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("attendance.my.colReason")}</th>
-                <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3 whitespace-nowrap">{t("attendance.my.colRequestedCheckIn")}</th>
-                <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3 whitespace-nowrap">{t("attendance.my.colRequestedCheckOut")}</th>
-                <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("attendance.my.colStatus")}</th>
-                <th className="text-right text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("attendance.my.colActions")}</th>
+                <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t("attendance.my.colDate")}</th>
+                <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t("attendance.my.colReason")}</th>
+                <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5 whitespace-nowrap">{t("attendance.my.colRequestedCheckIn")}</th>
+                <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5 whitespace-nowrap">{t("attendance.my.colRequestedCheckOut")}</th>
+                <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t("attendance.my.colStatus")}</th>
+                <th className="text-right text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t("attendance.my.colActions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {regHistLoading ? (
-                <tr><td colSpan={6} className="px-6 py-6 text-center text-muted-foreground">{t("attendance.my.loading")}</td></tr>
+                <tr><td colSpan={6} className="px-4 py-6 text-center text-[13px] text-muted-foreground">{t("attendance.my.loading")}</td></tr>
               ) : myRegRequests.length === 0 ? (
-                <tr><td colSpan={6} className="px-6 py-6 text-center text-muted-foreground">{t("attendance.my.noRequests")}</td></tr>
+                <tr><td colSpan={6} className="px-4 py-6 text-center text-[13px] text-muted-foreground">{t("attendance.my.noRequests")}</td></tr>
               ) : (
                 myRegRequests.map((r) => {
                   // requested_check_in/out come back as proper UTC instants
@@ -489,34 +489,34 @@ export default function AttendancePage() {
                       : d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
                   };
                   return (
-                    <tr key={r.id} className="hover:bg-muted">
-                      <td className="px-6 py-3 text-sm font-medium text-foreground whitespace-nowrap">
+                    <tr key={r.id} className="hover:bg-muted/50 transition-colors">
+                      <td className="px-4 py-2.5 text-[13px] tabular-nums font-medium text-foreground whitespace-nowrap">
                         {r.date ? new Date(r.date).toLocaleDateString() : "-"}
                       </td>
-                      <td className="px-6 py-3 text-sm text-muted-foreground max-w-xs truncate" title={r.reason}>
+                      <td className="px-4 py-2.5 text-[13px] text-muted-foreground max-w-xs truncate" title={r.reason}>
                         {r.reason || "-"}
                       </td>
-                      <td className="px-6 py-3 text-sm text-muted-foreground whitespace-nowrap">{fmtTime(r.requested_check_in)}</td>
-                      <td className="px-6 py-3 text-sm text-muted-foreground whitespace-nowrap">{fmtTime(r.requested_check_out)}</td>
-                      <td className="px-6 py-3">
-                        <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                      <td className="px-4 py-2.5 text-[13px] tabular-nums text-muted-foreground whitespace-nowrap">{fmtTime(r.requested_check_in)}</td>
+                      <td className="px-4 py-2.5 text-[13px] tabular-nums text-muted-foreground whitespace-nowrap">{fmtTime(r.requested_check_out)}</td>
+                      <td className="px-4 py-2.5">
+                        <span className={`text-[11px] px-2 py-0.5 rounded-md font-medium ${
                           r.status === "approved" ? "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300"
                             : r.status === "rejected" ? "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300"
                             : "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300"
                         }`}>{t(`attendance.my.reqStatus.${r.status}`, { defaultValue: r.status })}</span>
                         {r.rejection_reason && (
-                          <p className="text-xs text-red-500 mt-1" title={r.rejection_reason}>
+                          <p className="text-[11px] text-red-500 mt-1" title={r.rejection_reason}>
                             {r.rejection_reason}
                           </p>
                         )}
                       </td>
-                      <td className="px-6 py-3 text-right">
+                      <td className="px-4 py-2.5 text-right">
                         {r.status === "pending" && (
                           <button
                             type="button"
                             onClick={() => setDeleteRegId(r.id)}
                             disabled={deleteRegularization.isPending}
-                            className="inline-flex items-center justify-center p-1.5 rounded text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 disabled:opacity-50"
+                            className="inline-flex items-center justify-center p-1.5 rounded-md text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 disabled:opacity-50 transition-colors"
                             aria-label={t("attendance.my.deletePendingAria")}
                             title={t("attendance.my.deleteRequestTitle")}
                           >
@@ -538,7 +538,7 @@ export default function AttendancePage() {
         <select
           value={month}
           onChange={(e) => { setMonth(Number(e.target.value)); setPage(1); }}
-          className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm"
+          className="bg-card text-foreground px-3 py-2 border border-border rounded-md text-[13px]"
         >
           {months.map((m) => (
             <option key={m.value} value={m.value}>{m.label}</option>
@@ -547,7 +547,7 @@ export default function AttendancePage() {
         <select
           value={year}
           onChange={(e) => { setYear(Number(e.target.value)); setPage(1); }}
-          className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm"
+          className="bg-card text-foreground px-3 py-2 border border-border rounded-md text-[13px]"
         >
           {Array.from({ length: 5 }, (_, i) => now.getFullYear() - i).map((y) => (
             <option key={y} value={y}>{y}</option>
@@ -556,18 +556,18 @@ export default function AttendancePage() {
       </div>
 
       {/* History Table */}
-      <div className="bg-card rounded-xl border border-border overflow-x-auto -mx-4 lg:mx-0">
+      <div className="bg-card rounded-lg border border-border overflow-x-auto -mx-4 lg:mx-0">
         <table className="min-w-full">
-          <thead className="bg-muted border-b border-border">
+          <thead className="bg-muted/50 border-b border-border">
             <tr>
-              <th className="px-3 py-3 w-10"></th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("attendance.my.colDate")}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("attendance.my.colCheckIn")}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("attendance.my.colCheckOut")}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("attendance.my.colWorked")}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("attendance.my.colStatus")}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("attendance.my.colLate")}</th>
-              <th className="text-right text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("attendance.my.colDetails")}</th>
+              <th className="px-3 py-2.5 w-10"></th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t("attendance.my.colDate")}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t("attendance.my.colCheckIn")}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t("attendance.my.colCheckOut")}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t("attendance.my.colWorked")}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t("attendance.my.colStatus")}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t("attendance.my.colLate")}</th>
+              <th className="text-right text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t("attendance.my.colDetails")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
@@ -575,19 +575,19 @@ export default function AttendancePage() {
               <>
                 {[1, 2, 3, 4, 5].map((i) => (
                   <tr key={i} className="animate-pulse">
-                    <td className="px-3 py-4"><div className="h-4 w-4 bg-muted rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-20 bg-muted rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-16 bg-muted rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-16 bg-muted rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-12 bg-muted rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-16 bg-muted rounded-full" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-10 bg-muted rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-6 bg-muted rounded ml-auto" /></td>
+                    <td className="px-3 py-2.5"><div className="h-4 w-4 bg-muted rounded" /></td>
+                    <td className="px-4 py-2.5"><div className="h-4 w-20 bg-muted rounded" /></td>
+                    <td className="px-4 py-2.5"><div className="h-4 w-16 bg-muted rounded" /></td>
+                    <td className="px-4 py-2.5"><div className="h-4 w-16 bg-muted rounded" /></td>
+                    <td className="px-4 py-2.5"><div className="h-4 w-12 bg-muted rounded" /></td>
+                    <td className="px-4 py-2.5"><div className="h-4 w-16 bg-muted rounded-full" /></td>
+                    <td className="px-4 py-2.5"><div className="h-4 w-10 bg-muted rounded" /></td>
+                    <td className="px-4 py-2.5"><div className="h-4 w-6 bg-muted rounded ml-auto" /></td>
                   </tr>
                 ))}
               </>
             ) : records.length === 0 ? (
-              <tr><td colSpan={8} className="px-6 py-8 text-center text-muted-foreground">{t("attendance.my.noRecords")}</td></tr>
+              <tr><td colSpan={8} className="px-4 py-8 text-center text-muted-foreground">{t("attendance.my.noRecords")}</td></tr>
             ) : (
               records.map((r: any) => {
                 // Synthesized rows (holiday / week_off / absent with no real
@@ -600,13 +600,13 @@ export default function AttendancePage() {
                 const expanded = canExpand && expandedRowId === r.id;
                 return (
                   <Fragment key={r.id}>
-                  <tr className="hover:bg-muted">
-                    <td className="px-3 py-4 w-10">
+                  <tr className="hover:bg-muted/50 transition-colors">
+                    <td className="px-3 py-2.5 w-10">
                       {canExpand && (
                         <button
                           type="button"
                           onClick={() => setExpandedRowId(expanded ? null : r.id)}
-                          className="inline-flex items-center justify-center p-1.5 rounded text-muted-foreground hover:bg-muted"
+                          className="inline-flex items-center justify-center p-1.5 rounded-md text-muted-foreground hover:bg-muted"
                           aria-label={expanded ? t("attendance.my.collapseTimeline") : t("attendance.my.expandTimeline")}
                           title={expanded ? t("attendance.my.hideTimeline") : t("attendance.my.showTimeline")}
                           aria-expanded={expanded}
@@ -615,14 +615,14 @@ export default function AttendancePage() {
                         </button>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-sm font-medium text-foreground">{new Date(r.date).toLocaleDateString()}</td>
-                    <td className="px-6 py-4 text-sm text-muted-foreground">{r.check_in ? new Date(r.check_in).toLocaleTimeString() : "-"}</td>
-                    <td className="px-6 py-4 text-sm text-muted-foreground">{r.check_out ? new Date(r.check_out).toLocaleTimeString() : "-"}</td>
-                    <td className="px-6 py-4 text-sm text-muted-foreground">
+                    <td className="px-4 py-2.5 text-[13px] tabular-nums font-medium text-foreground">{new Date(r.date).toLocaleDateString()}</td>
+                    <td className="px-4 py-2.5 text-[13px] tabular-nums text-muted-foreground">{r.check_in ? new Date(r.check_in).toLocaleTimeString() : "-"}</td>
+                    <td className="px-4 py-2.5 text-[13px] tabular-nums text-muted-foreground">{r.check_out ? new Date(r.check_out).toLocaleTimeString() : "-"}</td>
+                    <td className="px-4 py-2.5 text-[13px] tabular-nums text-muted-foreground">
                       {r.worked_minutes != null ? `${Math.floor(r.worked_minutes / 60)}h ${r.worked_minutes % 60}m` : "-"}
                     </td>
-                    <td className="px-6 py-4">
-                      <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                    <td className="px-4 py-2.5">
+                      <span className={`text-[11px] px-2 py-0.5 rounded-md font-medium ${
                         r.status === "present" ? "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300"
                           : r.status === "checked_in" ? "bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300"
                           : r.status === "half_day" ? "bg-yellow-50 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300"
@@ -636,13 +636,13 @@ export default function AttendancePage() {
                           : t(`attendance.my.status.${r.status}`, { defaultValue: r.status.replace(/_/g, " ") })}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-muted-foreground">{r.late_minutes ? `${Math.floor(r.late_minutes / 60)}h ${r.late_minutes % 60}m` : "-"}</td>
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-4 py-2.5 text-[13px] tabular-nums text-muted-foreground">{r.late_minutes ? `${Math.floor(r.late_minutes / 60)}h ${r.late_minutes % 60}m` : "-"}</td>
+                    <td className="px-4 py-2.5 text-right">
                       <div className="inline-flex items-center justify-end gap-1">
                         <button
                           type="button"
                           onClick={() => openRegularizeFor(r)}
-                          className="inline-flex items-center justify-center p-1.5 rounded text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40"
+                          className="inline-flex items-center justify-center p-1.5 rounded-md text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40 transition-colors"
                           aria-label={t("attendance.my.regularizeDay")}
                           title={t("attendance.my.regularizeDay")}
                         >
@@ -655,7 +655,7 @@ export default function AttendancePage() {
                           <button
                             type="button"
                             onClick={() => setDetailRecord(r)}
-                            className="inline-flex items-center justify-center p-1.5 rounded text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-950/40"
+                            className="inline-flex items-center justify-center p-1.5 rounded-md text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-950/40 transition-colors"
                             aria-label={t("attendance.my.viewDetailsAria")}
                             title={t("attendance.my.viewDetailsTitle")}
                           >
@@ -674,11 +674,11 @@ export default function AttendancePage() {
         </table>
 
         {meta && meta.total_pages > 1 && (
-          <div className="flex items-center justify-between px-6 py-3 border-t border-border">
-            <p className="text-sm text-muted-foreground">{t("attendance.my.pageOf", { page: meta.page, total_pages: meta.total_pages, total: meta.total })}</p>
+          <div className="flex items-center justify-between px-4 py-2.5 border-t border-border">
+            <p className="text-[13px] tabular-nums text-muted-foreground">{t("attendance.my.pageOf", { page: meta.page, total_pages: meta.total_pages, total: meta.total })}</p>
             <div className="flex gap-2">
-              <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="bg-card text-foreground px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50">{t("attendance.my.previous")}</button>
-              <button onClick={() => setPage((p) => p + 1)} disabled={page >= meta.total_pages} className="bg-card text-foreground px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50">{t("attendance.my.next")}</button>
+              <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="bg-card text-foreground px-3 py-1.5 text-[13px] border border-border rounded-md disabled:opacity-50 hover:bg-muted transition-colors">{t("attendance.my.previous")}</button>
+              <button onClick={() => setPage((p) => p + 1)} disabled={page >= meta.total_pages} className="bg-card text-foreground px-3 py-1.5 text-[13px] border border-border rounded-md disabled:opacity-50 hover:bg-muted transition-colors">{t("attendance.my.next")}</button>
             </div>
           </div>
         )}
@@ -722,7 +722,7 @@ function InlinePunchTimelineRow({ recordId, colSpan }: { recordId: number; colSp
   });
   return (
     <tr className="bg-muted">
-      <td colSpan={colSpan} className="px-6 py-4">
+      <td colSpan={colSpan} className="px-4 py-3">
         {isLoading ? (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Loader2 className="w-4 h-4 animate-spin" /> {t("attendance.my.loadingTimeline")}
@@ -747,10 +747,10 @@ function InlinePunchTimelineRow({ recordId, colSpan }: { recordId: number; colSp
               return (
                 <li key={p.id} className="flex flex-wrap items-center gap-3 text-sm">
                   <span className="font-mono text-muted-foreground w-20">{fmtPunchTime(p.punch_time)}</span>
-                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${labelCls}`}>
+                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium ${labelCls}`}>
                     {label}
                   </span>
-                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs ${meta.cls}`}>
+                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] ${meta.cls}`}>
                     <Icon className="w-3 h-3" /> {meta.label}
                   </span>
                   {p.latitude != null && p.longitude != null && (
@@ -811,12 +811,12 @@ function AttendanceDetailModal({
       onClick={onClose}
     >
       <div
-        className="bg-card rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+        className="bg-card rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <div>
-            <h3 className="text-lg font-semibold text-foreground">{t("attendance.my.detailsTitle")}</h3>
+            <h3 className="text-base font-semibold text-foreground">{t("attendance.my.detailsTitle")}</h3>
             <p className="text-xs text-muted-foreground mt-0.5">
               {r.date ? new Date(r.date).toLocaleDateString() : ""}
             </p>
@@ -856,7 +856,7 @@ function AttendanceDetailModal({
             <div>
               <p className="text-xs uppercase text-muted-foreground">{t("attendance.my.colStatus")}</p>
               <p className="mt-0.5">
-                <span className={`text-xs px-2 py-1 rounded-full font-medium ${statusCls}`}>{statusLabel}</span>
+                <span className={`text-[11px] px-2 py-0.5 rounded-md font-medium ${statusCls}`}>{statusLabel}</span>
               </p>
             </div>
           </div>
@@ -887,10 +887,10 @@ function AttendanceDetailModal({
                   return (
                     <li key={p.id} className="flex flex-wrap items-center gap-3 text-sm">
                       <span className="font-mono text-muted-foreground w-20">{fmtPunchTime(p.punch_time)}</span>
-                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${labelCls}`}>
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium ${labelCls}`}>
                         {label}
                       </span>
-                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs ${meta.cls}`}>
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] ${meta.cls}`}>
                         <Icon className="w-3 h-3" /> {meta.label}
                       </span>
                       {p.latitude != null && p.longitude != null && (
@@ -915,7 +915,7 @@ function AttendanceDetailModal({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm border border-border rounded-lg hover:bg-muted"
+            className="px-4 py-2 text-[13px] border border-border rounded-md hover:bg-muted transition-colors"
           >
             {t("attendance.my.close")}
           </button>
