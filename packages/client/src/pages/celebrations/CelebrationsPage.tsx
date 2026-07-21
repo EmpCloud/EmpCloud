@@ -215,12 +215,12 @@ export default function CelebrationsPage() {
       {/* ── Header — clean & light, matching the app's other page headers ── */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-50 dark:bg-brand-950/40 text-brand-600 dark:text-brand-400">
-            <PartyPopper className="h-6 w-6" />
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-brand-50 dark:bg-brand-950/40 text-brand-600 dark:text-brand-400">
+            <PartyPopper className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">{t("celebrations.title")}</h1>
-            <p className="text-sm text-muted-foreground">{t("celebrations.subtitle")}</p>
+            <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("celebrations.title")}</h1>
+            <p className="text-[13px] text-muted-foreground">{t("celebrations.subtitle")}</p>
           </div>
         </div>
 
@@ -269,8 +269,8 @@ export default function CelebrationsPage() {
             </section>
           ) : (
             // No one celebrating today — a warm anchor instead of a bare list.
-            <div className="flex items-center gap-3 rounded-xl border border-border bg-gradient-to-r from-brand-50 to-white dark:from-brand-950/40 dark:to-gray-900 p-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-card text-brand-600 dark:text-brand-400 shadow-sm">
+            <div className="flex items-center gap-3 rounded-lg border border-border bg-gradient-to-r from-brand-50 to-white dark:from-brand-950/40 dark:to-gray-900 p-4">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-card text-brand-600 dark:text-brand-400 shadow-sm">
                 <Sparkles className="h-5 w-5" />
               </div>
               <div>
@@ -329,7 +329,7 @@ function HeroStat({
   accent: string;
 }) {
   return (
-    <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-1.5">
+    <div className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-1.5">
       <Icon className={`h-4 w-4 ${accent}`} />
       <span className="text-sm font-bold tabular-nums text-foreground">{value}</span>
       <span className="text-xs text-muted-foreground">{label}</span>
@@ -349,7 +349,7 @@ function FilterTab({
   return (
     <button
       onClick={onClick}
-      className={`inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium transition ${
+      className={`inline-flex items-center gap-1.5 rounded-md px-4 py-1.5 text-[13px] font-medium transition-colors duration-150 ${
         active
           ? "bg-brand-600 text-white shadow-sm"
           : "border border-border bg-card text-muted-foreground hover:bg-muted"
@@ -376,7 +376,7 @@ function SectionHeading({
       <span className="text-lg" aria-hidden>
         {emoji}
       </span>
-      <h2 className="text-lg font-bold text-foreground">{title}</h2>
+      <h2 className="text-base font-semibold text-foreground">{title}</h2>
       <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-semibold text-muted-foreground tabular-nums">
         {count}
       </span>
@@ -428,7 +428,7 @@ function UpcomingRow({ c, deptName, t }: { c: Celebration; deptName: string; t: 
 
   return (
     <div
-      className={`group relative flex items-center gap-3 overflow-hidden rounded-xl border bg-card p-3.5 pl-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${
+      className={`group relative flex items-center gap-3 overflow-hidden rounded-lg border bg-card p-3.5 pl-4 hover:border-brand-400 transition-colors duration-150 ${
         soon ? "border-border" : "border-border"
       }`}
     >
@@ -461,7 +461,7 @@ function UpcomingRow({ c, deptName, t }: { c: Celebration; deptName: string; t: 
 
       {/* Date badge — soft pill so the "when" reads clearly */}
       <div
-        className={`shrink-0 rounded-lg px-2.5 py-1.5 text-center ${
+        className={`shrink-0 rounded-md px-2.5 py-1.5 text-center ${
           soon ? s.chip : "bg-muted text-muted-foreground"
         }`}
       >
@@ -469,7 +469,7 @@ function UpcomingRow({ c, deptName, t }: { c: Celebration; deptName: string; t: 
           <CalendarDays className="h-3.5 w-3.5 opacity-70" />
           {fmtMonthDay(c.nextDate)}
         </p>
-        <p className="mt-1 text-[11px] font-medium leading-none opacity-80">
+        <p className="mt-1 text-[11px] font-medium tabular-nums leading-none opacity-80">
           {c.daysUntil === 1
             ? t("celebrations.tomorrow")
             : t("celebrations.inDays", { count: c.daysUntil })}
@@ -483,7 +483,7 @@ function LoadingState() {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {[1, 2, 3, 4, 5, 6].map((i) => (
-        <div key={i} className="animate-pulse rounded-2xl border border-border bg-card p-5">
+        <div key={i} className="animate-pulse rounded-lg border border-border bg-card p-5">
           <div className="mx-auto h-16 w-16 rounded-full bg-muted" />
           <div className="mx-auto mt-3 h-4 w-28 rounded bg-muted" />
           <div className="mx-auto mt-2 h-3 w-20 rounded bg-muted" />
@@ -504,7 +504,7 @@ function EmptyState({
 }) {
   return (
     <div
-      className={`flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card text-center ${
+      className={`flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-card text-center ${
         compact ? "py-10" : "py-16"
       }`}
     >
