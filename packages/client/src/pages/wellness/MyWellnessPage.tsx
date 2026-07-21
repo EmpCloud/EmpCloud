@@ -156,19 +156,19 @@ export default function MyWellnessPage() {
     return (
       <div className="space-y-8">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t("myWellness.header.title")}</h1>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("myWellness.header.title")}</h1>
           <p className="text-muted-foreground mt-1">{t("myWellness.header.subtitle")}</p>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="bg-card rounded-xl border border-border p-4 text-center animate-pulse">
+            <div key={i} className="bg-card rounded-lg border border-border p-4 text-center animate-pulse">
               <div className="h-6 w-6 bg-muted rounded mx-auto mb-2" />
               <div className="h-7 w-10 bg-muted rounded mx-auto mb-1" />
               <div className="h-3 w-16 bg-muted rounded mx-auto" />
             </div>
           ))}
         </div>
-        <div className="bg-card rounded-xl border border-border p-6 animate-pulse">
+        <div className="bg-card rounded-lg border border-border p-4 animate-pulse">
           <div className="h-5 w-32 bg-muted rounded mb-4" />
           <div className="h-4 w-full bg-muted rounded mb-2" />
           <div className="h-4 w-3/4 bg-muted rounded" />
@@ -181,10 +181,10 @@ export default function MyWellnessPage() {
     return (
       <div className="space-y-8">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t("myWellness.header.title")}</h1>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("myWellness.header.title")}</h1>
           <p className="text-muted-foreground mt-1">{t("myWellness.header.subtitle")}</p>
         </div>
-        <div className="bg-card rounded-xl border border-border p-8 text-center">
+        <div className="bg-card rounded-lg border border-border p-8 text-center">
           <p className="text-muted-foreground">{t("myWellness.error.loadFailed")}</p>
         </div>
       </div>
@@ -200,7 +200,7 @@ export default function MyWellnessPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t("myWellness.header.title")}</h1>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("myWellness.header.title")}</h1>
           <p className="text-muted-foreground mt-1">{t("myWellness.header.subtitle")}</p>
         </div>
         <Link
@@ -213,32 +213,32 @@ export default function MyWellnessPage() {
 
       {/* Quick Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-card rounded-xl border border-border p-4 text-center">
+        <div className="bg-card rounded-lg border border-border p-4 text-center">
           <Flame className="h-6 w-6 text-orange-500 mx-auto mb-1" />
-          <p className="text-2xl font-bold text-foreground">{s.checkin_streak || 0}</p>
+          <p className="text-2xl font-semibold tabular-nums text-foreground">{s.checkin_streak || 0}</p>
           <p className="text-xs text-muted-foreground">{t("myWellness.stats.dayStreak")}</p>
         </div>
-        <div className="bg-card rounded-xl border border-border p-4 text-center">
+        <div className="bg-card rounded-lg border border-border p-4 text-center">
           <Heart className="h-6 w-6 text-red-500 mx-auto mb-1" />
-          <p className="text-2xl font-bold text-foreground">{s.total_checkins || 0}</p>
+          <p className="text-2xl font-semibold tabular-nums text-foreground">{s.total_checkins || 0}</p>
           <p className="text-xs text-muted-foreground">{t("myWellness.stats.totalCheckIns")}</p>
         </div>
-        <div className="bg-card rounded-xl border border-border p-4 text-center">
+        <div className="bg-card rounded-lg border border-border p-4 text-center">
           <Zap className="h-6 w-6 text-yellow-500 mx-auto mb-1" />
-          <p className="text-2xl font-bold text-foreground">{s.avg_energy_level || "---"}</p>
+          <p className="text-2xl font-semibold tabular-nums text-foreground">{s.avg_energy_level || "---"}</p>
           <p className="text-xs text-muted-foreground">{t("myWellness.stats.avgEnergy")}</p>
         </div>
-        <div className="bg-card rounded-xl border border-border p-4 text-center">
+        <div className="bg-card rounded-lg border border-border p-4 text-center">
           <Trophy className="h-6 w-6 text-amber-500 mx-auto mb-1" />
-          <p className="text-2xl font-bold text-foreground">{s.completed_goals_count || 0}</p>
+          <p className="text-2xl font-semibold tabular-nums text-foreground">{s.completed_goals_count || 0}</p>
           <p className="text-xs text-muted-foreground">{t("myWellness.stats.goalsDone")}</p>
         </div>
       </div>
 
       {/* Mood Trend */}
       {s.mood_trend && s.mood_trend.length > 0 && (
-        <div className="bg-card rounded-xl border border-border p-6">
-          <h3 className="text-lg font-semibold text-foreground mb-4">{t("myWellness.moodTrend.title")}</h3>
+        <div className="bg-card rounded-lg border border-border p-4">
+          <h3 className="text-base font-semibold text-foreground mb-4">{t("myWellness.moodTrend.title")}</h3>
           <div className="flex gap-2 overflow-x-auto pb-2">
             {[...s.mood_trend].reverse().map((day: any, idx: number) => (
               <div
@@ -266,9 +266,9 @@ export default function MyWellnessPage() {
       )}
 
       {/* Goals */}
-      <div className="bg-card rounded-xl border border-border p-6">
+      <div className="bg-card rounded-lg border border-border p-4">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-foreground">{t("myWellness.goals.title")}</h3>
+          <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("myWellness.goals.title")}</h3>
           <button
             onClick={() => setShowGoalForm(true)}
             className="flex items-center gap-1 text-sm text-brand-600 dark:text-brand-400 hover:text-brand-700 font-medium"
@@ -295,7 +295,7 @@ export default function MyWellnessPage() {
                       <Target className="h-5 w-5 text-brand-500" />
                       <span className="font-medium text-foreground">{goal.title}</span>
                       <span
-                        className={`text-xs px-2 py-0.5 rounded-full ${
+                        className={`text-[11px] px-2 py-0.5 rounded-md ${
                           goal.status === "completed"
                             ? "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300"
                             : goal.status === "abandoned"
@@ -359,10 +359,10 @@ export default function MyWellnessPage() {
             : ep.enrollment_status !== "completed"
         );
         return (
-        <div className="bg-card rounded-xl border border-border p-6">
+        <div className="bg-card rounded-lg border border-border p-4">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-foreground">{t("myWellness.programs.title")}</h3>
-            <div className="flex gap-1 bg-muted rounded-lg p-1">
+            <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("myWellness.programs.title")}</h3>
+            <div className="flex gap-1 bg-muted rounded-md p-1">
               <button
                 onClick={() => setProgramsTab("active")}
                 className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
@@ -405,7 +405,7 @@ export default function MyWellnessPage() {
                     </p>
                   </div>
                   <span
-                    className={`text-xs px-2 py-0.5 rounded-full ${
+                    className={`text-[11px] px-2 py-0.5 rounded-md ${
                       ep.enrollment_status === "completed"
                         ? "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300"
                         : "bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300"
@@ -445,17 +445,17 @@ export default function MyWellnessPage() {
 
       {/* Recent Check-ins */}
       {checkIns.length > 0 && (
-        <div className="bg-card rounded-xl border border-border p-6">
-          <h3 className="text-lg font-semibold text-foreground mb-4">{t("myWellness.checkIns.title")}</h3>
+        <div className="bg-card rounded-lg border border-border p-4">
+          <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-4">{t("myWellness.checkIns.title")}</h3>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border">
-                  <th className="text-left py-2 text-muted-foreground font-medium">{t("myWellness.checkIns.colDate")}</th>
-                  <th className="text-center py-2 text-muted-foreground font-medium">{t("myWellness.checkIns.colMood")}</th>
-                  <th className="text-center py-2 text-muted-foreground font-medium">{t("myWellness.checkIns.colEnergy")}</th>
-                  <th className="text-center py-2 text-muted-foreground font-medium">{t("myWellness.checkIns.colSleep")}</th>
-                  <th className="text-center py-2 text-muted-foreground font-medium">{t("myWellness.checkIns.colExercise")}</th>
+                  <th className="text-left py-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("myWellness.checkIns.colDate")}</th>
+                  <th className="text-center py-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("myWellness.checkIns.colMood")}</th>
+                  <th className="text-center py-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("myWellness.checkIns.colEnergy")}</th>
+                  <th className="text-center py-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("myWellness.checkIns.colSleep")}</th>
+                  <th className="text-center py-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("myWellness.checkIns.colExercise")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -477,7 +477,7 @@ export default function MyWellnessPage() {
                           <Zap
                             key={n}
                             className={`h-3 w-3 ${
-                              n <= ci.energy_level ? "text-yellow-500" : "text-gray-200 dark:text-slate-700"
+                              n <= ci.energy_level ? "text-yellow-500" : "text-muted-foreground/30"
                             }`}
                           />
                         ))}
@@ -513,7 +513,7 @@ export default function MyWellnessPage() {
       {showGoalForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="fixed inset-0 bg-black/50" onClick={() => setShowGoalForm(false)} />
-          <div className="relative bg-card rounded-xl shadow-xl p-6 w-full max-w-lg">
+          <div className="relative bg-card rounded-lg shadow-xl p-6 w-full max-w-lg">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-semibold text-foreground">{t("myWellness.goalModal.title")}</h2>
               <button onClick={() => setShowGoalForm(false)} className="text-muted-foreground hover:text-muted-foreground">
@@ -528,7 +528,7 @@ export default function MyWellnessPage() {
                   value={goalForm.title}
                   onChange={(e) => setGoalForm({ ...goalForm, title: e.target.value })}
                   required
-                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
                   placeholder={t("myWellness.goalModal.placeholderTitle")}
                 />
               </div>
@@ -545,7 +545,7 @@ export default function MyWellnessPage() {
                         unit: gt?.unit || goalForm.unit,
                       });
                     }}
-                    className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-card"
+                    className="w-full px-3 py-2 border border-border rounded-md text-[13px] bg-card"
                   >
                     {GOAL_TYPES.map((gt) => (
                       <option key={gt.value} value={gt.value}>
@@ -559,7 +559,7 @@ export default function MyWellnessPage() {
                   <select
                     value={goalForm.frequency}
                     onChange={(e) => setGoalForm({ ...goalForm, frequency: e.target.value })}
-                    className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-card"
+                    className="w-full px-3 py-2 border border-border rounded-md text-[13px] bg-card"
                   >
                     <option value="daily">{t("myWellness.goalFrequency.daily")}</option>
                     <option value="weekly">{t("myWellness.goalFrequency.weekly")}</option>
@@ -576,7 +576,7 @@ export default function MyWellnessPage() {
                     onChange={(e) => setGoalForm({ ...goalForm, target_value: e.target.value })}
                     required
                     min="1"
-                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
                     placeholder={t("myWellness.goalModal.placeholderTargetValue")}
                   />
                 </div>
@@ -587,7 +587,7 @@ export default function MyWellnessPage() {
                     value={goalForm.unit}
                     onChange={(e) => setGoalForm({ ...goalForm, unit: e.target.value })}
                     required
-                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
                     placeholder={t("myWellness.goalModal.placeholderUnit")}
                   />
                 </div>
@@ -600,7 +600,7 @@ export default function MyWellnessPage() {
                     value={goalForm.start_date}
                     onChange={(e) => setGoalForm({ ...goalForm, start_date: e.target.value })}
                     required
-                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
                   />
                 </div>
                 <div>
@@ -610,7 +610,7 @@ export default function MyWellnessPage() {
                     value={goalForm.end_date}
                     onChange={(e) => setGoalForm({ ...goalForm, end_date: e.target.value })}
                     min={goalForm.start_date || undefined}
-                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
                   />
                 </div>
               </div>
@@ -623,7 +623,7 @@ export default function MyWellnessPage() {
                 <button
                   type="button"
                   onClick={() => setShowGoalForm(false)}
-                  className="px-4 py-2 text-muted-foreground hover:bg-muted rounded-lg text-sm"
+                  className="px-4 py-2 text-muted-foreground hover:bg-muted rounded-md text-[13px]"
                 >
                   {t("myWellness.goalModal.cancel")}
                 </button>
@@ -646,7 +646,7 @@ export default function MyWellnessPage() {
           the update. */}
       {progressTarget !== null && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-md rounded-xl bg-card p-6 shadow-xl">
+          <div className="w-full max-w-md rounded-lg bg-card p-4 shadow-xl">
             <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
               <ArrowUpRight className="h-5 w-5 text-brand-600 dark:text-brand-400" />
               {t("myWellness.progressModal.title")}

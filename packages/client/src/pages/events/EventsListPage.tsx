@@ -110,15 +110,15 @@ export default function EventsListPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t("events.list.title")}</h1>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("events.list.title")}</h1>
           <p className="text-muted-foreground mt-1">{t("events.list.subtitle")}</p>
         </div>
         {isHR && (
           <Link
             to="/events/dashboard"
-            className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
+            className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700"
           >
             <Plus className="h-4 w-4" /> {t("events.list.manage")}
           </Link>
@@ -132,7 +132,7 @@ export default function EventsListPage() {
           <select
             value={typeFilter}
             onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }}
-            className="bg-card text-foreground px-3 py-1.5 border border-border rounded-lg text-sm"
+            className="bg-card text-foreground px-3 py-1.5 border border-border rounded-md text-[13px]"
           >
             <option value="">{t("events.list.allTypes")}</option>
             {Object.entries(EVENT_TYPE_CONFIG).map(([key, cfg]) => (
@@ -143,7 +143,7 @@ export default function EventsListPage() {
         <select
           value={statusFilter}
           onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-          className="bg-card text-foreground px-3 py-1.5 border border-border rounded-lg text-sm"
+          className="bg-card text-foreground px-3 py-1.5 border border-border rounded-md text-[13px]"
         >
           <option value="">{t("events.list.allStatuses")}</option>
           {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
@@ -155,11 +155,11 @@ export default function EventsListPage() {
       {/* Event Cards */}
       <div className="space-y-4">
         {isLoading ? (
-          <div className="bg-card rounded-xl border border-border p-8 text-center text-muted-foreground">
+          <div className="bg-card rounded-lg border border-border p-8 text-center text-muted-foreground">
             {t("events.list.loading")}
           </div>
         ) : events.length === 0 ? (
-          <div className="bg-card rounded-xl border border-border p-8 text-center text-muted-foreground">
+          <div className="bg-card rounded-lg border border-border p-8 text-center text-muted-foreground">
             {t("events.list.empty")}
           </div>
         ) : (
@@ -170,20 +170,20 @@ export default function EventsListPage() {
             return (
               <div
                 key={event.id}
-                className="bg-card rounded-xl border border-border p-6 hover:shadow-md transition-shadow"
+                className="bg-card rounded-lg border border-border p-4 hover:border-brand-400 transition-colors duration-150"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     {/* Badges */}
                     <div className="flex items-center gap-2 mb-2 flex-wrap">
-                      <span className={`inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-full ${typeConfig.color}`}>
+                      <span className={`inline-flex items-center text-[11px] font-medium px-2.5 py-0.5 rounded-md ${typeConfig.color}`}>
                         {t(`events.list.type.${event.event_type}`, { defaultValue: typeConfig.label })}
                       </span>
-                      <span className={`inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-full ${statusConfig.color}`}>
+                      <span className={`inline-flex items-center text-[11px] font-medium px-2.5 py-0.5 rounded-md ${statusConfig.color}`}>
                         {t(`events.list.status.${event.status}`, { defaultValue: statusConfig.label })}
                       </span>
                       {event.is_mandatory && (
-                        <span className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-0.5 rounded-full bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400">
+                        <span className="inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-0.5 rounded-md bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400">
                           <Star className="h-3 w-3" /> {t("events.list.mandatory")}
                         </span>
                       )}
@@ -256,7 +256,7 @@ export default function EventsListPage() {
                         <button
                           onClick={() => rsvpMutation.mutate({ eventId: event.id, status: "attending" })}
                           disabled={rsvpMutation.isPending}
-                          className={`flex items-center gap-1 text-xs font-medium border px-2.5 py-1.5 rounded-lg disabled:opacity-50 ${
+                          className={`flex items-center gap-1 text-xs font-medium border px-2.5 py-1.5 rounded-md disabled:opacity-50 ${
                             event.my_rsvp_status === "attending"
                               ? "bg-green-100 dark:bg-green-950/40 border-green-400 dark:border-green-700 text-green-700 dark:text-green-300"
                               : "border-green-200 dark:border-green-900 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-950/40"
@@ -268,7 +268,7 @@ export default function EventsListPage() {
                         <button
                           onClick={() => rsvpMutation.mutate({ eventId: event.id, status: "maybe" })}
                           disabled={rsvpMutation.isPending}
-                          className={`flex items-center gap-1 text-xs font-medium border px-2.5 py-1.5 rounded-lg disabled:opacity-50 ${
+                          className={`flex items-center gap-1 text-xs font-medium border px-2.5 py-1.5 rounded-md disabled:opacity-50 ${
                             event.my_rsvp_status === "maybe"
                               ? "bg-amber-100 dark:bg-amber-950/40 border-amber-400 dark:border-amber-700 text-amber-700 dark:text-amber-300"
                               : "border-amber-200 dark:border-amber-900 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40"
@@ -280,7 +280,7 @@ export default function EventsListPage() {
                         <button
                           onClick={() => rsvpMutation.mutate({ eventId: event.id, status: "declined" })}
                           disabled={rsvpMutation.isPending}
-                          className={`flex items-center gap-1 text-xs font-medium border px-2.5 py-1.5 rounded-lg disabled:opacity-50 ${
+                          className={`flex items-center gap-1 text-xs font-medium border px-2.5 py-1.5 rounded-md disabled:opacity-50 ${
                             event.my_rsvp_status === "declined"
                               ? "bg-red-100 dark:bg-red-950/40 border-red-400 dark:border-red-700 text-red-700 dark:text-red-300"
                               : "border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40"
@@ -297,7 +297,7 @@ export default function EventsListPage() {
                           setDeleteTarget({ id: event.id, title: event.title });
                           setDeleteError(null);
                         }}
-                        className="p-1.5 rounded-lg text-muted-foreground hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-600 dark:hover:text-red-400"
+                        className="p-1.5 rounded-md text-muted-foreground hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-600 dark:hover:text-red-400"
                         title={t("events.list.titleDelete")}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -321,14 +321,14 @@ export default function EventsListPage() {
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="bg-card text-foreground flex items-center gap-1 px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50"
+              className="bg-card text-foreground flex items-center gap-1 px-3 py-1.5 text-[13px] border border-border rounded-md hover:bg-muted transition-colors disabled:opacity-50"
             >
               <ChevronLeft className="h-4 w-4" /> {t("events.list.previous")}
             </button>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={page >= meta.total_pages}
-              className="bg-card text-foreground flex items-center gap-1 px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50"
+              className="bg-card text-foreground flex items-center gap-1 px-3 py-1.5 text-[13px] border border-border rounded-md hover:bg-muted transition-colors disabled:opacity-50"
             >
               {t("events.list.next")} <ChevronRight className="h-4 w-4" />
             </button>
@@ -343,7 +343,7 @@ export default function EventsListPage() {
           onClick={() => !deleteMutation.isPending && setDeleteTarget(null)}
         >
           <div
-            className="w-full max-w-md rounded-xl bg-card shadow-xl"
+            className="w-full max-w-md rounded-lg bg-card shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="px-6 py-5">
@@ -360,16 +360,16 @@ export default function EventsListPage() {
               </div>
             </div>
             {deleteError && (
-              <div className="mx-6 mb-4 rounded-lg bg-red-50 dark:bg-red-950/40 p-3 text-sm text-red-700 dark:text-red-300">
+              <div className="mx-6 mb-4 rounded-md bg-red-50 dark:bg-red-950/40 p-3 text-sm text-red-700 dark:text-red-300">
                 {deleteError}
               </div>
             )}
-            <div className="flex justify-end gap-3 rounded-b-xl border-t border-border bg-muted px-6 py-4">
+            <div className="flex justify-end gap-3 rounded-b-lg border-t border-border bg-muted px-6 py-4">
               <button
                 type="button"
                 onClick={() => setDeleteTarget(null)}
                 disabled={deleteMutation.isPending}
-                className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-card disabled:opacity-50"
+                className="rounded-md border border-border px-4 py-2 text-[13px] font-medium text-muted-foreground hover:bg-card disabled:opacity-50"
               >
                 {t("events.list.cancel")}
               </button>
@@ -377,7 +377,7 @@ export default function EventsListPage() {
                 type="button"
                 onClick={() => deleteMutation.mutate(deleteTarget.id)}
                 disabled={deleteMutation.isPending}
-                className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+                className="flex items-center gap-2 rounded-md bg-red-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-red-700 disabled:opacity-50"
               >
                 {deleteMutation.isPending ? (
                   <>

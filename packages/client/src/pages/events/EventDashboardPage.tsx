@@ -212,9 +212,9 @@ export default function EventDashboardPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t("eventDashboard.header.title")}</h1>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("eventDashboard.header.title")}</h1>
           <p className="text-muted-foreground mt-1">{t("eventDashboard.header.subtitle")}</p>
         </div>
         <button
@@ -228,7 +228,7 @@ export default function EventDashboardPage() {
               setShowForm(true);
             }
           }}
-          className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
+          className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700"
         >
           <Plus className="h-4 w-4" /> {t("eventDashboard.header.createEvent")}
         </button>
@@ -246,17 +246,17 @@ export default function EventDashboardPage() {
             const Icon = card.icon;
             const content = (
               <div className="flex items-center gap-3 mb-2">
-                <div className={`h-10 w-10 rounded-lg ${card.iconBg} flex items-center justify-center`}>
+                <div className={`h-10 w-10 rounded-md ${card.iconBg} flex items-center justify-center`}>
                   <Icon className={`h-5 w-5 ${card.iconColor}`} />
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">{card.label}</p>
-                  <p className="text-xl font-bold text-foreground">{card.value}</p>
+                  <p className="text-xl font-semibold tabular-nums text-foreground">{card.value}</p>
                 </div>
               </div>
             );
             const sharedClass =
-              "block text-left w-full bg-card rounded-xl border border-border p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500";
+              "block text-left w-full bg-card rounded-lg border border-border p-5 transition-colors duration-150 hover:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500";
             if ("href" in card) {
               return (
                 <Link key={card.label} to={card.href} className={sharedClass}>
@@ -282,20 +282,20 @@ export default function EventDashboardPage() {
 
       {/* Type Breakdown */}
       {dashboard?.type_breakdown?.length > 0 && (
-        <div id="type-breakdown" className="bg-card rounded-xl border border-border p-6 mb-6 scroll-mt-4">
-          <h2 className="text-sm font-semibold text-muted-foreground mb-3">{t("eventDashboard.typeBreakdown.title")}</h2>
+        <div id="type-breakdown" className="bg-card rounded-lg border border-border p-4 mb-6 scroll-mt-4">
+          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-3">{t("eventDashboard.typeBreakdown.title")}</h2>
           <div className="flex flex-wrap gap-3">
             {dashboard.type_breakdown.map((tb: any) => (
               <div
                 key={tb.event_type}
-                className="flex items-center gap-2 bg-muted px-3 py-1.5 rounded-lg"
+                className="flex items-center gap-2 bg-muted px-3 py-1.5 rounded-md"
               >
                 <span className="text-sm font-medium text-muted-foreground">
                   {t(`eventDashboard.eventType.${tb.event_type}`, {
                     defaultValue: EVENT_TYPE_LABELS[tb.event_type] || tb.event_type,
                   })}
                 </span>
-                <span className="text-xs bg-brand-100 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300 px-2 py-0.5 rounded-full font-semibold">
+                <span className="text-[11px] tabular-nums bg-brand-100 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300 px-2 py-0.5 rounded-md font-semibold">
                   {tb.count}
                 </span>
               </div>
@@ -306,8 +306,8 @@ export default function EventDashboardPage() {
 
       {/* Create / Edit Event Form */}
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-card rounded-xl border border-border p-6 mb-6 space-y-4">
-          <h2 className="text-lg font-semibold text-foreground">
+        <form onSubmit={handleSubmit} className="bg-card rounded-lg border border-border p-4 mb-6 space-y-4">
+          <h2 className="text-base font-semibold text-foreground">
             {editingId != null ? t("eventDashboard.form.editTitle") : t("eventDashboard.form.title")}
           </h2>
 
@@ -318,7 +318,7 @@ export default function EventDashboardPage() {
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
                 placeholder={t("eventDashboard.form.placeholders.title")}
                 required
               />
@@ -329,7 +329,7 @@ export default function EventDashboardPage() {
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm min-h-[80px]"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] min-h-[80px]"
                 placeholder={t("eventDashboard.form.placeholders.description")}
               />
             </div>
@@ -343,7 +343,7 @@ export default function EventDashboardPage() {
                   setEventType(nextType);
                   if (nextType === "holiday") setVirtualLink("");
                 }}
-                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
               >
                 {EVENT_TYPES.map((type) => (
                   <option key={type} value={type}>
@@ -380,7 +380,7 @@ export default function EventDashboardPage() {
                 type="datetime-local"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
                 required
               />
             </div>
@@ -392,7 +392,7 @@ export default function EventDashboardPage() {
                 value={endDate}
                 onChange={(e) => { setEndDate(e.target.value); setDateError(""); }}
                 min={startDate || undefined}
-                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
               />
             </div>
 
@@ -404,7 +404,7 @@ export default function EventDashboardPage() {
                   type="text"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  className="bg-card text-foreground w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm"
+                  className="bg-card text-foreground w-full pl-9 pr-3 py-2 border border-border rounded-md text-[13px]"
                   placeholder={t("eventDashboard.form.placeholders.location")}
                 />
               </div>
@@ -419,7 +419,7 @@ export default function EventDashboardPage() {
                     type="url"
                     value={virtualLink}
                     onChange={(e) => setVirtualLink(e.target.value)}
-                    className="bg-card text-foreground w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm"
+                    className="bg-card text-foreground w-full pl-9 pr-3 py-2 border border-border rounded-md text-[13px]"
                     placeholder={t("eventDashboard.form.placeholders.virtualLink")}
                   />
                 </div>
@@ -431,7 +431,7 @@ export default function EventDashboardPage() {
               <select
                 value={targetType}
                 onChange={(e) => setTargetType(e.target.value)}
-                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
               >
                 <option value="all">{t("eventDashboard.form.targetType.all")}</option>
                 <option value="department">{t("eventDashboard.form.targetType.department")}</option>
@@ -446,7 +446,7 @@ export default function EventDashboardPage() {
                   type="text"
                   value={targetIds}
                   onChange={(e) => setTargetIds(e.target.value)}
-                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
                   placeholder='["1","2"]'
                 />
               </div>
@@ -460,7 +460,7 @@ export default function EventDashboardPage() {
                   type="number"
                   value={maxAttendees}
                   onChange={(e) => setMaxAttendees(e.target.value)}
-                  className="bg-card text-foreground w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm"
+                  className="bg-card text-foreground w-full pl-9 pr-3 py-2 border border-border rounded-md text-[13px]"
                   placeholder={t("eventDashboard.form.placeholders.maxAttendees")}
                   min="1"
                 />
@@ -485,7 +485,7 @@ export default function EventDashboardPage() {
             <button
               type="submit"
               disabled={createMutation.isPending || updateMutation.isPending}
-              className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
+              className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700 disabled:opacity-50"
             >
               <Calendar className="h-4 w-4" />{" "}
               {editingId != null ? t("eventDashboard.form.updateSubmit") : t("eventDashboard.form.submit")}
@@ -495,9 +495,9 @@ export default function EventDashboardPage() {
       )}
 
       {/* Upcoming Events */}
-      <div className="bg-card rounded-xl border border-border">
+      <div className="bg-card rounded-lg border border-border">
         <div className="p-4 border-b border-border flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-muted-foreground">{t("eventDashboard.upcoming.title")}</h2>
+          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("eventDashboard.upcoming.title")}</h2>
           <Link to="/events" className="text-xs text-brand-600 dark:text-brand-400 hover:underline">
             {t("eventDashboard.upcoming.viewAll")}
           </Link>
@@ -511,7 +511,7 @@ export default function EventDashboardPage() {
             </div>
           ) : (
             dashboard.upcoming_events.map((event: any) => (
-              <div key={event.id} className="p-4 flex items-center justify-between hover:bg-muted">
+              <div key={event.id} className="p-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
                 <div className="flex-1 min-w-0">
                   <Link
                     to={`/events/${event.id}`}
@@ -585,7 +585,7 @@ export default function EventDashboardPage() {
           onClick={() => !deleteMutation.isPending && setDeleteTarget(null)}
         >
           <div
-            className="w-full max-w-md rounded-xl bg-card shadow-xl"
+            className="w-full max-w-md rounded-lg bg-card shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="px-6 py-5">
@@ -602,16 +602,16 @@ export default function EventDashboardPage() {
               </div>
             </div>
             {deleteError && (
-              <div className="mx-6 mb-4 rounded-lg bg-red-50 dark:bg-red-950/40 p-3 text-sm text-red-700 dark:text-red-300">
+              <div className="mx-6 mb-4 rounded-md bg-red-50 dark:bg-red-950/40 p-3 text-sm text-red-700 dark:text-red-300">
                 {deleteError}
               </div>
             )}
-            <div className="flex justify-end gap-3 rounded-b-xl border-t border-border bg-muted px-6 py-4">
+            <div className="flex justify-end gap-3 rounded-b-lg border-t border-border bg-muted px-6 py-4">
               <button
                 type="button"
                 onClick={() => setDeleteTarget(null)}
                 disabled={deleteMutation.isPending}
-                className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-card disabled:opacity-50"
+                className="rounded-md border border-border px-4 py-2 text-[13px] font-medium text-muted-foreground hover:bg-card disabled:opacity-50"
               >
                 {t("eventDashboard.deleteModal.cancel")}
               </button>
@@ -619,7 +619,7 @@ export default function EventDashboardPage() {
                 type="button"
                 onClick={() => deleteMutation.mutate(deleteTarget.id)}
                 disabled={deleteMutation.isPending}
-                className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+                className="flex items-center gap-2 rounded-md bg-red-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-red-700 disabled:opacity-50"
               >
                 {deleteMutation.isPending ? (
                   <>
