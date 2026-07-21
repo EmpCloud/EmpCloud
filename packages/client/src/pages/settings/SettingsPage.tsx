@@ -66,16 +66,16 @@ export default function SettingsPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-foreground">{t("settingsPage.header.title")}</h1>
-        <p className="text-muted-foreground mt-1">{t("settingsPage.header.subtitle")}</p>
+      <div className="mb-6">
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("settingsPage.header.title")}</h1>
+        <p className="text-[13px] text-muted-foreground mt-0.5">{t("settingsPage.header.subtitle")}</p>
       </div>
 
       {/* Organization info */}
       {editingOrg ? (
         <OrgEditForm org={org} onClose={() => setEditingOrg(false)} />
       ) : (
-        <div className="bg-card rounded-xl border border-border p-6 mb-6">
+        <div className="bg-card rounded-lg border border-border p-4 mb-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <Building2 className="h-5 w-5 text-brand-600 dark:text-brand-400" />
@@ -194,7 +194,7 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
   ];
 
   return (
-    <form onSubmit={handleSubmit} className="bg-card rounded-xl border border-border p-6 mb-6">
+    <form onSubmit={handleSubmit} className="bg-card rounded-lg border border-border p-4 mb-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <Building2 className="h-5 w-5 text-brand-600 dark:text-brand-400" />
@@ -212,7 +212,7 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
               <select
                 value={form[key]}
                 onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-card"
+                className="w-full px-3 py-2 border border-border rounded-md text-sm bg-card"
               >
                 <option value="">{t("settingsPage.form.selectTimezone")}</option>
                 {TIMEZONES.map((tz) => (
@@ -223,7 +223,7 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
               <select
                 value={form[key]}
                 onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-card"
+                className="w-full px-3 py-2 border border-border rounded-md text-sm bg-card"
               >
                 <option value="">{t("settingsPage.form.selectCountry")}</option>
                 {COUNTRIES.map((c) => (
@@ -241,7 +241,7 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
                       setValidationErrors((prev) => { const next = { ...prev }; delete next[key]; return next; });
                     }
                   }}
-                  className={`w-full px-3 py-2 border rounded-lg text-sm ${validationErrors[key] ? "border-red-400" : "border-border"}`}
+                  className={`w-full px-3 py-2 border rounded-md text-[13px] ${validationErrors[key] ? "border-red-400" : "border-border"}`}
                 />
                 {validationErrors[key] && (
                   <p className="text-xs text-red-500 mt-1">{validationErrors[key]}</p>
@@ -255,14 +255,14 @@ function OrgEditForm({ org, onClose }: { org: any; onClose: () => void }) {
         <button
           type="button"
           onClick={onClose}
-          className="px-4 py-2 text-sm text-muted-foreground border border-border rounded-lg hover:bg-muted"
+          className="px-4 py-2 text-sm text-muted-foreground border border-border rounded-md hover:bg-muted"
         >
           {t("settingsPage.actions.cancel")}
         </button>
         <button
           type="submit"
           disabled={updateOrg.isPending}
-          className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
+          className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700 disabled:opacity-50"
         >
           <Save className="h-4 w-4" /> {t("settingsPage.actions.saveChanges")}
         </button>
@@ -351,7 +351,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
   };
 
   return (
-    <div className="bg-card rounded-xl border border-border p-6">
+    <div className="bg-card rounded-lg border border-border p-4">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <Briefcase className="h-5 w-5 text-brand-600 dark:text-brand-400" />
@@ -379,13 +379,13 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
               value={newName}
               onChange={(e) => { setNewName(e.target.value); setAddError(""); }}
               placeholder={t("settingsPage.departments.namePlaceholder")}
-              className="bg-card text-foreground flex-1 px-3 py-2 border border-border rounded-lg text-sm"
+              className="bg-card text-foreground flex-1 px-3 py-2 border border-border rounded-md text-sm"
               required
             />
             <button
               type="submit"
               disabled={addDept.isPending}
-              className="px-3 py-2 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
+              className="px-3 py-2 bg-brand-600 text-white rounded-md text-[13px] font-medium hover:bg-brand-700 disabled:opacity-50"
             >
               {t("settingsPage.actions.add")}
             </button>
@@ -397,7 +397,7 @@ function DepartmentsCard({ departments }: { departments: any[] }) {
         {departments.map((d: any) => (
           <li
             key={d.id}
-            className="flex items-center justify-between px-3 py-2 bg-muted rounded-lg text-sm"
+            className="flex items-center justify-between px-3 py-2 bg-muted rounded-md text-[13px]"
           >
             {editId === d.id ? (
               <form
@@ -547,7 +547,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
   };
 
   return (
-    <div className="bg-card rounded-xl border border-border p-6">
+    <div className="bg-card rounded-lg border border-border p-4">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <MapPin className="h-5 w-5 text-brand-600 dark:text-brand-400" />
@@ -582,13 +582,13 @@ function LocationsCard({ locations }: { locations: any[] }) {
             value={locForm.name}
             onChange={(e) => { setLocForm({ ...locForm, name: e.target.value }); setAddError(""); }}
             placeholder={t("settingsPage.locations.namePlaceholder")}
-            className="bg-card text-foreground flex-1 px-3 py-2 border border-border rounded-lg text-sm"
+            className="bg-card text-foreground flex-1 px-3 py-2 border border-border rounded-md text-sm"
             required
           />
           <select
             value={locForm.timezone}
             onChange={(e) => { setLocForm({ ...locForm, timezone: e.target.value }); setAddError(""); }}
-            className="flex-1 px-3 py-2 border border-border rounded-lg text-sm bg-card"
+            className="flex-1 px-3 py-2 border border-border rounded-md text-sm bg-card"
             required
             aria-required="true"
           >
@@ -600,7 +600,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
           <button
             type="submit"
             disabled={addLoc.isPending}
-            className="px-3 py-2 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
+            className="px-3 py-2 bg-brand-600 text-white rounded-md text-[13px] font-medium hover:bg-brand-700 disabled:opacity-50"
           >
             {t("settingsPage.actions.add")}
           </button>
@@ -612,7 +612,7 @@ function LocationsCard({ locations }: { locations: any[] }) {
         {locations.map((l: any) => (
           <li
             key={l.id}
-            className="flex items-center justify-between px-3 py-2 bg-muted rounded-lg text-sm"
+            className="flex items-center justify-between px-3 py-2 bg-muted rounded-md text-[13px]"
           >
             {editId === l.id ? (
               <form
