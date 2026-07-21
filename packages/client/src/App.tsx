@@ -25,6 +25,7 @@ import { biometricRoutes } from "./routes/biometrics.routes";
 import { adminRoutes } from "./routes/admin.routes";
 import { billingRoutes } from "./routes/billing.routes";
 import { chatbotRoutes } from "./routes/chatbot.routes";
+import { assistantRoutes } from "./routes/assistant.routes";
 import { managerRoutes } from "./routes/manager.routes";
 import { customFieldRoutes } from "./routes/custom-fields.routes";
 import { rolesRoutes } from "./routes/roles.routes";
@@ -205,6 +206,7 @@ export default function App() {
           {adminRoutes}
           {billingRoutes}
           {chatbotRoutes}
+          {assistantRoutes}
           {managerRoutes}
           {customFieldRoutes}
           {rolesRoutes}
