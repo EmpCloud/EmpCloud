@@ -102,9 +102,9 @@ export default function HelpdeskDashboardPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">
             {t("helpdeskDashboard.title")}
           </h1>
           <p className="text-muted-foreground mt-1">
@@ -113,29 +113,29 @@ export default function HelpdeskDashboardPage() {
         </div>
         <Link
           to="/helpdesk/tickets"
-          className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
+          className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700"
         >
           {t("helpdeskDashboard.viewAllTickets")} <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {statCards.map((card) => {
           const Icon = card.icon;
           return (
             <Link
               key={card.label}
               to={card.href}
-              className="bg-card rounded-xl border border-border p-6 transition-colors hover:border-brand-400 hover:bg-brand-50/30 dark:hover:bg-brand-950/30 focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="bg-card rounded-lg border border-border p-4 transition-colors hover:border-brand-400 hover:bg-brand-50/30 dark:hover:bg-brand-950/30 focus:outline-none focus:ring-2 focus:ring-brand-500"
             >
               <div className="flex items-center gap-3">
-                <div className={`p-2.5 rounded-lg ${card.color}`}>
+                <div className={`p-2.5 rounded-md ${card.color}`}>
                   <Icon className="h-5 w-5" />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">{card.label}</p>
-                  <p className="text-2xl font-bold text-foreground">{card.value}</p>
+                  <p className="text-2xl font-semibold tabular-nums leading-none text-foreground">{card.value}</p>
                 </div>
               </div>
             </Link>
@@ -144,10 +144,10 @@ export default function HelpdeskDashboardPage() {
       </div>
 
       {/* SLA & Metrics Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
         {/* SLA Compliance */}
-        <div className="bg-card rounded-xl border border-border p-6">
-          <h3 className="text-sm font-semibold text-muted-foreground mb-4 flex items-center gap-2">
+        <div className="bg-card rounded-lg border border-border p-4">
+          <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
             <BarChart3 className="h-4 w-4" /> {t("helpdeskDashboard.sla.compliance")}
           </h3>
           <div className="flex items-center justify-center">
@@ -174,7 +174,7 @@ export default function HelpdeskDashboardPage() {
                 />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-2xl font-bold text-foreground">
+                <span className="text-2xl font-semibold tabular-nums leading-none text-foreground">
                   {stats.sla_compliance}%
                 </span>
               </div>
@@ -186,13 +186,13 @@ export default function HelpdeskDashboardPage() {
         </div>
 
         {/* Avg Resolution Time */}
-        <div className="bg-card rounded-xl border border-border p-6">
-          <h3 className="text-sm font-semibold text-muted-foreground mb-4 flex items-center gap-2">
+        <div className="bg-card rounded-lg border border-border p-4">
+          <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
             <Clock className="h-4 w-4" /> {t("helpdeskDashboard.metrics.avgResolutionTime")}
           </h3>
           <div className="flex items-center justify-center mt-4">
             <div className="text-center">
-              <p className="text-4xl font-bold text-foreground">
+              <p className="text-4xl font-semibold tabular-nums text-foreground">
                 {stats.avg_resolution_hours}
               </p>
               <p className="text-sm text-muted-foreground mt-1">
@@ -203,8 +203,8 @@ export default function HelpdeskDashboardPage() {
         </div>
 
         {/* Satisfaction */}
-        <div className="bg-card rounded-xl border border-border p-6">
-          <h3 className="text-sm font-semibold text-muted-foreground mb-4 flex items-center gap-2">
+        <div className="bg-card rounded-lg border border-border p-4">
+          <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
             <Star className="h-4 w-4" /> {t("helpdeskDashboard.satisfaction.title")}
           </h3>
           <div className="flex items-center justify-center mt-4">
@@ -221,7 +221,7 @@ export default function HelpdeskDashboardPage() {
                   />
                 ))}
               </div>
-              <p className="text-2xl font-bold text-foreground">
+              <p className="text-2xl font-semibold tabular-nums leading-none text-foreground">
                 {stats.avg_satisfaction ?? t("helpdeskDashboard.satisfaction.notAvailable")}
               </p>
               <p className="text-xs text-muted-foreground mt-1">
@@ -235,9 +235,9 @@ export default function HelpdeskDashboardPage() {
       </div>
 
       {/* Category Breakdown */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
-        <div className="bg-card rounded-xl border border-border p-6">
-          <h3 className="text-sm font-semibold text-muted-foreground mb-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+        <div className="bg-card rounded-lg border border-border p-4">
+          <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-4">
             {t("helpdeskDashboard.categoryBreakdown.title")}
           </h3>
           <div className="space-y-3">
@@ -260,7 +260,7 @@ export default function HelpdeskDashboardPage() {
                     }}
                   />
                 </div>
-                <span className="text-sm font-medium text-muted-foreground w-8 text-right">
+                <span className="text-[13px] tabular-nums font-medium text-muted-foreground w-8 text-right">
                   {cat.count}
                 </span>
               </div>
@@ -274,8 +274,8 @@ export default function HelpdeskDashboardPage() {
         </div>
 
         {/* Recent Tickets */}
-        <div className="bg-card rounded-xl border border-border p-6">
-          <h3 className="text-sm font-semibold text-muted-foreground mb-4">
+        <div className="bg-card rounded-lg border border-border p-4">
+          <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-4">
             {t("helpdeskDashboard.recentTickets.title")}
           </h3>
           <div className="space-y-3">
@@ -283,7 +283,7 @@ export default function HelpdeskDashboardPage() {
               <Link
                 key={ticket.id}
                 to={`/helpdesk/tickets/${ticket.id}`}
-                className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-muted transition-colors"
+                className="flex items-center justify-between py-2 px-3 rounded-md hover:bg-muted/50 transition-colors"
               >
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-foreground truncate">

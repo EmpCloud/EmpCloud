@@ -202,13 +202,13 @@ export default function TicketDetailPage() {
       </Link>
 
       {/* Ticket Header */}
-      <div className="bg-card rounded-xl border border-border p-6 mb-6">
+      <div className="bg-card rounded-lg border border-border p-4 mb-6">
         <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-2 flex-wrap">
               <span className="text-sm text-muted-foreground font-mono">#{ticket.id}</span>
               <span
-                className={`text-xs font-medium px-2.5 py-0.5 rounded-full border capitalize ${
+                className={`text-[11px] font-medium px-2.5 py-0.5 rounded-md border capitalize ${
                   PRIORITY_COLORS[ticket.priority] || ""
                 }`}
               >
@@ -236,7 +236,7 @@ export default function TicketDetailPage() {
                 </span>
               )}
             </div>
-            <h1 className="text-xl font-bold text-foreground">{ticket.subject}</h1>
+            <h1 className="text-xl font-semibold tracking-tight text-foreground">{ticket.subject}</h1>
             <div
               className={`rich-text text-sm text-muted-foreground mt-2 dark:[&]:text-slate-300 dark:[&_h1]:text-slate-100 dark:[&_h2]:text-slate-100 ${isHtmlContent(ticket.description) ? "" : "whitespace-pre-wrap"}`}
               dangerouslySetInnerHTML={{ __html: ticket.description || "" }}
@@ -255,7 +255,7 @@ export default function TicketDetailPage() {
           </div>
 
           {/* SLA info */}
-          <div className="shrink-0 bg-muted rounded-lg p-4 min-w-[200px]">
+          <div className="shrink-0 bg-muted rounded-md p-4 min-w-[200px]">
             <h4 className="text-xs font-semibold text-muted-foreground mb-2 flex items-center gap-1">
               <Clock className="h-3.5 w-3.5" /> {t("ticketDetail.slaDeadlines")}
             </h4>
@@ -293,7 +293,7 @@ export default function TicketDetailPage() {
           {isHR && (
             <button
               onClick={() => setShowAssignForm(!showAssignForm)}
-              className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg border border-border text-muted-foreground hover:bg-muted"
+              className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-md border border-border text-muted-foreground hover:bg-muted"
             >
               <UserPlus className="h-3.5 w-3.5" /> {t("ticketDetail.action.assign")}
             </button>
@@ -302,7 +302,7 @@ export default function TicketDetailPage() {
             <button
               onClick={() => resolveMutation.mutate()}
               disabled={resolveMutation.isPending}
-              className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-green-600 text-white hover:bg-green-700 disabled:opacity-50"
+              className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-md bg-green-600 text-white hover:bg-green-700 disabled:opacity-50"
             >
               <CheckCircle2 className="h-3.5 w-3.5" /> {t("ticketDetail.action.resolve")}
             </button>
@@ -311,7 +311,7 @@ export default function TicketDetailPage() {
             <button
               onClick={() => closeMutation.mutate()}
               disabled={closeMutation.isPending}
-              className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg border border-border text-muted-foreground hover:bg-muted disabled:opacity-50"
+              className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-md border border-border text-muted-foreground hover:bg-muted disabled:opacity-50"
             >
               <XCircle className="h-3.5 w-3.5" /> {t("ticketDetail.action.close")}
             </button>
@@ -320,7 +320,7 @@ export default function TicketDetailPage() {
             <button
               onClick={() => reopenMutation.mutate()}
               disabled={reopenMutation.isPending}
-              className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg border border-orange-200 dark:border-orange-900 text-orange-700 dark:text-orange-300 hover:bg-orange-50 dark:hover:bg-orange-950/40 disabled:opacity-50"
+              className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-md border border-orange-200 dark:border-orange-900 text-orange-700 dark:text-orange-300 hover:bg-orange-50 dark:hover:bg-orange-950/40 disabled:opacity-50"
             >
               <RotateCcw className="h-3.5 w-3.5" /> {t("ticketDetail.action.reopen")}
             </button>
@@ -328,7 +328,7 @@ export default function TicketDetailPage() {
           {canRate && (
             <button
               onClick={() => setShowRatingForm(!showRatingForm)}
-              className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg border border-yellow-200 dark:border-yellow-900 text-yellow-700 dark:text-yellow-300 hover:bg-yellow-50 dark:hover:bg-yellow-950/40"
+              className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-md border border-yellow-200 dark:border-yellow-900 text-yellow-700 dark:text-yellow-300 hover:bg-yellow-50 dark:hover:bg-yellow-950/40"
             >
               <Star className="h-3.5 w-3.5" /> {t("ticketDetail.action.rateService")}
             </button>
@@ -337,11 +337,11 @@ export default function TicketDetailPage() {
 
         {/* Assign Form */}
         {showAssignForm && isHR && (
-          <form onSubmit={handleAssign} className="mt-3 flex items-center gap-2 p-3 bg-muted rounded-lg">
+          <form onSubmit={handleAssign} className="mt-3 flex items-center gap-2 p-3 bg-muted rounded-md">
             <select
               value={assignUserId}
               onChange={(e) => setAssignUserId(e.target.value)}
-              className="bg-card text-foreground flex-1 px-3 py-2 border border-border rounded-lg text-sm"
+              className="bg-card text-foreground flex-1 px-3 py-2 border border-border rounded-md text-[13px]"
             >
               <option value="">{t("ticketDetail.assign.selectUser")}</option>
               {(usersData || [])
@@ -390,7 +390,7 @@ export default function TicketDetailPage() {
               value={ratingComment}
               onChange={(e) => setRatingComment(e.target.value)}
               placeholder={t("ticketDetail.rating.feedbackPlaceholder")}
-              className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm min-h-[60px] mb-3"
+              className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] min-h-[60px] mb-3"
             />
             <button
               type="submit"
@@ -430,7 +430,7 @@ export default function TicketDetailPage() {
       </div>
 
       {/* Conversation Thread */}
-      <div className="bg-card rounded-xl border border-border p-6 mb-6">
+      <div className="bg-card rounded-lg border border-border p-4 mb-6">
         <h3 className="text-sm font-semibold text-muted-foreground mb-4">{t("ticketDetail.conversation")}</h3>
 
         {ticket.comments && ticket.comments.length > 0 ? (
@@ -440,7 +440,7 @@ export default function TicketDetailPage() {
               return (
                 <div
                   key={c.id}
-                  className={`p-4 rounded-lg ${
+                  className={`p-4 rounded-md ${
                     c.is_internal
                       ? "bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900"
                       : isSelf
@@ -481,13 +481,13 @@ export default function TicketDetailPage() {
 
       {/* Reply Input */}
       {canReply && ticket.status !== "closed" && (
-        <div className="bg-card rounded-xl border border-border p-6">
+        <div className="bg-card rounded-lg border border-border p-4">
           <form onSubmit={handleComment}>
             <textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder={t("ticketDetail.replyPlaceholder")}
-              className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm min-h-[80px] mb-3"
+              className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] min-h-[80px] mb-3"
               required
             />
             <div className="flex items-center justify-between">
@@ -508,7 +508,7 @@ export default function TicketDetailPage() {
               <button
                 type="submit"
                 disabled={addCommentMutation.isPending || !comment.trim()}
-                className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
+                className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700 disabled:opacity-50"
               >
                 <Send className="h-4 w-4" />
                 {addCommentMutation.isPending ? t("ticketDetail.sending") : t("ticketDetail.sendReply")}
