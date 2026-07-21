@@ -377,7 +377,15 @@
     "changePassword": "パスワードの変更",
     "viewAttendance": "勤怠を表示",
     "attendanceGrid": "勤怠グリッド",
-    "attendanceSettings": "勤怠設定"
+    "attendanceSettings": "勤怠設定",
+    "section": {
+      "account": "アカウント",
+      "administration": "管理",
+      "attendance_and_leave": "勤怠・休暇",
+      "communication": "コミュニケーション",
+      "people_and_hr": "人材・人事",
+      "workplace_and_community": "ワークプレイス・コミュニティ"
+    }
   },
   "common": {
     "save": "保存",

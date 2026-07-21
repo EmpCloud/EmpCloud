@@ -377,7 +377,15 @@
     "changePassword": "Change Password",
     "viewAttendance": "View Attendance",
     "attendanceGrid": "Attendance Grid",
-    "attendanceSettings": "Attendance Settings"
+    "attendanceSettings": "Attendance Settings",
+    "section": {
+      "account": "Account",
+      "administration": "Administration",
+      "attendance_and_leave": "Attendance & Leave",
+      "communication": "Communication",
+      "people_and_hr": "People & HR",
+      "workplace_and_community": "Workplace & Community"
+    }
   },
   "common": {
     "save": "Save",
