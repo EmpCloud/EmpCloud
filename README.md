@@ -4,6 +4,88 @@
 
 [![Status: Built](https://img.shields.io/badge/Status-Built-green)]()
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
+[![OpenAI Build Week](https://img.shields.io/badge/OpenAI-Build%20Week-black.svg)]()
+[![Built with Codex + GPT-5.6](https://img.shields.io/badge/Built%20with-Codex%20%2B%20GPT--5.6-412991.svg)]()
+
+---
+
+## 🏆 OpenAI Build Week Submission — EmpCloud HR Assistant
+
+**Track: Work & Productivity · Built with Codex and GPT-5.6**
+
+> **Replace dashboards with a question.** Ask in plain language and get answers across payroll,
+> attendance, leave, shifts, and workforce productivity — from three separate systems, in one reply.
+
+### What's new (evaluate this)
+
+The submission is a **new, self-contained module** built during the Submission Period. Everything
+else in this repository is the pre-existing EmpCloud platform (prior work).
+
+| | Path | Status |
+|---|---|---|
+| **New — the submission** | [`packages/server/src/services/assistant/`](packages/server/src/services/assistant/) | Built this week with Codex |
+| New — API routes | [`packages/server/src/api/routes/assistant.routes.ts`](packages/server/src/api/routes/assistant.routes.ts) | Built this week |
+| New — migration | `packages/server/src/db/migrations/099_ai_assistant.ts` | Built this week |
+| New — frontend | `packages/client/src/pages/assistant/` | Built this week |
+| Prior work | the rest of this repository (platform, legacy chatbot, all modules) | Pre-existing |
+
+A detailed technical writeup of the module lives at
+[`packages/server/src/services/assistant/Readme.md`](packages/server/src/services/assistant/Readme.md).
+
+### How Codex + GPT-5.6 were used
+
+- **GPT-5.6 is the runtime brain.** The assistant is an OpenAI function-calling agent: GPT-5.6 reads
+  the question, selects and chains among **21 read-only tools** across core HR, Payroll, and workforce
+  monitoring, then composes one answer. Multi-system questions (e.g. *"compare Priya's attendance,
+  productivity, and salary this month"*) are planned by the model — no flow is hard-coded.
+- **Codex was the builder.** We drove the architecture and product decisions; Codex generated the
+  function-calling loop, wrote each of the 21 tools against our real database schemas and internal
+  APIs, built the Server-Sent-Events streaming layer and the conversation-history UI, and produced the
+  test suite. Division of labor: *we* decided what to connect, how to scope permissions, and what the
+  product should feel like; *Codex* implemented it fast enough to make 21 tools + streaming achievable
+  in one build week.
+- **Security lives in the tools, not the prompt.** The model never receives the organization ID or
+  caller identity; every tool independently re-derives self / team / organization visibility from the
+  caller's real permissions, so a model-guessed employee ID can never escape authorization.
+
+### Feature highlights
+
+- Natural-language answers over **payroll, attendance, leave, shifts, productivity, app/website usage,
+  and AI-tool adoption**
+- **Streaming** responses (SSE) and full **conversation history** (open, rename, delete)
+- Strict **role- and organization-scoping** on every result
+- Built as a clean module **beside** the legacy rule-based chatbot (kept as the "before")
+
+### Run / test the assistant
+
+**Fastest path — hosted demo (no setup):** log in at https://app.empcloud.com/ and open **HR Assistant**
+from the sidebar. Try: *"What is the salary of Priya Patel?"*, *"What was her net pay in June 2026?"*,
+*"How productive was Priya Patel this month?"*, *"Which AI tools is the team using?"*
+
+**Run locally:** first complete the base setup in [Getting Started](#getting-started) (`pnpm install`,
+`docker compose up -d`, run the server + client). Then add the assistant config to `packages/server/.env`:
+
+```env
+# --- Assistant: OpenAI (GPT-5.6) ---
+ASSISTANT_OPENAI_API_KEY=<your OpenAI key>   # falls back to OPENAI_API_KEY
+ASSISTANT_MODEL=<openai model>               # the OpenAI model to use
+
+# --- Cross-system tools: reach the Payroll + Monitor services ---
+PAYROLL_MODULE_URL=http://localhost:4000
+MONITOR_MODULE_URL=http://localhost:6004
+INTERNAL_SERVICE_SECRET=<shared secret>      # same value in EmpCloud, Payroll, and Monitor .env
+```
+
+Payroll and attendance/leave tools work with just EmpCloud + Payroll running; the productivity and
+AI-usage tools additionally need the EmpMonitor service up with the same `INTERNAL_SERVICE_SECRET`.
+Restart the servers after editing `.env`. Then open **HR Assistant** at `http://localhost:5173/assistant`.
+
+For the full API contract, the complete 21-tool list, all configuration options, and a live smoke test,
+see [`packages/server/src/services/assistant/Readme.md`](packages/server/src/services/assistant/Readme.md).
+
+**Demo video:** `https://youtu.be/12iMo-bcDRI` · **Codex `/feedback` session ID:** `019f7e53-e3a9-7c82-b788-40dfe8baf999`
+
+---
 
 > HRMS is no longer a record-keeping system. EMP Cloud reimagines it as an **orchestration layer** — a single control tower where people data, company policies, operational workflows, and AI agents converge to run HR autonomously.
 

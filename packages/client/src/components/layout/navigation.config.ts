@@ -33,7 +33,6 @@ import {
   CalendarCheck,
   ShieldAlert,
   Search,
-  BotMessageSquare,
   MessagesSquare,
   PenSquare,
   Heart,
@@ -98,7 +97,7 @@ export const employeeNavItems: NavItem[] = [
 
   // — Communication —
   { path: "/messages", label: "Messages", i18nKey: "nav.messages", icon: MessagesSquare, section: "Communication" },
-  { path: "/chatbot", label: "AI Assistant", i18nKey: "nav.chatbot", icon: BotMessageSquare, section: "Communication", badge: "AI", requiredPermissions: ["chatbot:use"] },
+  { path: "/assistant", label: "HR Assistant", icon: Sparkles, section: "Communication", badge: "NEW" },
 
   // — Company & services —
   { path: "/documents", label: "Company", i18nKey: "nav.company", icon: Building2, section: "Workplace & Community", children: [
@@ -181,7 +180,7 @@ export const adminNavItems: NavItem[] = [
 
   // — Communication —
   { path: "/messages", label: "Messages", i18nKey: "nav.messages", icon: MessagesSquare, section: "Communication" },
-  { path: "/chatbot", label: "AI Assistant", i18nKey: "nav.chatbot", icon: BotMessageSquare, section: "Communication", badge: "AI", requiredPermissions: ["chatbot:use"] },
+  { path: "/assistant", label: "HR Assistant", icon: Sparkles, section: "Communication", badge: "NEW" },
 
   // — Company & services —
   { path: "/documents", label: "Company", i18nKey: "nav.company", icon: Building2, section: "Workplace & Community", children: [

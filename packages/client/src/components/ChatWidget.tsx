@@ -113,13 +113,13 @@ export default function ChatWidget() {
   const location = useLocation();
   const { i18n } = useTranslation();
   const { has } = usePermissions();
-  const canUseChatbot = has("chatbot:use");
+  const canUseChatbot = has("assistant:use");
   // Hide the floating AI widget on the Messages page — its bottom-right launcher
   // overlaps the chat composer + message ticks, and an AI bubble inside a
   // person-to-person chat UI is redundant.
-  const onMessagesPage = location.pathname.startsWith("/messages");
+  const onMessagesPage = location.pathname.startsWith("/messages") || location.pathname.startsWith("/assistant");
   const [isOpen, setIsOpen] = useState(false);
-  const [convoId, setConvoId] = useState<number | null>(null);
+  const [convoId] = useState<number | null>(null);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -145,14 +145,6 @@ export default function ChatWidget() {
     queryKey: ["chatbot-widget-messages", convoId],
     queryFn: () => api.get(`/chatbot/conversations/${convoId}`).then((r) => r.data.data),
     enabled: !!convoId && canUseChatbot,
-  });
-
-  // Create conversation
-  const createConvo = useMutation({
-    mutationFn: () => api.post("/chatbot/conversations"),
-    onSuccess: (res) => {
-      setConvoId(res.data.data.id);
-    },
   });
 
   // Send message
@@ -181,9 +173,8 @@ export default function ChatWidget() {
   }, [isOpen, convoId]);
 
   const handleOpen = useCallback(() => {
-    setIsOpen(true);
-    if (!convoId) createConvo.mutate();
-  }, [convoId, createConvo]);
+    navigate("/assistant");
+  }, [navigate]);
 
   const handleSend = useCallback(
     (text?: string) => {
@@ -197,7 +188,7 @@ export default function ChatWidget() {
 
   const handleExpand = useCallback(() => {
     setIsOpen(false);
-    navigate("/chatbot");
+    navigate("/assistant");
   }, [navigate]);
 
   if (!canUseChatbot) return null;

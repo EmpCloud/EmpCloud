@@ -144,6 +144,9 @@ export const PERMISSIONS: PermissionDef[] = [
   p("chatbot:use", "Use chatbot", "Chatbot", "Chat with the AI assistant"),
   p("chatbot:manage_kb", "Manage knowledge base", "Chatbot", "Add / edit / remove knowledge-base articles"),
 
+  // ── AI Assistant (new function-calling assistant; chatbot remains legacy) ──
+  p("assistant:use", "Use AI assistant", "AI Assistant", "Ask the conversational HR data assistant questions"),
+
   // ── Whistleblowing ──
   p("whistleblowing:submit", "Submit report", "Whistleblowing", "File a confidential whistleblower report"),
   p("whistleblowing:view", "View reports", "Whistleblowing", "See submitted reports (anonymized as configured)"),
@@ -306,7 +309,7 @@ const MANAGER_KEYS: string[] = [
   "employees:view", "employees:view_team", "employees:edit_own",
   "positions:view", "org_chart:view",
   "notifications:view", "helpdesk:view_own", "helpdesk:create_ticket",
-  "chatbot:use", "surveys:submit", "forum:read", "forum:post",
+  "chatbot:use", "assistant:use", "surveys:submit", "forum:read", "forum:post",
   "feedback:submit", "events:view",
   "wellness:submit", "wellness:view_team",
   "biometrics:view_own", "biometrics:enroll_self",
@@ -329,7 +332,7 @@ const EMPLOYEE_KEYS: string[] = [
   "employees:view", "employees:edit_own",
   "positions:view", "org_chart:view",
   "notifications:view", "helpdesk:view_own", "helpdesk:create_ticket",
-  "chatbot:use", "surveys:submit", "forum:read", "forum:post",
+  "chatbot:use", "assistant:use", "surveys:submit", "forum:read", "forum:post",
   "feedback:submit", "events:view",
   "wellness:submit",
   "biometrics:view_own", "biometrics:enroll_self",

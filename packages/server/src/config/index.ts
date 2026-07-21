@@ -162,6 +162,25 @@ export const config = {
     maxTokens: parseInt(process.env.AI_MAX_TOKENS || "4096", 10),
   },
 
+  assistant: {
+    openaiApiKey: process.env.ASSISTANT_OPENAI_API_KEY || process.env.OPENAI_API_KEY || "",
+    openaiBaseUrl: process.env.ASSISTANT_OPENAI_BASE_URL || process.env.OPENAI_BASE_URL || "",
+    openaiOrganization:
+      process.env.ASSISTANT_OPENAI_ORGANIZATION || process.env.OPENAI_ORGANIZATION || "",
+    openaiProject: process.env.ASSISTANT_OPENAI_PROJECT || process.env.OPENAI_PROJECT || "",
+    useLegacyMaxTokens: env("ASSISTANT_USE_LEGACY_MAX_TOKENS", "false") === "true",
+    model: env("ASSISTANT_MODEL", "gpt-5.6"),
+    maxTokens: envInt("ASSISTANT_MAX_TOKENS", 2048),
+    maxToolRounds: Math.min(envInt("ASSISTANT_MAX_TOOL_ROUNDS", 8), 8),
+    providerMaxRetries: Math.min(Math.max(envInt("ASSISTANT_PROVIDER_MAX_RETRIES", 2), 0), 5),
+    providerRetryBaseMs: Math.max(envInt("ASSISTANT_PROVIDER_RETRY_BASE_MS", 500), 100),
+    moduleMaxRetries: Math.min(Math.max(envInt("ASSISTANT_MODULE_MAX_RETRIES", 2), 0), 5),
+    moduleRetryBaseMs: Math.max(envInt("ASSISTANT_MODULE_RETRY_BASE_MS", 300), 100),
+    payrollUrl: env("PAYROLL_MODULE_URL", "http://localhost:4000"),
+    monitorUrl: env("MONITOR_MODULE_URL", "http://localhost:5000"),
+    internalServiceSecret: process.env.INTERNAL_SERVICE_SECRET || "",
+  },
+
   log: {
     level: env("LOG_LEVEL", "debug"),
     format: env("LOG_FORMAT", "pretty"),
