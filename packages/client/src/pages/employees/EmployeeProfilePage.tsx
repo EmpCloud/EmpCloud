@@ -265,7 +265,7 @@ export default function EmployeeProfilePage() {
       </Link>
 
       {/* Header */}
-      <div className="bg-card rounded-xl border border-border p-6 mb-6">
+      <div className="bg-card rounded-lg border border-border p-4 mb-6">
         <div className="flex items-center gap-4">
           {/* Biometric face takes precedence — when the user has a kiosk-
               enrolled face, show that image and lock manual photo edits.
@@ -326,7 +326,7 @@ export default function EmployeeProfilePage() {
                   />
                 </div>
                 <div>
-                  <h1 className="text-xl font-bold text-foreground">
+                  <h1 className="text-xl font-semibold tracking-tight text-foreground">
                     {profile.first_name} {profile.last_name}
                   </h1>
                   <p className="text-sm text-muted-foreground">{profile.designation || t("employeeProfile.header.noDesignation")}</p>
@@ -402,7 +402,7 @@ export default function EmployeeProfilePage() {
       </div>
 
       {/* Tab Content */}
-      <div className="bg-card rounded-xl border border-border p-6">
+      <div className="bg-card rounded-lg border border-border p-4">
         {activeTab === "personal" && (
           <PersonalTab
             profile={profile}
@@ -794,7 +794,7 @@ function PersonalTab({ profile, editing, onSave, saving, error, allUsers, depart
               onSave?.(Object.fromEntries(Object.entries(form).filter(([k]) => canEditField(k)).map(([k, v]) => [k, v || null])));
             }}
             disabled={saving}
-            className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50"
+            className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700 disabled:opacity-50 transition-colors"
           >
             <Check className="h-4 w-4" /> {saving ? t("employeeProfile.personal.saving") : t("employeeProfile.personal.saveChanges")}
           </button>
@@ -1671,7 +1671,7 @@ function ExperienceTab({ data, userId, canEdit }: { data?: any[]; userId: number
                   <div className="flex items-center gap-2">
                     <h3 className="text-sm font-semibold text-foreground">{exp.designation}</h3>
                     {exp.is_current && (
-                      <span className="text-xs bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300 px-2 py-0.5 rounded-full font-medium">
+                      <span className="text-xs bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300 px-2 py-0.5 rounded-md font-medium">
                         {t("employeeProfile.experience.currentBadge")}
                       </span>
                     )}
@@ -2229,7 +2229,7 @@ function AddressesTab({ data, userId, canEdit }: { data?: any[]; userId: number;
           {data.map((addr: any) => (
             <div key={addr.id} className="border border-border rounded-lg p-4 flex items-start justify-between">
               <div className="flex-1">
-                <span className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full font-medium uppercase mb-2 inline-block">
+                <span className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-md font-medium uppercase mb-2 inline-block">
                   {t(`employeeProfile.addresses.type.${addr.type}`, { defaultValue: addr.type })}
                 </span>
                 <p className="text-sm text-foreground">{addr.line1}</p>
