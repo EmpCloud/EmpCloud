@@ -69,7 +69,7 @@ function renderMarkdown(text: string, onClickSuggestion?: (text: string) => void
       const body = tableRows.slice(1).filter((r) => !r.every((c) => /^[-|:\s]+$/.test(c)));
       elements.push(
         <div key={`table-${elements.length}`} className="overflow-x-auto my-3">
-          <table className="min-w-full text-sm border border-border rounded-lg">
+          <table className="min-w-full text-[13px] border border-border rounded-lg">
             <thead>
               <tr className="bg-muted">
                 {header.map((cell, i) => (
@@ -208,7 +208,7 @@ function renderInline(text: string, onClickSuggestion?: (text: string) => void):
       parts.push(
         <code
           key={`c-${match.index}`}
-          className="bg-muted text-pink-600 dark:text-pink-400 px-1.5 py-0.5 rounded text-xs font-mono"
+          className="bg-muted text-pink-600 dark:text-pink-400 px-1.5 py-0.5 rounded text-[11px] font-mono"
         >
           {match[9]}
         </code>
@@ -269,11 +269,11 @@ function MessageBubble({ message, onSend }: { message: Message; onSend?: (text: 
               : "bg-card border border-border text-foreground rounded-bl-md shadow-sm"
           }`}
         >
-          <div className={`text-sm ${isUser ? "text-white" : "text-foreground"}`}>
+          <div className={`text-[13px] ${isUser ? "text-white" : "text-foreground"}`}>
             {isUser ? message.content : renderMarkdown(message.content, onSend)}
           </div>
         </div>
-        <p className={`text-[10px] text-muted-foreground mt-1 ${isUser ? "text-right" : "text-left"}`}>
+        <p className={`text-[10px] tabular-nums text-muted-foreground mt-1 ${isUser ? "text-right" : "text-left"}`}>
           {time}
         </p>
       </div>
@@ -441,7 +441,7 @@ export default function ChatbotPage() {
   const visibleConversations = conversations.filter((c) => c.message_count > 0);
 
   return (
-    <div className="h-[calc(100vh-7rem)] flex rounded-xl border border-border bg-card overflow-hidden shadow-sm">
+    <div className="h-[calc(100vh-7rem)] flex rounded-lg border border-border bg-card overflow-hidden shadow-sm">
       {/* Sidebar — conversation list */}
       <div
         className={`${
@@ -456,7 +456,7 @@ export default function ChatbotPage() {
                 <Sparkles className="h-4 w-4 text-white" />
               </div>
               <div>
-                <h2 className="text-sm font-semibold text-foreground">AI Assistant</h2>
+                <h2 className="text-[13px] font-semibold text-foreground">AI Assistant</h2>
                 <p className="text-[10px] text-muted-foreground">
                   {aiStatus?.engine === "ai" ? "AI-powered" : "Basic mode"}
                 </p>
@@ -466,7 +466,7 @@ export default function ChatbotPage() {
           <button
             onClick={handleNewChat}
             disabled={createConvo.isPending}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 transition-colors disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-brand-600 text-white text-[13px] font-medium rounded-md hover:bg-brand-700 transition-colors disabled:opacity-50"
           >
             {createConvo.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -482,27 +482,27 @@ export default function ChatbotPage() {
           {visibleConversations.length === 0 ? (
             <div className="text-center py-12 px-4">
               <MessageCircle className="h-10 w-10 text-muted-foreground/50 mx-auto mb-3" />
-              <p className="text-sm text-muted-foreground">No conversations yet</p>
-              <p className="text-xs text-muted-foreground mt-1">Start a new conversation above</p>
+              <p className="text-[13px] text-muted-foreground">No conversations yet</p>
+              <p className="text-[11px] text-muted-foreground mt-1">Start a new conversation above</p>
             </div>
           ) : (
             visibleConversations.map((c) => (
               <div
                 key={c.id}
-                className={`group flex items-center gap-2 rounded-lg cursor-pointer transition-colors ${
+                className={`group flex items-center gap-2 rounded-md cursor-pointer transition-colors ${
                   activeConvoId === c.id
-                    ? "bg-brand-50 dark:bg-brand-950/40 border border-brand-200"
-                    : "hover:bg-muted border border-transparent"
+                    ? "bg-brand-50 dark:bg-brand-950/40 border border-brand-200 dark:border-brand-800"
+                    : "hover:bg-muted/50 transition-colors border border-transparent"
                 }`}
               >
                 <button
                   onClick={() => handleSelectConvo(c.id)}
                   className="flex-1 text-left px-3 py-2.5 min-w-0"
                 >
-                  <p className="text-sm font-medium text-foreground truncate">
+                  <p className="text-[13px] font-medium text-foreground truncate">
                     {c.title || "New conversation"}
                   </p>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">
+                  <p className="text-[10px] tabular-nums text-muted-foreground mt-0.5">
                     {new Date(c.updated_at).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
@@ -534,7 +534,7 @@ export default function ChatbotPage() {
               <button
                 onClick={handleBack}
                 title="Back to conversations"
-                className="p-1.5 text-muted-foreground hover:text-muted-foreground rounded-lg hover:bg-muted"
+                className="p-1.5 text-muted-foreground hover:text-muted-foreground rounded-md hover:bg-muted"
               >
                 <ArrowLeft className="h-5 w-5" />
               </button>
@@ -542,17 +542,17 @@ export default function ChatbotPage() {
                 <Bot className="h-4 w-4 text-white" />
               </div>
               <div>
-                <h3 className="text-sm font-medium text-foreground">
+                <h3 className="text-[13px] font-medium text-foreground">
                   {conversations.find((c) => c.id === activeConvoId)?.title || "New Conversation"}
                 </h3>
                 <div className="flex items-center gap-1.5">
                   <p className="text-[10px] text-green-600 dark:text-green-400 font-medium">Online</p>
                   {aiStatus?.engine === "ai" ? (
-                    <span className="inline-flex items-center gap-0.5 bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded-full text-[9px] font-medium">
+                    <span className="inline-flex items-center gap-0.5 bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded-md text-[9px] font-medium">
                       <Sparkles className="h-2.5 w-2.5" /> AI-powered
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-0.5 bg-muted text-muted-foreground px-1.5 py-0.5 rounded-full text-[9px]">
+                    <span className="inline-flex items-center gap-0.5 bg-muted text-muted-foreground px-1.5 py-0.5 rounded-md text-[9px]">
                       Basic mode
                     </span>
                   )}
@@ -561,7 +561,7 @@ export default function ChatbotPage() {
               <button
                 onClick={handleMinimize}
                 title="Minimize assistant"
-                className="ml-auto p-1.5 text-muted-foreground hover:text-violet-700 hover:bg-violet-50 rounded-lg transition-colors"
+                className="ml-auto p-1.5 text-muted-foreground hover:text-violet-700 hover:bg-violet-50 rounded-md transition-colors"
               >
                 <Minimize2 className="h-4 w-4" />
               </button>
@@ -577,7 +577,7 @@ export default function ChatbotPage() {
                   <h3 className="text-lg font-semibold text-foreground mb-1">
                     How can I help you today?
                   </h3>
-                  <p className="text-sm text-muted-foreground mb-6 max-w-md">
+                  <p className="text-[13px] text-muted-foreground mb-6 max-w-md">
                     I can answer questions about leave, attendance, policies, holidays, and more.
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-lg w-full">
@@ -585,7 +585,7 @@ export default function ChatbotPage() {
                       <button
                         key={i}
                         onClick={() => handleSend(s)}
-                        className="text-left px-3 py-2.5 text-sm text-muted-foreground bg-card border border-border rounded-xl hover:border-brand-300 hover:bg-brand-50 dark:hover:bg-brand-950/40 transition-colors shadow-sm"
+                        className="text-left px-3 py-2.5 text-[13px] text-muted-foreground bg-card border border-border rounded-lg hover:border-brand-300 hover:bg-brand-50 dark:hover:bg-brand-950/40 transition-colors shadow-sm"
                       >
                         {s}
                       </button>
@@ -610,7 +610,7 @@ export default function ChatbotPage() {
                   <button
                     key={i}
                     onClick={() => handleSend(s)}
-                    className="shrink-0 text-xs px-3 py-1.5 text-brand-700 dark:text-brand-300 bg-brand-50 dark:bg-brand-950/40 border border-brand-200 rounded-full hover:bg-brand-100 dark:hover:bg-brand-950/40 transition-colors"
+                    className="shrink-0 text-[11px] px-3 py-1.5 text-brand-700 dark:text-brand-300 bg-brand-50 dark:bg-brand-950/40 border border-brand-200 dark:border-brand-800 dark:border-brand-800 rounded-md hover:bg-brand-100 dark:hover:bg-brand-950/40 transition-colors"
                   >
                     {s}
                   </button>
@@ -634,12 +634,12 @@ export default function ChatbotPage() {
                   }}
                   placeholder="Type your message..."
                   disabled={sendMsg.isPending}
-                  className="flex-1 px-4 py-2.5 bg-muted border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent disabled:opacity-50"
+                  className="flex-1 px-4 py-2.5 bg-muted border border-border rounded-md text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent disabled:opacity-50"
                 />
                 <button
                   onClick={() => handleSend()}
                   disabled={!inputValue.trim() || sendMsg.isPending}
-                  className="h-10 w-10 flex items-center justify-center bg-brand-600 text-white rounded-xl hover:bg-brand-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+                  className="h-10 w-10 flex items-center justify-center bg-brand-600 text-white rounded-md hover:bg-brand-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
                 >
                   {sendMsg.isPending ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -661,21 +661,21 @@ export default function ChatbotPage() {
             <button
               onClick={handleMinimize}
               title="Minimize assistant"
-              className="absolute top-3 right-3 p-1.5 text-muted-foreground hover:text-violet-700 hover:bg-violet-50 rounded-lg transition-colors"
+              className="absolute top-3 right-3 p-1.5 text-muted-foreground hover:text-violet-700 hover:bg-violet-50 rounded-md transition-colors"
             >
               <Minimize2 className="h-4 w-4" />
             </button>
             <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center mb-6 shadow-xl shadow-violet-200">
               <Sparkles className="h-10 w-10 text-white" />
             </div>
-            <h2 className="text-xl font-bold text-foreground mb-2">AI HR Assistant</h2>
-            <p className="text-sm text-muted-foreground mb-6 max-w-sm text-center">
+            <h2 className="text-xl font-semibold tracking-tight text-foreground mb-2">AI HR Assistant</h2>
+            <p className="text-[13px] text-muted-foreground mb-6 max-w-sm text-center">
               Get instant answers to your HR questions. Ask about leave, attendance, policies, holidays, and more.
             </p>
             <button
               onClick={handleNewChat}
               disabled={createConvo.isPending}
-              className="flex items-center gap-2 px-6 py-3 bg-brand-600 text-white text-sm font-medium rounded-xl hover:bg-brand-700 transition-colors shadow-lg shadow-brand-200 disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-3 bg-brand-600 text-white text-[13px] font-medium rounded-md hover:bg-brand-700 transition-colors shadow-lg shadow-brand-200 disabled:opacity-50"
             >
               {createConvo.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -688,7 +688,7 @@ export default function ChatbotPage() {
               {suggestions.slice(0, 4).map((s, i) => (
                 <div
                   key={i}
-                  className="text-left px-3 py-2.5 text-sm text-muted-foreground bg-card border border-border rounded-xl"
+                  className="text-left px-3 py-2.5 text-[13px] text-muted-foreground bg-card border border-border rounded-lg"
                 >
                   <span className="text-muted-foreground mr-1">&quot;</span>
                   {s}

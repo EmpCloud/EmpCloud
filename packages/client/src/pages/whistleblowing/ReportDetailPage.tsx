@@ -123,17 +123,17 @@ export default function ReportDetailPage() {
     <div className="max-w-4xl mx-auto">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <Link to="/whistleblowing/reports" className="p-1 hover:bg-muted rounded-lg transition">
+        <Link to="/whistleblowing/reports" className="p-1 hover:bg-muted/50 rounded-md transition-colors">
           <ArrowLeft className="h-5 w-5 text-muted-foreground" />
         </Link>
         <ShieldAlert className="h-6 w-6 text-brand-600 dark:text-brand-400" />
         <div className="flex-1">
           <div className="flex items-center gap-3">
-            <h1 className="text-xl font-bold text-foreground font-mono">{data.case_number}</h1>
-            <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${statusCfg.color}`}>
+            <h1 className="text-xl font-semibold tracking-tight text-foreground font-mono tabular-nums">{data.case_number}</h1>
+            <span className={`px-2.5 py-0.5 rounded-md text-[11px] font-medium ${statusCfg.color}`}>
               {statusLabel}
             </span>
-            <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${SEVERITY_BADGE[data.severity] || ""}`}>
+            <span className={`px-2.5 py-0.5 rounded-md text-[11px] font-medium ${SEVERITY_BADGE[data.severity] || ""}`}>
               {t(`reportDetail.severity.${data.severity}`, { defaultValue: data.severity })}
             </span>
           </div>
@@ -144,9 +144,9 @@ export default function ReportDetailPage() {
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
           {/* Report Info */}
-          <div className="bg-card rounded-xl shadow-sm border p-6">
+          <div className="bg-card rounded-lg shadow-sm border p-4">
             <h2 className="text-lg font-semibold text-foreground mb-4">{data.subject}</h2>
-            <div className="flex gap-4 mb-4 text-sm">
+            <div className="flex gap-4 mb-4 text-[13px]">
               <div>
                 <span className="text-muted-foreground">{t("reportDetail.reportInfo.categoryLabel")}</span>{" "}
                 <span className="font-medium capitalize">{data.category?.replace(/_/g, " ")}</span>
@@ -164,15 +164,15 @@ export default function ReportDetailPage() {
                 </div>
               )}
             </div>
-            <div className="bg-muted rounded-lg p-4 text-sm text-muted-foreground whitespace-pre-wrap">
+            <div className="bg-muted rounded-md p-4 text-[13px] text-muted-foreground whitespace-pre-wrap">
               {data.description}
             </div>
             {data.evidence_paths && data.evidence_paths.length > 0 && (
               <div className="mt-4">
-                <p className="text-sm font-medium text-muted-foreground mb-2">{t("reportDetail.reportInfo.evidenceFilesLabel")}</p>
+                <p className="text-[13px] font-medium text-muted-foreground mb-2">{t("reportDetail.reportInfo.evidenceFilesLabel")}</p>
                 <div className="flex flex-wrap gap-2">
                   {data.evidence_paths.map((path: string, idx: number) => (
-                    <span key={idx} className="px-3 py-1 bg-muted rounded-lg text-sm text-muted-foreground">
+                    <span key={idx} className="px-3 py-1 bg-muted rounded-md text-[13px] text-muted-foreground">
                       {path.split("/").pop()}
                     </span>
                   ))}
@@ -182,25 +182,25 @@ export default function ReportDetailPage() {
           </div>
 
           {/* Investigation Timeline */}
-          <div className="bg-card rounded-xl shadow-sm border p-6">
-            <h3 className="text-sm font-semibold text-muted-foreground uppercase mb-4">{t("reportDetail.timeline.heading")}</h3>
+          <div className="bg-card rounded-lg shadow-sm border p-4">
+            <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-4">{t("reportDetail.timeline.heading")}</h3>
             {data.updates && data.updates.length > 0 ? (
               <div className="space-y-4">
                 {data.updates.map((u: any) => (
                   <div key={u.id} className="flex gap-3 border-l-2 border-border pl-4 pb-2">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-medium px-2 py-0.5 rounded bg-muted text-muted-foreground capitalize">
+                        <span className="text-[11px] font-medium px-2 py-0.5 rounded bg-muted text-muted-foreground capitalize">
                           {u.update_type.replace(/_/g, " ")}
                         </span>
                         {u.is_visible_to_reporter && (
-                          <span className="text-xs px-2 py-0.5 rounded bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300">
+                          <span className="text-[11px] px-2 py-0.5 rounded bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300">
                             {t("reportDetail.timeline.visibleToReporterBadge")}
                           </span>
                         )}
                       </div>
-                      <p className="text-sm text-foreground">{u.content}</p>
-                      <p className="text-xs text-muted-foreground mt-1">
+                      <p className="text-[13px] text-foreground">{u.content}</p>
+                      <p className="text-[11px] tabular-nums text-muted-foreground mt-1">
                         {u.created_by_name || t("reportDetail.timeline.systemAuthor")} &middot; {new Date(u.created_at).toLocaleString()}
                       </p>
                     </div>
@@ -208,25 +208,25 @@ export default function ReportDetailPage() {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">{t("reportDetail.timeline.empty")}</p>
+              <p className="text-[13px] text-muted-foreground">{t("reportDetail.timeline.empty")}</p>
             )}
           </div>
 
           {/* Add Update */}
-          <div className="bg-card rounded-xl shadow-sm border p-6">
-            <h3 className="text-sm font-semibold text-muted-foreground uppercase mb-4">{t("reportDetail.addUpdate.heading")}</h3>
+          <div className="bg-card rounded-lg shadow-sm border p-4">
+            <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-4">{t("reportDetail.addUpdate.heading")}</h3>
             <div className="space-y-3">
               <div className="flex gap-3">
                 <select
                   value={updateType}
                   onChange={(e) => setUpdateType(e.target.value)}
-                  className="border border-border rounded-lg px-3 py-2 text-sm bg-card text-foreground"
+                  className="border border-border rounded-md px-3 py-2 text-[13px] bg-card text-foreground"
                 >
                   <option value="note">{t("reportDetail.addUpdate.typeNote")}</option>
                   <option value="response_to_reporter">{t("reportDetail.addUpdate.typeResponseToReporter")}</option>
                   <option value="status_change">{t("reportDetail.addUpdate.typeStatusChange")}</option>
                 </select>
-                <label className="flex items-center gap-2 text-sm text-muted-foreground">
+                <label className="flex items-center gap-2 text-[13px] text-muted-foreground">
                   <input
                     type="checkbox"
                     checked={visibleToReporter}
@@ -241,12 +241,12 @@ export default function ReportDetailPage() {
                 onChange={(e) => setUpdateContent(e.target.value)}
                 rows={3}
                 placeholder={t("reportDetail.addUpdate.contentPlaceholder")}
-                className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-card text-foreground"
+                className="w-full border border-border rounded-md px-3 py-2 text-[13px] bg-card text-foreground"
               />
               <button
                 onClick={() => updateMutation.mutate()}
                 disabled={!updateContent.trim() || updateMutation.isPending}
-                className="px-4 py-2 bg-brand-600 text-white rounded-lg text-sm hover:bg-brand-700 disabled:opacity-50 transition flex items-center gap-2"
+                className="px-4 py-2 bg-brand-600 text-white rounded-md text-[13px] hover:bg-brand-700 disabled:opacity-50 transition flex items-center gap-2"
               >
                 <MessageSquare className="h-4 w-4" />
                 {updateMutation.isPending ? t("reportDetail.addUpdate.submitSending") : t("reportDetail.addUpdate.submit")}
@@ -258,35 +258,35 @@ export default function ReportDetailPage() {
         {/* Sidebar Actions */}
         <div className="space-y-4">
           {/* Info Card */}
-          <div className="bg-card rounded-xl shadow-sm border p-5 space-y-3">
-            <div className="flex items-center gap-2 text-sm">
+          <div className="bg-card rounded-lg shadow-sm border p-5 space-y-3">
+            <div className="flex items-center gap-2 text-[13px]">
               <Clock className="h-4 w-4 text-muted-foreground" />
               <span className="text-muted-foreground">{t("reportDetail.info.submittedLabel")}</span>
               <span className="text-foreground">{new Date(data.created_at).toLocaleDateString()}</span>
             </div>
             {data.investigator_name && (
-              <div className="flex items-center gap-2 text-sm">
+              <div className="flex items-center gap-2 text-[13px]">
                 <User className="h-4 w-4 text-muted-foreground" />
                 <span className="text-muted-foreground">{t("reportDetail.info.investigatorLabel")}</span>
                 <span className="text-foreground">{data.investigator_name}</span>
               </div>
             )}
             {data.escalated_to && (
-              <div className="flex items-center gap-2 text-sm">
+              <div className="flex items-center gap-2 text-[13px]">
                 <ArrowUpRight className="h-4 w-4 text-orange-500" />
                 <span className="text-muted-foreground">{t("reportDetail.info.escalatedToLabel")}</span>
                 <span className="text-foreground">{data.escalated_to}</span>
               </div>
             )}
             {data.resolved_at && (
-              <div className="flex items-center gap-2 text-sm">
+              <div className="flex items-center gap-2 text-[13px]">
                 <CheckCircle className="h-4 w-4 text-green-500" />
                 <span className="text-muted-foreground">{t("reportDetail.info.resolvedLabel")}</span>
                 <span className="text-foreground">{new Date(data.resolved_at).toLocaleDateString()}</span>
               </div>
             )}
             {data.resolution && (
-              <div className="mt-2 p-3 bg-green-50 dark:bg-green-950/40 rounded-lg text-sm text-green-800 dark:text-green-200">
+              <div className="mt-2 p-3 bg-green-50 dark:bg-green-950/40 rounded-md text-[13px] text-green-800 dark:text-green-200">
                 <p className="font-medium mb-1">{t("reportDetail.info.resolutionLabel")}</p>
                 <p>{data.resolution}</p>
               </div>
@@ -294,17 +294,17 @@ export default function ReportDetailPage() {
           </div>
 
           {/* Assign Investigator */}
-          <div className="bg-card rounded-xl shadow-sm border p-5">
-            <h4 className="text-sm font-semibold text-muted-foreground mb-3">{t("reportDetail.assign.heading")}</h4>
+          <div className="bg-card rounded-lg shadow-sm border p-5">
+            <h4 className="text-[13px] font-semibold text-muted-foreground mb-3">{t("reportDetail.assign.heading")}</h4>
             {usersError && (
-              <p className="text-xs text-red-600 dark:text-red-400 mb-2">{t("reportDetail.assign.loadUsersError")}</p>
+              <p className="text-[11px] text-red-600 dark:text-red-400 mb-2">{t("reportDetail.assign.loadUsersError")}</p>
             )}
             <div className="flex items-center gap-2">
               <select
                 value={investigatorId}
                 onChange={(e) => setInvestigatorId(e.target.value)}
                 disabled={usersLoading || !!usersError}
-                className="flex-1 min-w-0 border border-border rounded-lg px-3 py-2 text-sm disabled:opacity-50 bg-card text-foreground"
+                className="flex-1 min-w-0 border border-border rounded-lg px-3 py-2 text-[13px] disabled:opacity-50 bg-card text-foreground"
               >
                 <option value="">
                   {usersLoading
@@ -326,29 +326,29 @@ export default function ReportDetailPage() {
               <button
                 onClick={() => assignMutation.mutate()}
                 disabled={!investigatorId || assignMutation.isPending}
-                className="shrink-0 px-3 py-2 bg-brand-600 text-white rounded-lg text-sm hover:bg-brand-700 disabled:opacity-50 transition"
+                className="shrink-0 px-3 py-2 bg-brand-600 text-white rounded-md text-[13px] hover:bg-brand-700 disabled:opacity-50 transition"
               >
                 <User className="h-4 w-4" />
               </button>
             </div>
             {assignMutation.isError && (
-              <p className="text-xs text-red-600 dark:text-red-400 mt-2">
+              <p className="text-[11px] text-red-600 dark:text-red-400 mt-2">
                 {(assignMutation.error as any)?.response?.data?.error?.message || t("reportDetail.assign.error")}
               </p>
             )}
             {assignMutation.isSuccess && (
-              <p className="text-xs text-green-600 dark:text-green-400 mt-2">{t("reportDetail.assign.success")}</p>
+              <p className="text-[11px] text-green-600 dark:text-green-400 mt-2">{t("reportDetail.assign.success")}</p>
             )}
           </div>
 
           {/* Change Status */}
-          <div className="bg-card rounded-xl shadow-sm border p-5">
-            <h4 className="text-sm font-semibold text-muted-foreground mb-3">{t("reportDetail.changeStatus.heading")}</h4>
+          <div className="bg-card rounded-lg shadow-sm border p-5">
+            <h4 className="text-[13px] font-semibold text-muted-foreground mb-3">{t("reportDetail.changeStatus.heading")}</h4>
             <div className="space-y-2">
               <select
                 value={newStatus}
                 onChange={(e) => setNewStatus(e.target.value)}
-                className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-card text-foreground"
+                className="w-full border border-border rounded-md px-3 py-2 text-[13px] bg-card text-foreground"
               >
                 <option value="">{t("reportDetail.changeStatus.optionSelect")}</option>
                 {STATUSES.filter((s) => s !== data.status).map((s) => (
@@ -361,13 +361,13 @@ export default function ReportDetailPage() {
                   onChange={(e) => setResolution(e.target.value)}
                   rows={2}
                   placeholder={t("reportDetail.changeStatus.resolutionPlaceholder")}
-                  className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-card text-foreground"
+                  className="w-full border border-border rounded-md px-3 py-2 text-[13px] bg-card text-foreground"
                 />
               )}
               <button
                 onClick={() => statusMutation.mutate()}
                 disabled={!newStatus || statusMutation.isPending}
-                className="w-full px-3 py-2 bg-brand-600 text-white rounded-lg text-sm hover:bg-brand-700 disabled:opacity-50 transition"
+                className="w-full px-3 py-2 bg-brand-600 text-white rounded-md text-[13px] hover:bg-brand-700 disabled:opacity-50 transition"
               >
                 {statusMutation.isPending ? t("reportDetail.changeStatus.submitUpdating") : t("reportDetail.changeStatus.submit")}
               </button>
@@ -375,8 +375,8 @@ export default function ReportDetailPage() {
           </div>
 
           {/* Escalate */}
-          <div className="bg-card rounded-xl shadow-sm border p-5">
-            <h4 className="text-sm font-semibold text-muted-foreground mb-3 flex items-center gap-2">
+          <div className="bg-card rounded-lg shadow-sm border p-5">
+            <h4 className="text-[13px] font-semibold text-muted-foreground mb-3 flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-orange-500" />
               {t("reportDetail.escalate.heading")}
             </h4>
@@ -386,12 +386,12 @@ export default function ReportDetailPage() {
                 value={escalateTo}
                 onChange={(e) => setEscalateTo(e.target.value)}
                 placeholder={t("reportDetail.escalate.placeholder")}
-                className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-card text-foreground"
+                className="w-full border border-border rounded-md px-3 py-2 text-[13px] bg-card text-foreground"
               />
               <button
                 onClick={() => escalateMutation.mutate()}
                 disabled={!escalateTo.trim() || escalateMutation.isPending}
-                className="w-full px-3 py-2 bg-orange-500 text-white rounded-lg text-sm hover:bg-orange-600 disabled:opacity-50 transition flex items-center justify-center gap-2"
+                className="w-full px-3 py-2 bg-orange-500 text-white rounded-md text-[13px] hover:bg-orange-600 disabled:opacity-50 transition flex items-center justify-center gap-2"
               >
                 <ArrowUpRight className="h-4 w-4" />
                 {escalateMutation.isPending ? t("reportDetail.escalate.submitEscalating") : t("reportDetail.escalate.submit")}
