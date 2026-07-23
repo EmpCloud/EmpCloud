@@ -1020,11 +1020,18 @@ function RecordRow({
           // #1949 — `worked_minutes` is only filled at check-out, so for
           // rows still on the clock we'd otherwise show 0. Derive a live
           // total from check_in to now, capped at ACTIVE_HOURS so a
-          // forgotten check-out doesn't render as 500h+. Night shifts
-          // crossing midnight (≤ 15h shift + 12h OT buffer) stay under
-          // the 30h cap and show the live (so far) count; anything older
-          // surfaces as a "Missed check-out" badge instead.
-          const ACTIVE_HOURS = 30;
+          // forgotten check-out doesn't render as 500h+.
+          //
+          // The cap was 30h, which was too generous: a record from the
+          // PREVIOUS day that was never closed still sat under it, so the
+          // grid showed "22h 55m (so far)" — reading as though the employee
+          // were still on the clock a day later, and inflating the worked
+          // column. 16h is the plausible ceiling for someone genuinely still
+          // working (a long shift plus overtime), and it still covers a night
+          // shift crossing midnight (e.g. in 20:00 → 08:00 next day = 12h).
+          // Past that, the row is a forgotten check-out, not live work, so it
+          // surfaces as a "Missed check-out" badge instead of a running total.
+          const ACTIVE_HOURS = 16;
           if (r.status === "checked_in" && r.check_in) {
             const checkInTime = new Date(r.check_in).getTime();
             const ageMinutes = (Date.now() - checkInTime) / 60000;

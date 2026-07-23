@@ -162,6 +162,13 @@ export const config = {
     maxTokens: parseInt(process.env.AI_MAX_TOKENS || "4096", 10),
   },
 
+  // Telegram bot for the daily attendance report. One global platform bot;
+  // orgs opt in and configure recipient chat IDs in Attendance Settings.
+  // Empty token = bot disabled (no polling, no report delivery).
+  telegram: {
+    botToken: process.env.TELEGRAM_BOT_TOKEN || "",
+  },
+
   assistant: {
     openaiApiKey: process.env.ASSISTANT_OPENAI_API_KEY || process.env.OPENAI_API_KEY || "",
     openaiBaseUrl: process.env.ASSISTANT_OPENAI_BASE_URL || process.env.OPENAI_BASE_URL || "",

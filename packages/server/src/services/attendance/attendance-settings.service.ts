@@ -50,6 +50,29 @@ function serialiseChannels(channels: AttendanceChannel[]): string {
   return order.filter((c) => channels.includes(c)).join(",");
 }
 
+// Telegram chat IDs are stored as a CSV of numeric strings (groups negative).
+function parseChatIds(csv: string | null | undefined): string[] {
+  if (!csv) return [];
+  return csv
+    .split(",")
+    .map((s) => s.trim())
+    .filter((s) => /^-?\d+$/.test(s));
+}
+
+function serialiseChatIds(ids: string[]): string {
+  // Dedupe, preserve order.
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const id of ids) {
+    const v = String(id).trim();
+    if (/^-?\d+$/.test(v) && !seen.has(v)) {
+      seen.add(v);
+      out.push(v);
+    }
+  }
+  return out.join(",");
+}
+
 function todayIso(): string {
   return new Date().toISOString().slice(0, 10);
 }
@@ -79,6 +102,8 @@ export async function getSettings(orgId: number) {
     organization_id: row.organization_id,
     allowed_channels: parseChannels(row.allowed_channels),
     geofence_advisory: !!row.geofence_advisory,
+    telegram_enabled: !!row.telegram_enabled,
+    telegram_chat_ids: parseChatIds(row.telegram_chat_ids),
     updated_at: row.updated_at,
   };
 }
@@ -93,8 +118,31 @@ export async function updateSettings(orgId: number, data: UpdateAttendanceSettin
   if (data.geofence_advisory !== undefined) {
     patch.geofence_advisory = data.geofence_advisory;
   }
+  if (data.telegram_enabled !== undefined) {
+    patch.telegram_enabled = data.telegram_enabled;
+  }
+  if (data.telegram_chat_ids !== undefined) {
+    patch.telegram_chat_ids = serialiseChatIds(data.telegram_chat_ids);
+  }
   await db("attendance_settings").where({ organization_id: orgId }).update(patch);
   return getSettings(orgId);
+}
+
+/**
+ * All orgs that have opted into the daily Telegram report and have at least
+ * one recipient chat configured. Used by the nightly report job.
+ */
+export async function listTelegramEnabledOrgs(): Promise<
+  Array<{ organization_id: number; chat_ids: string[] }>
+> {
+  const db = getDB();
+  const rows = await db("attendance_settings")
+    .where({ telegram_enabled: true })
+    .whereNotNull("telegram_chat_ids")
+    .select("organization_id", "telegram_chat_ids");
+  return rows
+    .map((r) => ({ organization_id: r.organization_id, chat_ids: parseChatIds(r.telegram_chat_ids) }))
+    .filter((r) => r.chat_ids.length > 0);
 }
 
 // ---------------------------------------------------------------------------

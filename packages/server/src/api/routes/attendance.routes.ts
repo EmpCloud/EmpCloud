@@ -14,6 +14,7 @@ import * as leaveBalanceService from "../../services/leave/leave-balance.service
 import * as geoFenceService from "../../services/attendance/geo-fence.service.js";
 import * as regularizationService from "../../services/attendance/regularization.service.js";
 import * as settingsService from "../../services/attendance/attendance-settings.service.js";
+import * as attendanceReportService from "../../services/attendance/attendance-report.service.js";
 import {
   createShiftSchema,
   updateShiftSchema,
@@ -329,6 +330,22 @@ router.put("/settings", authenticate, requirePermission("attendance:manage"), as
     sendSuccess(res, settings);
   } catch (err) { next(err); }
 });
+
+// POST /api/v1/attendance/settings/telegram/test — send the daily attendance
+// report to this org's configured chats right now. Defaults to the last
+// completed day, i.e. exactly what the midnight cron would deliver.
+router.post(
+  "/settings/telegram/test",
+  authenticate,
+  requirePermission("attendance:manage"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const date = typeof req.body?.date === "string" ? req.body.date : undefined;
+      const result = await attendanceReportService.sendTestReportForOrg(req.user!.org_id, date);
+      sendSuccess(res, result);
+    } catch (err) { next(err); }
+  },
+);
 
 // GET /api/v1/attendance/overrides/users/:userId — list overrides for one user
 router.get(
