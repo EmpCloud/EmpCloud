@@ -5,6 +5,30 @@
 import { getDB } from "../../db/connection.js";
 
 /**
+ * Attendance statuses that mean "this person was at work today".
+ *
+ * `checked_in` is the critical one — it's the state between check-in and
+ * check-out, i.e. everyone currently working. Omitting it made the whole team
+ * fall through to "Absent" mid-day (present counted 0 while `late_today` still
+ * reported non-zero, since late is derived from late_minutes, not status).
+ *
+ * Kept in sync with attendance.service.ts, which already treats `checked_in`
+ * as present.
+ */
+const PRESENT_STATUSES = [
+  "present",
+  "checked_in",
+  "half_day",
+  "half_present_half_leave",
+  "holiday_overtime",
+  "weekoff_overtime",
+] as const;
+
+function isPresentStatus(status: string | null | undefined): boolean {
+  return !!status && (PRESENT_STATUSES as readonly string[]).includes(status);
+}
+
+/**
  * Get direct reports for a manager.
  */
 export async function getMyTeam(orgId: number, managerId: number) {
@@ -59,7 +83,7 @@ export async function getTeamAttendanceToday(orgId: number, managerId: number) {
     );
 
   const presentIds = records
-    .filter((r: any) => ["present", "half_day"].includes(r.status))
+    .filter((r: any) => isPresentStatus(r.status))
     .map((r: any) => r.user_id);
 
   const onLeaveIds = records
@@ -79,7 +103,7 @@ export async function getTeamAttendanceToday(orgId: number, managerId: number) {
 
   return {
     team_size: teamIds.length,
-    present: records.filter((r: any) => ["present", "half_day"].includes(r.status)),
+    present: records.filter((r: any) => isPresentStatus(r.status)),
     absent: absentMembers,
     on_leave: records.filter((r: any) => r.status === "on_leave"),
     date: today,
@@ -196,7 +220,7 @@ export async function getManagerDashboard(orgId: number, managerId: number) {
     .select("user_id", "status", "late_minutes");
 
   const presentCount = attendanceToday.filter(
-    (a: any) => ["present", "half_day"].includes(a.status),
+    (a: any) => isPresentStatus(a.status),
   ).length;
 
   const onLeaveCount = attendanceToday.filter(
