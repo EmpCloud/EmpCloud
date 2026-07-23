@@ -22,6 +22,7 @@ import {
   Pencil,
   Plus,
   Search,
+  Send,
   Settings as SettingsIcon,
   Smartphone,
   Trash2,
@@ -29,6 +30,7 @@ import {
 } from "lucide-react";
 import api from "@/api/client";
 import { showToast } from "@/components/ui/Toast";
+import Tooltip from "@/components/ui/Tooltip";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import GeofenceMapPicker from "@/components/maps/GeofenceMapPicker";
 
@@ -44,6 +46,10 @@ interface OrgSettings {
   organization_id: number;
   allowed_channels: Channel[];
   geofence_advisory: boolean;
+  /** Daily attendance report over Telegram. */
+  telegram_enabled: boolean;
+  /** Recipient chat IDs (numeric strings; groups are negative). */
+  telegram_chat_ids: string[];
   updated_at: string;
 }
 
@@ -97,8 +103,14 @@ export default function AttendanceSettingsPage() {
   });
 
   const updateSettings = useMutation({
-    mutationFn: (patch: Partial<Pick<OrgSettings, "allowed_channels" | "geofence_advisory">>) =>
-      api.put("/attendance/settings", patch).then((r) => r.data.data as OrgSettings),
+    mutationFn: (
+      patch: Partial<
+        Pick<
+          OrgSettings,
+          "allowed_channels" | "geofence_advisory" | "telegram_enabled" | "telegram_chat_ids"
+        >
+      >,
+    ) => api.put("/attendance/settings", patch).then((r) => r.data.data as OrgSettings),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["attendance-settings"] });
       showToast("success", t("attendanceSettings.updated"));
@@ -128,18 +140,16 @@ export default function AttendanceSettingsPage() {
       <header>
         <h1 className="text-xl font-semibold tracking-tight text-foreground flex items-center gap-2">
           <SettingsIcon className="h-5 w-5 text-brand-600 dark:text-brand-400" /> {t("attendanceSettings.title")}
+          <Tooltip content={t("attendanceSettings.subtitle")} side="bottom" />
         </h1>
-        <p className="text-[13px] text-muted-foreground mt-0.5">
-          {t("attendanceSettings.subtitle")}
-        </p>
       </header>
 
       {/* Org-level settings */}
       <section className="bg-card rounded-lg border border-border p-4">
-        <h2 className="text-base font-semibold text-foreground mb-1">{t("attendanceSettings.allowedChannels")}</h2>
-        <p className="text-[13px] text-muted-foreground mb-4">
-          {t("attendanceSettings.allowedChannelsDesc")}
-        </p>
+        <div className="flex items-center gap-2 mb-4">
+          <h2 className="text-base font-semibold text-foreground">{t("attendanceSettings.allowedChannels")}</h2>
+          <Tooltip content={t("attendanceSettings.allowedChannelsDesc")} />
+        </div>
 
         {settingsQ.isLoading ? (
           <div className="flex items-center gap-2 text-muted-foreground text-sm">
@@ -152,7 +162,7 @@ export default function AttendanceSettingsPage() {
               return (
                 <label
                   key={channel}
-                  className={`flex items-start gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${
+                  className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${
                     enabled
                       ? "border-brand-300 bg-brand-50 dark:bg-brand-950/40"
                       : "border-border bg-card hover:border-border"
@@ -163,18 +173,12 @@ export default function AttendanceSettingsPage() {
                     checked={enabled}
                     onChange={() => toggleChannel(channel)}
                     disabled={updateSettings.isPending}
-                    className="mt-0.5 h-4 w-4 text-brand-600 dark:text-brand-400"
+                    className="h-4 w-4 text-brand-600 dark:text-brand-400"
                   />
-                  <div>
-                    <div className="text-sm font-medium text-foreground">
-                      {t(`attendanceSettings.channel.${channel}`, { defaultValue: CHANNEL_LABEL[channel] })}
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-0.5">
-                      {channel === "dashboard" && t("attendanceSettings.channelDesc.dashboard")}
-                      {channel === "biometric" && t("attendanceSettings.channelDesc.biometric")}
-                      {channel === "app" && t("attendanceSettings.channelDesc.app")}
-                    </div>
-                  </div>
+                  <span className="text-sm font-medium text-foreground">
+                    {t(`attendanceSettings.channel.${channel}`, { defaultValue: CHANNEL_LABEL[channel] })}
+                  </span>
+                  <Tooltip content={t(`attendanceSettings.channelDesc.${channel}`)} />
                 </label>
               );
             })}
@@ -182,26 +186,30 @@ export default function AttendanceSettingsPage() {
         )}
 
         <div className="mt-6 pt-6 border-t border-border">
-          <label className="flex items-start gap-3 cursor-pointer">
+          <label className="flex items-center gap-3 cursor-pointer">
             <input
               type="checkbox"
               checked={!!settingsQ.data?.geofence_advisory}
               onChange={(e) => updateSettings.mutate({ geofence_advisory: e.target.checked })}
               disabled={updateSettings.isPending || settingsQ.isLoading}
-              className="mt-0.5 h-4 w-4 text-brand-600 dark:text-brand-400"
+              className="h-4 w-4 text-brand-600 dark:text-brand-400"
             />
-            <div>
-              <div className="text-sm font-medium text-foreground flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-muted-foreground" />
-                {t("attendanceSettings.enableGeofencing")}
-              </div>
-              <div className="text-xs text-muted-foreground mt-0.5">
-                {t("attendanceSettings.enableGeofencingDesc")}
-              </div>
-            </div>
+            <span className="text-sm font-medium text-foreground flex items-center gap-2">
+              <MapPin className="h-4 w-4 text-muted-foreground" />
+              {t("attendanceSettings.enableGeofencing")}
+            </span>
+            <Tooltip content={t("attendanceSettings.enableGeofencingDesc")} />
           </label>
         </div>
       </section>
+
+      {/* Daily attendance report over Telegram */}
+      <TelegramReportSection
+        settings={settingsQ.data}
+        isLoading={settingsQ.isLoading}
+        isSaving={updateSettings.isPending}
+        onChange={(patch) => updateSettings.mutate(patch)}
+      />
 
       {/* Geofences with inline CRUD */}
       <GeofencesSection geofences={fencesQ.data ?? []} isLoading={fencesQ.isLoading} />
@@ -216,6 +224,218 @@ export default function AttendanceSettingsPage() {
 // ===========================================================================
 // Geofences (org-level, inline CRUD)
 // ===========================================================================
+
+// ---------------------------------------------------------------------------
+// Daily attendance report over Telegram
+//
+// The bot token is a single platform-wide secret set by developers in .env —
+// orgs only choose whether the report is on and which chats receive it. A chat
+// ID is obtained by sending /start to the bot (works for a DM or a group).
+// ---------------------------------------------------------------------------
+
+function TelegramReportSection({
+  settings,
+  isLoading,
+  isSaving,
+  onChange,
+}: {
+  settings?: OrgSettings;
+  isLoading: boolean;
+  isSaving: boolean;
+  onChange: (patch: Partial<Pick<OrgSettings, "telegram_enabled" | "telegram_chat_ids">>) => void;
+}) {
+  const { t } = useTranslation();
+  const [newChatId, setNewChatId] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  const chatIds = settings?.telegram_chat_ids ?? [];
+  const enabled = !!settings?.telegram_enabled;
+
+  // Send the real report (last completed day) to the configured chats now, so
+  // an admin can verify delivery without waiting for midnight.
+  const sendTest = useMutation({
+    mutationFn: () =>
+      api
+        .post("/attendance/settings/telegram/test", {})
+        .then((r) => r.data.data as { date: string; sent: number; chats: number; total: number; present: number; absent: number }),
+    onSuccess: (res) => {
+      showToast(
+        "success",
+        t("attendanceSettings.telegramTestSent", {
+          defaultValue: `Report for ${res.date} sent to ${res.sent}/${res.chats} chat(s) — ${res.present} present, ${res.absent} absent of ${res.total}.`,
+        }),
+      );
+    },
+    onError: (err: any) =>
+      showToast(
+        "error",
+        err?.response?.data?.error?.message ??
+          t("attendanceSettings.telegramTestFailed", { defaultValue: "Could not send the test report." }),
+      ),
+  });
+
+  const addChatId = () => {
+    const value = newChatId.trim();
+    if (!value) return;
+    if (!/^-?\d+$/.test(value)) {
+      setError(
+        t("attendanceSettings.telegramInvalidId", {
+          defaultValue: "Chat ID must be a number — send /start to the bot to get it.",
+        }),
+      );
+      return;
+    }
+    if (chatIds.includes(value)) {
+      setError(t("attendanceSettings.telegramDuplicateId", { defaultValue: "That chat ID is already added." }));
+      return;
+    }
+    setError(null);
+    setNewChatId("");
+    onChange({ telegram_chat_ids: [...chatIds, value] });
+  };
+
+  const removeChatId = (id: string) => {
+    onChange({ telegram_chat_ids: chatIds.filter((c) => c !== id) });
+  };
+
+  return (
+    <section className="bg-card border border-border rounded-xl p-6">
+      <div className="flex items-center gap-2 mb-4">
+        <Send className="h-5 w-5 text-brand-600 dark:text-brand-400" />
+        <h2 className="text-base font-semibold text-foreground">
+          {t("attendanceSettings.telegramTitle", { defaultValue: "Daily Attendance Report (Telegram)" })}
+        </h2>
+        <Tooltip
+          content={t("attendanceSettings.telegramDesc", {
+            defaultValue:
+              "Sends a full attendance report — every employee's check-in/check-out plus an absentee list — to the chats below, every day at midnight for the day that just ended.",
+          })}
+        />
+      </div>
+
+      <label className="flex items-center gap-3 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={enabled}
+          onChange={(e) => onChange({ telegram_enabled: e.target.checked })}
+          disabled={isSaving || isLoading}
+          className="h-4 w-4 text-brand-600 dark:text-brand-400"
+        />
+        <span className="text-sm font-medium text-foreground">
+          {t("attendanceSettings.telegramEnable", { defaultValue: "Enable daily report" })}
+        </span>
+        <Tooltip
+          content={t("attendanceSettings.telegramEnableDesc", {
+            defaultValue: "When off, no report is sent even if chat IDs are configured.",
+          })}
+        />
+      </label>
+
+      <div className="mt-6 pt-6 border-t border-border">
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-sm font-medium text-foreground">
+            {t("attendanceSettings.telegramRecipients", { defaultValue: "Recipient chat IDs" })}
+          </span>
+          <Tooltip
+            content={t("attendanceSettings.telegramHowTo", {
+              defaultValue:
+                "Send /start to the EMP Cloud bot (in a direct message, or a group it has been added to) and it replies with the chat ID. Paste it here — you can add multiple.",
+            })}
+          />
+        </div>
+
+        {chatIds.length === 0 ? (
+          <p className="text-xs text-muted-foreground italic mb-3">
+            {t("attendanceSettings.telegramNoRecipients", {
+              defaultValue: "No chat IDs yet — the report has nowhere to go.",
+            })}
+          </p>
+        ) : (
+          <ul className="space-y-2 mb-3">
+            {chatIds.map((id) => (
+              <li
+                key={id}
+                className="flex items-center justify-between gap-3 rounded-lg border border-border px-3 py-2"
+              >
+                <span className="font-mono text-sm text-foreground">{id}</span>
+                <button
+                  type="button"
+                  onClick={() => removeChatId(id)}
+                  disabled={isSaving}
+                  title={t("common.remove", { defaultValue: "Remove" })}
+                  className="text-muted-foreground hover:text-red-600 disabled:opacity-50"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        <div className="flex items-center gap-2">
+          <input
+            type="text"
+            inputMode="numeric"
+            value={newChatId}
+            onChange={(e) => {
+              setNewChatId(e.target.value);
+              if (error) setError(null);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                addChatId();
+              }
+            }}
+            placeholder={t("attendanceSettings.telegramIdPlaceholder", {
+              defaultValue: "e.g. 123456789 or -1001234567890",
+            })}
+            disabled={isSaving}
+            className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm"
+          />
+          <button
+            type="button"
+            onClick={addChatId}
+            disabled={isSaving || !newChatId.trim()}
+            className="inline-flex items-center gap-1 rounded-lg bg-brand-600 px-3 py-2 text-sm text-white hover:bg-brand-700 disabled:opacity-50"
+          >
+            <Plus className="h-4 w-4" />
+            {t("common.add", { defaultValue: "Add" })}
+          </button>
+        </div>
+        {error && <p className="mt-2 text-xs text-red-600">{error}</p>}
+      </div>
+
+      {/* Manual trigger — sends the real report for the last completed day. */}
+      <div className="mt-6 pt-6 border-t border-border flex items-center gap-3">
+        <button
+          type="button"
+          onClick={() => sendTest.mutate()}
+          disabled={sendTest.isPending || isSaving || chatIds.length === 0}
+          className="inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm font-medium text-foreground hover:bg-muted disabled:opacity-50"
+        >
+          {sendTest.isPending ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Send className="h-4 w-4" />
+          )}
+          {t("attendanceSettings.telegramSendTest", { defaultValue: "Send test report" })}
+        </button>
+        <Tooltip
+          content={t("attendanceSettings.telegramSendTestHelp", {
+            defaultValue:
+              "Sends the real report for the last completed day to every chat ID above — the same message the midnight job delivers. Works even while the daily report is disabled.",
+          })}
+        />
+        {chatIds.length === 0 && (
+          <span className="text-xs text-muted-foreground">
+            {t("attendanceSettings.telegramNeedChatId", { defaultValue: "Add a chat ID first" })}
+          </span>
+        )}
+      </div>
+    </section>
+  );
+}
 
 function GeofencesSection({ geofences, isLoading }: { geofences: Geofence[]; isLoading: boolean }) {
   const { t } = useTranslation();
@@ -241,16 +461,18 @@ function GeofencesSection({ geofences, isLoading }: { geofences: Geofence[]; isL
   return (
     <section className="bg-card rounded-lg border border-border p-4">
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
-        <div>
+        <div className="flex items-center gap-2">
           <h2 className="text-base font-semibold text-foreground">{t("attendanceSettings.geofences")}</h2>
-          <p className="text-sm text-muted-foreground">
-            <Trans
-              i18nKey="attendanceSettings.geofencesDesc"
-              count={geofences.length}
-              values={{ count: geofences.length }}
-              components={{ code: <code /> }}
-            />
-          </p>
+          <Tooltip
+            content={
+              <Trans
+                i18nKey="attendanceSettings.geofencesDesc"
+                count={geofences.length}
+                values={{ count: geofences.length }}
+                components={{ code: <code /> }}
+              />
+            }
+          />
         </div>
         <button
           onClick={() => setCreating(true)}
@@ -465,7 +687,10 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
           {/* Map picker — click anywhere or drag the marker to set the
               coordinates. Circle overlay shows the current radius. */}
           <div>
-            <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t("attendanceSettings.locationLabel")}</label>
+            <label className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground mb-1">
+              {t("attendanceSettings.locationLabel")}
+              <Tooltip content={t("attendanceSettings.mapHint")} />
+            </label>
             <GeofenceMapPicker
               latitude={latitude === "" || Number.isNaN(Number(latitude)) ? null : Number(latitude)}
               longitude={
@@ -479,9 +704,6 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
                 setLongitude(lng.toFixed(7));
               }}
             />
-            <p className="text-xs text-muted-foreground mt-1">
-              {t("attendanceSettings.mapHint")}
-            </p>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -532,8 +754,9 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
           </div>
 
           <div>
-            <label className="block text-[13px] font-medium text-muted-foreground mb-1">
+            <label className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground mb-1">
               {t("attendanceSettings.radiusLabel")}
+              <Tooltip content={t("attendanceSettings.radiusHint")} />
             </label>
             <input
               type="number"
@@ -551,12 +774,8 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
                   : "border-border focus:ring-brand-500 focus:border-brand-500"
               }`}
             />
-            {errors.radius ? (
+            {errors.radius && (
               <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.radius}</p>
-            ) : (
-              <p className="text-xs text-muted-foreground mt-1">
-                {t("attendanceSettings.radiusHint")}
-              </p>
             )}
           </div>
         </div>
@@ -680,11 +899,9 @@ function OverridesSection({ geofences }: { geofences: Geofence[] }) {
   return (
     <section className="bg-card rounded-lg border border-border p-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-        <div>
+        <div className="flex items-center gap-2">
           <h2 className="text-base font-semibold text-foreground">{t("attendanceSettings.overrides")}</h2>
-          <p className="text-sm text-muted-foreground">
-            {t("attendanceSettings.overridesDesc")}
-          </p>
+          <Tooltip content={t("attendanceSettings.overridesDesc")} />
         </div>
         <button
           onClick={() => setCreating(true)}
@@ -1139,8 +1356,9 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
               )}
             </div>
             <div>
-              <label className="block text-[13px] font-medium text-muted-foreground mb-1">
+              <label className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground mb-1">
                 {t("attendanceSettings.endDate")} <span className="text-muted-foreground font-normal">{t("attendanceSettings.optional")}</span>
+                <Tooltip content={t("attendanceSettings.endDateHint")} />
               </label>
               <input
                 type="date"
@@ -1149,9 +1367,6 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
                 onChange={(e) => setEndDate(e.target.value)}
                 className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
               />
-              <p className="text-xs text-muted-foreground mt-1">
-                {t("attendanceSettings.endDateHint")}
-              </p>
             </div>
           </div>
 

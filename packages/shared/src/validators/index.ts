@@ -779,6 +779,18 @@ export const updateAttendanceSettingsSchema = z.object({
     .min(1, "At least one channel must be allowed")
     .optional(),
   geofence_advisory: z.boolean().optional(),
+  // Daily attendance report over Telegram.
+  telegram_enabled: z.boolean().optional(),
+  // Telegram chat IDs (numeric; groups are negative). Stored as strings to
+  // preserve very large / negative IDs without precision loss.
+  telegram_chat_ids: z
+    .array(
+      z
+        .string()
+        .trim()
+        .regex(/^-?\d+$/, "Chat ID must be a number (send /start to the bot to get it)"),
+    )
+    .optional(),
 });
 
 // ---- User-level attendance override ----

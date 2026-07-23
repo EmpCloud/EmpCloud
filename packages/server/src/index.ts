@@ -19,6 +19,8 @@ import { requestIdMiddleware } from "./api/middleware/request-id.middleware.js";
 import { sendSuccess } from "./utils/response.js";
 import { startHealthCheckInterval, stopHealthCheckInterval } from "./services/admin/health-check.service.js";
 import { startTrialExpirationInterval, stopTrialExpirationInterval } from "./services/subscription/trial-expiration.interval.js";
+import { initTelegramBot, stopTelegramBot } from "./services/telegram/telegram.service.js";
+import { startAttendanceReportCron, stopAttendanceReportCron } from "./services/attendance/attendance-report.interval.js";
 
 // Docs
 import { swaggerUIHandler, openapiHandler } from "./api/docs/index.js";
@@ -316,6 +318,11 @@ async function main() {
   // Start hourly trial expiration sweep (flips trial → active when trial_ends_at passes)
   startTrialExpirationInterval();
 
+  // Telegram bot (replies to /start with the chat id) + the 00:00 daily
+  // attendance report cron. Both no-op when TELEGRAM_BOT_TOKEN is unset.
+  initTelegramBot();
+  startAttendanceReportCron();
+
   // Start server
   const server = app.listen(config.port, () => {
     logger.info(`EMP Cloud server running on port ${config.port}`);
@@ -340,6 +347,8 @@ async function main() {
     server.close(async () => {
       stopHealthCheckInterval();
       stopTrialExpirationInterval();
+      stopAttendanceReportCron();
+      stopTelegramBot();
       await closeDB();
       process.exit(0);
     });
