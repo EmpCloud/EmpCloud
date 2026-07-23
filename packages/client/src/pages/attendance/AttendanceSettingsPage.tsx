@@ -136,18 +136,18 @@ export default function AttendanceSettingsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <header>
-        <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-          <SettingsIcon className="h-6 w-6 text-brand-600 dark:text-brand-400" /> {t("attendanceSettings.title")}
+        <h1 className="text-xl font-semibold tracking-tight text-foreground flex items-center gap-2">
+          <SettingsIcon className="h-5 w-5 text-brand-600 dark:text-brand-400" /> {t("attendanceSettings.title")}
           <Tooltip content={t("attendanceSettings.subtitle")} side="bottom" />
         </h1>
       </header>
 
       {/* Org-level settings */}
-      <section className="bg-card rounded-xl border border-border p-6">
+      <section className="bg-card rounded-lg border border-border p-4">
         <div className="flex items-center gap-2 mb-4">
-          <h2 className="text-lg font-semibold text-foreground">{t("attendanceSettings.allowedChannels")}</h2>
+          <h2 className="text-base font-semibold text-foreground">{t("attendanceSettings.allowedChannels")}</h2>
           <Tooltip content={t("attendanceSettings.allowedChannelsDesc")} />
         </div>
 
@@ -459,10 +459,10 @@ function GeofencesSection({ geofences, isLoading }: { geofences: Geofence[]; isL
   });
 
   return (
-    <section className="bg-card rounded-xl border border-border p-6">
+    <section className="bg-card rounded-lg border border-border p-4">
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
         <div className="flex items-center gap-2">
-          <h2 className="text-lg font-semibold text-foreground">{t("attendanceSettings.geofences")}</h2>
+          <h2 className="text-base font-semibold text-foreground">{t("attendanceSettings.geofences")}</h2>
           <Tooltip
             content={
               <Trans
@@ -476,7 +476,7 @@ function GeofencesSection({ geofences, isLoading }: { geofences: Geofence[]; isL
         </div>
         <button
           onClick={() => setCreating(true)}
-          className="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3 py-2 rounded-lg shrink-0"
+          className="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-[13px] font-medium px-3 py-2 rounded-md shrink-0 transition-colors"
         >
           <Plus className="h-4 w-4" /> {t("attendanceSettings.addGeofence")}
         </button>
@@ -508,14 +508,14 @@ function GeofencesSection({ geofences, isLoading }: { geofences: Geofence[]; isL
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => setEditing(f)}
-                  className="p-1.5 text-muted-foreground hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-950/40 rounded"
+                  className="p-1.5 text-muted-foreground hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-950/40 rounded-md transition-colors"
                   aria-label={t("attendanceSettings.editGeofence")}
                 >
                   <Pencil className="h-4 w-4" />
                 </button>
                 <button
                   onClick={() => setPendingDelete(f)}
-                  className="p-1.5 text-muted-foreground hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 rounded"
+                  className="p-1.5 text-muted-foreground hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-md transition-colors"
                   aria-label={t("attendanceSettings.deleteGeofence")}
                 >
                   <Trash2 className="h-4 w-4" />
@@ -644,11 +644,11 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
       onClick={onClose}
     >
       <div
-        className="bg-card rounded-xl border border-border w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+        className="bg-card rounded-lg border border-border w-full max-w-2xl max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-border sticky top-0 bg-card">
-          <h3 className="text-lg font-semibold text-foreground">
+          <h3 className="text-base font-semibold text-foreground">
             {mode === "create" ? t("attendanceSettings.addGeofence") : t("attendanceSettings.editGeofence")}
           </h3>
           <button
@@ -662,7 +662,7 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
 
         <div className="p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-1">{t("attendanceSettings.nameLabel")}</label>
+            <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t("attendanceSettings.nameLabel")}</label>
             <input
               type="text"
               value={name}
@@ -673,7 +673,7 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
               placeholder={t("attendanceSettings.namePlaceholder")}
               maxLength={100}
               aria-invalid={!!errors.name}
-              className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 outline-none ${
+              className={`w-full px-3 py-2 border rounded-md text-[13px] focus:ring-2 outline-none ${
                 errors.name
                   ? "border-red-300 focus:ring-red-300 focus:border-red-400"
                   : "border-border focus:ring-brand-500 focus:border-brand-500"
@@ -687,7 +687,7 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
           {/* Map picker — click anywhere or drag the marker to set the
               coordinates. Circle overlay shows the current radius. */}
           <div>
-            <label className="flex items-center gap-2 text-sm font-medium text-muted-foreground mb-1">
+            <label className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground mb-1">
               {t("attendanceSettings.locationLabel")}
               <Tooltip content={t("attendanceSettings.mapHint")} />
             </label>
@@ -708,7 +708,7 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("attendanceSettings.latitudeLabel")}</label>
+              <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t("attendanceSettings.latitudeLabel")}</label>
               <input
                 type="number"
                 step="0.0000001"
@@ -719,7 +719,7 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
                 }}
                 placeholder="12.9716"
                 aria-invalid={!!errors.latitude}
-                className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 outline-none ${
+                className={`w-full px-3 py-2 border rounded-md text-[13px] focus:ring-2 outline-none ${
                   errors.latitude
                     ? "border-red-300 focus:ring-red-300 focus:border-red-400"
                     : "border-border focus:ring-brand-500 focus:border-brand-500"
@@ -730,7 +730,7 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("attendanceSettings.longitudeLabel")}</label>
+              <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t("attendanceSettings.longitudeLabel")}</label>
               <input
                 type="number"
                 step="0.0000001"
@@ -741,7 +741,7 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
                 }}
                 placeholder="77.5946"
                 aria-invalid={!!errors.longitude}
-                className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 outline-none ${
+                className={`w-full px-3 py-2 border rounded-md text-[13px] focus:ring-2 outline-none ${
                   errors.longitude
                     ? "border-red-300 focus:ring-red-300 focus:border-red-400"
                     : "border-border focus:ring-brand-500 focus:border-brand-500"
@@ -754,7 +754,7 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
           </div>
 
           <div>
-            <label className="flex items-center gap-2 text-sm font-medium text-muted-foreground mb-1">
+            <label className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground mb-1">
               {t("attendanceSettings.radiusLabel")}
               <Tooltip content={t("attendanceSettings.radiusHint")} />
             </label>
@@ -768,7 +768,7 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
                 if (errors.radius) setErrors((p) => ({ ...p, radius: undefined }));
               }}
               aria-invalid={!!errors.radius}
-              className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 outline-none ${
+              className={`w-full px-3 py-2 border rounded-md text-[13px] focus:ring-2 outline-none ${
                 errors.radius
                   ? "border-red-300 focus:ring-red-300 focus:border-red-400"
                   : "border-border focus:ring-brand-500 focus:border-brand-500"
@@ -783,14 +783,14 @@ function GeofenceModal({ mode, existing, onClose, onSaved }: GeofenceModalProps)
         <div className="flex justify-end gap-2 px-6 py-4 border-t border-border bg-muted">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm text-muted-foreground hover:bg-muted rounded-lg"
+            className="px-4 py-2 text-[13px] text-muted-foreground hover:bg-muted rounded-md transition-colors"
           >
             {t("attendanceSettings.cancel")}
           </button>
           <button
             onClick={submit}
             disabled={save.isPending}
-            className="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2 rounded-lg disabled:opacity-50"
+            className="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-[13px] font-medium px-4 py-2 rounded-md disabled:opacity-50 transition-colors"
           >
             {save.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
             {mode === "create" ? t("attendanceSettings.addGeofence") : t("attendanceSettings.saveChanges")}
@@ -897,15 +897,15 @@ function OverridesSection({ geofences }: { geofences: Geofence[] }) {
   }, [overridesQ.data, search]);
 
   return (
-    <section className="bg-card rounded-xl border border-border p-6">
+    <section className="bg-card rounded-lg border border-border p-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
         <div className="flex items-center gap-2">
-          <h2 className="text-lg font-semibold text-foreground">{t("attendanceSettings.overrides")}</h2>
+          <h2 className="text-base font-semibold text-foreground">{t("attendanceSettings.overrides")}</h2>
           <Tooltip content={t("attendanceSettings.overridesDesc")} />
         </div>
         <button
           onClick={() => setCreating(true)}
-          className="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-3 py-2 rounded-lg shrink-0"
+          className="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-[13px] font-medium px-3 py-2 rounded-md shrink-0 transition-colors"
         >
           <Plus className="h-4 w-4" /> {t("attendanceSettings.newOverride")}
         </button>
@@ -917,7 +917,7 @@ function OverridesSection({ geofences }: { geofences: Geofence[] }) {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={t("attendanceSettings.searchEmployee")}
-          className="bg-card text-foreground w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+          className="bg-card text-foreground w-full pl-9 pr-3 py-2 border border-border rounded-md text-[13px] focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
         />
       </div>
 
@@ -933,13 +933,13 @@ function OverridesSection({ geofences }: { geofences: Geofence[] }) {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-xs font-semibold text-muted-foreground uppercase border-b border-border">
-                <th className="px-3 py-2">{t("attendanceSettings.colEmployee")}</th>
-                <th className="px-3 py-2">{t("attendanceSettings.colChannels")}</th>
-                <th className="px-3 py-2">{t("attendanceSettings.colGeofence")}</th>
-                <th className="px-3 py-2">{t("attendanceSettings.colWindow")}</th>
-                <th className="px-3 py-2">{t("attendanceSettings.colNote")}</th>
-                <th className="px-3 py-2 w-1" />
+              <tr className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider border-b border-border">
+                <th className="px-3 py-2.5">{t("attendanceSettings.colEmployee")}</th>
+                <th className="px-3 py-2.5">{t("attendanceSettings.colChannels")}</th>
+                <th className="px-3 py-2.5">{t("attendanceSettings.colGeofence")}</th>
+                <th className="px-3 py-2.5">{t("attendanceSettings.colWindow")}</th>
+                <th className="px-3 py-2.5">{t("attendanceSettings.colNote")}</th>
+                <th className="px-3 py-2.5 w-1" />
               </tr>
             </thead>
             <tbody>
@@ -963,7 +963,7 @@ function OverridesSection({ geofences }: { geofences: Geofence[] }) {
                         {row.allowed_channels.map((c) => (
                           <span
                             key={c}
-                            className="inline-flex items-center gap-1 text-xs bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300 px-2 py-0.5 rounded"
+                            className="inline-flex items-center gap-1 text-[11px] bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300 px-2 py-0.5 rounded-md"
                           >
                             {c === "app" && <Smartphone className="h-3 w-3" />}
                             {c}
@@ -987,7 +987,7 @@ function OverridesSection({ geofences }: { geofences: Geofence[] }) {
                       </span>
                     )}
                   </td>
-                  <td className="px-3 py-3 text-muted-foreground whitespace-nowrap">
+                  <td className="px-3 py-3 text-muted-foreground tabular-nums whitespace-nowrap">
                     {row.start_date} → {row.end_date ?? <span className="text-muted-foreground">{t("attendanceSettings.open")}</span>}
                   </td>
                   <td className="px-3 py-3 text-muted-foreground max-w-xs truncate" title={row.note ?? ""}>
@@ -997,14 +997,14 @@ function OverridesSection({ geofences }: { geofences: Geofence[] }) {
                     <div className="flex items-center gap-1">
                       <button
                         onClick={() => setEditing(row)}
-                        className="p-1.5 text-muted-foreground hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-950/40 rounded"
+                        className="p-1.5 text-muted-foreground hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-950/40 rounded-md transition-colors"
                         aria-label={t("attendanceSettings.editOverride")}
                       >
                         <Pencil className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => setPendingDelete(row)}
-                        className="p-1.5 text-muted-foreground hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 rounded"
+                        className="p-1.5 text-muted-foreground hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-md transition-colors"
                         aria-label={t("attendanceSettings.deleteOverride")}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -1164,11 +1164,11 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
       onClick={onClose}
     >
       <div
-        className="bg-card rounded-xl border border-border w-full max-w-xl max-h-[90vh] overflow-y-auto"
+        className="bg-card rounded-lg border border-border w-full max-w-xl max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-border sticky top-0 bg-card">
-          <h3 className="text-lg font-semibold text-foreground">
+          <h3 className="text-base font-semibold text-foreground">
             {mode === "create" ? t("attendanceSettings.newOverrideTitle") : t("attendanceSettings.editOverrideTitle")}
           </h3>
           <button
@@ -1184,7 +1184,7 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
           {/* Employee picker (create mode only) */}
           {mode === "create" ? (
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("attendanceSettings.colEmployee")}</label>
+              <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t("attendanceSettings.colEmployee")}</label>
               {selectedUser ? (
                 <div className="flex items-center justify-between p-3 border border-border rounded-lg bg-muted">
                   <div>
@@ -1211,7 +1211,7 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
                       value={userSearch}
                       onChange={(e) => setUserSearch(e.target.value)}
                       placeholder={t("attendanceSettings.searchNameEmail")}
-                      className="bg-card text-foreground w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                      className="bg-card text-foreground w-full pl-9 pr-3 py-2 border border-border rounded-md text-[13px] focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
                     />
                   </div>
                   <div className="mt-2 border border-border rounded-lg divide-y divide-border max-h-48 overflow-y-auto">
@@ -1239,7 +1239,7 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
             </div>
           ) : (
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("attendanceSettings.colEmployee")}</label>
+              <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t("attendanceSettings.colEmployee")}</label>
               <div className="p-3 border border-border rounded-lg bg-muted">
                 <div className="text-sm font-medium text-foreground">
                   {existing!.user
@@ -1271,9 +1271,9 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
               {ALL_CHANNELS.map((c) => (
                 <label
                   key={c}
-                  className={`flex items-center gap-2 p-2 border rounded-lg cursor-pointer text-sm ${
+                  className={`flex items-center gap-2 p-2 border rounded-md cursor-pointer text-[13px] ${
                     channels.includes(c)
-                      ? "border-brand-300 bg-brand-50 dark:bg-brand-950/40 text-brand-900"
+                      ? "border-brand-300 bg-brand-50 dark:bg-brand-950/40 text-brand-900 dark:text-brand-200"
                       : "border-border"
                   }`}
                 >
@@ -1326,7 +1326,7 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
               <select
                 value={customFenceId ?? ""}
                 onChange={(e) => setCustomFenceId(e.target.value ? Number(e.target.value) : null)}
-                className="bg-card text-foreground mt-3 w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                className="bg-card text-foreground mt-3 w-full px-3 py-2 border border-border rounded-md text-[13px] focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
               >
                 <option value="">{t("attendanceSettings.selectGeofence")}</option>
                 {geofences.map((f) => (
@@ -1341,13 +1341,13 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
           {/* Dates */}
           <div className="grid sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("attendanceSettings.startDate")}</label>
+              <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t("attendanceSettings.startDate")}</label>
               <input
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
                 disabled={mode === "edit"}
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none disabled:bg-muted disabled:text-muted-foreground"
+                className="w-full px-3 py-2 border border-border rounded-md text-[13px] focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none disabled:bg-muted disabled:text-muted-foreground"
               />
               {mode === "edit" && (
                 <p className="text-xs text-muted-foreground mt-1">
@@ -1356,7 +1356,7 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
               )}
             </div>
             <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-muted-foreground mb-1">
+              <label className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground mb-1">
                 {t("attendanceSettings.endDate")} <span className="text-muted-foreground font-normal">{t("attendanceSettings.optional")}</span>
                 <Tooltip content={t("attendanceSettings.endDateHint")} />
               </label>
@@ -1365,14 +1365,14 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
                 value={endDate}
                 min={startDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
               />
             </div>
           </div>
 
           {/* Note */}
           <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-1">
+            <label className="block text-[13px] font-medium text-muted-foreground mb-1">
               {t("attendanceSettings.colNote")} <span className="text-muted-foreground font-normal">{t("attendanceSettings.optional")}</span>
             </label>
             <textarea
@@ -1381,7 +1381,7 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
               rows={2}
               maxLength={255}
               placeholder={t("attendanceSettings.notePlaceholder")}
-              className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+              className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
             />
           </div>
         </div>
@@ -1389,14 +1389,14 @@ function OverrideModal({ mode, existing, geofences, directory, onClose, onSaved 
         <div className="flex justify-end gap-2 px-6 py-4 border-t border-border bg-muted">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm text-muted-foreground hover:bg-muted rounded-lg"
+            className="px-4 py-2 text-[13px] text-muted-foreground hover:bg-muted rounded-md transition-colors"
           >
             {t("attendanceSettings.cancel")}
           </button>
           <button
             onClick={submit}
             disabled={save.isPending}
-            className="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2 rounded-lg disabled:opacity-50"
+            className="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-[13px] font-medium px-4 py-2 rounded-md disabled:opacity-50 transition-colors"
           >
             {save.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
             {mode === "create" ? t("attendanceSettings.createOverride") : t("attendanceSettings.saveChanges")}

@@ -136,6 +136,25 @@
     right: 0;
   }
 
+  /* Sidebar collapse toggle in RTL. The button is anchored to the sidebar's
+     inner edge via `-right-3` (Tailwind), which is correct for LTR (sidebar
+     on the left). In RTL the sidebar flips to the right of the viewport, so
+     `-right-3` pushes the circular toggle onto the OUTER edge where it sticks
+     out as a stray wedge. Re-anchor it to the (now-inner) left edge and mirror
+     the chevron so it points the right way. */
+  /* !important is load-bearing here for the same reason as the collapsed-nav
+     rules below: this sits in @layer base while Tailwind's `-right-3` sits in
+     @layer utilities, which is emitted later in the prod build and would win
+     the cascade on source order. Without !important the override "works" in
+     dev (source-order coincidence) and silently regresses in prod. */
+  [dir="rtl"] .sidebar-collapse-toggle {
+    right: auto !important;
+    left: -0.75rem !important; /* mirror of Tailwind -right-3 */
+  }
+  [dir="rtl"] .sidebar-collapse-toggle svg {
+    transform: scaleX(-1);
+  }
+
   /* #1415 — Collapsed sidebar: hide text labels, section headers, badges, and
      chevrons so only nav icons remain visible. We rely on a class toggle on
      the sidebar root (.sidebar-collapsed) so every NavLink/NestedNavItem

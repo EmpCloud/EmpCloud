@@ -27,9 +27,9 @@ interface Module {
 
 function StatCardSkeleton() {
   return (
-    <div className="bg-card rounded-xl border border-border p-6 animate-pulse">
+    <div className="bg-card rounded-lg border border-border p-4 animate-pulse">
       <div className="flex items-center gap-4">
-        <div className="h-12 w-12 rounded-lg bg-muted" />
+        <div className="h-10 w-10 rounded-md bg-muted" />
         <div>
           <div className="h-6 w-12 rounded bg-muted mb-2" />
           <div className="h-4 w-20 rounded bg-muted" />
@@ -123,15 +123,15 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-foreground">
+      <div className="mb-6">
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">
           {t('common.welcome')}, {user?.first_name}
         </h1>
-        <p className="text-muted-foreground mt-1">{t('dashboard.subtitle')}</p>
+        <p className="text-[13px] text-muted-foreground mt-0.5">{t('dashboard.subtitle')}</p>
       </div>
 
       {/* Stats cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 mb-6">
         {statsLoading ? (
           <>
             <StatCardSkeleton />
@@ -141,7 +141,7 @@ export default function DashboardPage() {
             <StatCardSkeleton />
           </>
         ) : statsError ? (
-          <div className="sm:col-span-2 lg:col-span-5 bg-card rounded-xl border border-red-200 p-6 text-center">
+          <div className="sm:col-span-2 lg:col-span-5 bg-card rounded-lg border border-red-200 dark:border-red-900/40 p-6 text-center">
             <AlertCircle className="h-8 w-8 text-red-400 mx-auto mb-2" />
             <p className="text-sm text-red-600 dark:text-red-400">Failed to load organization stats. Please try refreshing the page.</p>
           </div>
@@ -149,67 +149,67 @@ export default function DashboardPage() {
           <>
             <Link
               to="/users"
-              className="bg-card rounded-xl border border-border p-6 hover:border-brand-300 transition-colors"
+              className="bg-card rounded-lg border border-border p-4 hover:border-brand-400 transition-colors duration-150"
             >
               <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-lg bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center">
-                  <Users className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                <div className="h-10 w-10 rounded-md bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center">
+                  <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-foreground">{stats?.total_users ?? 0}</p>
-                  <p className="text-sm text-muted-foreground">{t('dashboard.totalUsers')}</p>
+                  <p className="text-2xl font-semibold tabular-nums leading-none text-foreground">{stats?.total_users ?? 0}</p>
+                  <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{t('dashboard.totalUsers')}</p>
                 </div>
               </div>
             </Link>
             <Link
               to="/modules"
-              className="bg-card rounded-xl border border-border p-6 hover:border-brand-300 transition-colors"
+              className="bg-card rounded-lg border border-border p-4 hover:border-brand-400 transition-colors duration-150"
             >
               <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-lg bg-green-50 dark:bg-green-950/40 flex items-center justify-center">
-                  <Package className="h-6 w-6 text-green-600 dark:text-green-400" />
+                <div className="h-10 w-10 rounded-md bg-green-50 dark:bg-green-950/40 flex items-center justify-center">
+                  <Package className="h-5 w-5 text-green-600 dark:text-green-400" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-foreground">{stats?.active_subscriptions ?? 0}</p>
-                  <p className="text-sm text-muted-foreground">{t('dashboard.activeModules')}</p>
+                  <p className="text-2xl font-semibold tabular-nums leading-none text-foreground">{stats?.active_subscriptions ?? 0}</p>
+                  <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{t('dashboard.activeModules')}</p>
                 </div>
               </div>
             </Link>
             <Link
               to="/settings"
-              className="bg-card rounded-xl border border-border p-6 hover:border-brand-300 transition-colors"
+              className="bg-card rounded-lg border border-border p-4 hover:border-brand-400 transition-colors duration-150"
             >
               <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-lg bg-purple-50 dark:bg-purple-950/40 flex items-center justify-center">
-                  <Building2 className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+                <div className="h-10 w-10 rounded-md bg-purple-50 dark:bg-purple-950/40 flex items-center justify-center">
+                  <Building2 className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-foreground">{stats?.total_departments ?? 0}</p>
-                  <p className="text-sm text-muted-foreground">{t('dashboard.departments')}</p>
+                  <p className="text-2xl font-semibold tabular-nums leading-none text-foreground">{stats?.total_departments ?? 0}</p>
+                  <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{t('dashboard.departments')}</p>
                 </div>
               </div>
             </Link>
-            <div className="bg-card rounded-xl border border-border p-6">
+            <div className="bg-card rounded-lg border border-border p-4">
               <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-lg bg-amber-50 dark:bg-amber-950/40 flex items-center justify-center">
-                  <Shield className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+                <div className="h-10 w-10 rounded-md bg-amber-50 dark:bg-amber-950/40 flex items-center justify-center">
+                  <Shield className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-foreground">SOC 2</p>
-                  <p className="text-sm text-muted-foreground">{t('dashboard.compliant')}</p>
+                  <p className="text-2xl font-semibold tabular-nums leading-none text-foreground">SOC 2</p>
+                  <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{t('dashboard.compliant')}</p>
                 </div>
               </div>
             </div>
             <Link
               to="/billing"
-              className="bg-card rounded-xl border border-border p-6 hover:border-brand-300 transition-colors"
+              className="bg-card rounded-lg border border-border p-4 hover:border-brand-400 transition-colors duration-150"
             >
               <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center">
-                  <Receipt className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+                <div className="h-10 w-10 rounded-md bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center">
+                  <Receipt className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-foreground">
+                  <p className="text-2xl font-semibold tabular-nums leading-none text-foreground">
                     {billingLoading ? (
                       <span className="inline-block h-6 w-20 bg-muted rounded animate-pulse" />
                     ) : billingSummary ? (
@@ -233,8 +233,8 @@ export default function DashboardPage() {
       {/* Core HRMS — Always shown (it IS the platform) */}
       {hrmsModule && (
         <div className="mb-8">
-          <h2 className="text-lg font-semibold text-foreground mb-4">{t('dashboard.coreHRMS')}</h2>
-          <div className="bg-gradient-to-r from-brand-600 to-brand-700 rounded-xl p-8 text-white">
+          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-4">{t('dashboard.coreHRMS')}</h2>
+          <div className="bg-gradient-to-r from-brand-600 to-brand-700 rounded-lg p-8 text-white">
             <div className="flex items-start justify-between mb-4">
               <div>
                 <div className="flex items-center gap-2 mb-2">
@@ -275,7 +275,7 @@ export default function DashboardPage() {
       {/* Module Insights — live data from subscribed module APIs */}
       {activeSubscriptions.length > 0 && (
         <div className="mb-8">
-          <h2 className="text-lg font-semibold text-foreground mb-4">{t('dashboard.moduleInsights')}</h2>
+          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-4">{t('dashboard.moduleInsights')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Recruit Widget */}
             {subscribedSlugs.has("emp-recruit") && (
@@ -361,7 +361,7 @@ export default function DashboardPage() {
 
       {/* Monitor Admin SSO -- visible only when the user holds every monitor:* permission. */}
       {isMonitorAdmin && moduleBaseUrls.get("emp-monitor") && (
-        <div className="mb-8 bg-gradient-to-r from-slate-900 to-slate-800 rounded-xl p-5 text-white flex items-center justify-between gap-4">
+        <div className="mb-8 bg-gradient-to-r from-slate-900 to-slate-800 rounded-lg p-5 text-white flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="h-12 w-12 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0">
               <MonitorPlay className="h-6 w-6 text-white" />
@@ -383,9 +383,9 @@ export default function DashboardPage() {
       )}
 
       {/* Subscribed Modules */}
-      <h2 className="text-lg font-semibold text-foreground mb-4">{t('dashboard.yourModules')}</h2>
+      <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-4">{t('dashboard.yourModules')}</h2>
       {activeSubscriptions.length === 0 ? (
-        <div className="bg-card rounded-xl border border-border p-12 text-center">
+        <div className="bg-card rounded-lg border border-border p-12 text-center">
           <Package className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
           <p className="text-muted-foreground">{t('dashboard.noModulesYet')}</p>
           <Link to="/modules" className="text-brand-600 dark:text-brand-400 text-sm font-medium hover:text-brand-700 mt-2 inline-block">
@@ -414,7 +414,7 @@ export default function DashboardPage() {
             return (
               <div
                 key={sub.id}
-                className="bg-card rounded-xl border border-border p-6 hover:border-brand-300 transition-colors"
+                className="bg-card rounded-lg border border-border p-4 hover:border-brand-400 transition-colors duration-150"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
@@ -432,7 +432,7 @@ export default function DashboardPage() {
                       <p className="text-xs text-muted-foreground">{mod?.slug}</p>
                     </div>
                   </div>
-                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                  <span className={`text-[11px] px-2 py-0.5 rounded-md font-medium ${
                     sub.status === "active"
                       ? "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300"
                       : "bg-yellow-50 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300"
@@ -459,8 +459,8 @@ export default function DashboardPage() {
                 )}
 
                 <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
-                  <span>{sub.used_seats}/{sub.total_seats} {t('dashboard.seatsUsed')}</span>
-                  <span className="capitalize text-xs bg-muted px-2 py-0.5 rounded-full">{displayPlan}</span>
+                  <span className="tabular-nums">{sub.used_seats}/{sub.total_seats} {t('dashboard.seatsUsed')}</span>
+                  <span className="capitalize text-[11px] bg-muted px-2 py-0.5 rounded-md">{displayPlan}</span>
                 </div>
 
                 {/* Progress bar */}

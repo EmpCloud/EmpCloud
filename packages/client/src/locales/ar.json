@@ -377,7 +377,15 @@
     "changePassword": "تغيير كلمة المرور",
     "viewAttendance": "عرض الحضور",
     "attendanceGrid": "شبكة الحضور",
-    "attendanceSettings": "إعدادات الحضور"
+    "attendanceSettings": "إعدادات الحضور",
+    "section": {
+      "account": "الحساب",
+      "administration": "الإدارة",
+      "attendance_and_leave": "الحضور والإجازات",
+      "communication": "التواصل",
+      "people_and_hr": "الأفراد والموارد البشرية",
+      "workplace_and_community": "مكان العمل والمجتمع"
+    }
   },
   "common": {
     "save": "حفظ",

@@ -89,16 +89,16 @@ export default function MyTicketsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t("helpdesk.myTicketsPage.title")}</h1>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("helpdesk.myTicketsPage.title")}</h1>
           <p className="text-muted-foreground mt-1">
             {t("helpdesk.myTicketsPage.subtitle")}
           </p>
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
+          className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700"
         >
           <Plus className="h-4 w-4" /> {t("helpdesk.myTicketsPage.raiseTicket")}
         </button>
@@ -106,14 +106,14 @@ export default function MyTicketsPage() {
 
       {/* Create Ticket Form */}
       {showForm && (
-        <div className="bg-card rounded-xl border border-border p-6 mb-6">
+        <div className="bg-card rounded-lg border border-border p-4 mb-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-foreground">
+            <h2 className="text-base font-semibold text-foreground">
               {t("helpdesk.myTicketsPage.newTicket")}
             </h2>
             <button
               onClick={() => setShowForm(false)}
-              className="p-1 rounded-lg text-muted-foreground hover:bg-muted hover:text-muted-foreground"
+              className="p-1 rounded-md text-muted-foreground hover:bg-muted hover:text-muted-foreground"
             >
               <X className="h-5 w-5" />
             </button>
@@ -121,13 +121,13 @@ export default function MyTicketsPage() {
           <form onSubmit={handleCreate} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1">
+                <label className="block text-[13px] font-medium text-muted-foreground mb-1">
                   {t("helpdesk.myTicketsPage.category")}
                 </label>
                 <select
                   value={formCategory}
                   onChange={(e) => setFormCategory(e.target.value)}
-                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
                 >
                   {CATEGORIES.map((c) => (
                     <option key={c} value={c}>
@@ -137,13 +137,13 @@ export default function MyTicketsPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1">
+                <label className="block text-[13px] font-medium text-muted-foreground mb-1">
                   {t("helpdesk.myTicketsPage.priorityLabel")}
                 </label>
                 <select
                   value={formPriority}
                   onChange={(e) => setFormPriority(e.target.value)}
-                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
                 >
                   {PRIORITIES.map((p) => (
                     <option key={p} value={p}>
@@ -155,21 +155,21 @@ export default function MyTicketsPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">
+              <label className="block text-[13px] font-medium text-muted-foreground mb-1">
                 {t("helpdesk.myTicketsPage.subject")}
               </label>
               <input
                 type="text"
                 value={formSubject}
                 onChange={(e) => setFormSubject(e.target.value)}
-                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
                 placeholder={t("helpdesk.myTicketsPage.subjectPlaceholder")}
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">
+              <label className="block text-[13px] font-medium text-muted-foreground mb-1">
                 {t("helpdesk.myTicketsPage.description")}
               </label>
               <RichTextEditor
@@ -183,14 +183,14 @@ export default function MyTicketsPage() {
               <button
                 type="button"
                 onClick={() => setShowForm(false)}
-                className="px-4 py-2 text-sm border border-border rounded-lg text-muted-foreground hover:bg-muted"
+                className="px-4 py-2 text-[13px] border border-border rounded-md text-muted-foreground hover:bg-muted"
               >
                 {t("helpdesk.myTicketsPage.cancel")}
               </button>
               <button
                 type="submit"
                 disabled={createTicket.isPending || !formSubject.trim() || isRichTextEmpty(formDescription)}
-                className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <TicketCheck className="h-4 w-4" />
                 {createTicket.isPending ? t("helpdesk.myTicketsPage.submitting") : t("helpdesk.myTicketsPage.submit")}
@@ -204,7 +204,7 @@ export default function MyTicketsPage() {
       <div className="flex items-center gap-2 mb-4">
         <button
           onClick={() => { setStatusFilter(""); setPage(1); }}
-          className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+          className={`px-3 py-1.5 rounded-md text-[13px] font-medium transition-colors ${
             !statusFilter ? "bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300" : "text-muted-foreground hover:bg-muted"
           }`}
         >
@@ -214,7 +214,7 @@ export default function MyTicketsPage() {
           <button
             key={s}
             onClick={() => { setStatusFilter(s); setPage(1); }}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+            className={`px-3 py-1.5 rounded-md text-[13px] font-medium transition-colors ${
               statusFilter === s
                 ? "bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300"
                 : "text-muted-foreground hover:bg-muted"
@@ -230,7 +230,7 @@ export default function MyTicketsPage() {
         {isLoading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-card rounded-xl border border-border p-4 animate-pulse">
+              <div key={i} className="bg-card rounded-lg border border-border p-4 animate-pulse">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
@@ -247,7 +247,7 @@ export default function MyTicketsPage() {
             ))}
           </div>
         ) : tickets.length === 0 ? (
-          <div className="bg-card rounded-xl border border-border p-8 text-center text-muted-foreground">
+          <div className="bg-card rounded-lg border border-border p-8 text-center text-muted-foreground">
             <TicketCheck className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
             <p className="text-lg font-medium text-muted-foreground mb-1">{t("helpdesk.myTicketsPage.noTickets")}</p>
             <p className="text-sm">
@@ -259,7 +259,7 @@ export default function MyTicketsPage() {
             <Link
               key={ticket.id}
               to={`/helpdesk/tickets/${ticket.id}`}
-              className="block bg-card rounded-xl border border-border p-4 hover:shadow-md transition-shadow"
+              className="block bg-card rounded-lg border border-border p-4 hover:border-brand-400 transition-colors duration-150"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
@@ -280,7 +280,7 @@ export default function MyTicketsPage() {
                       {t(`helpdesk.myTicketsPage.status.${ticket.status}`, { defaultValue: ticket.status.replace(/_/g, " ") })}
                     </span>
                   </div>
-                  <h3 className="text-sm font-semibold text-foreground truncate">
+                  <h3 className="text-[13px] font-semibold text-foreground truncate">
                     {ticket.subject}
                   </h3>
                   <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
@@ -313,14 +313,14 @@ export default function MyTicketsPage() {
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="bg-card text-foreground flex items-center gap-1 px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50"
+              className="bg-card text-foreground flex items-center gap-1 px-3 py-1.5 text-[13px] border border-border rounded-md hover:bg-muted transition-colors disabled:opacity-50"
             >
               <ChevronLeft className="h-4 w-4" /> {t("helpdesk.myTicketsPage.previous")}
             </button>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={page >= meta.total_pages}
-              className="bg-card text-foreground flex items-center gap-1 px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50"
+              className="bg-card text-foreground flex items-center gap-1 px-3 py-1.5 text-[13px] border border-border rounded-md hover:bg-muted transition-colors disabled:opacity-50"
             >
               {t("helpdesk.myTicketsPage.next")} <ChevronRight className="h-4 w-4" />
             </button>

@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -29,14 +30,45 @@ function QuickLink({ to, icon: Icon, label }: { to: string; icon: any; label: st
   return (
     <Link
       to={to}
-      className="flex items-center gap-3 px-4 py-3 bg-card border border-border rounded-xl hover:border-brand-300 hover:shadow-sm transition-all group"
+      className="group flex items-center gap-2.5 px-3 py-2.5 bg-card border border-border rounded-md hover:border-brand-400 hover:bg-brand-50/40 dark:hover:bg-brand-950/20 transition-colors duration-150"
     >
-      <div className="h-10 w-10 rounded-lg bg-brand-50 dark:bg-brand-950/40 flex items-center justify-center text-brand-600 dark:text-brand-400 group-hover:bg-brand-100 dark:group-hover:bg-brand-900/50">
-        <Icon className="h-5 w-5" />
-      </div>
-      <span className="text-sm font-medium text-muted-foreground group-hover:text-brand-600 dark:group-hover:text-brand-400">{label}</span>
-      <ArrowRight className="h-4 w-4 text-muted-foreground ml-auto group-hover:text-brand-500" />
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-brand-50 dark:bg-brand-950/40 text-brand-600 dark:text-brand-400 group-hover:bg-brand-100 dark:group-hover:bg-brand-900/50 transition-colors">
+        <Icon className="h-4 w-4" />
+      </span>
+      <span className="text-[13px] font-medium text-foreground truncate">{label}</span>
+      <ArrowRight className="h-3.5 w-3.5 text-muted-foreground/60 ml-auto shrink-0 transition-transform duration-150 group-hover:translate-x-0.5 group-hover:text-brand-500" />
     </Link>
+  );
+}
+
+// Compact panel primitive — the enterprise card: 8px radius, tight padding,
+// hairline border, an uppercase section-label header with a small accent icon.
+// Replaces the old rounded-xl / p-6 / text-lg heading style with the denser,
+// more scannable Workday-style module.
+function Panel({
+  icon: Icon,
+  title,
+  action,
+  children,
+}: {
+  icon: any;
+  title: string;
+  action?: ReactNode;
+  children: ReactNode;
+}) {
+  return (
+    <section className="bg-card border border-border rounded-lg">
+      <header className="flex items-center justify-between gap-2 px-4 py-2.5 border-b border-border">
+        <div className="flex items-center gap-2 min-w-0">
+          <Icon className="h-4 w-4 text-brand-600 dark:text-brand-400 shrink-0" />
+          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground truncate">
+            {title}
+          </h2>
+        </div>
+        {action}
+      </header>
+      <div className="p-4">{children}</div>
+    </section>
   );
 }
 
@@ -70,23 +102,46 @@ export default function SelfServiceDashboardPage() {
       "error",
       err?.response?.data?.error?.message ?? "Could not record attendance. Please try again.",
     );
+  // Shared success handler: refresh the attendance caches and confirm the
+  // action with a success toast that includes the recorded time so the
+  // employee sees exactly when they were clocked in / out.
+  const refreshAttendance = () => {
+    qc.invalidateQueries({ queryKey: ["my-attendance-today"] });
+    qc.invalidateQueries({ queryKey: ["attendance-today"] });
+    qc.invalidateQueries({ queryKey: ["attendance-history"] });
+    qc.invalidateQueries({ queryKey: ["attendance-me-policy"] });
+  };
+  const punchTime = (rec: any, field: "check_in" | "check_out") => {
+    const iso = rec?.[field] ?? rec?.[`${field}_time`];
+    return iso
+      ? new Date(iso).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true })
+      : new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true });
+  };
   const checkIn = useMutation({
     mutationFn: () => api.post("/attendance/check-in", { source: "manual" }).then((r) => r.data.data),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["my-attendance-today"] });
-      qc.invalidateQueries({ queryKey: ["attendance-today"] });
-      qc.invalidateQueries({ queryKey: ["attendance-history"] });
-      qc.invalidateQueries({ queryKey: ["attendance-me-policy"] });
+    onSuccess: (rec) => {
+      refreshAttendance();
+      showToast(
+        "success",
+        t("attendance.checkInSuccess", {
+          defaultValue: "Successfully checked in at {{time}}",
+          time: punchTime(rec, "check_in"),
+        }),
+      );
     },
     onError: onAttendanceError,
   });
   const checkOut = useMutation({
     mutationFn: () => api.post("/attendance/check-out", { source: "manual" }).then((r) => r.data.data),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["my-attendance-today"] });
-      qc.invalidateQueries({ queryKey: ["attendance-today"] });
-      qc.invalidateQueries({ queryKey: ["attendance-history"] });
-      qc.invalidateQueries({ queryKey: ["attendance-me-policy"] });
+    onSuccess: (rec) => {
+      refreshAttendance();
+      showToast(
+        "success",
+        t("attendance.checkOutSuccess", {
+          defaultValue: "Successfully checked out at {{time}}",
+          time: punchTime(rec, "check_out"),
+        }),
+      );
     },
     onError: onAttendanceError,
   });
@@ -179,12 +234,12 @@ export default function SelfServiceDashboardPage() {
 
   return (
     <div>
-      <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">
             {t('selfService.welcomeBack', { name: user?.first_name })}
           </h1>
-          <p className="text-muted-foreground mt-1">{t('selfService.overviewDesc')}</p>
+          <p className="text-[13px] text-muted-foreground mt-0.5">{t('selfService.overviewDesc')}</p>
         </div>
         {/* Primary Check In / Check Out action — always visible in the page
             header so it doesn't require scrolling or navigating to
@@ -200,7 +255,7 @@ export default function SelfServiceDashboardPage() {
       </div>
 
       {/* Quick Links */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 mb-6">
         <QuickLink to="/my-profile" icon={FileText} label={t('nav.myProfile')} />
         <QuickLink to={`/employees/${user?.id}`} icon={Pencil} label={t('selfService.editMyDetails')} />
         <QuickLink to="/leave" icon={CalendarDays} label={t('leave.applyLeave')} />
@@ -235,13 +290,9 @@ export default function SelfServiceDashboardPage() {
             sticky + internally scrollable so tall card stacks remain
             accessible. */}
         <div className="mt-6 lg:mt-0 lg:absolute lg:right-0 lg:top-0 lg:w-2/5">
-          <div className="space-y-6 lg:sticky lg:top-4 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:pr-1">
+          <div className="space-y-4 lg:sticky lg:top-4 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:pr-1">
         {/* Attendance Today */}
-        <div className="bg-card border border-border rounded-xl p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Clock className="h-5 w-5 text-brand-600 dark:text-brand-400" />
-            <h2 className="text-lg font-semibold text-foreground">{t('attendance.myAttendanceToday')}</h2>
-          </div>
+        <Panel icon={Clock} title={t('attendance.myAttendanceToday')}>
           {todayAttendance ? (() => {
             // #1383 — API returns check_in / check_out as ISO timestamps,
             // not check_in_time / check_out_time strings
@@ -320,111 +371,104 @@ export default function SelfServiceDashboardPage() {
               </div>
             );
           })() : (
-            <div className="flex items-center gap-3">
-              <XCircle className="h-5 w-5 text-muted-foreground/50" />
-              <p className="text-sm text-muted-foreground">{t('attendance.notCheckedInYet')}</p>
+            <div className="flex items-center gap-2.5">
+              <XCircle className="h-4 w-4 text-muted-foreground/50" />
+              <p className="text-[13px] text-muted-foreground">{t('attendance.notCheckedInYet')}</p>
             </div>
           )}
-        </div>
+        </Panel>
 
         {/* Leave Balances */}
-        <div className="bg-card border border-border rounded-xl p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <CalendarDays className="h-5 w-5 text-brand-600 dark:text-brand-400" />
-            <h2 className="text-lg font-semibold text-foreground">{t('leave.leaveBalance')}</h2>
-          </div>
+        <Panel icon={CalendarDays} title={t('leave.leaveBalance')}>
           {leaveCards.length > 0 ? (
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2">
               {leaveCards.map((c) => (
-                <div key={c.id} className="bg-muted rounded-lg p-3">
-                  <p className="text-xs text-muted-foreground">{leaveTypeLabel(t, c)}</p>
-                  <p className="text-lg font-bold text-foreground">{c.balance}</p>
-                  <p className="text-xs text-muted-foreground">{t('leave.daysRemaining')}</p>
+                <div key={c.id} className="rounded-md border border-border bg-muted/50 px-3 py-2.5">
+                  <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground truncate">{leaveTypeLabel(t, c)}</p>
+                  <p className="mt-1 text-2xl font-semibold tabular-nums leading-none text-foreground">{c.balance}</p>
+                  <p className="mt-1 text-[11px] text-muted-foreground">{t('leave.daysRemaining')}</p>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground">{t('leave.noTypes')}</p>
+            <p className="text-[13px] text-muted-foreground">{t('leave.noTypes')}</p>
           )}
-        </div>
+        </Panel>
 
         {/* Pending Documents */}
-        <div className="bg-card border border-border rounded-xl p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-brand-600 dark:text-brand-400" />
-              <h2 className="text-lg font-semibold text-foreground">{t('documents.pending')}</h2>
-            </div>
-            <Link to="/documents" className="text-xs text-brand-600 dark:text-brand-400 hover:underline">
+        <Panel
+          icon={FileText}
+          title={t('documents.pending')}
+          action={
+            <Link to="/documents" className="text-[11px] font-medium text-brand-600 dark:text-brand-400 hover:underline">
               {t('common.viewAll')}
             </Link>
-          </div>
+          }
+        >
           {pendingDocs.length > 0 ? (
-            <ul className="space-y-2">
+            <ul className="-my-1 divide-y divide-border">
               {pendingDocs.slice(0, 5).map((doc: any) => (
-                <li key={doc.id} className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <span className="truncate">{doc.title || doc.original_name || doc.file_name || doc.category_name || t('documents.fallbackName')}</span>
+                <li key={doc.id} className="flex items-center gap-2 py-2 text-[13px]">
+                  <FileText className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                  <span className="truncate text-foreground">{doc.title || doc.original_name || doc.file_name || doc.category_name || t('documents.fallbackName')}</span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-sm text-muted-foreground">{t('documents.noPending')}</p>
+            <p className="text-[13px] text-muted-foreground">{t('documents.noPending')}</p>
           )}
-        </div>
+        </Panel>
 
         {/* Recent Announcements — only render when there are items */}
         {canViewAnnouncements && announcementList.length > 0 && (
-          <div className="bg-card border border-border rounded-xl p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Megaphone className="h-5 w-5 text-brand-600 dark:text-brand-400" />
-                <h2 className="text-lg font-semibold text-foreground">{t('announcements.title')}</h2>
-              </div>
-              <Link to="/announcements" className="text-xs text-brand-600 dark:text-brand-400 hover:underline">
+          <Panel
+            icon={Megaphone}
+            title={t('announcements.title')}
+            action={
+              <Link to="/announcements" className="text-[11px] font-medium text-brand-600 dark:text-brand-400 hover:underline">
                 {t('common.viewAll')}
               </Link>
-            </div>
-            <ul className="space-y-3">
+            }
+          >
+            <ul className="-my-1 divide-y divide-border">
               {announcementList.slice(0, 3).map((a: any) => (
-                <li key={a.id}>
-                  <p className="text-sm font-medium text-foreground">{a.title}</p>
+                <li key={a.id} className="py-2.5">
+                  <p className="text-[13px] font-medium text-foreground">{a.title}</p>
                   <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
                     {richTextToPlainText(a.content) || a.body || ""}
                   </p>
                 </li>
               ))}
             </ul>
-          </div>
+          </Panel>
         )}
 
         {/* Policies to Acknowledge — only render when there are items */}
         {policyList.length > 0 && (
-          <div className="bg-card border border-border rounded-xl p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <BookOpen className="h-5 w-5 text-brand-600 dark:text-brand-400" />
-                <h2 className="text-lg font-semibold text-foreground">{t('policies.title')}</h2>
-              </div>
-              <Link to="/policies" className="text-xs text-brand-600 dark:text-brand-400 hover:underline">
+          <Panel
+            icon={BookOpen}
+            title={t('policies.title')}
+            action={
+              <Link to="/policies" className="text-[11px] font-medium text-brand-600 dark:text-brand-400 hover:underline">
                 {t('common.viewAll')}
               </Link>
-            </div>
-            <ul className="space-y-2">
+            }
+          >
+            <ul className="-my-1 divide-y divide-border">
               {policyList.slice(0, 5).map((p: any) => (
                 <li
                   key={p.id}
-                  className="flex items-center justify-between text-sm text-muted-foreground border-b border-border pb-2 last:border-0"
+                  className="flex items-center justify-between gap-3 py-2 text-[13px]"
                 >
-                  <span>{p.title}</span>
+                  <span className="truncate text-foreground">{p.title}</span>
                   {p.acknowledged ? (
-                    <span className="text-xs text-green-600 dark:text-green-400 flex items-center gap-1">
+                    <span className="text-[11px] text-green-600 dark:text-green-400 flex items-center gap-1 shrink-0">
                       <CheckCircle2 className="h-3 w-3" /> {t('policies.acknowledged')}
                     </span>
                   ) : (
                     <Link
                       to="/policies"
-                      className="text-xs text-brand-600 dark:text-brand-400 hover:underline"
+                      className="text-[11px] font-medium text-brand-600 dark:text-brand-400 hover:underline shrink-0"
                     >
                       {t('policies.review')}
                     </Link>
@@ -432,7 +476,7 @@ export default function SelfServiceDashboardPage() {
                 </li>
               ))}
             </ul>
-          </div>
+          </Panel>
         )}
           </div>
         </div>
@@ -471,22 +515,13 @@ function AttendanceHeaderAction({
   const hasCheckedIn = !!ci;
   const hasCheckedOut = !!co;
 
-  if (hasCheckedOut) {
-    return (
-      <div className="inline-flex items-center gap-2 rounded-xl bg-green-50 dark:bg-green-950/40 border border-green-200 dark:border-green-900 px-4 py-2.5 text-sm font-medium text-green-700 dark:text-green-300">
-        <CheckCircle2 className="h-4 w-4" />
-        {t('attendance.attendanceComplete')}
-      </div>
-    );
-  }
-
   // Web check-in disabled by org / override — show a small explanation
   // pill instead of an actionable button. The user can still check out via
   // a biometric device or the mobile app if those channels are enabled.
   if (!dashboardAllowed) {
     return (
       <div
-        className="inline-flex items-center gap-2 rounded-xl bg-muted border border-border px-4 py-2.5 text-sm font-medium text-muted-foreground"
+        className="inline-flex items-center gap-2 rounded-md bg-muted border border-border px-4 py-2.5 text-sm font-medium text-muted-foreground"
         title="Use the EmpCloud mobile app or a biometric device to check in / out."
       >
         <Lock className="h-4 w-4" />
@@ -501,7 +536,7 @@ function AttendanceHeaderAction({
         type="button"
         onClick={onCheckIn}
         disabled={checkInPending}
-        className="inline-flex items-center gap-2 rounded-xl bg-green-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-green-700 hover:shadow transition-all disabled:opacity-50"
+        className="inline-flex items-center gap-2 rounded-md bg-green-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-green-700 hover:shadow transition-all disabled:opacity-50"
       >
         {checkInPending ? (
           <Loader2 className="h-4 w-4 animate-spin" />
@@ -513,19 +548,40 @@ function AttendanceHeaderAction({
     );
   }
 
+  // Checked in — always keep an actionable Check Out button visible, even
+  // AFTER a check-out. Check-in is naturally one-time (it's the first punch
+  // of the day and stays locked), but check-out is the LATEST punch and rolls
+  // forward on every tap (see attendance.service.ts). Keeping the button live
+  // lets an employee who checked out early / by mistake re-check-out at the
+  // correct time instead of being stuck with the wrong time. Once they've
+  // checked out at least once we relabel to "Update check-out" and show the
+  // recorded time so the second click clearly overwrites rather than looks
+  // like a fresh action.
+  const coText = co
+    ? new Date(co).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true })
+    : null;
   return (
-    <button
-      type="button"
-      onClick={onCheckOut}
-      disabled={checkOutPending}
-      className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-700 hover:shadow transition-all disabled:opacity-50"
-    >
-      {checkOutPending ? (
-        <Loader2 className="h-4 w-4 animate-spin" />
-      ) : (
-        <LogOut className="h-4 w-4" />
+    <div className="flex items-center gap-2.5">
+      {hasCheckedOut && coText && (
+        <span className="hidden sm:inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+          <CheckCircle2 className="h-3.5 w-3.5 text-green-600 dark:text-green-400" />
+          {t('attendance.checkedOutAt', { defaultValue: 'Checked out {{time}}', time: coText })}
+        </span>
       )}
-      {t('attendance.checkOut')}
-    </button>
+      <button
+        type="button"
+        onClick={onCheckOut}
+        disabled={checkOutPending}
+        title={hasCheckedOut ? t('attendance.updateCheckOutHint', { defaultValue: 'Check out again to correct the time' }) : undefined}
+        className="inline-flex items-center gap-2 rounded-md bg-red-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-700 hover:shadow transition-all disabled:opacity-50"
+      >
+        {checkOutPending ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <LogOut className="h-4 w-4" />
+        )}
+        {t('attendance.checkOut')}
+      </button>
+    </div>
   );
 }

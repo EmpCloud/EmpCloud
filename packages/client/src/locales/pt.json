@@ -377,7 +377,15 @@
     "changePassword": "Alterar Senha",
     "viewAttendance": "Ver Presença",
     "attendanceGrid": "Grade de Presença",
-    "attendanceSettings": "Configurações de Presença"
+    "attendanceSettings": "Configurações de Presença",
+    "section": {
+      "account": "Conta",
+      "administration": "Administração",
+      "attendance_and_leave": "Presença e licenças",
+      "communication": "Comunicação",
+      "people_and_hr": "Pessoas e RH",
+      "workplace_and_community": "Local de trabalho e comunidade"
+    }
   },
   "common": {
     "save": "Salvar",

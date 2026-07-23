@@ -88,7 +88,7 @@ export default function EventDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="bg-card rounded-xl border border-border p-8 text-center text-muted-foreground">
+      <div className="bg-card rounded-lg border border-border p-8 text-center text-muted-foreground">
         {t("eventDetail.state.loading")}
       </div>
     );
@@ -96,7 +96,7 @@ export default function EventDetailPage() {
 
   if (!data) {
     return (
-      <div className="bg-card rounded-xl border border-border p-8 text-center text-muted-foreground">
+      <div className="bg-card rounded-lg border border-border p-8 text-center text-muted-foreground">
         {t("eventDetail.state.notFound")}
       </div>
     );
@@ -131,24 +131,24 @@ export default function EventDetailPage() {
         )}
       </div>
 
-      <div className="bg-card rounded-xl border border-border overflow-hidden">
+      <div className="bg-card rounded-lg border border-border overflow-hidden">
         {/* Header */}
         <div className="p-6 border-b border-border">
           <div className="flex items-center gap-2 mb-3 flex-wrap">
-            <span className={`inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-full ${typeConfig.color}`}>
+            <span className={`inline-flex items-center text-[11px] font-medium px-2.5 py-0.5 rounded-md ${typeConfig.color}`}>
               {t(`eventDetail.type.${typeConfig.labelKey}`)}
             </span>
-            <span className={`inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-full ${statusConfig.color}`}>
+            <span className={`inline-flex items-center text-[11px] font-medium px-2.5 py-0.5 rounded-md ${statusConfig.color}`}>
               {t(`eventDetail.status.${statusConfig.labelKey}`)}
             </span>
             {event.is_mandatory && (
-              <span className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-0.5 rounded-full bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400">
+              <span className="inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-0.5 rounded-md bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400">
                 <Star className="h-3 w-3" /> {t("eventDetail.badge.mandatory")}
               </span>
             )}
           </div>
 
-          <h1 className="text-2xl font-bold text-foreground">{event.title}</h1>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">{event.title}</h1>
 
           {event.description && (
             <p className="mt-3 text-muted-foreground leading-relaxed whitespace-pre-wrap">
@@ -160,12 +160,12 @@ export default function EventDetailPage() {
         {/* Details */}
         <div className="p-6 border-b border-border grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center">
+            <div className="h-10 w-10 rounded-md bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center">
               <Calendar className="h-5 w-5 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
               <p className="text-xs text-muted-foreground">{t("eventDetail.details.dateLabel")}</p>
-              <p className="text-sm font-medium text-foreground">
+              <p className="text-[13px] font-medium text-foreground">
                 {event.is_all_day
                   ? new Date(event.start_date).toLocaleDateString("en-US", {
                       weekday: "long",
@@ -185,19 +185,19 @@ export default function EventDetailPage() {
 
           {event.location && (
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-green-50 dark:bg-green-950/40 flex items-center justify-center">
+              <div className="h-10 w-10 rounded-md bg-green-50 dark:bg-green-950/40 flex items-center justify-center">
                 <MapPin className="h-5 w-5 text-green-600 dark:text-green-400" />
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">{t("eventDetail.details.locationLabel")}</p>
-                <p className="text-sm font-medium text-foreground">{event.location}</p>
+                <p className="text-[13px] font-medium text-foreground">{event.location}</p>
               </div>
             </div>
           )}
 
           {event.virtual_link && (
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-purple-50 dark:bg-purple-950/40 flex items-center justify-center">
+              <div className="h-10 w-10 rounded-md bg-purple-50 dark:bg-purple-950/40 flex items-center justify-center">
                 <Video className="h-5 w-5 text-purple-600 dark:text-purple-400" />
               </div>
               <div>
@@ -215,12 +215,12 @@ export default function EventDetailPage() {
           )}
 
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-amber-50 dark:bg-amber-950/40 flex items-center justify-center">
+            <div className="h-10 w-10 rounded-md bg-amber-50 dark:bg-amber-950/40 flex items-center justify-center">
               <Users className="h-5 w-5 text-amber-600 dark:text-amber-400" />
             </div>
             <div>
               <p className="text-xs text-muted-foreground">{t("eventDetail.details.attendeesLabel")}</p>
-              <p className="text-sm font-medium text-foreground">
+              <p className="text-[13px] font-medium text-foreground">
                 {t("eventDetail.details.attendingCount", { count: event.attending_count || 0 })}
                 {event.maybe_count > 0 &&
                   t("eventDetail.details.maybeSuffix", { count: event.maybe_count })}
@@ -247,7 +247,7 @@ export default function EventDetailPage() {
               <button
                 onClick={() => rsvpMutation.mutate("attending")}
                 disabled={rsvpMutation.isPending}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border transition-colors disabled:opacity-50 ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium border transition-colors disabled:opacity-50 ${
                   myRsvp?.status === "attending"
                     ? "bg-green-50 dark:bg-green-950/40 border-green-300 dark:border-green-800 text-green-700 dark:text-green-300"
                     : "border-border text-muted-foreground hover:bg-green-50 dark:hover:bg-green-950/40 hover:border-green-300 dark:hover:border-green-800 hover:text-green-700 dark:hover:text-green-300"
@@ -258,7 +258,7 @@ export default function EventDetailPage() {
               <button
                 onClick={() => rsvpMutation.mutate("maybe")}
                 disabled={rsvpMutation.isPending}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border transition-colors disabled:opacity-50 ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium border transition-colors disabled:opacity-50 ${
                   myRsvp?.status === "maybe"
                     ? "bg-amber-50 dark:bg-amber-950/40 border-amber-300 dark:border-amber-800 text-amber-700 dark:text-amber-300"
                     : "border-border text-muted-foreground hover:bg-amber-50 dark:hover:bg-amber-950/40 hover:border-amber-300 dark:hover:border-amber-800 hover:text-amber-700 dark:hover:text-amber-300"
@@ -269,7 +269,7 @@ export default function EventDetailPage() {
               <button
                 onClick={() => rsvpMutation.mutate("declined")}
                 disabled={rsvpMutation.isPending}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border transition-colors disabled:opacity-50 ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium border transition-colors disabled:opacity-50 ${
                   myRsvp?.status === "declined"
                     ? "bg-red-50 dark:bg-red-950/40 border-red-300 dark:border-red-800 text-red-700 dark:text-red-300"
                     : "border-border text-muted-foreground hover:bg-red-50 dark:hover:bg-red-950/40 hover:border-red-300 dark:hover:border-red-800 hover:text-red-700 dark:hover:text-red-300"
@@ -293,7 +293,7 @@ export default function EventDetailPage() {
                   {attendingRsvps.map((r: any) => (
                     <span
                       key={r.user_id}
-                      className="inline-flex items-center gap-1.5 text-xs bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300 px-2.5 py-1 rounded-full"
+                      className="inline-flex items-center gap-1.5 text-[11px] bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300 px-2.5 py-1 rounded-md"
                     >
                       <User className="h-3 w-3" />
                       {r.first_name} {r.last_name}
@@ -311,7 +311,7 @@ export default function EventDetailPage() {
                   {maybeRsvps.map((r: any) => (
                     <span
                       key={r.user_id}
-                      className="inline-flex items-center gap-1.5 text-xs bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 px-2.5 py-1 rounded-full"
+                      className="inline-flex items-center gap-1.5 text-[11px] bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 px-2.5 py-1 rounded-md"
                     >
                       <User className="h-3 w-3" />
                       {r.first_name} {r.last_name}
@@ -331,7 +331,7 @@ export default function EventDetailPage() {
           onClick={() => !deleteMutation.isPending && setShowDelete(false)}
         >
           <div
-            className="w-full max-w-md rounded-xl bg-card shadow-xl"
+            className="w-full max-w-md rounded-lg bg-card shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="px-6 py-5">
@@ -348,16 +348,16 @@ export default function EventDetailPage() {
               </div>
             </div>
             {deleteError && (
-              <div className="mx-6 mb-4 rounded-lg bg-red-50 dark:bg-red-950/40 p-3 text-sm text-red-700 dark:text-red-300">
+              <div className="mx-6 mb-4 rounded-md bg-red-50 dark:bg-red-950/40 p-3 text-sm text-red-700 dark:text-red-300">
                 {deleteError}
               </div>
             )}
-            <div className="flex justify-end gap-3 rounded-b-xl border-t border-border bg-muted px-6 py-4">
+            <div className="flex justify-end gap-3 rounded-b-lg border-t border-border bg-muted px-6 py-4">
               <button
                 type="button"
                 onClick={() => setShowDelete(false)}
                 disabled={deleteMutation.isPending}
-                className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-card disabled:opacity-50"
+                className="rounded-md border border-border px-4 py-2 text-[13px] font-medium text-muted-foreground hover:bg-card disabled:opacity-50"
               >
                 {t("eventDetail.delete.cancel")}
               </button>
@@ -365,7 +365,7 @@ export default function EventDetailPage() {
                 type="button"
                 onClick={() => deleteMutation.mutate()}
                 disabled={deleteMutation.isPending}
-                className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+                className="flex items-center gap-2 rounded-md bg-red-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-red-700 disabled:opacity-50"
               >
                 {deleteMutation.isPending ? (
                   <>

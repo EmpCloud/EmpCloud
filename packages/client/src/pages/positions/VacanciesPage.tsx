@@ -60,10 +60,10 @@ export default function VacanciesPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{tx("title")}</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">{tx("title")}</h1>
+          <p className="text-[13px] text-muted-foreground mt-0.5">
             {tx("subtitle")}
             {vacancies.length > 0 && (
               <span className="ml-2 text-brand-600 dark:text-brand-400 font-medium">
@@ -79,21 +79,21 @@ export default function VacanciesPage() {
           <div className="text-muted-foreground">{tx("loading")}</div>
         </div>
       ) : vacancies.length === 0 ? (
-        <div className="bg-card rounded-xl border border-border p-12 text-center">
+        <div className="bg-card rounded-lg border border-border p-12 text-center">
           <Briefcase className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
-          <h3 className="text-lg font-medium text-foreground">{tx("noVacanciesTitle")}</h3>
-          <p className="text-sm text-muted-foreground mt-1">{tx("noVacanciesSubtitle")}</p>
+          <h3 className="text-base font-medium text-foreground">{tx("noVacanciesTitle")}</h3>
+          <p className="text-[13px] text-muted-foreground mt-1">{tx("noVacanciesSubtitle")}</p>
         </div>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-5">
           {Object.entries(grouped).map(([dept, positions]) => (
             <div key={dept}>
-              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">{dept}</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <h2 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2.5">{dept}</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {positions.map((pos: any) => (
                   <div
                     key={pos.id}
-                    className="bg-card rounded-xl border border-border p-5 hover:border-brand-300 hover:shadow-sm transition-all group"
+                    className="bg-card rounded-lg border border-border p-4 hover:border-brand-400 transition-colors duration-150 group"
                   >
                     <Link to={`/positions/${pos.id}`} className="block">
                       <div className="flex items-start justify-between mb-3">
@@ -110,7 +110,7 @@ export default function VacanciesPage() {
                         )}
                       </div>
 
-                      <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
+                      <div className="flex items-center gap-3 text-[11px] text-muted-foreground mb-3">
                         <span className="capitalize">{(pos.employment_type || "").replace("_", " ")}</span>
                         {pos.location_name && (
                           <span className="flex items-center gap-1">
@@ -121,12 +121,12 @@ export default function VacanciesPage() {
 
                       <div className="flex items-center justify-between">
                         <div>
-                          <span className="text-lg font-bold text-amber-600 dark:text-amber-400">{pos.open_count}</span>
-                          <span className="text-xs text-muted-foreground ml-1">
+                          <span className="text-lg font-semibold tabular-nums text-amber-600 dark:text-amber-400">{pos.open_count}</span>
+                          <span className="text-[11px] text-muted-foreground ml-1">
                             {tx("openings", { count: pos.open_count })}
                           </span>
                         </div>
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-[11px] tabular-nums text-muted-foreground">
                           {tx("filledRatio", { filled: pos.headcount_filled, budget: pos.headcount_budget })}
                         </span>
                       </div>
@@ -135,7 +135,7 @@ export default function VacanciesPage() {
                           so when both salaries are 0/null React doesn't print
                           a stray "0" instead of skipping the block. */}
                       {pos.min_salary || pos.max_salary ? (
-                        <div className="mt-2 text-xs text-muted-foreground">
+                        <div className="mt-2 text-[11px] tabular-nums text-muted-foreground">
                           {pos.currency} {pos.min_salary ? (pos.min_salary / 100).toLocaleString() : "0"} - {pos.max_salary ? (pos.max_salary / 100).toLocaleString() : "0"}
                         </div>
                       ) : null}

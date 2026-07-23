@@ -377,7 +377,15 @@
     "changePassword": "पासवर्ड बदलें",
     "viewAttendance": "उपस्थिति देखें",
     "attendanceGrid": "उपस्थिति ग्रिड",
-    "attendanceSettings": "उपस्थिति सेटिंग्स"
+    "attendanceSettings": "उपस्थिति सेटिंग्स",
+    "section": {
+      "account": "खाता",
+      "administration": "प्रशासन",
+      "attendance_and_leave": "उपस्थिति और अवकाश",
+      "communication": "संचार",
+      "people_and_hr": "लोग और HR",
+      "workplace_and_community": "कार्यस्थल और समुदाय"
+    }
   },
   "common": {
     "save": "सहेजें",

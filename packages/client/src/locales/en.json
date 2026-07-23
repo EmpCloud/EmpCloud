@@ -377,7 +377,15 @@
     "changePassword": "Change Password",
     "viewAttendance": "View Attendance",
     "attendanceGrid": "Attendance Grid",
-    "attendanceSettings": "Attendance Settings"
+    "attendanceSettings": "Attendance Settings",
+    "section": {
+      "account": "Account",
+      "administration": "Administration",
+      "attendance_and_leave": "Attendance & Leave",
+      "communication": "Communication",
+      "people_and_hr": "People & HR",
+      "workplace_and_community": "Workplace & Community"
+    }
   },
   "common": {
     "save": "Save",
@@ -1313,7 +1321,12 @@
       },
       "applyLeaveFailed": "Failed to apply leave"
     },
-    "location": "Location"
+    "location": "Location",
+    "updateCheckOut": "Update check-out",
+    "checkedOutAt": "Checked out {{time}}",
+    "updateCheckOutHint": "Check out again to correct the time",
+    "checkInSuccess": "Successfully checked in at {{time}}",
+    "checkOutSuccess": "Successfully checked out at {{time}}"
   },
   "manager": {
     "title": "My Team",

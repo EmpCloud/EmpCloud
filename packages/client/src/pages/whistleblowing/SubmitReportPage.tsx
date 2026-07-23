@@ -49,19 +49,19 @@ export default function SubmitReportPage() {
   if (submittedCase) {
     return (
       <div className="max-w-2xl mx-auto py-12">
-        <div className="bg-card rounded-xl shadow-sm border p-8 text-center">
+        <div className="bg-card rounded-lg shadow-sm border p-8 text-center">
           <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-foreground mb-2">{t("submitReport.success.title")}</h2>
+          <h2 className="text-xl font-semibold tracking-tight text-foreground mb-2">{t("submitReport.success.title")}</h2>
           <p className="text-muted-foreground mb-6">
             {t("submitReport.success.description")}
           </p>
           <div className="bg-muted border-2 border-dashed border-border rounded-lg p-6 mb-6">
-            <p className="text-sm text-muted-foreground mb-1">{t("submitReport.success.caseNumberLabel")}</p>
-            <p className="text-3xl font-mono font-bold text-brand-700 dark:text-brand-300">{submittedCase}</p>
+            <p className="text-[13px] text-muted-foreground mb-1">{t("submitReport.success.caseNumberLabel")}</p>
+            <p className="text-3xl font-mono font-semibold tabular-nums text-brand-700 dark:text-brand-300">{submittedCase}</p>
           </div>
           <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 rounded-lg p-4 text-left">
-            <p className="text-sm text-amber-800 dark:text-amber-200 font-medium">{t("submitReport.success.importantLabel")}</p>
-            <ul className="text-sm text-amber-700 dark:text-amber-300 mt-1 list-disc list-inside space-y-1">
+            <p className="text-[13px] text-amber-800 dark:text-amber-200 font-medium">{t("submitReport.success.importantLabel")}</p>
+            <ul className="text-[13px] text-amber-700 dark:text-amber-300 mt-1 list-disc list-inside space-y-1">
               <li>{t("submitReport.success.saveCaseNumber")}</li>
               <li>{isAnonymous ? t("submitReport.success.identityAnonymous") : t("submitReport.success.identityAttached")}</li>
               <li>{t("submitReport.success.trackReportHint")}</li>
@@ -75,7 +75,7 @@ export default function SubmitReportPage() {
               setSubject("");
               setDescription("");
             }}
-            className="mt-6 px-6 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition"
+            className="mt-6 px-6 py-2 bg-brand-600 text-white rounded-md hover:bg-brand-700 transition"
           >
             {t("submitReport.success.submitAnother")}
           </button>
@@ -89,14 +89,14 @@ export default function SubmitReportPage() {
       <div className="flex items-center gap-3 mb-6">
         <ShieldAlert className="h-7 w-7 text-brand-600 dark:text-brand-400" />
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t("submitReport.header.title")}</h1>
-          <p className="text-sm text-muted-foreground">
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("submitReport.header.title")}</h1>
+          <p className="text-[13px] text-muted-foreground">
             {t("submitReport.header.subtitle")}
           </p>
         </div>
       </div>
 
-      <div className="bg-card rounded-xl shadow-sm border p-6 space-y-6">
+      <div className="bg-card rounded-lg shadow-sm border p-4 space-y-6">
         {/* Anonymous Toggle */}
         <div className="flex items-center justify-between p-4 bg-muted rounded-lg border">
           <div className="flex items-center gap-3">
@@ -109,7 +109,7 @@ export default function SubmitReportPage() {
               <p className="font-medium text-foreground">
                 {isAnonymous ? t("submitReport.anonymous.anonymousTitle") : t("submitReport.anonymous.identifiedTitle")}
               </p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-[13px] text-muted-foreground">
                 {isAnonymous
                   ? t("submitReport.anonymous.anonymousDescription")
                   : t("submitReport.anonymous.identifiedDescription")}
@@ -133,13 +133,13 @@ export default function SubmitReportPage() {
 
         {/* Category */}
         <div>
-          <label className="block text-sm font-medium text-muted-foreground mb-1">
+          <label className="block text-[13px] font-medium text-muted-foreground mb-1">
             {t("submitReport.form.categoryLabel")} <span className="text-red-500">{t("submitReport.form.required")}</span>
           </label>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-card text-foreground"
+            className="w-full border border-border rounded-md px-3 py-2 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-card text-foreground"
           >
             <option value="">{t("submitReport.form.categoryPlaceholder")}</option>
             {CATEGORIES.map((c) => (
@@ -152,7 +152,7 @@ export default function SubmitReportPage() {
 
         {/* Severity */}
         <div>
-          <label className="block text-sm font-medium text-muted-foreground mb-2">
+          <label className="block text-[13px] font-medium text-muted-foreground mb-2">
             {t("submitReport.form.severityLabel")} <span className="text-red-500">{t("submitReport.form.required")}</span>
           </label>
           <div className="flex gap-3">
@@ -161,7 +161,7 @@ export default function SubmitReportPage() {
                 key={s.value}
                 type="button"
                 onClick={() => setSeverity(s.value)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium border transition ${
+                className={`px-4 py-2 rounded-md text-[13px] font-medium border transition ${
                   severity === s.value
                     ? `${s.color} border-current ring-2 ring-offset-1 ring-offset-card`
                     : "bg-muted text-muted-foreground border-border hover:bg-muted"
@@ -175,7 +175,7 @@ export default function SubmitReportPage() {
 
         {/* Subject */}
         <div>
-          <label className="block text-sm font-medium text-muted-foreground mb-1">
+          <label className="block text-[13px] font-medium text-muted-foreground mb-1">
             {t("submitReport.form.subjectLabel")} <span className="text-red-500">{t("submitReport.form.required")}</span>
           </label>
           <input
@@ -184,13 +184,13 @@ export default function SubmitReportPage() {
             onChange={(e) => setSubject(e.target.value)}
             placeholder={t("submitReport.form.subjectPlaceholder")}
             maxLength={255}
-            className="w-full border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-card text-foreground"
+            className="w-full border border-border rounded-md px-3 py-2 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-card text-foreground"
           />
         </div>
 
         {/* Description */}
         <div>
-          <label className="block text-sm font-medium text-muted-foreground mb-1">
+          <label className="block text-[13px] font-medium text-muted-foreground mb-1">
             {t("submitReport.form.descriptionLabel")} <span className="text-red-500">{t("submitReport.form.required")}</span>
           </label>
           <textarea
@@ -198,7 +198,7 @@ export default function SubmitReportPage() {
             onChange={(e) => setDescription(e.target.value)}
             rows={6}
             placeholder={t("submitReport.form.descriptionPlaceholder")}
-            className="w-full border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-card text-foreground"
+            className="w-full border border-border rounded-md px-3 py-2 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-card text-foreground"
           />
         </div>
 
@@ -215,14 +215,14 @@ export default function SubmitReportPage() {
               })
             }
             disabled={!category || !subject || !description || submitMutation.isPending}
-            className="px-6 py-2.5 bg-brand-600 text-white rounded-lg hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition font-medium"
+            className="px-6 py-2.5 bg-brand-600 text-white rounded-md hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition font-medium"
           >
             {submitMutation.isPending ? t("submitReport.actions.submitting") : t("submitReport.actions.submit")}
           </button>
         </div>
 
         {submitMutation.isError && (
-          <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-lg p-3 text-sm text-red-700 dark:text-red-300">
+          <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-lg p-3 text-[13px] text-red-700 dark:text-red-300">
             {t("submitReport.error.submitFailed")}
           </div>
         )}

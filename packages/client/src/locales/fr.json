@@ -377,7 +377,15 @@
     "changePassword": "Changer le mot de passe",
     "viewAttendance": "Voir la présence",
     "attendanceGrid": "Grille de présence",
-    "attendanceSettings": "Paramètres de présence"
+    "attendanceSettings": "Paramètres de présence",
+    "section": {
+      "account": "Compte",
+      "administration": "Administration",
+      "attendance_and_leave": "Présence et congés",
+      "communication": "Communication",
+      "people_and_hr": "Personnel et RH",
+      "workplace_and_community": "Espace de travail et communauté"
+    }
   },
   "common": {
     "save": "Enregistrer",

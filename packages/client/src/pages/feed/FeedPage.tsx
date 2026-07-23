@@ -111,14 +111,14 @@ export default function FeedPage() {
             </button>
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-bold text-foreground">{t("feed.page.title")}</h1>
+                <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("feed.page.title")}</h1>
                 {isHR && (
                   <span className="inline-flex items-center gap-1 rounded-full bg-brand-100 dark:bg-brand-950/40 px-2 py-0.5 text-[11px] font-medium text-brand-700 dark:text-brand-300">
                     <Sparkles className="h-3 w-3" /> {t("feed.page.admin")}
                   </span>
                 )}
               </div>
-              <p className="text-muted-foreground mt-1 text-sm">
+              <p className="text-[13px] text-muted-foreground mt-1">
                 {isHR ? t("feed.page.subtitleHr") : t("feed.page.subtitleEmployee")}
               </p>
             </div>
@@ -148,7 +148,7 @@ export default function FeedPage() {
         {/* Main column — reserve 1/3 + gap on the right for the sidebar */}
         <div className={isHR ? "space-y-4 lg:pr-[calc(33.333%+1.5rem)]" : "space-y-4"}>
           {/* Search + filter chips */}
-          <div className="rounded-xl border border-border bg-card p-3 space-y-3">
+          <div className="rounded-lg border border-border bg-card p-3 space-y-3">
             <form
               onSubmit={(e) => { e.preventDefault(); setSearch(searchInput.trim() || undefined); }}
               className="relative"
@@ -266,7 +266,7 @@ export default function FeedPage() {
 
             {/* Top contributors */}
             {stats?.top_contributors && stats.top_contributors.length > 0 && (
-              <div className="rounded-xl border border-border bg-card p-4">
+              <div className="rounded-lg border border-border bg-card p-4">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
                     <Users className="h-4 w-4 text-brand-600 dark:text-brand-400" />
@@ -295,7 +295,7 @@ export default function FeedPage() {
                           {u.first_name} {u.last_name}
                         </p>
                       </div>
-                      <span className="text-xs font-semibold text-brand-600 dark:text-brand-400">
+                      <span className="text-[11px] tabular-nums font-semibold text-brand-600 dark:text-brand-400">
                         {u.contribution_count}
                       </span>
                     </li>
@@ -306,7 +306,7 @@ export default function FeedPage() {
 
             {/* Trending posts */}
             {stats?.trending_posts && stats.trending_posts.length > 0 && (
-              <div className="rounded-xl border border-border bg-card p-4">
+              <div className="rounded-lg border border-border bg-card p-4">
                 <h3 className="text-sm font-semibold text-foreground flex items-center gap-2 mb-3">
                   <TrendingUp className="h-4 w-4 text-amber-600 dark:text-amber-400" />
                   {t("feed.page.trendingWeek")}
@@ -379,11 +379,11 @@ function StatCard({
   };
   const t = toneClasses[tone];
   return (
-    <div className={`group rounded-xl border border-border bg-card p-3 transition-all hover:shadow-sm hover:-translate-y-0.5 ring-1 ring-transparent ${t.ring}`}>
-      <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${t.bg} ${t.text}`}>
+    <div className={`group rounded-lg border border-border bg-card p-3 transition-colors duration-150 hover:border-brand-400 ${t.ring}`}>
+      <div className={`h-8 w-8 rounded-md flex items-center justify-center ${t.bg} ${t.text}`}>
         {icon}
       </div>
-      <p className="mt-2 text-2xl font-bold text-foreground leading-none">{value}</p>
+      <p className="mt-2 text-2xl font-semibold tabular-nums text-foreground leading-none">{value}</p>
       <p className="mt-1 text-[11px] text-muted-foreground">{label}</p>
     </div>
   );
@@ -393,7 +393,7 @@ function FeedSkeleton() {
   return (
     <div className="space-y-4">
       {[0, 1, 2].map((i) => (
-        <div key={i} className="rounded-xl border border-border bg-card p-5 animate-pulse">
+        <div key={i} className="rounded-lg border border-border bg-card p-5 animate-pulse">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-full bg-muted" />
             <div className="space-y-2 flex-1">
@@ -414,7 +414,7 @@ function FeedSkeleton() {
 function EmptyState({ search, filter }: { search?: string; filter: FeedFilter }) {
   const { t } = useTranslation();
   return (
-    <div className="rounded-xl border border-dashed border-border bg-card p-10 text-center">
+    <div className="rounded-lg border border-dashed border-border bg-card p-10 text-center">
       <div className="mx-auto h-12 w-12 rounded-full bg-muted flex items-center justify-center text-muted-foreground mb-3">
         <MessagesSquare className="h-6 w-6" />
       </div>

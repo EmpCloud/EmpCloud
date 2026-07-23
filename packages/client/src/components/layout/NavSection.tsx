@@ -9,7 +9,7 @@ interface NavSectionProps {
   label: string;
   items: NavItem[];
   location: { pathname: string };
-  t: (key: string) => string;
+  t: (key: string, opts?: Record<string, unknown>) => string;
   activeClass?: string;
   /** Live unread counts keyed by nav path (e.g. { "/messages": 3 }). */
   unreadByPath?: Record<string, number>;
@@ -37,7 +37,21 @@ function isItemActive(item: NavItem, pathname: string, allItems: NavItem[]): boo
     : isExact || (isPrefix && !hasMoreSpecificMatch);
 }
 
-export function NavSection({ label, items, location, activeClass = "bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300", unreadByPath }: NavSectionProps) {
+// Section headers are stored as English strings in navigation.config.ts
+// (e.g. "People & HR"). Localise them via `nav.section.<slug>` keys, falling
+// back to the raw English string so an unmapped section still renders.
+function sectionLabel(section: string, t: (key: string, opts?: Record<string, unknown>) => string): string {
+  const slug = section
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+  const key = `nav.section.${slug}`;
+  const translated = t(key, { defaultValue: section });
+  return translated;
+}
+
+export function NavSection({ label, items, location, t, activeClass = "bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300", unreadByPath }: NavSectionProps) {
   // Track the running section so a divider+label renders before the first
   // surviving item of each new group (resilient to permission-filtered items).
   let currentSection: string | undefined;
@@ -56,7 +70,7 @@ export function NavSection({ label, items, location, activeClass = "bg-brand-50 
           <Fragment key={item.path}>
             {header && (
               <div className="mx-3 mt-4 mb-1 border-t border-border pt-3 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                {header}
+                {sectionLabel(header, t)}
               </div>
             )}
             {item.children ? (

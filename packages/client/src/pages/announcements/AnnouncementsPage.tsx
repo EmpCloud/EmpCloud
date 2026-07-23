@@ -16,9 +16,9 @@ const AVAILABLE_ROLES = ["employee", "manager", "hr_admin", "org_admin"];
 // Priority → colour + icon. Label text comes from i18n
 // (announcements.page.priority.*).
 const PRIORITY_CONFIG: Record<string, { color: string; icon: typeof Info }> = {
-  urgent: { color: "bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300 border-red-200", icon: AlertCircle },
-  high: { color: "bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300 border-orange-200", icon: AlertTriangle },
-  normal: { color: "bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border-blue-200", icon: Info },
+  urgent: { color: "bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300 border-red-200 dark:border-red-900/50", icon: AlertCircle },
+  high: { color: "bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-900/50", icon: AlertTriangle },
+  normal: { color: "bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-900/50", icon: Info },
   low: { color: "bg-muted text-muted-foreground border-border", icon: Info },
 };
 
@@ -206,12 +206,12 @@ export default function AnnouncementsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-foreground">{t("announcements.page.title")}</h1>
+            <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("announcements.page.title")}</h1>
             {typeof unreadCount === "number" && unreadCount > 0 && (
-              <span className="inline-flex items-center justify-center h-6 min-w-[1.5rem] px-2 text-xs font-bold text-white bg-red-500 rounded-full">
+              <span className="inline-flex items-center justify-center h-6 min-w-[1.5rem] px-2 text-[11px] tabular-nums font-bold text-white bg-red-500 rounded-full">
                 {unreadCount}
               </span>
             )}
@@ -221,7 +221,7 @@ export default function AnnouncementsPage() {
         {isHR && (
           <button
             onClick={() => (showForm ? closeForm() : (setEditId(null), resetForm(), setShowForm(true)))}
-            className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
+            className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700"
           >
             <Plus className="h-4 w-4" /> {t("announcements.page.newAnnouncement")}
           </button>
@@ -230,25 +230,25 @@ export default function AnnouncementsPage() {
 
       {/* Create Announcement Form */}
       {showForm && isHR && (
-        <form onSubmit={handleSubmit} className="bg-card rounded-xl border border-border p-6 mb-6 space-y-4">
-          <h2 className="text-lg font-semibold text-foreground">
+        <form onSubmit={handleSubmit} className="bg-card rounded-lg border border-border p-4 mb-6 space-y-4">
+          <h2 className="text-base font-semibold text-foreground">
             {editId != null ? t("announcements.page.editTitle") : t("announcements.page.createTitle")}
           </h2>
 
           <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-1">{t("announcements.page.fieldTitle")} <span className="text-red-500">*</span></label>
+            <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t("announcements.page.fieldTitle")} <span className="text-red-500">*</span></label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+              className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
               placeholder={t("announcements.page.titlePlaceholder")}
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-1">{t("announcements.page.fieldContent")} <span className="text-red-500">*</span></label>
+            <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t("announcements.page.fieldContent")} <span className="text-red-500">*</span></label>
             <RichTextEditor
               value={content}
               onChange={setContent}
@@ -258,11 +258,11 @@ export default function AnnouncementsPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("announcements.page.fieldPriority")}</label>
+              <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t("announcements.page.fieldPriority")}</label>
               <select
                 value={priority}
                 onChange={(e) => setPriority(e.target.value)}
-                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
               >
                 <option value="low">{t("announcements.page.priority.low")}</option>
                 <option value="normal">{t("announcements.page.priority.normal")}</option>
@@ -272,11 +272,11 @@ export default function AnnouncementsPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("announcements.page.fieldTarget")}</label>
+              <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t("announcements.page.fieldTarget")}</label>
               <select
                 value={targetType}
                 onChange={(e) => { setTargetType(e.target.value); setSelectedTargetIds([]); }}
-                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
               >
                 <option value="all">{t("announcements.page.targetAll")}</option>
                 <option value="department">{t("announcements.page.targetDepartment")}</option>
@@ -286,10 +286,10 @@ export default function AnnouncementsPage() {
 
             {targetType === "department" && (
               <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1">
+                <label className="block text-[13px] font-medium text-muted-foreground mb-1">
                   {t("announcements.page.selectDepartments")}
                 </label>
-                <div className="w-full border border-border rounded-lg p-2 max-h-40 overflow-y-auto bg-card">
+                <div className="w-full border border-border rounded-md p-2 max-h-40 overflow-y-auto bg-card">
                   {deptLoading ? (
                     <p className="text-xs text-muted-foreground p-1">{t("announcements.page.loadingDepartments")}</p>
                   ) : (departments || []).length === 0 ? (
@@ -315,10 +315,10 @@ export default function AnnouncementsPage() {
             )}
             {targetType === "role" && (
               <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1">
+                <label className="block text-[13px] font-medium text-muted-foreground mb-1">
                   {t("announcements.page.selectRoles")}
                 </label>
-                <div className="w-full border border-border rounded-lg p-2 max-h-40 overflow-y-auto bg-card">
+                <div className="w-full border border-border rounded-md p-2 max-h-40 overflow-y-auto bg-card">
                   {AVAILABLE_ROLES.map((role) => (
                     <label key={role} className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-muted cursor-pointer">
                       <input
@@ -338,12 +338,12 @@ export default function AnnouncementsPage() {
             )}
 
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("announcements.page.fieldExpires")}</label>
+              <label className="block text-[13px] font-medium text-muted-foreground mb-1">{t("announcements.page.fieldExpires")}</label>
               <input
                 type="datetime-local"
                 value={expiresAt}
                 onChange={(e) => setExpiresAt(e.target.value)}
-                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
               />
             </div>
           </div>
@@ -352,14 +352,14 @@ export default function AnnouncementsPage() {
             <button
               type="button"
               onClick={closeForm}
-              className="px-4 py-2 text-sm border border-border rounded-lg text-muted-foreground hover:bg-muted"
+              className="px-4 py-2 text-[13px] border border-border rounded-md text-muted-foreground hover:bg-muted/50 transition-colors"
             >
               {t("announcements.page.cancel")}
             </button>
             <button
               type="submit"
               disabled={isSaving || !title.trim() || isRichTextEmpty(content)}
-              className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Megaphone className="h-4 w-4" />{" "}
               {editId != null ? t("announcements.page.saveChanges") : t("announcements.page.publish")}
@@ -371,11 +371,11 @@ export default function AnnouncementsPage() {
       {/* Announcement Cards */}
       <div className="space-y-4">
         {isLoading ? (
-          <div className="bg-card rounded-xl border border-border p-8 text-center text-muted-foreground">
+          <div className="bg-card rounded-lg border border-border p-8 text-center text-muted-foreground">
             {t("announcements.page.loading")}
           </div>
         ) : announcements.length === 0 ? (
-          <div className="bg-card rounded-xl border border-border p-8 text-center text-muted-foreground">
+          <div className="bg-card rounded-lg border border-border p-8 text-center text-muted-foreground">
             {t("announcements.page.empty")}
           </div>
         ) : (
@@ -388,16 +388,16 @@ export default function AnnouncementsPage() {
             return (
               <div
                 key={a.id}
-                className={`bg-card rounded-xl border overflow-hidden transition-shadow hover:shadow-md ${
+                className={`bg-card rounded-lg border overflow-hidden hover:border-brand-400 transition-colors duration-150 ${
                   isRead ? "border-border" : "border-brand-300 shadow-sm"
                 }`}
               >
-                <div className="p-6">
+                <div className="p-4">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-3 mb-2">
                         {/* Priority Badge */}
-                        <span className={`inline-flex items-center gap-1 text-xs font-medium px-2.5 py-0.5 rounded-full border ${config.color}`}>
+                        <span className={`inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-0.5 rounded-md border ${config.color}`}>
                           <PriorityIcon className="h-3 w-3" />
                           {t(`announcements.page.priority.${a.priority}`, { defaultValue: a.priority })}
                         </span>
@@ -453,7 +453,7 @@ export default function AnnouncementsPage() {
                         <button
                           onClick={() => handleMarkRead(a.id)}
                           disabled={markAsRead.isPending}
-                          className="flex items-center gap-1.5 text-xs font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700 border border-brand-200 px-3 py-1.5 rounded-lg hover:bg-brand-50 dark:hover:bg-brand-950/40 disabled:opacity-50"
+                          className="flex items-center gap-1.5 text-xs font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700 border border-brand-200 dark:border-brand-900/50 px-3 py-1.5 rounded-md hover:bg-brand-50 dark:hover:bg-brand-950/40 disabled:opacity-50"
                         >
                           <Check className="h-3.5 w-3.5" /> {t("announcements.page.markRead")}
                         </button>
@@ -463,7 +463,7 @@ export default function AnnouncementsPage() {
                           onClick={() => startEdit(a)}
                           title={t("announcements.page.editTitle")}
                           aria-label={t("announcements.page.editAria", { title: a.title })}
-                          className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-brand-700 border border-border px-3 py-1.5 rounded-lg hover:bg-brand-50 dark:hover:bg-brand-950/40"
+                          className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-brand-700 border border-border px-3 py-1.5 rounded-md hover:bg-brand-50 dark:hover:bg-brand-950/40"
                         >
                           <Pencil className="h-3.5 w-3.5" /> {t("announcements.page.edit")}
                         </button>
@@ -474,7 +474,7 @@ export default function AnnouncementsPage() {
                           disabled={deleteAnnouncement.isPending}
                           title={t("announcements.page.deleteTitle")}
                           aria-label={t("announcements.page.deleteAria", { title: a.title })}
-                          className="flex items-center gap-1.5 text-xs font-medium text-red-600 dark:text-red-400 hover:text-red-700 border border-red-200 px-3 py-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 disabled:opacity-50"
+                          className="flex items-center gap-1.5 text-xs font-medium text-red-600 dark:text-red-400 hover:text-red-700 border border-red-200 dark:border-red-900/50 px-3 py-1.5 rounded-md hover:bg-red-50 dark:hover:bg-red-950/40 disabled:opacity-50"
                         >
                           <Trash2 className="h-3.5 w-3.5" /> {t("announcements.page.delete")}
                         </button>
@@ -523,14 +523,14 @@ export default function AnnouncementsPage() {
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="bg-card text-foreground px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50"
+              className="bg-card text-foreground px-3 py-1.5 text-[13px] border border-border rounded-md disabled:opacity-50 hover:bg-muted transition-colors"
             >
               {t("announcements.page.previous")}
             </button>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={page >= meta.total_pages}
-              className="bg-card text-foreground px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50"
+              className="bg-card text-foreground px-3 py-1.5 text-[13px] border border-border rounded-md disabled:opacity-50 hover:bg-muted transition-colors"
             >
               {t("announcements.page.next")}
             </button>

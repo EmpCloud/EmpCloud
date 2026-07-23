@@ -64,18 +64,18 @@ export default function MyEventsPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-foreground">{t("events.my.title")}</h1>
-        <p className="text-muted-foreground mt-1">{t("events.my.subtitle")}</p>
+      <div className="mb-6">
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("events.my.title")}</h1>
+        <p className="text-[13px] text-muted-foreground mt-0.5">{t("events.my.subtitle")}</p>
       </div>
 
       <div className="space-y-4">
         {isLoading ? (
-          <div className="bg-card rounded-xl border border-border p-8 text-center text-muted-foreground">
+          <div className="bg-card rounded-lg border border-border p-8 text-center text-[13px] text-muted-foreground">
             {t("events.my.loading")}
           </div>
         ) : events.length === 0 ? (
-          <div className="bg-card rounded-xl border border-border p-8 text-center">
+          <div className="bg-card rounded-lg border border-border p-8 text-center">
             <Calendar className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
             <p className="text-muted-foreground mb-2">{t("events.my.empty")}</p>
             <Link
@@ -92,26 +92,26 @@ export default function MyEventsPage() {
             return (
               <div
                 key={event.id}
-                className="bg-card rounded-xl border border-border p-6 hover:shadow-md transition-shadow"
+                className="bg-card rounded-lg border border-border p-4 hover:border-brand-400 transition-colors duration-150"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2 flex-wrap">
-                      <span className={`inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-full ${typeColor}`}>
+                      <span className={`inline-flex items-center text-[11px] font-medium px-2.5 py-0.5 rounded-md ${typeColor}`}>
                         {t(`events.list.type.${event.event_type}`, { defaultValue: event.event_type })}
                       </span>
                       {event.rsvp_status === "attending" && (
-                        <span className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-0.5 rounded-full bg-green-50 dark:bg-green-950/40 text-green-600 dark:text-green-400">
+                        <span className="inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-0.5 rounded-md bg-green-50 dark:bg-green-950/40 text-green-600 dark:text-green-400">
                           <CheckCircle className="h-3 w-3" /> {t("events.list.titleAttending")}
                         </span>
                       )}
                       {event.rsvp_status === "maybe" && (
-                        <span className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400">
+                        <span className="inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-0.5 rounded-md bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400">
                           <HelpCircle className="h-3 w-3" /> {t("events.list.titleMaybe")}
                         </span>
                       )}
                       {event.is_mandatory && (
-                        <span className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-0.5 rounded-full bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400">
+                        <span className="inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-0.5 rounded-md bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400">
                           <Star className="h-3 w-3" /> {t("events.list.mandatory")}
                         </span>
                       )}
@@ -125,12 +125,12 @@ export default function MyEventsPage() {
                     </Link>
 
                     {event.description && (
-                      <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
+                      <p className="mt-1 text-[13px] text-muted-foreground line-clamp-2">
                         {event.description}
                       </p>
                     )}
 
-                    <div className="mt-3 flex items-center gap-4 flex-wrap text-xs text-muted-foreground">
+                    <div className="mt-3 flex items-center gap-4 flex-wrap text-[11px] tabular-nums text-muted-foreground">
                       <span className="flex items-center gap-1">
                         <Calendar className="h-3.5 w-3.5" />
                         {formatDate(event.start_date)}
@@ -176,7 +176,7 @@ export default function MyEventsPage() {
                         })
                       }
                       disabled={rsvpMutation.isPending}
-                      className="flex-shrink-0 text-xs font-medium text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 border border-red-200 dark:border-red-900 px-3 py-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 disabled:opacity-50"
+                      className="flex-shrink-0 text-[11px] font-medium text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 border border-red-200 dark:border-red-900 px-3 py-1.5 rounded-md hover:bg-red-50 dark:hover:bg-red-950/40 disabled:opacity-50"
                     >
                       {t("events.my.cancelRsvp")}
                     </button>

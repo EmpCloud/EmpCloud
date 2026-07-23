@@ -377,7 +377,15 @@
     "changePassword": "修改密码",
     "viewAttendance": "查看考勤",
     "attendanceGrid": "考勤网格",
-    "attendanceSettings": "考勤设置"
+    "attendanceSettings": "考勤设置",
+    "section": {
+      "account": "账户",
+      "administration": "管理",
+      "attendance_and_leave": "考勤与休假",
+      "communication": "沟通",
+      "people_and_hr": "人员与人力资源",
+      "workplace_and_community": "工作场所与社区"
+    }
   },
   "common": {
     "save": "保存",

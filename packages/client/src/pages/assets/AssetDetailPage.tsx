@@ -300,16 +300,16 @@ export default function AssetDetailPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Link to={isHR ? "/assets" : "/assets/my"} className="p-2 rounded-lg hover:bg-muted transition-colors">
+        <Link to={isHR ? "/assets" : "/assets/my"} className="p-2 rounded-md hover:bg-muted transition-colors">
           <ArrowLeft className="h-5 w-5 text-muted-foreground" />
         </Link>
         <div className="flex-1">
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-foreground">{asset.asset_tag}</h1>
-            <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${STATUS_COLORS[asset.status] || "bg-muted"}`}>
+            <h1 className="text-xl font-semibold tracking-tight text-foreground">{asset.asset_tag}</h1>
+            <span className={`inline-flex px-2.5 py-0.5 rounded-md text-[11px] font-medium capitalize ${STATUS_COLORS[asset.status] || "bg-muted"}`}>
               {t(`assetDetail.status.${asset.status}`, { defaultValue: asset.status.replace(/_/g, " ") })}
             </span>
-            <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${CONDITION_COLORS[asset.condition_status] || "bg-muted"}`}>
+            <span className={`inline-flex px-2.5 py-0.5 rounded-md text-[11px] font-medium capitalize ${CONDITION_COLORS[asset.condition_status] || "bg-muted"}`}>
               {t(`assetDetail.condition.${asset.condition_status}`, { defaultValue: asset.condition_status })}
             </span>
           </div>
@@ -409,18 +409,18 @@ export default function AssetDetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Asset Details */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-card rounded-xl border border-border p-6">
-            <h2 className="text-lg font-semibold text-foreground mb-4">{t("assetDetail.info.heading")}</h2>
+          <div className="bg-card rounded-lg border border-border p-4">
+            <h2 className="text-base font-semibold text-foreground mb-4">{t("assetDetail.info.heading")}</h2>
             <div className="grid grid-cols-2 gap-y-4 gap-x-8">
               <div>
-                <p className="text-xs text-muted-foreground mb-1">{t("assetDetail.info.assetTag")}</p>
+                <p className="text-[11px] text-muted-foreground mb-1">{t("assetDetail.info.assetTag")}</p>
                 <div className="flex items-center gap-2">
                   <Hash className="h-4 w-4 text-muted-foreground" />
                   <p className="text-sm font-medium text-foreground">{asset.asset_tag}</p>
                 </div>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground mb-1">{t("assetDetail.info.category")}</p>
+                <p className="text-[11px] text-muted-foreground mb-1">{t("assetDetail.info.category")}</p>
                 <div className="flex items-center gap-2">
                   <Package className="h-4 w-4 text-muted-foreground" />
                   <p className="text-sm text-foreground">{asset.category_name || t("assetDetail.info.uncategorized")}</p>
@@ -428,25 +428,25 @@ export default function AssetDetailPage() {
               </div>
               {asset.serial_number && (
                 <div>
-                  <p className="text-xs text-muted-foreground mb-1">{t("assetDetail.info.serialNumber")}</p>
+                  <p className="text-[11px] text-muted-foreground mb-1">{t("assetDetail.info.serialNumber")}</p>
                   <p className="text-sm text-foreground">{asset.serial_number}</p>
                 </div>
               )}
               {asset.brand && (
                 <div>
-                  <p className="text-xs text-muted-foreground mb-1">{t("assetDetail.info.brand")}</p>
+                  <p className="text-[11px] text-muted-foreground mb-1">{t("assetDetail.info.brand")}</p>
                   <p className="text-sm text-foreground">{asset.brand}</p>
                 </div>
               )}
               {asset.model && (
                 <div>
-                  <p className="text-xs text-muted-foreground mb-1">{t("assetDetail.info.model")}</p>
+                  <p className="text-[11px] text-muted-foreground mb-1">{t("assetDetail.info.model")}</p>
                   <p className="text-sm text-foreground">{asset.model}</p>
                 </div>
               )}
               {asset.location_name && (
                 <div>
-                  <p className="text-xs text-muted-foreground mb-1">{t("assetDetail.info.location")}</p>
+                  <p className="text-[11px] text-muted-foreground mb-1">{t("assetDetail.info.location")}</p>
                   <div className="flex items-center gap-2">
                     <MapPin className="h-4 w-4 text-muted-foreground" />
                     <p className="text-sm text-foreground">{asset.location_name}</p>
@@ -455,7 +455,7 @@ export default function AssetDetailPage() {
               )}
               {asset.purchase_date && (
                 <div>
-                  <p className="text-xs text-muted-foreground mb-1">{t("assetDetail.info.purchaseDate")}</p>
+                  <p className="text-[11px] text-muted-foreground mb-1">{t("assetDetail.info.purchaseDate")}</p>
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
                     <p className="text-sm text-foreground">{new Date(asset.purchase_date).toLocaleDateString()}</p>
@@ -464,7 +464,7 @@ export default function AssetDetailPage() {
               )}
               {asset.purchase_cost != null && (
                 <div>
-                  <p className="text-xs text-muted-foreground mb-1">{t("assetDetail.info.purchaseCost")}</p>
+                  <p className="text-[11px] text-muted-foreground mb-1">{t("assetDetail.info.purchaseCost")}</p>
                   <p className="text-sm text-foreground">
                     {new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(
                       Number(asset.purchase_cost) / 100,
@@ -474,7 +474,7 @@ export default function AssetDetailPage() {
               )}
               {asset.warranty_expiry && (
                 <div>
-                  <p className="text-xs text-muted-foreground mb-1">{t("assetDetail.info.warrantyExpiry")}</p>
+                  <p className="text-[11px] text-muted-foreground mb-1">{t("assetDetail.info.warrantyExpiry")}</p>
                   <div className="flex items-center gap-2">
                     <Shield className={`h-4 w-4 ${warrantyExpired ? "text-red-500" : "text-green-500"}`} />
                     <p className={`text-sm ${warrantyExpired ? "text-red-600 dark:text-red-400 font-medium" : "text-foreground"}`}>
@@ -487,13 +487,13 @@ export default function AssetDetailPage() {
             </div>
             {asset.description && (
               <div className="mt-4 pt-4 border-t border-border">
-                <p className="text-xs text-muted-foreground mb-1">{t("assetDetail.info.description")}</p>
+                <p className="text-[11px] text-muted-foreground mb-1">{t("assetDetail.info.description")}</p>
                 <p className="text-sm text-muted-foreground">{asset.description}</p>
               </div>
             )}
             {asset.notes && (
               <div className="mt-4 pt-4 border-t border-border">
-                <p className="text-xs text-muted-foreground mb-1">{t("assetDetail.info.notes")}</p>
+                <p className="text-[11px] text-muted-foreground mb-1">{t("assetDetail.info.notes")}</p>
                 <p className="text-sm text-muted-foreground">{asset.notes}</p>
               </div>
             )}
@@ -501,22 +501,22 @@ export default function AssetDetailPage() {
 
           {/* Assignment Info */}
           {asset.status === "assigned" && (
-            <div className="bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 rounded-xl p-6">
-              <h2 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-3">{t("assetDetail.assignment.heading")}</h2>
+            <div className="bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 rounded-lg p-4">
+              <h2 className="text-base font-semibold text-blue-900 dark:text-blue-100 mb-3">{t("assetDetail.assignment.heading")}</h2>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-xs text-blue-600 dark:text-blue-400 mb-1">{t("assetDetail.assignment.assignedTo")}</p>
+                  <p className="text-[11px] text-blue-600 dark:text-blue-400 mb-1">{t("assetDetail.assignment.assignedTo")}</p>
                   <p className="text-sm font-medium text-blue-900 dark:text-blue-100">{asset.assigned_to_name}</p>
                 </div>
                 {asset.assigned_at && (
                   <div>
-                    <p className="text-xs text-blue-600 dark:text-blue-400 mb-1">{t("assetDetail.assignment.assignedAt")}</p>
+                    <p className="text-[11px] text-blue-600 dark:text-blue-400 mb-1">{t("assetDetail.assignment.assignedAt")}</p>
                     <p className="text-sm text-blue-900 dark:text-blue-100">{new Date(asset.assigned_at).toLocaleString()}</p>
                   </div>
                 )}
                 {asset.assigned_by_name && (
                   <div>
-                    <p className="text-xs text-blue-600 dark:text-blue-400 mb-1">{t("assetDetail.assignment.assignedBy")}</p>
+                    <p className="text-[11px] text-blue-600 dark:text-blue-400 mb-1">{t("assetDetail.assignment.assignedBy")}</p>
                     <p className="text-sm text-blue-900 dark:text-blue-100">{asset.assigned_by_name}</p>
                   </div>
                 )}
@@ -526,10 +526,10 @@ export default function AssetDetailPage() {
         </div>
 
         {/* History Timeline */}
-        <div className="bg-card rounded-xl border border-border p-6">
+        <div className="bg-card rounded-lg border border-border p-4">
           <div className="flex items-center gap-2 mb-4">
             <Clock className="h-5 w-5 text-muted-foreground" />
-            <h2 className="text-lg font-semibold text-foreground">{t("assetDetail.history.heading")}</h2>
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("assetDetail.history.heading")}</h2>
           </div>
           {asset.history && asset.history.length > 0 ? (
             <div className="relative">
@@ -550,7 +550,7 @@ export default function AssetDetailPage() {
                         {entry.notes && (
                           <p className="text-xs text-muted-foreground mt-0.5">{entry.notes}</p>
                         )}
-                        <p className="text-xs text-muted-foreground mt-1">
+                        <p className="text-[11px] tabular-nums text-muted-foreground mt-1">
                           {entry.performed_by_name} &middot; {new Date(entry.created_at).toLocaleString()}
                         </p>
                       </div>
@@ -586,7 +586,7 @@ export default function AssetDetailPage() {
       {/* Assign Modal */}
       {showAssignModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-card rounded-xl shadow-xl w-full max-w-md mx-4">
+          <div className="bg-card rounded-lg shadow-xl w-full max-w-md mx-4">
             <div className="flex items-center justify-between px-6 py-4 border-b border-border">
               <h2 className="text-lg font-semibold text-foreground">{t("assetDetail.assignModal.title")}</h2>
               <button onClick={() => setShowAssignModal(false)} className="p-1 rounded hover:bg-muted">
@@ -609,7 +609,7 @@ export default function AssetDetailPage() {
                   required
                   value={assignUserId}
                   onChange={(e) => setAssignUserId(e.target.value)}
-                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500"
                 >
                   <option value="">{t("assetDetail.assignModal.selectEmployee")}</option>
                   {(users || []).map((u: any) => (
@@ -625,7 +625,7 @@ export default function AssetDetailPage() {
                   value={assignNotes}
                   onChange={(e) => setAssignNotes(e.target.value)}
                   rows={2}
-                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
               <div className="flex justify-end gap-3">
@@ -652,7 +652,7 @@ export default function AssetDetailPage() {
       {/* Return Modal */}
       {showReturnModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-card rounded-xl shadow-xl w-full max-w-md mx-4">
+          <div className="bg-card rounded-lg shadow-xl w-full max-w-md mx-4">
             <div className="flex items-center justify-between px-6 py-4 border-b border-border">
               <h2 className="text-lg font-semibold text-foreground">{t("assetDetail.returnModal.title")}</h2>
               <button onClick={() => setShowReturnModal(false)} className="p-1 rounded hover:bg-muted">
@@ -674,7 +674,7 @@ export default function AssetDetailPage() {
                 <select
                   value={returnCondition}
                   onChange={(e) => setReturnCondition(e.target.value)}
-                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500"
                 >
                   <option value="new">{t("assetDetail.conditionOptions.new")}</option>
                   <option value="good">{t("assetDetail.conditionOptions.good")}</option>
@@ -688,7 +688,7 @@ export default function AssetDetailPage() {
                   value={returnNotes}
                   onChange={(e) => setReturnNotes(e.target.value)}
                   rows={2}
-                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
               <div className="flex justify-end gap-3">
@@ -776,7 +776,7 @@ export default function AssetDetailPage() {
             onClick={() => !pending && setConfirmAction(null)}
           >
             <div
-              className="w-full max-w-md rounded-xl bg-card shadow-xl"
+              className="w-full max-w-md rounded-lg bg-card shadow-xl"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="px-6 py-5">
@@ -798,11 +798,11 @@ export default function AssetDetailPage() {
                 </div>
               </div>
               {confirmError && (
-                <div className="mx-6 mb-4 rounded-lg bg-red-50 dark:bg-red-950/40 p-3 text-sm text-red-700 dark:text-red-300">
+                <div className="mx-6 mb-4 rounded-md bg-red-50 dark:bg-red-950/40 p-3 text-[13px] text-red-700 dark:text-red-300">
                   {confirmError}
                 </div>
               )}
-              <div className="flex justify-end gap-3 rounded-b-xl border-t border-border bg-muted px-6 py-4">
+              <div className="flex justify-end gap-3 rounded-b-lg border-t border-border bg-muted px-6 py-4">
                 <button
                   type="button"
                   onClick={() => setConfirmAction(null)}
@@ -838,7 +838,7 @@ export default function AssetDetailPage() {
           onClick={() => !updateMutation.isPending && setShowEditModal(false)}
         >
           <div
-            className="bg-card rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+            className="bg-card rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between px-6 py-4 border-b border-border">
@@ -859,7 +859,7 @@ export default function AssetDetailPage() {
                     required
                     value={editForm.name}
                     onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
                 <div>
@@ -867,7 +867,7 @@ export default function AssetDetailPage() {
                   <select
                     value={editForm.category_id}
                     onChange={(e) => setEditForm({ ...editForm, category_id: e.target.value })}
-                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500"
                   >
                     <option value="">{t("assetDetail.editModal.uncategorized")}</option>
                     {(categories || []).map((c: any) => (
@@ -883,7 +883,7 @@ export default function AssetDetailPage() {
                     type="text"
                     value={editForm.serial_number}
                     onChange={(e) => setEditForm({ ...editForm, serial_number: e.target.value })}
-                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
                 <div>
@@ -892,7 +892,7 @@ export default function AssetDetailPage() {
                     type="text"
                     value={editForm.brand}
                     onChange={(e) => setEditForm({ ...editForm, brand: e.target.value })}
-                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
                 <div>
@@ -901,7 +901,7 @@ export default function AssetDetailPage() {
                     type="text"
                     value={editForm.model}
                     onChange={(e) => setEditForm({ ...editForm, model: e.target.value })}
-                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
                 <div>
@@ -911,7 +911,7 @@ export default function AssetDetailPage() {
                     onChange={(e) =>
                       setEditForm({ ...editForm, condition_status: e.target.value })
                     }
-                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500"
                   >
                     <option value="new">{t("assetDetail.conditionOptions.new")}</option>
                     <option value="good">{t("assetDetail.conditionOptions.good")}</option>
@@ -925,13 +925,13 @@ export default function AssetDetailPage() {
                     type="date"
                     value={editForm.purchase_date}
                     onChange={(e) => setEditForm({ ...editForm, purchase_date: e.target.value })}
-                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-muted-foreground mb-1">{t("assetDetail.editModal.purchaseCostLabel")}</label>
                   <div className="flex items-stretch">
-                    <span className="inline-flex items-center px-3 py-2 rounded-l-lg border border-r-0 border-border bg-muted text-sm text-muted-foreground">
+                    <span className="inline-flex items-center px-3 py-2 rounded-l-md border border-r-0 border-border bg-muted text-sm text-muted-foreground">
                       ₹ INR
                     </span>
                     <input
@@ -940,10 +940,10 @@ export default function AssetDetailPage() {
                       onChange={(e) =>
                         setEditForm({ ...editForm, purchase_cost: e.target.value })
                       }
-                      className="bg-card text-foreground flex-1 min-w-0 px-3 py-2 border border-border rounded-r-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                      className="bg-card text-foreground flex-1 min-w-0 px-3 py-2 border border-border rounded-r-md text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                     />
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">{t("assetDetail.editModal.purchaseCostHint")}</p>
+                  <p className="text-[11px] tabular-nums text-muted-foreground mt-1">{t("assetDetail.editModal.purchaseCostHint")}</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-muted-foreground mb-1">{t("assetDetail.editModal.warrantyExpiryLabel")}</label>
@@ -952,7 +952,7 @@ export default function AssetDetailPage() {
                     value={editForm.warranty_expiry}
                     onChange={(e) => setEditForm({ ...editForm, warranty_expiry: e.target.value })}
                     min={editForm.purchase_date || undefined}
-                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
                 <div>
@@ -961,7 +961,7 @@ export default function AssetDetailPage() {
                     type="text"
                     value={editForm.location_name}
                     onChange={(e) => setEditForm({ ...editForm, location_name: e.target.value })}
-                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
               </div>
@@ -971,7 +971,7 @@ export default function AssetDetailPage() {
                   value={editForm.description}
                   onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
                   rows={2}
-                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
               <div>
@@ -980,11 +980,11 @@ export default function AssetDetailPage() {
                   value={editForm.notes}
                   onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
                   rows={2}
-                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
               {editError && (
-                <div className="rounded-lg bg-red-50 dark:bg-red-950/40 p-3 text-sm text-red-700 dark:text-red-300">{editError}</div>
+                <div className="rounded-md bg-red-50 dark:bg-red-950/40 p-3 text-[13px] text-red-700 dark:text-red-300">{editError}</div>
               )}
               <div className="flex justify-end gap-3 pt-2 border-t border-border">
                 <button
@@ -1021,7 +1021,7 @@ export default function AssetDetailPage() {
           onClick={() => !deleteHistoryMutation.isPending && setHistoryDeleteId(null)}
         >
           <div
-            className="w-full max-w-md rounded-xl bg-card shadow-xl"
+            className="w-full max-w-md rounded-lg bg-card shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="px-6 py-5">
@@ -1038,11 +1038,11 @@ export default function AssetDetailPage() {
               </div>
             </div>
             {historyDeleteError && (
-              <div className="mx-6 mb-4 rounded-lg bg-red-50 dark:bg-red-950/40 p-3 text-sm text-red-700 dark:text-red-300">
+              <div className="mx-6 mb-4 rounded-md bg-red-50 dark:bg-red-950/40 p-3 text-[13px] text-red-700 dark:text-red-300">
                 {historyDeleteError}
               </div>
             )}
-            <div className="flex justify-end gap-3 rounded-b-xl border-t border-border bg-muted px-6 py-4">
+            <div className="flex justify-end gap-3 rounded-b-lg border-t border-border bg-muted px-6 py-4">
               <button
                 type="button"
                 onClick={() => setHistoryDeleteId(null)}

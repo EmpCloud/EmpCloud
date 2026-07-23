@@ -28,12 +28,12 @@ export default function MyAssetsPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t("myAssets.page.title")}</h1>
-          <p className="text-sm text-muted-foreground mt-1">{t("myAssets.page.subtitle")}</p>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("myAssets.page.title")}</h1>
+          <p className="text-[13px] text-muted-foreground mt-0.5">{t("myAssets.page.subtitle")}</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-card rounded-xl border border-border p-5 animate-pulse">
+            <div key={i} className="bg-card rounded-lg border border-border p-4 animate-pulse">
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <div className="h-4 w-32 bg-muted rounded mb-2" />
@@ -55,15 +55,15 @@ export default function MyAssetsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">{t("myAssets.page.title")}</h1>
-        <p className="text-sm text-muted-foreground mt-1">{t("myAssets.page.subtitle")}</p>
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("myAssets.page.title")}</h1>
+        <p className="text-[13px] text-muted-foreground mt-0.5">{t("myAssets.page.subtitle")}</p>
       </div>
 
       {!assets || assets.length === 0 ? (
-        <div className="bg-card rounded-xl border border-border p-12 text-center">
+        <div className="bg-card rounded-lg border border-border p-12 text-center">
           <Package className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
-          <p className="text-lg font-medium text-muted-foreground mb-1">{t("myAssets.empty.title")}</p>
-          <p className="text-sm text-muted-foreground">{t("myAssets.empty.description")}</p>
+          <p className="text-base font-medium text-muted-foreground mb-1">{t("myAssets.empty.title")}</p>
+          <p className="text-[13px] text-muted-foreground">{t("myAssets.empty.description")}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -73,22 +73,22 @@ export default function MyAssetsPage() {
               <Link
                 key={asset.id}
                 to={`/assets/${asset.id}`}
-                className="bg-card rounded-xl border border-border p-5 hover:shadow-md transition-shadow"
+                className="bg-card rounded-lg border border-border p-4 hover:border-brand-400 transition-colors duration-150"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <h3 className="text-sm font-semibold text-foreground">{asset.name}</h3>
                     <div className="flex items-center gap-1 mt-1">
                       <Hash className="h-3 w-3 text-muted-foreground" />
-                      <span className="text-xs text-muted-foreground">{asset.asset_tag}</span>
+                      <span className="text-[11px] tabular-nums text-muted-foreground">{asset.asset_tag}</span>
                     </div>
                   </div>
-                  <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium capitalize ${CONDITION_COLORS[asset.condition_status] || "bg-muted"}`}>
+                  <span className={`inline-flex px-2 py-0.5 rounded-md text-[11px] font-medium capitalize ${CONDITION_COLORS[asset.condition_status] || "bg-muted"}`}>
                     {t(`myAssets.condition.${asset.condition_status}`, { defaultValue: asset.condition_status })}
                   </span>
                 </div>
 
-                <div className="space-y-2 text-sm">
+                <div className="space-y-2 text-[13px]">
                   {asset.category_name && (
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <Package className="h-4 w-4 text-muted-foreground" />

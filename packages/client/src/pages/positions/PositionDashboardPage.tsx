@@ -25,101 +25,88 @@ export default function PositionDashboardPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{tx("title")}</h1>
-          <p className="text-muted-foreground mt-1">{tx("subtitle")}</p>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">{tx("title")}</h1>
+          <p className="text-[13px] text-muted-foreground mt-0.5">{tx("subtitle")}</p>
         </div>
         <Link
           to="/positions/list"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 text-white text-[13px] font-medium rounded-md hover:bg-brand-700 transition-colors shrink-0"
         >
           <Briefcase className="h-4 w-4" />
           {tx("allPositions")}
         </Link>
       </div>
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <Link to="/positions/list" className="block text-left w-full bg-card rounded-xl border border-border p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="h-10 w-10 rounded-lg bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center">
-              <Briefcase className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground uppercase font-medium">{tx("totalPositions")}</p>
-              <p className="text-2xl font-bold text-foreground">{stats.total_positions || 0}</p>
-            </div>
-          </div>
-          <p className="text-xs text-muted-foreground">{tx("budgetHeadcount", { count: stats.total_budget || 0 })}</p>
+      {/* Stat tiles — compact KPI treatment; each deep-links to a filtered list. */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 mb-4">
+        <Link to="/positions/list" className="group bg-card rounded-lg border border-border p-3 transition-colors duration-150 hover:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500">
+          <span className="flex h-8 w-8 items-center justify-center rounded-md bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400">
+            <Briefcase className="h-4 w-4" />
+          </span>
+          <p className="mt-2.5 text-2xl font-semibold tabular-nums leading-none text-foreground">{stats.total_positions || 0}</p>
+          <p className="mt-1.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground truncate">{tx("totalPositions")}</p>
+          <p className="mt-1 text-[11px] text-muted-foreground truncate">{tx("budgetHeadcount", { count: stats.total_budget || 0 })}</p>
         </Link>
 
         {/* #1553 — Filled card deep-links to the list filtered to status=filled
             so users actually see filled positions, not every position. The
             Total Positions card above stays unfiltered (that's the point). */}
-        <Link to="/positions/list?status=filled" className="block text-left w-full bg-card rounded-xl border border-border p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="h-10 w-10 rounded-lg bg-green-50 dark:bg-green-950/40 flex items-center justify-center">
-              <Users className="h-5 w-5 text-green-600 dark:text-green-400" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground uppercase font-medium">{tx("filled")}</p>
-              <p className="text-2xl font-bold text-foreground">{stats.total_filled || 0}</p>
-            </div>
-          </div>
-          <p className="text-xs text-muted-foreground">
+        <Link to="/positions/list?status=filled" className="group bg-card rounded-lg border border-border p-3 transition-colors duration-150 hover:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500">
+          <span className="flex h-8 w-8 items-center justify-center rounded-md bg-green-50 dark:bg-green-950/40 text-green-600 dark:text-green-400">
+            <Users className="h-4 w-4" />
+          </span>
+          <p className="mt-2.5 text-2xl font-semibold tabular-nums leading-none text-foreground">{stats.total_filled || 0}</p>
+          <p className="mt-1.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground truncate">{tx("filled")}</p>
+          <p className="mt-1 text-[11px] text-muted-foreground truncate">
             {stats.total_budget > 0
               ? tx("fillRate", { pct: Math.round((stats.total_filled / stats.total_budget) * 100) })
               : tx("noBudget")}
           </p>
         </Link>
 
-        <Link to="/positions/vacancies" className="block text-left w-full bg-card rounded-xl border border-border p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="h-10 w-10 rounded-lg bg-amber-50 dark:bg-amber-950/40 flex items-center justify-center">
-              <TrendingUp className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground uppercase font-medium">{tx("vacant")}</p>
-              <p className="text-2xl font-bold text-foreground">{stats.total_vacant || 0}</p>
-            </div>
-          </div>
-          <span className="text-xs text-brand-600 dark:text-brand-400">{tx("viewVacancies")}</span>
+        <Link to="/positions/vacancies" className="group bg-card rounded-lg border border-border p-3 transition-colors duration-150 hover:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500">
+          <span className="flex h-8 w-8 items-center justify-center rounded-md bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400">
+            <TrendingUp className="h-4 w-4" />
+          </span>
+          <p className="mt-2.5 text-2xl font-semibold tabular-nums leading-none text-foreground">{stats.total_vacant || 0}</p>
+          <p className="mt-1.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground truncate">{tx("vacant")}</p>
+          <p className="mt-1 text-[11px] text-brand-600 dark:text-brand-400 group-hover:underline">{tx("viewVacancies")}</p>
         </Link>
 
-        <Link to="/positions/vacancies" className="block text-left w-full bg-card rounded-xl border border-border p-5 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="h-10 w-10 rounded-lg bg-red-50 dark:bg-red-950/40 flex items-center justify-center">
-              <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground uppercase font-medium">{tx("criticalVacancies")}</p>
-              <p className="text-2xl font-bold text-foreground">{stats.critical_vacancies || 0}</p>
-            </div>
-          </div>
-          <p className="text-xs text-muted-foreground">{tx("unfilledCritical")}</p>
+        <Link to="/positions/vacancies" className="group bg-card rounded-lg border border-border p-3 transition-colors duration-150 hover:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500">
+          <span className="flex h-8 w-8 items-center justify-center rounded-md bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400">
+            <AlertTriangle className="h-4 w-4" />
+          </span>
+          <p className="mt-2.5 text-2xl font-semibold tabular-nums leading-none text-foreground">{stats.critical_vacancies || 0}</p>
+          <p className="mt-1.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground truncate">{tx("criticalVacancies")}</p>
+          <p className="mt-1 text-[11px] text-muted-foreground truncate">{tx("unfilledCritical")}</p>
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Department Breakdown */}
-        <div className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-lg font-semibold text-foreground mb-4">{tx("departmentBreakdown")}</h2>
+        <section className="bg-card rounded-lg border border-border overflow-hidden">
+          <header className="px-4 py-2.5 border-b border-border">
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{tx("departmentBreakdown")}</h2>
+          </header>
+          <div className="p-4">
           {(stats.department_breakdown || []).length === 0 ? (
-            <p className="text-sm text-muted-foreground">{tx("noData")}</p>
+            <p className="text-[13px] text-muted-foreground">{tx("noData")}</p>
           ) : (
             <div className="space-y-3">
               {(stats.department_breakdown || []).map((dept: any, i: number) => {
                 const fillPct = dept.budget > 0 ? Math.round((dept.filled / dept.budget) * 100) : 0;
                 return (
                   <div key={i}>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium text-muted-foreground">{dept.department}</span>
-                      <span className="text-xs text-muted-foreground">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-[13px] font-medium text-foreground truncate">{dept.department}</span>
+                      <span className="text-[11px] tabular-nums text-muted-foreground shrink-0 ml-2">
                         {tx("filledVacantRatio", { filled: dept.filled, budget: dept.budget, vacant: dept.vacant })}
                       </span>
                     </div>
-                    <div className="h-2 bg-muted rounded-full overflow-hidden">
+                    <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                       <div
                         className={`h-full rounded-full transition-all ${
                           fillPct >= 90 ? "bg-green-500" : fillPct >= 60 ? "bg-amber-500" : "bg-red-500"
@@ -132,43 +119,44 @@ export default function PositionDashboardPage() {
               })}
             </div>
           )}
-        </div>
+          </div>
+        </section>
 
         {/* Headcount Plan Summary */}
-        <div className="bg-card rounded-xl border border-border p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-foreground">{tx("headcountPlanning")}</h2>
-            <Link to="/positions/headcount-plans" className="text-xs text-brand-600 dark:text-brand-400 hover:underline flex items-center gap-1">
+        <section className="bg-card rounded-lg border border-border overflow-hidden">
+          <header className="flex items-center justify-between px-4 py-2.5 border-b border-border">
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{tx("headcountPlanning")}</h2>
+            <Link to="/positions/headcount-plans" className="text-[11px] font-medium text-brand-600 dark:text-brand-400 hover:underline flex items-center gap-0.5">
               {tx("viewPlans")} <ChevronRight className="h-3 w-3" />
             </Link>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-muted rounded-lg p-4 text-center">
-              <p className="text-2xl font-bold text-foreground">
+          </header>
+          <div className="grid grid-cols-2 gap-2.5 p-4">
+            <div className="rounded-md border border-border bg-muted/50 px-3 py-3 text-center">
+              <p className="text-2xl font-semibold tabular-nums leading-none text-foreground">
                 {stats.headcount_plan_summary?.total_planned || 0}
               </p>
-              <p className="text-xs text-muted-foreground mt-1">{tx("planned")}</p>
+              <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground mt-1.5">{tx("planned")}</p>
             </div>
-            <div className="bg-muted rounded-lg p-4 text-center">
-              <p className="text-2xl font-bold text-foreground">
+            <div className="rounded-md border border-border bg-muted/50 px-3 py-3 text-center">
+              <p className="text-2xl font-semibold tabular-nums leading-none text-foreground">
                 {stats.headcount_plan_summary?.total_approved || 0}
               </p>
-              <p className="text-xs text-muted-foreground mt-1">{tx("approved")}</p>
+              <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground mt-1.5">{tx("approved")}</p>
             </div>
-            <div className="bg-muted rounded-lg p-4 text-center">
-              <p className="text-2xl font-bold text-foreground">
+            <div className="rounded-md border border-border bg-muted/50 px-3 py-3 text-center">
+              <p className="text-2xl font-semibold tabular-nums leading-none text-foreground">
                 {stats.headcount_plan_summary?.total_current || 0}
               </p>
-              <p className="text-xs text-muted-foreground mt-1">{tx("current")}</p>
+              <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground mt-1.5">{tx("current")}</p>
             </div>
-            <div className="bg-muted rounded-lg p-4 text-center">
-              <p className="text-2xl font-bold text-foreground">
+            <div className="rounded-md border border-border bg-muted/50 px-3 py-3 text-center">
+              <p className="text-2xl font-semibold tabular-nums leading-none text-foreground">
                 {stats.headcount_plan_summary?.plan_count || 0}
               </p>
-              <p className="text-xs text-muted-foreground mt-1">{tx("activePlans")}</p>
+              <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground mt-1.5">{tx("activePlans")}</p>
             </div>
           </div>
-        </div>
+        </section>
       </div>
 
       {/* Status Breakdown */}
@@ -176,30 +164,32 @@ export default function PositionDashboardPage() {
           to that status. Previously rendered as inert spans. Whitelist of
           statuses matches positionStatusEnum on the backend. */}
       {(stats.status_breakdown || []).length > 0 && (
-        <div className="mt-6 bg-card rounded-xl border border-border p-6">
-          <h2 className="text-lg font-semibold text-foreground mb-4">{tx("positionStatus")}</h2>
-          <div className="flex flex-wrap gap-3">
+        <section className="mt-4 bg-card rounded-lg border border-border overflow-hidden">
+          <header className="px-4 py-2.5 border-b border-border">
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{tx("positionStatus")}</h2>
+          </header>
+          <div className="flex flex-wrap gap-2 p-4">
             {(stats.status_breakdown || []).map((s: any) => (
               <Link
                 key={s.status}
                 to={`/positions/list?status=${encodeURIComponent(s.status)}`}
-                className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-1.5 hover:border-brand-300 hover:bg-brand-50 dark:hover:bg-brand-950/40 transition-colors"
+                className="flex items-center gap-2 rounded-md border border-border bg-card px-2.5 py-1.5 hover:border-brand-400 hover:bg-brand-50/50 dark:hover:bg-brand-950/30 transition-colors"
               >
                 <span
-                  className={`inline-block h-3 w-3 rounded-full ${
+                  className={`inline-block h-2 w-2 rounded-full ${
                     s.status === "active" ? "bg-green-500" : s.status === "frozen" ? "bg-amber-500" : "bg-gray-400"
                   }`}
                 />
                 {/* Reuse the localized status labels from positions.list so the
                     capitalized status word matches what the list page shows. */}
-                <span className="text-sm text-muted-foreground">
+                <span className="text-[13px] text-muted-foreground">
                   {t(`positions.list.status${s.status.charAt(0).toUpperCase()}${s.status.slice(1)}`, { defaultValue: s.status }) as string}
                 </span>
-                <span className="text-sm font-semibold text-foreground">{s.count}</span>
+                <span className="text-[13px] font-semibold tabular-nums text-foreground">{s.count}</span>
               </Link>
             ))}
           </div>
-        </div>
+        </section>
       )}
     </div>
   );

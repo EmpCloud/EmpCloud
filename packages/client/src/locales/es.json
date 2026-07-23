@@ -377,7 +377,15 @@
     "changePassword": "Cambiar Contraseña",
     "viewAttendance": "Ver Asistencia",
     "attendanceGrid": "Cuadrícula de Asistencia",
-    "attendanceSettings": "Configuración de Asistencia"
+    "attendanceSettings": "Configuración de Asistencia",
+    "section": {
+      "account": "Cuenta",
+      "administration": "Administración",
+      "attendance_and_leave": "Asistencia y permisos",
+      "communication": "Comunicación",
+      "people_and_hr": "Personas y RR. HH.",
+      "workplace_and_community": "Lugar de trabajo y comunidad"
+    }
   },
   "common": {
     "save": "Guardar",

@@ -8,15 +8,15 @@ function StatCard({ label, value, icon: Icon, color, to }: { label: string; valu
   return (
     <Link
       to={to}
-      className="block text-left w-full bg-card rounded-xl border border-border p-6 transition-all hover:border-brand-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+      className="block text-left w-full bg-card rounded-lg border border-border p-4 transition-colors duration-150 hover:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
     >
       <div className="flex items-center gap-4">
-        <div className={`h-12 w-12 rounded-lg flex items-center justify-center ${color}`}>
+        <div className={`h-8 w-8 rounded-md flex items-center justify-center ${color}`}>
           <Icon className="h-6 w-6" />
         </div>
         <div>
           <p className="text-sm text-muted-foreground">{label}</p>
-          <p className="text-2xl font-bold text-foreground">{value}</p>
+          <p className="text-2xl font-semibold tabular-nums leading-none text-foreground">{value}</p>
         </div>
       </div>
     </Link>
@@ -27,8 +27,8 @@ function ENPSGauge({ score }: { score: number | null }) {
   const { t } = useTranslation();
   if (score === null) {
     return (
-      <div className="bg-card rounded-xl border border-border p-6">
-        <h3 className="text-sm font-semibold text-muted-foreground mb-4">{t("surveyDashboard.enpsScore")}</h3>
+      <div className="bg-card rounded-lg border border-border p-4">
+        <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-4">{t("surveyDashboard.enpsScore")}</h3>
         <p className="text-muted-foreground text-sm">{t("surveyDashboard.noEnps")}</p>
       </div>
     );
@@ -46,10 +46,10 @@ function ENPSGauge({ score }: { score: number | null }) {
           : t("surveyDashboard.enpsNeedsImprovement");
 
   return (
-    <div className="bg-card rounded-xl border border-border p-6">
-      <h3 className="text-sm font-semibold text-muted-foreground mb-4">{t("surveyDashboard.enpsScore")}</h3>
+    <div className="bg-card rounded-lg border border-border p-4">
+      <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-4">{t("surveyDashboard.enpsScore")}</h3>
       <div className={`inline-flex items-center gap-3 px-4 py-3 rounded-lg ${bgColor}`}>
-        <span className={`text-4xl font-bold ${color}`}>{score}</span>
+        <span className={`text-4xl font-semibold tabular-nums ${color}`}>{score}</span>
         <div>
           <p className={`text-sm font-medium ${color}`}>{label}</p>
           <p className="text-xs text-muted-foreground">{t("surveyDashboard.enpsRange")}</p>
@@ -94,14 +94,14 @@ export default function SurveyDashboardPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t("surveyDashboard.title")}</h1>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("surveyDashboard.title")}</h1>
           <p className="text-muted-foreground mt-1">{t("surveyDashboard.subtitle")}</p>
         </div>
         <Link
           to="/surveys/builder"
-          className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
+          className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700"
         >
           <ClipboardList className="h-4 w-4" /> {t("surveyDashboard.createSurvey")}
         </Link>
@@ -123,8 +123,8 @@ export default function SurveyDashboardPage() {
         <div className="lg:col-span-1">
           <ENPSGauge score={d.enps_score} />
         </div>
-        <div className="lg:col-span-1 bg-card rounded-xl border border-border p-6">
-          <h3 className="text-sm font-semibold text-muted-foreground mb-4">{t("surveyDashboard.statusBreakdown")}</h3>
+        <div className="lg:col-span-1 bg-card rounded-lg border border-border p-4">
+          <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-4">{t("surveyDashboard.statusBreakdown")}</h3>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -146,8 +146,8 @@ export default function SurveyDashboardPage() {
             </div>
           </div>
         </div>
-        <div className="lg:col-span-1 bg-card rounded-xl border border-border p-6">
-          <h3 className="text-sm font-semibold text-muted-foreground mb-4">{t("surveyDashboard.organization")}</h3>
+        <div className="lg:col-span-1 bg-card rounded-lg border border-border p-4">
+          <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-4">{t("surveyDashboard.organization")}</h3>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">{t("surveyDashboard.totalEmployees")}</span>
@@ -162,7 +162,7 @@ export default function SurveyDashboardPage() {
       </div>
 
       {/* Recent Surveys Table */}
-      <div className="bg-card rounded-xl border border-border">
+      <div className="bg-card rounded-lg border border-border">
         <div className="px-6 py-4 border-b border-border flex items-center justify-between">
           <h3 className="text-sm font-semibold text-foreground">{t("surveyDashboard.recentSurveys")}</h3>
           <Link to="/surveys/list" className="text-xs text-brand-600 dark:text-brand-400 hover:underline">
@@ -173,33 +173,33 @@ export default function SurveyDashboardPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border">
-                <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase">{t("surveyDashboard.colTitle")}</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase">{t("surveyDashboard.colType")}</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase">{t("surveyDashboard.colStatus")}</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase">{t("surveyDashboard.colResponses")}</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase">{t("surveyDashboard.colCreated")}</th>
+                <th className="text-left px-4 py-2.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{t("surveyDashboard.colTitle")}</th>
+                <th className="text-left px-4 py-2.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{t("surveyDashboard.colType")}</th>
+                <th className="text-left px-4 py-2.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{t("surveyDashboard.colStatus")}</th>
+                <th className="text-left px-4 py-2.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{t("surveyDashboard.colResponses")}</th>
+                <th className="text-left px-4 py-2.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{t("surveyDashboard.colCreated")}</th>
               </tr>
             </thead>
             <tbody>
               {(d.recent_surveys || []).map((s: any) => (
-                <tr key={s.id} className="border-b border-border hover:bg-muted">
-                  <td className="px-6 py-3">
+                <tr key={s.id} className="border-b border-border hover:bg-muted/50 transition-colors">
+                  <td className="px-4 py-2.5">
                     <Link to={`/surveys/${s.id}/results`} className="text-brand-600 dark:text-brand-400 hover:underline font-medium">
                       {s.title}
                     </Link>
                   </td>
-                  <td className="px-6 py-3">
-                    <span className={`inline-flex text-xs font-medium px-2 py-0.5 rounded-full ${TYPE_BADGE[s.type] || TYPE_BADGE.custom}`}>
+                  <td className="px-4 py-2.5">
+                    <span className={`inline-flex text-[11px] font-medium px-2 py-0.5 rounded-md ${TYPE_BADGE[s.type] || TYPE_BADGE.custom}`}>
                       {t(`surveyDashboard.type.${s.type}`, { defaultValue: s.type })}
                     </span>
                   </td>
-                  <td className="px-6 py-3">
-                    <span className={`inline-flex text-xs font-medium px-2 py-0.5 rounded-full ${STATUS_BADGE[s.status] || STATUS_BADGE.draft}`}>
+                  <td className="px-4 py-2.5">
+                    <span className={`inline-flex text-[11px] font-medium px-2 py-0.5 rounded-md ${STATUS_BADGE[s.status] || STATUS_BADGE.draft}`}>
                       {t(`surveyDashboard.status.${s.status}`, { defaultValue: s.status })}
                     </span>
                   </td>
-                  <td className="px-6 py-3 text-muted-foreground">{s.response_count}</td>
-                  <td className="px-6 py-3 text-muted-foreground">
+                  <td className="px-4 py-2.5 text-muted-foreground">{s.response_count}</td>
+                  <td className="px-4 py-2.5 text-muted-foreground">
                     {new Date(s.created_at).toLocaleDateString()}
                   </td>
                 </tr>

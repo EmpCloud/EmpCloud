@@ -256,7 +256,7 @@ export default function CustomFieldsSettingsPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t("customFieldsSettings.page.title")}</h1>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("customFieldsSettings.page.title")}</h1>
           <p className="text-sm text-muted-foreground mt-1">
             {t("customFieldsSettings.page.subtitle")}
           </p>
@@ -267,7 +267,7 @@ export default function CustomFieldsSettingsPage() {
               resetForm();
               setShowForm(true);
             }}
-            className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 transition-colors"
+            className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700 transition-colors"
           >
             <Plus className="h-4 w-4" />
             {t("customFieldsSettings.actions.addField")}
@@ -301,10 +301,10 @@ export default function CustomFieldsSettingsPage() {
       {showForm && (
         <div
           ref={formRef}
-          className="bg-card rounded-xl border border-border p-6 mb-6 scroll-mt-4"
+          className="bg-card rounded-lg border border-border p-4 mb-6 scroll-mt-4"
         >
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-foreground">
+            <h2 className="text-base font-semibold text-foreground">
               {editingId ? t("customFieldsSettings.form.editTitle") : t("customFieldsSettings.form.newTitle")}
             </h2>
             <div className="flex items-center gap-2">
@@ -338,7 +338,7 @@ export default function CustomFieldsSettingsPage() {
                     setForm({ ...form, field_name: e.target.value })
                   }
                   placeholder={t("customFieldsSettings.form.fieldNamePlaceholder")}
-                  className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-card text-foreground"
+                  className="w-full border border-border rounded-md px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500 bg-card text-foreground"
                   required
                 />
               </div>
@@ -353,7 +353,7 @@ export default function CustomFieldsSettingsPage() {
                   onChange={(e) =>
                     setForm({ ...form, field_type: e.target.value, options: [] })
                   }
-                  className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-card text-foreground"
+                  className="w-full border border-border rounded-md px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500 bg-card text-foreground"
                 >
                   {FIELD_TYPES.map(({ value, label }) => (
                     <option key={value} value={value}>
@@ -375,7 +375,7 @@ export default function CustomFieldsSettingsPage() {
                     setForm({ ...form, section: e.target.value })
                   }
                   placeholder={t("customFieldsSettings.form.sectionPlaceholder")}
-                  className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-card text-foreground"
+                  className="w-full border border-border rounded-md px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500 bg-card text-foreground"
                 />
               </div>
 
@@ -390,7 +390,7 @@ export default function CustomFieldsSettingsPage() {
                   onChange={(e) =>
                     setForm({ ...form, placeholder: e.target.value })
                   }
-                  className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-card text-foreground"
+                  className="w-full border border-border rounded-md px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500 bg-card text-foreground"
                 />
               </div>
 
@@ -405,7 +405,7 @@ export default function CustomFieldsSettingsPage() {
                   onChange={(e) =>
                     setForm({ ...form, default_value: e.target.value })
                   }
-                  className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-card text-foreground"
+                  className="w-full border border-border rounded-md px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500 bg-card text-foreground"
                 />
               </div>
 
@@ -421,7 +421,7 @@ export default function CustomFieldsSettingsPage() {
                     setForm({ ...form, validation_regex: e.target.value })
                   }
                   placeholder="^[A-Z]{2}\d{4}$"
-                  className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-card text-foreground"
+                  className="w-full border border-border rounded-md px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500 bg-card text-foreground"
                 />
               </div>
 
@@ -438,7 +438,7 @@ export default function CustomFieldsSettingsPage() {
                       onChange={(e) =>
                         setForm({ ...form, min_value: e.target.value })
                       }
-                      className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-card text-foreground"
+                      className="w-full border border-border rounded-md px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500 bg-card text-foreground"
                     />
                   </div>
                   <div>
@@ -451,7 +451,7 @@ export default function CustomFieldsSettingsPage() {
                       onChange={(e) =>
                         setForm({ ...form, max_value: e.target.value })
                       }
-                      className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-card text-foreground"
+                      className="w-full border border-border rounded-md px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500 bg-card text-foreground"
                     />
                   </div>
                 </>
@@ -469,7 +469,7 @@ export default function CustomFieldsSettingsPage() {
                   setForm({ ...form, help_text: e.target.value })
                 }
                 rows={2}
-                className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-card text-foreground"
+                className="w-full border border-border rounded-md px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500 bg-card text-foreground"
                 placeholder={t("customFieldsSettings.form.helpTextPlaceholder")}
               />
             </div>
@@ -492,12 +492,12 @@ export default function CustomFieldsSettingsPage() {
                       }
                     }}
                     placeholder={t("customFieldsSettings.form.optionInputPlaceholder")}
-                    className="flex-1 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-card text-foreground"
+                    className="flex-1 border border-border rounded-md px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500 bg-card text-foreground"
                   />
                   <button
                     type="button"
                     onClick={addOption}
-                    className="px-3 py-2 bg-muted text-foreground rounded-lg text-sm hover:bg-muted-foreground/10 transition-colors"
+                    className="px-3 py-2 bg-muted text-foreground rounded-md text-[13px] hover:bg-muted-foreground/10 transition-colors"
                   >
                     {t("customFieldsSettings.form.addOption")}
                   </button>
@@ -507,7 +507,7 @@ export default function CustomFieldsSettingsPage() {
                     {form.options.map((opt, idx) => (
                       <span
                         key={idx}
-                        className="inline-flex items-center gap-1 bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300 px-2.5 py-1 rounded-full text-sm"
+                        className="inline-flex items-center gap-1 bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300 px-2.5 py-1 rounded-md text-[13px]"
                       >
                         {opt}
                         <button
@@ -595,7 +595,7 @@ export default function CustomFieldsSettingsPage() {
               <button
                 type="submit"
                 disabled={createMutation.isPending || updateMutation.isPending}
-                className="bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 transition-colors disabled:opacity-50"
+                className="bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700 transition-colors disabled:opacity-50"
               >
                 {createMutation.isPending || updateMutation.isPending
                   ? t("customFieldsSettings.form.saving")
@@ -617,7 +617,7 @@ export default function CustomFieldsSettingsPage() {
       {isLoading ? (
         <div className="text-center py-10 text-muted-foreground">{t("customFieldsSettings.list.loading")}</div>
       ) : fields.length === 0 ? (
-        <div className="bg-card rounded-xl border border-border p-10 text-center">
+        <div className="bg-card rounded-lg border border-border p-10 text-center">
           <p className="text-muted-foreground">
             {t("customFieldsSettings.list.emptyTitle", {
               name:
@@ -636,7 +636,7 @@ export default function CustomFieldsSettingsPage() {
       ) : (
         Object.entries(sections).map(([sectionName, sectionFields]) => (
           <div key={sectionName} className="mb-6">
-            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+            <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3">
               {sectionName}
             </h3>
             {/*
@@ -644,34 +644,34 @@ export default function CustomFieldsSettingsPage() {
               table keep the action column (edit/delete icons) reachable on
               narrow widths instead of clipping them off-screen.
             */}
-            <div className="bg-card rounded-xl border border-border overflow-x-auto">
+            <div className="bg-card rounded-lg border border-border overflow-x-auto">
               <table className="w-full min-w-[720px]">
                 <thead className="bg-muted">
                   <tr>
                     <th className="w-10" />
-                    <th className="text-left text-xs font-medium text-muted-foreground uppercase px-4 py-3">
+                    <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">
                       {t("customFieldsSettings.table.fieldName")}
                     </th>
-                    <th className="text-left text-xs font-medium text-muted-foreground uppercase px-4 py-3">
+                    <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">
                       {t("customFieldsSettings.table.key")}
                     </th>
-                    <th className="text-left text-xs font-medium text-muted-foreground uppercase px-4 py-3">
+                    <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">
                       {t("customFieldsSettings.table.type")}
                     </th>
-                    <th className="text-center text-xs font-medium text-muted-foreground uppercase px-4 py-3">
+                    <th className="text-center text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">
                       {t("customFieldsSettings.table.required")}
                     </th>
-                    <th className="text-center text-xs font-medium text-muted-foreground uppercase px-4 py-3">
+                    <th className="text-center text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">
                       {t("customFieldsSettings.table.searchable")}
                     </th>
-                    <th className="text-right text-xs font-medium text-muted-foreground uppercase px-4 py-3">
+                    <th className="text-right text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">
                       {t("customFieldsSettings.table.actions")}
                     </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
                   {sectionFields.map((field) => (
-                    <tr key={field.id} className="hover:bg-muted">
+                    <tr key={field.id} className="hover:bg-muted/50 transition-colors">
                       <td className="px-2">
                         <div className="flex flex-col items-center gap-0.5">
                           <button
@@ -689,20 +689,20 @@ export default function CustomFieldsSettingsPage() {
                           </button>
                         </div>
                       </td>
-                      <td className="px-4 py-3">
-                        <div className="text-sm font-medium text-foreground">
+                      <td className="px-4 py-2.5">
+                        <div className="text-[13px] font-medium text-foreground">
                           {field.field_name}
                         </div>
                         {field.help_text && (
-                          <div className="text-xs text-muted-foreground mt-0.5">
+                          <div className="text-[11px] text-muted-foreground mt-0.5">
                             {field.help_text}
                           </div>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-sm text-muted-foreground font-mono">
+                      <td className="px-4 py-2.5 text-[13px] text-muted-foreground font-mono tabular-nums">
                         {field.field_key}
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-2.5">
                         <span className="inline-block bg-muted text-muted-foreground px-2 py-0.5 rounded text-xs font-medium">
                           {t(`customFieldsSettings.fieldType.${field.field_type}`, { defaultValue: field.field_type })}
                         </span>
@@ -712,7 +712,7 @@ export default function CustomFieldsSettingsPage() {
                           </span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-center">
+                      <td className="px-4 py-2.5 text-center">
                         {field.is_required ? (
                           <span className="text-green-600 dark:text-green-400 text-xs font-medium">
                             {t("customFieldsSettings.table.yes")}
@@ -721,7 +721,7 @@ export default function CustomFieldsSettingsPage() {
                           <span className="text-muted-foreground/50 text-xs">{t("customFieldsSettings.table.no")}</span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-center">
+                      <td className="px-4 py-2.5 text-center">
                         {field.is_searchable ? (
                           <span className="text-green-600 dark:text-green-400 text-xs font-medium">
                             {t("customFieldsSettings.table.yes")}
@@ -730,7 +730,7 @@ export default function CustomFieldsSettingsPage() {
                           <span className="text-muted-foreground/50 text-xs">{t("customFieldsSettings.table.no")}</span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-right whitespace-nowrap">
+                      <td className="px-4 py-2.5 text-right whitespace-nowrap">
                         <div className="flex items-center justify-end gap-1 flex-shrink-0">
                           <button
                             onClick={() => startEdit(field)}
@@ -782,7 +782,7 @@ export default function CustomFieldsSettingsPage() {
 function FieldPreview({ form }: { form: typeof INITIAL_FORM }) {
   const { t } = useTranslation();
   const commonClass =
-    "w-full border border-border rounded-lg px-3 py-2 text-sm bg-card text-foreground";
+    "w-full border border-border rounded-md px-3 py-2 text-[13px] bg-card text-foreground";
 
   return (
     <div className="max-w-md">
@@ -849,7 +849,7 @@ function FieldPreview({ form }: { form: typeof INITIAL_FORM }) {
           ))}
         </select>
       ) : form.field_type === "multi_select" ? (
-        <div className="flex flex-wrap gap-2 p-2 border border-border rounded-lg bg-card min-h-[38px]">
+        <div className="flex flex-wrap gap-2 p-2 border border-border rounded-md bg-card min-h-[38px]">
           {form.options.length > 0 ? (
             form.options.map((opt, i) => (
               <span

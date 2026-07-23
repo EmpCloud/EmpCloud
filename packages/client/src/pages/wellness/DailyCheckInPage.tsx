@@ -77,9 +77,9 @@ export default function DailyCheckInPage() {
   if (submitted || alreadyCheckedIn) {
     return (
       <div className="max-w-lg mx-auto mt-12">
-        <div className="bg-card rounded-xl border border-border p-8 text-center">
+        <div className="bg-card rounded-lg border border-border p-8 text-center">
           <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-foreground mb-2">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground mb-2">
             {submitted ? t("wellness.checkIn.completeTitle") : t("wellness.checkIn.alreadyTitle")}
           </h2>
           <p className="text-muted-foreground mb-6">
@@ -118,12 +118,12 @@ export default function DailyCheckInPage() {
       <div className="flex items-center gap-3">
         <button
           onClick={() => navigate(-1)}
-          className="p-2 rounded-lg hover:bg-muted text-muted-foreground"
+          className="p-2 rounded-md hover:bg-muted text-muted-foreground"
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t("wellness.checkIn.title")}</h1>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("wellness.checkIn.title")}</h1>
           <p className="text-muted-foreground text-sm">
             {new Date().toLocaleDateString(undefined, {
               weekday: "long",
@@ -137,10 +137,10 @@ export default function DailyCheckInPage() {
 
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Mood Picker */}
-        <div className="bg-card rounded-xl border border-border p-6">
+        <div className="bg-card rounded-lg border border-border p-4">
           <div className="flex items-center gap-2 mb-4">
             <Heart className="h-5 w-5 text-pink-500" />
-            <h3 className="text-lg font-semibold text-foreground">{t("wellness.checkIn.moodQuestion")}</h3>
+            <h3 className="text-base font-semibold text-foreground">{t("wellness.checkIn.moodQuestion")}</h3>
           </div>
           <div className="grid grid-cols-5 gap-3">
             {MOODS.map((m) => (
@@ -165,10 +165,10 @@ export default function DailyCheckInPage() {
         </div>
 
         {/* Energy Level */}
-        <div className="bg-card rounded-xl border border-border p-6">
+        <div className="bg-card rounded-lg border border-border p-4">
           <div className="flex items-center gap-2 mb-4">
             <Zap className="h-5 w-5 text-yellow-500" />
-            <h3 className="text-lg font-semibold text-foreground">{t("wellness.checkIn.energyLevel")}</h3>
+            <h3 className="text-base font-semibold text-foreground">{t("wellness.checkIn.energyLevel")}</h3>
           </div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground w-8">{t("wellness.checkIn.low")}</span>
@@ -193,7 +193,7 @@ export default function DailyCheckInPage() {
         </div>
 
         {/* Sleep & Exercise */}
-        <div className="bg-card rounded-xl border border-border p-6">
+        <div className="bg-card rounded-lg border border-border p-4">
           <div className="grid grid-cols-2 gap-6">
             <div>
               <div className="flex items-center gap-2 mb-3">
@@ -204,7 +204,7 @@ export default function DailyCheckInPage() {
                 type="number"
                 value={form.sleep_hours}
                 onChange={(e) => setForm({ ...form, sleep_hours: e.target.value })}
-                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
                 placeholder={t("wellness.checkIn.sleepPlaceholder")}
                 step="0.5"
                 min="0"
@@ -220,7 +220,7 @@ export default function DailyCheckInPage() {
                 type="number"
                 value={form.exercise_minutes}
                 onChange={(e) => setForm({ ...form, exercise_minutes: e.target.value })}
-                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
                 placeholder={t("wellness.checkIn.exercisePlaceholder")}
                 min="0"
               />
@@ -229,7 +229,7 @@ export default function DailyCheckInPage() {
         </div>
 
         {/* Notes */}
-        <div className="bg-card rounded-xl border border-border p-6">
+        <div className="bg-card rounded-lg border border-border p-4">
           <label className="block text-sm font-semibold text-foreground mb-3">
             {t("wellness.checkIn.notesLabel")}
           </label>
@@ -237,7 +237,7 @@ export default function DailyCheckInPage() {
             value={form.notes}
             onChange={(e) => setForm({ ...form, notes: e.target.value })}
             rows={3}
-            className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+            className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
             placeholder={t("wellness.checkIn.notesPlaceholder")}
           />
         </div>
@@ -253,7 +253,7 @@ export default function DailyCheckInPage() {
         <button
           type="submit"
           disabled={!form.mood || mutation.isPending}
-          className="w-full py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors text-sm font-semibold disabled:opacity-50"
+          className="w-full py-3 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors text-[13px] font-semibold disabled:opacity-50"
         >
           {mutation.isPending ? t("wellness.checkIn.submitting") : t("wellness.checkIn.submit")}
         </button>

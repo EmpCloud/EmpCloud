@@ -288,38 +288,36 @@ export default function AttendanceDashboardPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">{t('attendance.dashboardTitle')} <AiBadge label={t('attendance.aiInsights')} /></h1>
-        <p className="text-muted-foreground mt-1">{t('attendance.dashboardSubtitle')}</p>
+      <div className="mb-6">
+        <h1 className="text-xl font-semibold tracking-tight text-foreground flex items-center gap-2">{t('attendance.dashboardTitle')} <AiBadge label={t('attendance.aiInsights')} /></h1>
+        <p className="text-[13px] text-muted-foreground mt-0.5">{t('attendance.dashboardSubtitle')}</p>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 mb-4">
         {stats.map((s) => {
           const isClickable = s.category !== null;
           const content = (
-            <div className="flex items-center gap-3">
-              <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${s.color}`}>
-                <s.icon className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-foreground">{dashLoading ? <span className="inline-block h-7 w-10 bg-muted rounded animate-pulse" /> : s.value}</p>
-                <p className="text-xs text-muted-foreground">{s.label}</p>
-              </div>
-            </div>
+            <>
+              <span className={`flex h-8 w-8 items-center justify-center rounded-md ${s.color}`}>
+                <s.icon className="h-4 w-4" />
+              </span>
+              <p className="mt-2.5 text-2xl font-semibold tabular-nums leading-none text-foreground">{dashLoading ? <span className="inline-block h-6 w-10 bg-muted rounded animate-pulse" /> : s.value}</p>
+              <p className="mt-1.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground truncate">{s.label}</p>
+            </>
           );
           return isClickable ? (
             <button
               key={s.label}
               type="button"
               onClick={() => openBreakdown(s.category!)}
-              className="bg-card rounded-xl border border-border p-5 text-left hover:border-brand-400 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all"
+              className="bg-card rounded-lg border border-border p-3 text-left hover:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-colors duration-150"
               aria-label={s.label}
             >
               {content}
             </button>
           ) : (
-            <div key={s.label} className="bg-card rounded-xl border border-border p-5">
+            <div key={s.label} className="bg-card rounded-lg border border-border p-3">
               {content}
             </div>
           );
@@ -401,11 +399,11 @@ export default function AttendanceDashboardPage() {
           onClick={() => setBreakdownOpen(null)}
         >
           <div
-            className="bg-card rounded-xl shadow-xl w-full max-w-3xl max-h-[85vh] flex flex-col"
+            className="bg-card rounded-lg shadow-xl w-full max-w-3xl max-h-[85vh] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between gap-3 px-6 py-4 border-b border-border">
-              <h3 className="text-lg font-semibold text-foreground">{t('attendance.breakdown.title', { date: breakdown?.date ?? breakdownDate })}</h3>
+              <h3 className="text-base font-semibold text-foreground">{t('attendance.breakdown.title', { date: breakdown?.date ?? breakdownDate })}</h3>
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2">
                   <label htmlFor="breakdown-date" className="text-xs font-medium text-muted-foreground whitespace-nowrap">{t('attendance.breakdown.dateLabel')}</label>
@@ -415,14 +413,14 @@ export default function AttendanceDashboardPage() {
                     value={breakdownDate}
                     max={todayStr}
                     onChange={(e) => { setBreakdownDate(e.target.value); setBreakdownPage(1); }}
-                    className="bg-card text-foreground px-2.5 py-1.5 border border-border rounded-lg text-sm"
+                    className="bg-card text-foreground px-2.5 py-1.5 border border-border rounded-md text-[13px]"
                   />
                 </div>
                 <button
                   type="button"
                   onClick={exportBreakdown}
                   disabled={breakdownLoading || filteredList.length === 0}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-green-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="inline-flex items-center gap-1.5 rounded-md bg-green-600 px-3 py-1.5 text-[13px] font-medium text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
                   title={t('attendance.breakdown.export')}
                 >
                   <Download className="h-4 w-4" />
@@ -458,7 +456,7 @@ export default function AttendanceDashboardPage() {
                       key={tab.key}
                       type="button"
                       onClick={() => { setBreakdownOpen(tab.key); setBreakdownPage(1); }}
-                      className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px ${
+                      className={`px-4 py-2 text-[13px] font-medium border-b-2 -mb-px ${
                         active ? tab.color : "text-muted-foreground border-transparent hover:text-foreground"
                       }`}
                     >
@@ -476,14 +474,14 @@ export default function AttendanceDashboardPage() {
                   value={breakdownSearch}
                   onChange={(e) => { setBreakdownSearch(e.target.value); setBreakdownPage(1); }}
                   placeholder={t('attendance.breakdown.searchPlaceholder')}
-                  className="bg-card text-foreground w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm"
+                  className="bg-card text-foreground w-full pl-9 pr-3 py-2 border border-border rounded-md text-[13px]"
                 />
               </div>
               <div className="flex flex-wrap gap-2">
                 <select
                   value={breakdownDept}
                   onChange={(e) => { setBreakdownDept(e.target.value); setBreakdownPage(1); }}
-                  className="flex-1 min-w-[10rem] px-3 py-2 border border-border rounded-lg text-sm bg-card"
+                  className="flex-1 min-w-[10rem] px-3 py-2 border border-border rounded-md text-[13px] bg-card"
                   aria-label={t('attendance.department')}
                 >
                   <option value="">{t('attendance.breakdown.allDepartments')}</option>
@@ -494,7 +492,7 @@ export default function AttendanceDashboardPage() {
                 <select
                   value={breakdownLoc}
                   onChange={(e) => { setBreakdownLoc(e.target.value); setBreakdownPage(1); }}
-                  className="flex-1 min-w-[10rem] px-3 py-2 border border-border rounded-lg text-sm bg-card"
+                  className="flex-1 min-w-[10rem] px-3 py-2 border border-border rounded-md text-[13px] bg-card"
                   aria-label={t('attendance.location')}
                 >
                   <option value="">{t('attendance.breakdown.allLocations')}</option>
@@ -518,12 +516,12 @@ export default function AttendanceDashboardPage() {
               ) : (
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="text-left text-xs text-muted-foreground uppercase border-b border-border">
-                      <th className="py-2 font-medium">{t('common.name')}</th>
-                      <th className="py-2 font-medium">{t('attendance.department')}</th>
-                      <th className="py-2 font-medium whitespace-nowrap">{t('attendance.checkIn')}</th>
-                      {breakdownOpen === "total" && <th className="py-2 font-medium">{t('common.status')}</th>}
-                      {breakdownOpen === "late" && <th className="py-2 font-medium">{t('attendance.breakdown.lateBy')}</th>}
+                    <tr className="text-left text-[11px] text-muted-foreground uppercase tracking-wider border-b border-border">
+                      <th className="py-2 font-semibold">{t('common.name')}</th>
+                      <th className="py-2 font-semibold">{t('attendance.department')}</th>
+                      <th className="py-2 font-semibold whitespace-nowrap">{t('attendance.checkIn')}</th>
+                      {breakdownOpen === "total" && <th className="py-2 font-semibold">{t('common.status')}</th>}
+                      {breakdownOpen === "late" && <th className="py-2 font-semibold">{t('attendance.breakdown.lateBy')}</th>}
                     </tr>
                   </thead>
                   <tbody>
@@ -539,7 +537,7 @@ export default function AttendanceDashboardPage() {
                           <td className="py-3 text-muted-foreground">{emp.check_in_time ? new Date(emp.check_in_time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "—"}</td>
                           {breakdownOpen === "total" && s && (
                             <td className="py-3">
-                              <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${s.color}`}>{s.label}</span>
+                              <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium ${s.color}`}>{s.label}</span>
                             </td>
                           )}
                           {breakdownOpen === "late" && (
@@ -556,19 +554,19 @@ export default function AttendanceDashboardPage() {
                 control is visibly part of the modal even for a single page. */}
             {!breakdownLoading && filteredList.length > 0 && (
               <div className="flex items-center justify-between px-6 py-3 border-t border-border">
-                <p className="text-sm text-muted-foreground">{t('attendance.pagination', { page: safePage, totalPages, total: filteredList.length })}</p>
+                <p className="text-[13px] tabular-nums text-muted-foreground">{t('attendance.pagination', { page: safePage, totalPages, total: filteredList.length })}</p>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setBreakdownPage(Math.max(1, safePage - 1))}
                     disabled={safePage === 1}
-                    className="bg-card text-foreground px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50"
+                    className="bg-card text-foreground px-3 py-1.5 text-[13px] border border-border rounded-md disabled:opacity-50 hover:bg-muted transition-colors"
                   >
                     {t('attendance.previous')}
                   </button>
                   <button
                     onClick={() => setBreakdownPage(Math.min(totalPages, safePage + 1))}
                     disabled={safePage >= totalPages}
-                    className="bg-card text-foreground px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50"
+                    className="bg-card text-foreground px-3 py-1.5 text-[13px] border border-border rounded-md disabled:opacity-50 hover:bg-muted transition-colors"
                   >
                     {t('attendance.next')}
                   </button>
@@ -581,17 +579,17 @@ export default function AttendanceDashboardPage() {
       })()}
 
       {/* Quick Links */}
-      <div className="flex gap-3 mb-6">
+      <div className="flex gap-2.5 mb-4">
         <Link
           to="/attendance/regularizations"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted transition-colors"
+          className="inline-flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-md text-[13px] font-medium text-muted-foreground hover:bg-muted transition-colors"
         >
           <ClipboardCheck className="h-4 w-4 text-amber-600 dark:text-amber-400" />
           {t('attendance.regularizationRequests')}
         </Link>
         <Link
           to="/attendance/shifts"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted transition-colors"
+          className="inline-flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-md text-[13px] font-medium text-muted-foreground hover:bg-muted transition-colors"
         >
           <SlidersHorizontal className="h-4 w-4 text-brand-600 dark:text-brand-400" />
           {t('attendance.shiftManagement')}
@@ -599,10 +597,10 @@ export default function AttendanceDashboardPage() {
       </div>
 
       {/* Date & Department Filters */}
-      <div className="bg-card rounded-xl border border-border p-4 mb-6">
+      <div className="bg-card rounded-lg border border-border p-4 mb-4">
         <div className="flex items-center gap-2 mb-3">
           <Filter className="h-4 w-4 text-muted-foreground" />
-          <h3 className="text-sm font-semibold text-muted-foreground">{t('attendance.filters')}</h3>
+          <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t('attendance.filters')}</h3>
         </div>
         <div className="flex flex-wrap items-end gap-3">
           <div>
@@ -610,7 +608,7 @@ export default function AttendanceDashboardPage() {
             <select
               value={month}
               onChange={(e) => { setMonth(Number(e.target.value)); setPage(1); }}
-              className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm"
+              className="bg-card text-foreground px-3 py-2 border border-border rounded-md text-[13px]"
             >
               {months.map((m) => (
                 <option key={m.value} value={m.value}>{m.label}</option>
@@ -622,7 +620,7 @@ export default function AttendanceDashboardPage() {
             <select
               value={year}
               onChange={(e) => { setYear(Number(e.target.value)); setPage(1); }}
-              className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm"
+              className="bg-card text-foreground px-3 py-2 border border-border rounded-md text-[13px]"
             >
               {Array.from({ length: 5 }, (_, i) => now.getFullYear() - i).map((y) => (
                 <option key={y} value={y}>{y}</option>
@@ -634,7 +632,7 @@ export default function AttendanceDashboardPage() {
             <select
               value={departmentId ?? ""}
               onChange={(e) => { setDepartmentId(e.target.value ? Number(e.target.value) : undefined); setPage(1); }}
-              className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm"
+              className="bg-card text-foreground px-3 py-2 border border-border rounded-md text-[13px]"
             >
               <option value="">{t('attendance.allDepartments')}</option>
               {departments.map((d: any) => (
@@ -647,7 +645,7 @@ export default function AttendanceDashboardPage() {
             <select
               value={locationId ?? ""}
               onChange={(e) => { setLocationId(e.target.value ? Number(e.target.value) : undefined); setPage(1); }}
-              className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm"
+              className="bg-card text-foreground px-3 py-2 border border-border rounded-md text-[13px]"
             >
               <option value="">All locations</option>
               {locations.map((l: any) => (
@@ -660,7 +658,7 @@ export default function AttendanceDashboardPage() {
             <select
               value={roleFilter}
               onChange={(e) => { setRoleFilter(e.target.value); setPage(1); }}
-              className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm"
+              className="bg-card text-foreground px-3 py-2 border border-border rounded-md text-[13px]"
             >
               <option value="">All roles</option>
               {ROLE_OPTIONS.map((r) => (
@@ -675,7 +673,7 @@ export default function AttendanceDashboardPage() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Name, email, code"
-              className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm w-52"
+              className="bg-card text-foreground px-3 py-2 border border-border rounded-md text-[13px] w-52"
             />
           </div>
           <div className="border-l border-border pl-3">
@@ -706,7 +704,7 @@ export default function AttendanceDashboardPage() {
           </div>
           <button
             onClick={handleClearFilters}
-            className="px-3 py-2 text-sm text-muted-foreground border border-border rounded-lg hover:bg-muted"
+            className="px-3 py-2 text-[13px] text-muted-foreground border border-border rounded-md hover:bg-muted transition-colors"
           >
             {t('attendance.clearFilters')}
           </button>
@@ -721,7 +719,7 @@ export default function AttendanceDashboardPage() {
               setExportLoc(locationId ? String(locationId) : "");
               setShowExport(true);
             }}
-            className="flex items-center gap-1.5 px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700"
+            className="flex items-center gap-1.5 px-3 py-2 bg-green-600 text-white text-[13px] rounded-md hover:bg-green-700 transition-colors"
           >
             <Download className="h-4 w-4" /> {t('attendance.exportReport')}
           </button>
@@ -731,14 +729,14 @@ export default function AttendanceDashboardPage() {
       {/* Export Modal */}
       {showExport && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-card rounded-2xl shadow-2xl w-full max-w-lg mx-4">
+          <div className="bg-card rounded-lg shadow-2xl w-full max-w-lg mx-4">
             <div className="flex items-center justify-between px-6 py-4 border-b border-border">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-green-50 dark:bg-green-950/40 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-md bg-green-50 dark:bg-green-950/40 flex items-center justify-center">
                   <Download className="h-5 w-5 text-green-600 dark:text-green-400" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-foreground">{t('attendance.export.title')}</h3>
+                  <h3 className="text-base font-semibold text-foreground">{t('attendance.export.title')}</h3>
                   <p className="text-xs text-muted-foreground">{t('attendance.export.subtitle')}</p>
                 </div>
               </div>
@@ -753,7 +751,7 @@ export default function AttendanceDashboardPage() {
                   <button
                     type="button"
                     onClick={() => setExportType("detailed")}
-                    className={`flex items-center gap-3 p-3 rounded-xl border-2 transition ${exportType === "detailed" ? "border-brand-600 bg-brand-50 dark:bg-brand-950/40" : "border-border hover:border-border"}`}
+                    className={`flex items-center gap-3 p-3 rounded-md border-2 transition ${exportType === "detailed" ? "border-brand-600 bg-brand-50 dark:bg-brand-950/40" : "border-border hover:border-border"}`}
                   >
                     <FileSpreadsheet className={`h-5 w-5 ${exportType === "detailed" ? "text-brand-600 dark:text-brand-400" : "text-muted-foreground"}`} />
                     <div className="text-left">
@@ -764,7 +762,7 @@ export default function AttendanceDashboardPage() {
                   <button
                     type="button"
                     onClick={() => setExportType("consolidated")}
-                    className={`flex items-center gap-3 p-3 rounded-xl border-2 transition ${exportType === "consolidated" ? "border-brand-600 bg-brand-50 dark:bg-brand-950/40" : "border-border hover:border-border"}`}
+                    className={`flex items-center gap-3 p-3 rounded-md border-2 transition ${exportType === "consolidated" ? "border-brand-600 bg-brand-50 dark:bg-brand-950/40" : "border-border hover:border-border"}`}
                   >
                     <BarChart3 className={`h-5 w-5 ${exportType === "consolidated" ? "text-brand-600 dark:text-brand-400" : "text-muted-foreground"}`} />
                     <div className="text-left">
@@ -819,14 +817,14 @@ export default function AttendanceDashboardPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-muted-foreground mb-1">{t('attendance.department')}</label>
-                  <select value={exportDept} onChange={(e) => setExportDept(e.target.value)} className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm">
+                  <select value={exportDept} onChange={(e) => setExportDept(e.target.value)} className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]">
                     <option value="">{t('attendance.allDepartments')}</option>
                     {departments.map((d: any) => <option key={d.id} value={d.id}>{d.name}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-muted-foreground mb-1">Location</label>
-                  <select value={exportLoc} onChange={(e) => setExportLoc(e.target.value)} className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm">
+                  <select value={exportLoc} onChange={(e) => setExportLoc(e.target.value)} className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]">
                     <option value="">All locations</option>
                     {locations.map((l: any) => <option key={l.id} value={l.id}>{l.name}</option>)}
                   </select>
@@ -834,7 +832,7 @@ export default function AttendanceDashboardPage() {
                 {exportType === "detailed" && (
                   <div className="col-span-2">
                     <label className="block text-xs font-medium text-muted-foreground mb-1">{t('common.status')}</label>
-                    <select value={exportStatus} onChange={(e) => setExportStatus(e.target.value)} className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm">
+                    <select value={exportStatus} onChange={(e) => setExportStatus(e.target.value)} className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]">
                       <option value="">{t('attendance.export.allStatuses')}</option>
                       <option value="present">{t('attendance.present')}</option>
                       <option value="checked_in">{t('attendance.statusCheckedIn')}</option>
@@ -857,12 +855,12 @@ export default function AttendanceDashboardPage() {
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-border bg-muted rounded-b-2xl">
-              <button onClick={() => setShowExport(false)} className="px-4 py-2 text-sm font-medium text-muted-foreground border border-border rounded-lg hover:bg-muted">{t('attendance.export.cancel')}</button>
+            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-border bg-muted rounded-b-lg">
+              <button onClick={() => setShowExport(false)} className="px-4 py-2 text-[13px] font-medium text-muted-foreground border border-border rounded-md hover:bg-muted transition-colors">{t('attendance.export.cancel')}</button>
               <button
                 onClick={handleExport}
                 disabled={exporting || (exportUseRange && !exportDateFrom)}
-                className="flex items-center gap-2 px-5 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50"
+                className="flex items-center gap-2 px-5 py-2 text-[13px] font-medium text-white bg-green-600 rounded-md hover:bg-green-700 disabled:opacity-50 transition-colors"
               >
                 {exporting ? <><Loader2 className="h-4 w-4 animate-spin" /> {t('attendance.export.exporting')}</> : <><Download className="h-4 w-4" /> {t('attendance.export.downloadExcel')}</>}
               </button>
@@ -872,26 +870,26 @@ export default function AttendanceDashboardPage() {
       )}
 
       {/* Attendance Records Table */}
-      <div className="bg-card rounded-xl border border-border overflow-x-auto -mx-4 lg:mx-0">
-        <div className="px-6 py-4 border-b border-border">
-          <h2 className="text-lg font-semibold text-foreground">
+      <div className="bg-card rounded-lg border border-border overflow-x-auto -mx-4 lg:mx-0">
+        <div className="px-4 py-2.5 border-b border-border">
+          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
             {t('attendance.recordsTitle', { month: months.find((m) => m.value === month)?.label, year })}
             {departmentId ? ` ${t('attendance.filteredSuffix')}` : ""}
           </h2>
         </div>
         <table className="w-full">
-          <thead className="bg-muted border-b border-border">
+          <thead className="bg-muted/50 border-b border-border">
             <tr>
-              <th className="px-3 py-3 w-10"></th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('common.name')}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('attendance.department')}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('common.date')}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3 whitespace-nowrap">{t('attendance.checkIn')}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3 whitespace-nowrap">{t('attendance.checkOut')}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('attendance.tableWorked')}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('common.status')}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t('attendance.late')}</th>
-              <th className="text-right text-xs font-medium text-muted-foreground uppercase px-6 py-3">Details</th>
+              <th className="px-3 py-2.5 w-10"></th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t('common.name')}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t('attendance.department')}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t('common.date')}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5 whitespace-nowrap">{t('attendance.checkIn')}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5 whitespace-nowrap">{t('attendance.checkOut')}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t('attendance.tableWorked')}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t('common.status')}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t('attendance.late')}</th>
+              <th className="text-right text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">Details</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
@@ -899,21 +897,21 @@ export default function AttendanceDashboardPage() {
               <>
                 {[1, 2, 3, 4].map((i) => (
                   <tr key={i} className="animate-pulse">
-                    <td className="px-3 py-4"><div className="h-4 w-4 bg-muted rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-28 bg-muted rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-20 bg-muted rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-20 bg-muted rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-16 bg-muted rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-16 bg-muted rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-12 bg-muted rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-16 bg-muted rounded-full" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-10 bg-muted rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-6 bg-muted rounded ml-auto" /></td>
+                    <td className="px-3 py-2.5"><div className="h-4 w-4 bg-muted rounded" /></td>
+                    <td className="px-4 py-2.5"><div className="h-4 w-28 bg-muted rounded" /></td>
+                    <td className="px-4 py-2.5"><div className="h-4 w-20 bg-muted rounded" /></td>
+                    <td className="px-4 py-2.5"><div className="h-4 w-20 bg-muted rounded" /></td>
+                    <td className="px-4 py-2.5"><div className="h-4 w-16 bg-muted rounded" /></td>
+                    <td className="px-4 py-2.5"><div className="h-4 w-16 bg-muted rounded" /></td>
+                    <td className="px-4 py-2.5"><div className="h-4 w-12 bg-muted rounded" /></td>
+                    <td className="px-4 py-2.5"><div className="h-4 w-16 bg-muted rounded-full" /></td>
+                    <td className="px-4 py-2.5"><div className="h-4 w-10 bg-muted rounded" /></td>
+                    <td className="px-4 py-2.5"><div className="h-4 w-6 bg-muted rounded ml-auto" /></td>
                   </tr>
                 ))}
               </>
             ) : records.length === 0 ? (
-              <tr><td colSpan={10} className="px-6 py-8 text-center text-muted-foreground">{t('attendance.noRecords')}</td></tr>
+              <tr><td colSpan={10} className="px-4 py-8 text-center text-muted-foreground">{t('attendance.noRecords')}</td></tr>
             ) : (
               records.map((r: any) => (
                 <RecordRow key={r.id} record={r} t={t} onView={() => setDetailRecord(r)} />
@@ -923,11 +921,11 @@ export default function AttendanceDashboardPage() {
         </table>
 
         {meta && meta.total_pages > 1 && (
-          <div className="flex items-center justify-between px-6 py-3 border-t border-border">
-            <p className="text-sm text-muted-foreground">{t('attendance.pagination', { page: meta.page, totalPages: meta.total_pages, total: meta.total })}</p>
+          <div className="flex items-center justify-between px-4 py-2.5 border-t border-border">
+            <p className="text-[13px] tabular-nums text-muted-foreground">{t('attendance.pagination', { page: meta.page, totalPages: meta.total_pages, total: meta.total })}</p>
             <div className="flex gap-2">
-              <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="bg-card text-foreground px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50">{t('attendance.previous')}</button>
-              <button onClick={() => setPage((p) => p + 1)} disabled={page >= meta.total_pages} className="bg-card text-foreground px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50">{t('attendance.next')}</button>
+              <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="bg-card text-foreground px-3 py-1.5 text-[13px] border border-border rounded-md disabled:opacity-50 hover:bg-muted transition-colors">{t('attendance.previous')}</button>
+              <button onClick={() => setPage((p) => p + 1)} disabled={page >= meta.total_pages} className="bg-card text-foreground px-3 py-1.5 text-[13px] border border-border rounded-md disabled:opacity-50 hover:bg-muted transition-colors">{t('attendance.next')}</button>
             </div>
           </div>
         )}
@@ -987,12 +985,12 @@ function RecordRow({
   const [expanded, setExpanded] = useState(false);
   return (
     <>
-    <tr className="hover:bg-muted">
-      <td className="px-3 py-4 w-10">
+    <tr className="hover:bg-muted/50 transition-colors">
+      <td className="px-3 py-2.5 w-10">
         <button
           type="button"
           onClick={() => setExpanded((v) => !v)}
-          className="inline-flex items-center justify-center p-1.5 rounded text-muted-foreground hover:bg-muted"
+          className="inline-flex items-center justify-center p-1.5 rounded-md text-muted-foreground hover:bg-muted"
           aria-label={expanded ? "Collapse timeline" : "Expand timeline"}
           title={expanded ? "Hide timeline" : "Show timeline"}
           aria-expanded={expanded}
@@ -1000,22 +998,22 @@ function RecordRow({
           {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         </button>
       </td>
-      <td className="px-6 py-4">
+      <td className="px-4 py-2.5">
         <div className="flex items-center gap-3">
           <div className="h-8 w-8 rounded-full bg-brand-100 dark:bg-brand-950/40 flex items-center justify-center text-sm font-semibold text-brand-700 dark:text-brand-300">
             {r.first_name?.[0]}{r.last_name?.[0]}
           </div>
           <div>
-            <p className="text-sm font-medium text-foreground">{r.first_name} {r.last_name}</p>
-            <p className="text-xs text-muted-foreground">{r.emp_code || r.email}</p>
+            <p className="text-[13px] font-medium text-foreground">{r.first_name} {r.last_name}</p>
+            <p className="text-[11px] text-muted-foreground">{r.emp_code || r.email}</p>
           </div>
         </div>
       </td>
-      <td className="px-6 py-4 text-sm text-muted-foreground">{r.department_name || "-"}</td>
-      <td className="px-6 py-4 text-sm text-muted-foreground">{r.date ? new Date(r.date).toLocaleDateString() : "-"}</td>
-      <td className="px-6 py-4 text-sm text-muted-foreground">{r.check_in ? new Date(r.check_in).toLocaleTimeString() : "-"}</td>
-      <td className="px-6 py-4 text-sm text-muted-foreground">{r.check_out ? new Date(r.check_out).toLocaleTimeString() : "-"}</td>
-      <td className="px-6 py-4 text-sm text-muted-foreground">
+      <td className="px-4 py-2.5 text-[13px] text-muted-foreground">{r.department_name || "-"}</td>
+      <td className="px-4 py-2.5 text-[13px] tabular-nums text-muted-foreground">{r.date ? new Date(r.date).toLocaleDateString() : "-"}</td>
+      <td className="px-4 py-2.5 text-[13px] tabular-nums text-muted-foreground">{r.check_in ? new Date(r.check_in).toLocaleTimeString() : "-"}</td>
+      <td className="px-4 py-2.5 text-[13px] tabular-nums text-muted-foreground">{r.check_out ? new Date(r.check_out).toLocaleTimeString() : "-"}</td>
+      <td className="px-4 py-2.5 text-[13px] tabular-nums text-muted-foreground">
         {(() => {
           // #1949 — `worked_minutes` is only filled at check-out, so for
           // rows still on the clock we'd otherwise show 0. Derive a live
@@ -1056,7 +1054,7 @@ function RecordRow({
             : "-";
         })()}
       </td>
-      <td className="px-6 py-4">
+      <td className="px-4 py-2.5">
         {(() => {
           // A row stamped `on_leave` can actually be a HALF-day leave where the
           // employee worked the other half (check-in/out present, worked_minutes
@@ -1069,7 +1067,7 @@ function RecordRow({
           const effStatus = isHalfLeavePresent ? "half_day" : r.status;
           const leaveSuffix = r.leave_type_code || r.leave_type_name;
           return (
-            <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+            <span className={`text-[11px] px-2 py-0.5 rounded-md font-medium ${
               effStatus === "present" ? "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300"
                 : effStatus === "checked_in" ? "bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300"
                 : effStatus === "half_day" ? "bg-yellow-50 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300"
@@ -1106,14 +1104,14 @@ function RecordRow({
           );
         })()}
       </td>
-      <td className="px-6 py-4 text-sm text-muted-foreground">
+      <td className="px-4 py-2.5 text-[13px] tabular-nums text-muted-foreground">
         {r.late_minutes ? `${Math.floor(r.late_minutes / 60)}h ${r.late_minutes % 60}m` : "-"}
       </td>
-      <td className="px-6 py-4 text-right">
+      <td className="px-4 py-2.5 text-right">
         <button
           type="button"
           onClick={onView}
-          className="inline-flex items-center justify-center p-1.5 rounded text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-950/40"
+          className="inline-flex items-center justify-center p-1.5 rounded-md text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-950/40 transition-colors"
           aria-label="View attendance details"
           title="View details"
         >
@@ -1135,7 +1133,7 @@ function InlinePunchTimelineRow({ recordId, colSpan }: { recordId: number; colSp
   });
   return (
     <tr className="bg-muted">
-      <td colSpan={colSpan} className="px-6 py-4">
+      <td colSpan={colSpan} className="px-4 py-3">
         {isLoading ? (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Loader2 className="w-4 h-4 animate-spin" /> Loading timeline…
@@ -1151,19 +1149,19 @@ function InlinePunchTimelineRow({ recordId, colSpan }: { recordId: number; colSp
               const isLast = idx === arr.length - 1 && arr.length > 1;
               const label = isFirst ? "Check in" : isLast ? "Check out" : "Punch";
               const labelCls = isFirst
-                ? "bg-green-100 dark:bg-green-950/40 text-green-800"
+                ? "bg-green-100 dark:bg-green-950/40 text-green-800 dark:text-green-300"
                 : isLast
-                ? "bg-rose-100 dark:bg-rose-950/40 text-rose-800"
+                ? "bg-rose-100 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300"
                 : "bg-muted text-muted-foreground";
               const meta = sourceMeta(p.source);
               const Icon = meta.Icon;
               return (
                 <li key={p.id} className="flex flex-wrap items-center gap-3 text-sm">
                   <span className="font-mono text-muted-foreground w-20">{fmtPunchTime(p.punch_time)}</span>
-                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${labelCls}`}>
+                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium ${labelCls}`}>
                     {label}
                   </span>
-                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs ${meta.cls}`}>
+                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] ${meta.cls}`}>
                     <Icon className="w-3 h-3" /> {meta.label}
                   </span>
                   {p.latitude != null && p.longitude != null && (
@@ -1239,12 +1237,12 @@ function AttendanceDetailModal({
       onClick={onClose}
     >
       <div
-        className="bg-card rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+        className="bg-card rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <div>
-            <h3 className="text-lg font-semibold text-foreground">Attendance details</h3>
+            <h3 className="text-base font-semibold text-foreground">Attendance details</h3>
             <p className="text-xs text-muted-foreground mt-0.5">
               {r.first_name} {r.last_name}
               {r.emp_code ? ` · ${r.emp_code}` : ""}
@@ -1291,7 +1289,7 @@ function AttendanceDetailModal({
             <div>
               <p className="text-xs uppercase text-muted-foreground">{t('common.status')}</p>
               <p className="mt-0.5">
-                <span className={`text-xs px-2 py-1 rounded-full font-medium ${statusCls}`}>{statusLabel}</span>
+                <span className={`text-[11px] px-2 py-0.5 rounded-md font-medium ${statusCls}`}>{statusLabel}</span>
               </p>
             </div>
           </div>
@@ -1314,19 +1312,19 @@ function AttendanceDetailModal({
                   const isLast = idx === arr.length - 1 && arr.length > 1;
                   const label = isFirst ? "Check in" : isLast ? "Check out" : "Punch";
                   const labelCls = isFirst
-                    ? "bg-green-100 dark:bg-green-950/40 text-green-800"
+                    ? "bg-green-100 dark:bg-green-950/40 text-green-800 dark:text-green-300"
                     : isLast
-                    ? "bg-rose-100 dark:bg-rose-950/40 text-rose-800"
+                    ? "bg-rose-100 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300"
                     : "bg-muted text-muted-foreground";
                   const meta = sourceMeta(p.source);
                   const Icon = meta.Icon;
                   return (
                     <li key={p.id} className="flex flex-wrap items-center gap-3 text-sm">
                       <span className="font-mono text-muted-foreground w-20">{fmtPunchTime(p.punch_time)}</span>
-                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${labelCls}`}>
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium ${labelCls}`}>
                         {label}
                       </span>
-                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs ${meta.cls}`}>
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] ${meta.cls}`}>
                         <Icon className="w-3 h-3" /> {meta.label}
                       </span>
                       {p.latitude != null && p.longitude != null && (
@@ -1351,7 +1349,7 @@ function AttendanceDetailModal({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm border border-border rounded-lg hover:bg-muted"
+            className="px-4 py-2 text-[13px] border border-border rounded-md hover:bg-muted transition-colors"
           >
             Close
           </button>

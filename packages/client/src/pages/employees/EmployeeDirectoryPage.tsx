@@ -498,21 +498,21 @@ export default function EmployeeDirectoryPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{tx("title")}</h1>
-          <p className="text-muted-foreground mt-1">{tx("subtitle")}</p>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">{tx("title")}</h1>
+          <p className="text-[13px] text-muted-foreground mt-0.5">{tx("subtitle")}</p>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={handleDownload}
             disabled={exportQuery.isFetching}
-            className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 border border-border rounded-md text-[13px] font-medium text-muted-foreground hover:bg-muted disabled:opacity-50"
           >
             <Download className="h-4 w-4" />
             {exportQuery.isFetching ? tx("exporting") : tx("exportExcel")}
           </button>
-          <label className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted cursor-pointer">
+          <label className="flex items-center gap-2 px-4 py-2 border border-border rounded-md text-[13px] font-medium text-muted-foreground hover:bg-muted cursor-pointer">
             <Upload className="h-4 w-4" />
             {tx("bulkUpdate")}
             <input
@@ -526,7 +526,7 @@ export default function EmployeeDirectoryPage() {
           {canInvite && (
             <button
               onClick={() => setShowPendingInvitations(true)}
-              className={`relative flex items-center gap-2 px-4 py-2 border rounded-lg text-sm font-medium transition-colors ${
+              className={`relative flex items-center gap-2 px-4 py-2 border rounded-md text-[13px] font-medium transition-colors ${
                 invitations.length > 0
                   ? "border-amber-300 bg-amber-50 dark:bg-amber-950/40 text-amber-800 hover:bg-amber-100 dark:hover:bg-amber-950/40"
                   : "border-border text-muted-foreground hover:bg-muted"
@@ -544,7 +544,7 @@ export default function EmployeeDirectoryPage() {
           {isOrgAdmin && (
             <button
               onClick={() => setShowCsvImport(true)}
-              className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted"
+              className="flex items-center gap-2 px-4 py-2 border border-border rounded-md text-[13px] font-medium text-muted-foreground hover:bg-muted"
             >
               <FileSpreadsheet className="h-4 w-4" /> {tx("importEmployees")}
             </button>
@@ -554,7 +554,7 @@ export default function EmployeeDirectoryPage() {
               onClick={() => setShowBulkInviteConfirm(true)}
               disabled={bulkInvite.isPending}
               title={tx("inviteAllTooltip") as string}
-              className="flex items-center gap-2 px-4 py-2 border border-brand-300 dark:border-brand-800 bg-brand-50 dark:bg-brand-950/40 text-brand-800 dark:text-brand-200 rounded-lg text-sm font-medium hover:bg-brand-100 dark:hover:bg-brand-900/50 disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2 border border-brand-300 dark:border-brand-800 bg-brand-50 dark:bg-brand-950/40 text-brand-800 dark:text-brand-200 rounded-md text-[13px] font-medium hover:bg-brand-100 dark:hover:bg-brand-900/50 disabled:opacity-50"
             >
               <Users className="h-4 w-4" /> {tx("inviteAll")}
             </button>
@@ -976,7 +976,7 @@ export default function EmployeeDirectoryPage() {
       )}
 
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row gap-2 mb-4 bg-card border border-border rounded-lg p-2">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
@@ -986,7 +986,7 @@ export default function EmployeeDirectoryPage() {
               setSearch(e.target.value);
               setPage(1);
             }}
-            className="bg-card text-foreground w-full pl-10 pr-4 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+            className="bg-card text-foreground w-full pl-9 pr-4 py-2 border border-border rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
             placeholder={tx("searchPlaceholder") as string}
           />
         </div>
@@ -996,7 +996,7 @@ export default function EmployeeDirectoryPage() {
             setDepartmentId(e.target.value);
             setPage(1);
           }}
-          className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+          className="bg-card text-foreground px-3 py-2 border border-border rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
         >
           <option value="">{tx("allDepartments")}</option>
           {deptList.map((d: any) => (
@@ -1011,7 +1011,7 @@ export default function EmployeeDirectoryPage() {
             setLocationId(e.target.value);
             setPage(1);
           }}
-          className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+          className="bg-card text-foreground px-3 py-2 border border-border rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
         >
           <option value="">{tx("allLocations")}</option>
           {(locations || []).map((l: any) => (
@@ -1026,7 +1026,7 @@ export default function EmployeeDirectoryPage() {
             setRoleFilter(e.target.value);
             setPage(1);
           }}
-          className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+          className="bg-card text-foreground px-3 py-2 border border-border rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
         >
           <option value="">{tx("allRoles")}</option>
           <option value="employee">{tx("roleEmployee")}</option>
@@ -1045,18 +1045,18 @@ export default function EmployeeDirectoryPage() {
           gray-50 page bg through during overscroll, which is the visual
           glitch the reporter screenshotted. Flatten left/right corners
           on mobile so there's nothing to leak through. */}
-      <div className="bg-card rounded-none lg:rounded-xl border-y border-border lg:border lg:border-border overflow-x-auto overscroll-x-contain -mx-4 lg:mx-0">
-        <table className="min-w-full">
-          <thead className="bg-muted border-b border-border">
+      <div className="bg-card rounded-none lg:rounded-lg border-y border-border lg:border lg:border-border overflow-x-auto overscroll-x-contain -mx-4 lg:mx-0">
+        <table className="min-w-full text-[13px]">
+          <thead className="bg-muted/60 border-b border-border">
             <tr>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("colEmployee")}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("colEmail")}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("common.department")}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("colDesignation")}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("colRole")}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("colEmpCode")}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("common.status")}</th>
-              <th className="text-right text-xs font-medium text-muted-foreground uppercase px-6 py-3">{t("common.actions")}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wide px-4 py-2.5">{tx("colEmployee")}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wide px-4 py-2.5">{tx("colEmail")}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wide px-4 py-2.5">{t("common.department")}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wide px-4 py-2.5">{tx("colDesignation")}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wide px-4 py-2.5">{tx("colRole")}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wide px-4 py-2.5">{tx("colEmpCode")}</th>
+              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wide px-4 py-2.5">{t("common.status")}</th>
+              <th className="text-right text-[11px] font-semibold text-muted-foreground uppercase tracking-wide px-4 py-2.5">{t("common.actions")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
@@ -1082,14 +1082,14 @@ export default function EmployeeDirectoryPage() {
               </>
             ) : employees.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-6 py-8 text-center text-muted-foreground">
+                <td colSpan={8} className="px-4 py-8 text-center text-muted-foreground">
                   {tx("noEmployees")}
                 </td>
               </tr>
             ) : (
               employees.map((emp: any) => (
-                <tr key={emp.id} className="hover:bg-muted">
-                  <td className="px-6 py-4">
+                <tr key={emp.id} className="hover:bg-muted/50 transition-colors">
+                  <td className="px-4 py-2.5">
                     <Link
                       to={`/employees/${emp.id}`}
                       className="flex items-center gap-3 group"
@@ -1102,19 +1102,19 @@ export default function EmployeeDirectoryPage() {
                         lastName={emp.last_name}
                         size="sm"
                       />
-                      <span className="text-sm font-medium text-foreground group-hover:text-brand-600">
+                      <span className="text-[13px] font-medium text-foreground group-hover:text-brand-600">
                         {emp.first_name} {emp.last_name}
                       </span>
                     </Link>
                   </td>
-                  <td className="px-6 py-4 text-sm text-muted-foreground">{emp.email}</td>
-                  <td className="px-6 py-4 text-sm text-muted-foreground">
+                  <td className="px-4 py-2.5 text-[13px] text-muted-foreground">{emp.email}</td>
+                  <td className="px-4 py-2.5 text-[13px] text-muted-foreground">
                     {emp.department_name || "-"}
                   </td>
-                  <td className="px-6 py-4 text-sm text-muted-foreground">
+                  <td className="px-4 py-2.5 text-[13px] text-muted-foreground">
                     {emp.designation || "-"}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-2.5">
                     {(() => {
                       // Map server enum → localized label, fall back to the
                       // raw enum word with underscores stripped.
@@ -1148,10 +1148,10 @@ export default function EmployeeDirectoryPage() {
                       );
                     })()}
                   </td>
-                  <td className="px-6 py-4 text-sm text-muted-foreground">
+                  <td className="px-4 py-2.5 text-[13px] text-muted-foreground tabular-nums">
                     {emp.emp_code || "-"}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-2.5">
                     <span
                       className={`text-xs px-2 py-1 rounded-full font-medium ${
                         emp.status === 1
@@ -1162,7 +1162,7 @@ export default function EmployeeDirectoryPage() {
                       {emp.status === 1 ? tx("statusActive") : tx("statusInactive")}
                     </span>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-2.5">
                     <div className="flex items-center justify-end gap-2">
                       {/* Per-row Invite — sends an invitation to this employee's
                           email/role without opening the bulk invite modal.

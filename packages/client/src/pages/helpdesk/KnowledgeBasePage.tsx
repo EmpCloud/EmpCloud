@@ -219,7 +219,7 @@ export default function KnowledgeBasePage() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => startEdit(selectedArticle)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-border rounded-lg text-muted-foreground hover:bg-muted"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[13px] border border-border rounded-md text-muted-foreground hover:bg-muted"
               >
                 <Pencil className="h-3.5 w-3.5" /> {t("kb.edit")}
               </button>
@@ -228,7 +228,7 @@ export default function KnowledgeBasePage() {
                   setDeleteTarget({ id: selectedArticle.id, title: selectedArticle.title });
                   setDeleteError(null);
                 }}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-red-200 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[13px] border border-red-200 dark:border-red-900/50 rounded-md text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40"
               >
                 <Trash2 className="h-3.5 w-3.5" /> {t("kb.delete")}
               </button>
@@ -236,7 +236,7 @@ export default function KnowledgeBasePage() {
           )}
         </div>
 
-        <div className="bg-card rounded-xl border border-border p-8 max-w-3xl">
+        <div className="bg-card rounded-lg border border-border p-8 max-w-3xl">
           <div className="flex items-center gap-2 mb-3">
             <span
               className={`text-xs font-medium px-2 py-0.5 rounded ${
@@ -252,7 +252,7 @@ export default function KnowledgeBasePage() {
             )}
           </div>
 
-          <h1 className="text-2xl font-bold text-foreground mb-2">
+          <h1 className="text-xl font-semibold tracking-tight text-foreground mb-2">
             {selectedArticle.title}
           </h1>
 
@@ -292,7 +292,7 @@ export default function KnowledgeBasePage() {
                   })
                 }
                 disabled={rateArticle.isPending}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-medium disabled:opacity-50 ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-md border text-[13px] font-medium disabled:opacity-50 ${
                   currentVote === true
                     ? "border-green-500 bg-green-50 dark:bg-green-950/40 text-green-800 dark:text-green-200"
                     : "border-green-200 dark:border-green-900 text-green-700 dark:text-green-300 hover:bg-green-50 dark:hover:bg-green-950/40"
@@ -309,7 +309,7 @@ export default function KnowledgeBasePage() {
                   })
                 }
                 disabled={rateArticle.isPending}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-medium disabled:opacity-50 ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-md border text-[13px] font-medium disabled:opacity-50 ${
                   currentVote === false
                     ? "border-red-500 bg-red-50 dark:bg-red-950/40 text-red-800 dark:text-red-200"
                     : "border-red-200 dark:border-red-900 text-red-700 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/40"
@@ -327,9 +327,9 @@ export default function KnowledgeBasePage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t("kb.title")}</h1>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("kb.title")}</h1>
           <p className="text-muted-foreground mt-1">
             {t("kb.subtitle")}
           </p>
@@ -345,7 +345,7 @@ export default function KnowledgeBasePage() {
                 setShowForm(true);
               }
             }}
-            className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700"
+            className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700"
           >
             <Plus className="h-4 w-4" /> {t("kb.newArticle")}
           </button>
@@ -354,28 +354,28 @@ export default function KnowledgeBasePage() {
 
       {/* Create / Edit Article Form */}
       {showForm && isHR && (
-        <div className="bg-card rounded-xl border border-border p-6 mb-6">
+        <div className="bg-card rounded-lg border border-border p-4 mb-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-foreground">
+            <h2 className="text-base font-semibold text-foreground">
               {editingId ? t("kb.editArticle") : t("kb.newKbArticle")}
             </h2>
             <button
               onClick={() => { setShowForm(false); resetForm(); }}
-              className="p-1 rounded-lg text-muted-foreground hover:bg-muted"
+              className="p-1 rounded-md text-muted-foreground hover:bg-muted"
             >
               <X className="h-5 w-5" />
             </button>
           </div>
           <form onSubmit={handleSubmitForm} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">
+              <label className="block text-[13px] font-medium text-muted-foreground mb-1">
                 {t("kb.titleLabel")}
               </label>
               <input
                 type="text"
                 value={formTitle}
                 onChange={(e) => setFormTitle(e.target.value)}
-                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
                 placeholder={t("kb.titlePlaceholder")}
                 required
               />
@@ -383,13 +383,13 @@ export default function KnowledgeBasePage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1">
+                <label className="block text-[13px] font-medium text-muted-foreground mb-1">
                   {t("kb.categoryLabel")}
                 </label>
                 <select
                   value={formCategory}
                   onChange={(e) => setFormCategory(e.target.value)}
-                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm"
+                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-md text-[13px]"
                 >
                   {CATEGORIES.map((c) => (
                     <option key={c} value={c}>
@@ -421,7 +421,7 @@ export default function KnowledgeBasePage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">
+              <label className="block text-[13px] font-medium text-muted-foreground mb-1">
                 {t("kb.contentLabel")}
               </label>
               <RichTextEditor
@@ -435,7 +435,7 @@ export default function KnowledgeBasePage() {
               <button
                 type="button"
                 onClick={() => { setShowForm(false); resetForm(); }}
-                className="px-4 py-2 text-sm border border-border rounded-lg text-muted-foreground hover:bg-muted"
+                className="px-4 py-2 text-[13px] border border-border rounded-md text-muted-foreground hover:bg-muted"
               >
                 {t("kb.cancel")}
               </button>
@@ -447,7 +447,7 @@ export default function KnowledgeBasePage() {
                   !formTitle.trim() ||
                   isRichTextEmpty(formContent)
                 }
-                className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <BookMarked className="h-4 w-4" />
                 {editingId
@@ -464,7 +464,7 @@ export default function KnowledgeBasePage() {
       )}
 
       {/* Search + Category Filter */}
-      <div className="bg-card rounded-xl border border-border p-4 mb-6">
+      <div className="bg-card rounded-lg border border-border p-4 mb-6">
         <div className="flex flex-wrap items-center gap-3">
           <form
             onSubmit={handleSearch}
@@ -477,7 +477,7 @@ export default function KnowledgeBasePage() {
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 placeholder={t("kb.searchPlaceholder")}
-                className="bg-card text-foreground w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm"
+                className="bg-card text-foreground w-full pl-9 pr-3 py-2 border border-border rounded-md text-[13px]"
               />
             </div>
             <button
@@ -494,7 +494,7 @@ export default function KnowledgeBasePage() {
               setCategory("");
               setPage(1);
             }}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+            className={`px-3 py-1.5 rounded-md text-[13px] font-medium transition-colors ${
               !category
                 ? "bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300"
                 : "text-muted-foreground hover:bg-muted"
@@ -509,7 +509,7 @@ export default function KnowledgeBasePage() {
                 setCategory(c);
                 setPage(1);
               }}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+              className={`px-3 py-1.5 rounded-md text-[13px] font-medium transition-colors ${
                 category === c
                   ? "bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300"
                   : "text-muted-foreground hover:bg-muted"
@@ -523,11 +523,11 @@ export default function KnowledgeBasePage() {
 
       {/* Articles Grid */}
       {isLoading ? (
-        <div className="bg-card rounded-xl border border-border p-8 text-center text-muted-foreground">
+        <div className="bg-card rounded-lg border border-border p-8 text-center text-muted-foreground">
           {t("kb.loading")}
         </div>
       ) : articles.length === 0 ? (
-        <div className="bg-card rounded-xl border border-border p-8 text-center text-muted-foreground">
+        <div className="bg-card rounded-lg border border-border p-8 text-center text-muted-foreground">
           <BookMarked className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
           <p className="text-lg font-medium text-muted-foreground mb-1">
             {t("kb.noArticles")}
@@ -552,7 +552,7 @@ export default function KnowledgeBasePage() {
                   handleViewArticle(a.slug || a.id);
                 }
               }}
-              className="relative text-left bg-card rounded-xl border border-border p-5 hover:shadow-md transition-shadow cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="relative text-left bg-card rounded-lg border border-border p-4 hover:border-brand-400 transition-colors duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-500"
             >
               {isHR && (
                 <div className="absolute top-3 right-3 flex items-center gap-1">
@@ -636,14 +636,14 @@ export default function KnowledgeBasePage() {
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="bg-card text-foreground flex items-center gap-1 px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50"
+              className="bg-card text-foreground flex items-center gap-1 px-3 py-1.5 text-[13px] border border-border rounded-md hover:bg-muted transition-colors disabled:opacity-50"
             >
               <ChevronLeft className="h-4 w-4" /> {t("kb.previous")}
             </button>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={page >= meta.total_pages}
-              className="bg-card text-foreground flex items-center gap-1 px-3 py-1 text-sm border border-border rounded-lg disabled:opacity-50"
+              className="bg-card text-foreground flex items-center gap-1 px-3 py-1.5 text-[13px] border border-border rounded-md hover:bg-muted transition-colors disabled:opacity-50"
             >
               {t("kb.next")} <ChevronRight className="h-4 w-4" />
             </button>
@@ -658,7 +658,7 @@ export default function KnowledgeBasePage() {
           onClick={() => !deleteArticle.isPending && setDeleteTarget(null)}
         >
           <div
-            className="w-full max-w-md rounded-xl bg-card shadow-xl"
+            className="w-full max-w-md rounded-lg bg-card shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="px-6 py-5">
@@ -675,16 +675,16 @@ export default function KnowledgeBasePage() {
               </div>
             </div>
             {deleteError && (
-              <div className="mx-6 mb-4 rounded-lg bg-red-50 dark:bg-red-950/40 p-3 text-sm text-red-700 dark:text-red-300">
+              <div className="mx-6 mb-4 rounded-md bg-red-50 dark:bg-red-950/40 p-3 text-sm text-red-700 dark:text-red-300">
                 {deleteError}
               </div>
             )}
-            <div className="flex justify-end gap-3 rounded-b-xl border-t border-border bg-muted px-6 py-4">
+            <div className="flex justify-end gap-3 rounded-b-lg border-t border-border bg-muted px-6 py-4">
               <button
                 type="button"
                 onClick={() => setDeleteTarget(null)}
                 disabled={deleteArticle.isPending}
-                className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-card disabled:opacity-50"
+                className="rounded-md border border-border px-4 py-2 text-[13px] font-medium text-muted-foreground hover:bg-card disabled:opacity-50"
               >
                 {t("kb.cancel")}
               </button>
@@ -692,7 +692,7 @@ export default function KnowledgeBasePage() {
                 type="button"
                 onClick={() => deleteArticle.mutate(deleteTarget.id)}
                 disabled={deleteArticle.isPending}
-                className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+                className="flex items-center gap-2 rounded-md bg-red-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-red-700 disabled:opacity-50"
               >
                 {deleteArticle.isPending ? (
                   <>
