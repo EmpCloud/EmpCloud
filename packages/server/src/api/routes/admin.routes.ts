@@ -38,6 +38,9 @@ import {
 } from "../../services/admin/system-notification.service.js";
 import * as planPricingAdmin from "../../services/admin/plan-pricing-admin.service.js";
 import * as subscriptionAdmin from "../../services/admin/subscription-admin.service.js";
+import * as orgAdmin from "../../services/admin/org-admin.service.js";
+import { logAudit } from "../../services/audit/audit.service.js";
+import { AuditAction } from "@empcloud/shared";
 import * as adminBilling from "../../services/admin/admin-billing.service.js";
 import { billingFetchRaw } from "../../services/billing/billing-integration.service.js";
 import { hashPassword } from "../../utils/crypto.js";
@@ -102,6 +105,151 @@ router.get("/organizations/:id", async (req: Request, res: Response, next: NextF
     const orgId = parseInt(String(req.params.id), 10);
     const detail = await getOrgDetail(orgId);
     sendSuccess(res, detail);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Organization comments — operator notes kept against a tenant
+// ---------------------------------------------------------------------------
+
+// GET /api/v1/admin/organizations/:id/comments
+router.get("/organizations/:id/comments", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const comments = await orgAdmin.listOrgComments(parseInt(String(req.params.id), 10));
+    sendSuccess(res, comments);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/v1/admin/organizations/:id/comments
+router.post("/organizations/:id/comments", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const orgId = parseInt(String(req.params.id), 10);
+    const comment = await orgAdmin.addOrgComment({
+      orgId,
+      authorUserId: req.user!.sub,
+      comment: req.body?.comment,
+    });
+    await logAudit({
+      organizationId: orgId,
+      userId: req.user!.sub,
+      action: AuditAction.ORG_COMMENT_ADDED,
+      resourceType: "organization_comment",
+      resourceId: String(comment.id),
+      ipAddress: req.ip,
+      userAgent: req.get("user-agent"),
+    });
+    sendSuccess(res, comment, 201);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// PUT /api/v1/admin/organizations/:id/comments/:commentId
+router.put(
+  "/organizations/:id/comments/:commentId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const orgId = parseInt(String(req.params.id), 10);
+      const commentId = parseInt(String(req.params.commentId), 10);
+      const comment = await orgAdmin.updateOrgComment({
+        orgId,
+        commentId,
+        comment: req.body?.comment,
+      });
+      await logAudit({
+        organizationId: orgId,
+        userId: req.user!.sub,
+        action: AuditAction.ORG_COMMENT_UPDATED,
+        resourceType: "organization_comment",
+        resourceId: String(commentId),
+        ipAddress: req.ip,
+        userAgent: req.get("user-agent"),
+      });
+      sendSuccess(res, comment);
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+// DELETE /api/v1/admin/organizations/:id/comments/:commentId
+router.delete(
+  "/organizations/:id/comments/:commentId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const orgId = parseInt(String(req.params.id), 10);
+      const commentId = parseInt(String(req.params.commentId), 10);
+      await orgAdmin.deleteOrgComment({ orgId, commentId });
+      await logAudit({
+        organizationId: orgId,
+        userId: req.user!.sub,
+        action: AuditAction.ORG_COMMENT_DELETED,
+        resourceType: "organization_comment",
+        resourceId: String(commentId),
+        ipAddress: req.ip,
+        userAgent: req.get("user-agent"),
+      });
+      sendSuccess(res, { id: commentId });
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+// ---------------------------------------------------------------------------
+// Organization deletion
+// ---------------------------------------------------------------------------
+
+// GET /api/v1/admin/organizations/:id/deletion-impact — blast radius preview
+router.get(
+  "/organizations/:id/deletion-impact",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const impact = await orgAdmin.getOrgDeletionImpact(parseInt(String(req.params.id), 10));
+      sendSuccess(res, impact);
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+// DELETE /api/v1/admin/organizations/:id — permanently delete a tenant.
+// Body must carry `confirm_name` matching the org name exactly.
+router.delete("/organizations/:id", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const orgId = parseInt(String(req.params.id), 10);
+
+    const result = await orgAdmin.deleteOrganization({
+      orgId,
+      confirmName: req.body?.confirm_name,
+      actingSuperAdminId: req.user!.sub,
+    });
+
+    // Audit AFTER the delete succeeds — logging first would leave a false
+    // "org deleted" record behind every rejected confirmation. `organizationId`
+    // is null because the tenant no longer exists; `details` is what preserves
+    // which one it was.
+    await logAudit({
+      organizationId: null,
+      userId: req.user!.sub,
+      action: AuditAction.ORG_DELETED,
+      resourceType: "organization",
+      resourceId: String(orgId),
+      details: {
+        organization_id: orgId,
+        name: result.name,
+        users_deleted: result.users_deleted,
+        rows_cleared: result.rows_cleared,
+      },
+      ipAddress: req.ip,
+      userAgent: req.get("user-agent"),
+    });
+
+    sendSuccess(res, result);
   } catch (err) {
     next(err);
   }

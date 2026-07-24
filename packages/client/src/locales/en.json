@@ -3206,6 +3206,55 @@
       "subscriptions_other": "{{count}} subscriptions"
     }
   },
+  "orgComments": {
+    "title": "Internal notes",
+    "description": "Visible to super admins only. Not shown to anyone inside the organization.",
+    "placeholder": "Add a note about this organization…",
+    "add": "Add note",
+    "save": "Save",
+    "cancel": "Cancel",
+    "editAction": "Edit",
+    "deleteAction": "Delete",
+    "edited": "(edited)",
+    "confirmDelete": "Delete this note?",
+    "loading": "Loading notes…",
+    "empty": "No notes yet.",
+    "unknownAuthor": "Unknown",
+    "toast": {
+      "added": "Note added",
+      "addFailed": "Could not add note",
+      "updated": "Note updated",
+      "updateFailed": "Could not update note",
+      "deleted": "Note deleted",
+      "deleteFailed": "Could not delete note"
+    }
+  },
+  "orgDelete": {
+    "title": "Danger zone",
+    "description": "Permanently delete this organization and every record it owns — users, attendance, leave, payroll data, subscriptions and documents. This cannot be undone.",
+    "button": "Delete organization",
+    "modal": {
+      "title": "Delete organization",
+      "irreversibleTitle": "This action is permanent and cannot be undone.",
+      "irreversibleBody": "There is no recovery, no undo and no trash. Proceed only if you are absolutely certain.",
+      "platformOrg": "This is the platform organization that owns super-admin accounts. It cannot be deleted.",
+      "warning": "This permanently removes:",
+      "users_one": "{{count}} user account",
+      "users_other": "{{count}} user accounts",
+      "subscriptions_one": "{{count}} module subscription",
+      "subscriptions_other": "{{count}} module subscriptions",
+      "allData": "All attendance, leave, payroll, documents, tickets and assets",
+      "confirmPrompt": "Type the organization name to confirm:",
+      "confirmPlaceholder": "Organization name",
+      "cancel": "Cancel",
+      "confirm": "Delete permanently",
+      "deleting": "Deleting…"
+    },
+    "toast": {
+      "deleted": "Organization deleted",
+      "failed": "Could not delete organization"
+    }
+  },
   "orgDetail": {
     "loading": "Loading...",
     "error": {

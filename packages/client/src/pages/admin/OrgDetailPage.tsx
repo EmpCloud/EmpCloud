@@ -3,6 +3,8 @@ import { useTranslation, Trans } from "react-i18next";
 import { useParams, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
+import OrgCommentsCard from "@/components/admin/OrgCommentsCard";
+import DeleteOrgCard from "@/components/admin/DeleteOrgCard";
 import {
   ArrowLeft,
   Building2,
@@ -467,6 +469,13 @@ export default function OrgDetailPage() {
           </div>
         </div>
       )}
+
+      {/* Internal notes — always visible, not behind a tab: they're context for
+          whatever the operator is about to do on this page. */}
+      <OrgCommentsCard orgId={String(id)} />
+
+      {/* Irreversible actions go last, below everything else. */}
+      <DeleteOrgCard orgId={String(id)} orgName={org.name} />
 
       {/* Reset Password Modal */}
       {resetPasswordModal && (
