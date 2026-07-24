@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -104,6 +104,47 @@ function renderWidgetMarkdown(text: string, onClickSuggestion?: (text: string) =
 }
 
 // ---------------------------------------------------------------------------
+// Draggable launcher position
+// ---------------------------------------------------------------------------
+// The launcher sits above the page in a fixed corner, where it covered action
+// buttons on some screens. It can now be dragged anywhere; the chosen spot is
+// remembered per browser. A press only counts as a drag once the pointer has
+// travelled DRAG_THRESHOLD px, so an ordinary click still opens the assistant.
+
+const LAUNCHER_POSITION_KEY = "empcloud.assistant-launcher-position";
+const DRAG_THRESHOLD = 4;
+const EDGE_MARGIN = 8;
+/** Clicks landing within this long after a drag are the drag's own click — ignore them. */
+const CLICK_SUPPRESS_MS = 250;
+
+type Point = { x: number; y: number };
+
+function readStoredPosition(): Point | null {
+  try {
+    const raw = localStorage.getItem(LAUNCHER_POSITION_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return typeof parsed?.x === "number" && typeof parsed?.y === "number"
+      ? { x: parsed.x, y: parsed.y }
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Keep the launcher fully on screen — a stored spot can be off-viewport after a resize. */
+function clampToViewport(p: Point, el: HTMLElement | null): Point {
+  const w = el?.offsetWidth || 64;
+  const h = el?.offsetHeight || 80;
+  const maxX = Math.max(EDGE_MARGIN, window.innerWidth - w - EDGE_MARGIN);
+  const maxY = Math.max(EDGE_MARGIN, window.innerHeight - h - EDGE_MARGIN);
+  return {
+    x: Math.min(Math.max(p.x, EDGE_MARGIN), maxX),
+    y: Math.min(Math.max(p.y, EDGE_MARGIN), maxY),
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Floating Chat Widget
 // ---------------------------------------------------------------------------
 
@@ -191,6 +232,87 @@ export default function ChatWidget() {
     navigate("/assistant");
   }, [navigate]);
 
+  // --- Launcher dragging -------------------------------------------------
+  const launcherRef = useRef<HTMLButtonElement>(null);
+  const [launcherPos, setLauncherPos] = useState<Point | null>(readStoredPosition);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragRef = useRef<{
+    pointerId: number;
+    grabX: number;
+    grabY: number;
+    startX: number;
+    startY: number;
+    moved: boolean;
+  } | null>(null);
+  const dragEndedAt = useRef(0);
+
+  // A position stored on a wider window can land off-screen — clamp before paint.
+  useLayoutEffect(() => {
+    setLauncherPos((p) => (p ? clampToViewport(p, launcherRef.current) : p));
+  }, []);
+
+  useEffect(() => {
+    function onResize() {
+      setLauncherPos((p) => (p ? clampToViewport(p, launcherRef.current) : p));
+    }
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  const onLauncherPointerDown = useCallback((e: React.PointerEvent<HTMLButtonElement>) => {
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    dragRef.current = {
+      pointerId: e.pointerId,
+      // Offset of the grab point inside the button, so it doesn't jump to the cursor.
+      grabX: e.clientX - rect.left,
+      grabY: e.clientY - rect.top,
+      startX: e.clientX,
+      startY: e.clientY,
+      moved: false,
+    };
+    e.currentTarget.setPointerCapture(e.pointerId);
+  }, []);
+
+  const onLauncherPointerMove = useCallback((e: React.PointerEvent<HTMLButtonElement>) => {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== e.pointerId) return;
+    if (!drag.moved) {
+      if (Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY) < DRAG_THRESHOLD) return;
+      drag.moved = true;
+      setIsDragging(true);
+    }
+    setLauncherPos(
+      clampToViewport({ x: e.clientX - drag.grabX, y: e.clientY - drag.grabY }, e.currentTarget),
+    );
+  }, []);
+
+  const onLauncherPointerUp = useCallback((e: React.PointerEvent<HTMLButtonElement>) => {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== e.pointerId) return;
+    dragRef.current = null;
+    e.currentTarget.releasePointerCapture?.(e.pointerId);
+    if (!drag.moved) return; // a plain click — let onClick open the assistant
+    setIsDragging(false);
+    dragEndedAt.current = performance.now();
+    const rect = e.currentTarget.getBoundingClientRect();
+    try {
+      localStorage.setItem(
+        LAUNCHER_POSITION_KEY,
+        JSON.stringify({ x: rect.left, y: rect.top }),
+      );
+    } catch {
+      // Private mode / quota — position just won't survive a reload.
+    }
+  }, []);
+
+  const onLauncherClick = useCallback(() => {
+    // Releasing a drag also fires a click; timestamp beats a boolean flag, which
+    // would stay set (and swallow the next real click) if no click followed.
+    if (performance.now() - dragEndedAt.current < CLICK_SUPPRESS_MS) return;
+    handleOpen();
+  }, [handleOpen]);
+
   if (!canUseChatbot) return null;
   // Don't render the floating widget over the Messages page.
   if (onMessagesPage) return null;
@@ -198,11 +320,29 @@ export default function ChatWidget() {
   if (!isOpen) {
     return (
       <button
-        onClick={handleOpen}
-        className="fixed bottom-20 right-6 z-[9999] flex flex-col items-center gap-1 group"
-        title="EMP AI — Your HR Assistant"
+        ref={launcherRef}
+        onClick={onLauncherClick}
+        onPointerDown={onLauncherPointerDown}
+        onPointerMove={onLauncherPointerMove}
+        onPointerUp={onLauncherPointerUp}
+        onPointerCancel={onLauncherPointerUp}
+        style={
+          launcherPos
+            ? { left: launcherPos.x, top: launcherPos.y, right: "auto", bottom: "auto" }
+            : undefined
+        }
+        className={`fixed z-[9999] flex flex-col items-center gap-1 group touch-none select-none ${
+          launcherPos ? "" : "bottom-20 right-6"
+        } ${isDragging ? "cursor-grabbing" : "cursor-grab"}`}
+        title="EMP AI — Your HR Assistant (drag to move)"
       >
-        <div className="relative h-14 w-14 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-lg shadow-violet-300 hover:shadow-xl hover:shadow-violet-300 hover:scale-105 transition-all flex items-center justify-center">
+        <div
+          className={`relative h-14 w-14 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-lg shadow-violet-300 flex items-center justify-center ${
+            isDragging
+              ? "scale-105 shadow-xl shadow-violet-300"
+              : "hover:shadow-xl hover:shadow-violet-300 hover:scale-105 transition-all"
+          }`}
+        >
           <MessageCircle className="h-6 w-6 group-hover:scale-110 transition-transform" />
           <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full border-2 border-white">
             <span className="absolute inset-0 rounded-full bg-purple-500 animate-ping opacity-75" />
