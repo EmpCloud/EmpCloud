@@ -141,6 +141,54 @@ export default function RichTextEditor({ value, onChange, placeholder, className
     setIsEmpty(isRichTextEmpty(html));
   }, [onChange]);
 
+  // Sanitize on paste. A contentEditable otherwise keeps whatever inline styles
+  // the source carried — and pasting from any Tailwind-rendered page dumps the
+  // framework's `--tw-*` CSS variables onto every element (including <br>),
+  // bloating the saved markup and leaking as visible text wherever it's shown
+  // as plain text. Strip style/class/id and disallowed tags from the pasted
+  // fragment, keeping only the basic formatting tags the editor itself emits.
+  const handlePaste = useCallback(
+    (e: React.ClipboardEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      const html = e.clipboardData.getData("text/html");
+      const text = e.clipboardData.getData("text/plain");
+
+      if (!html) {
+        // Plain-text paste: insert as-is (execCommand escapes it for us).
+        document.execCommand("insertText", false, text);
+        handleInput();
+        return;
+      }
+
+      const ALLOWED = new Set([
+        "P", "BR", "B", "STRONG", "I", "EM", "U", "A", "UL", "OL", "LI",
+        "H1", "H2", "H3", "SPAN", "DIV", "BLOCKQUOTE",
+      ]);
+      const tmp = document.createElement("div");
+      tmp.innerHTML = html;
+      // Drop non-content nodes wholesale.
+      tmp.querySelectorAll("script,style,meta,link,svg,img,iframe,object").forEach((n) => n.remove());
+      tmp.querySelectorAll("*").forEach((node) => {
+        const el = node as HTMLElement;
+        // Strip every attribute except href on links — this is what removes the
+        // pasted `style="--tw-...."` pollution and any on* handlers.
+        for (const attr of Array.from(el.attributes)) {
+          if (!(el.tagName === "A" && attr.name.toLowerCase() === "href")) {
+            el.removeAttribute(attr.name);
+          }
+        }
+        // Unwrap disallowed tags, keeping their text/children.
+        if (!ALLOWED.has(el.tagName)) {
+          el.replaceWith(...Array.from(el.childNodes));
+        }
+      });
+
+      document.execCommand("insertHTML", false, tmp.innerHTML);
+      handleInput();
+    },
+    [handleInput],
+  );
+
   const syncActive = useCallback(() => {
     try {
       setActive({
@@ -282,6 +330,7 @@ export default function RichTextEditor({ value, onChange, placeholder, className
           aria-label={placeholder || "Rich text editor"}
           suppressContentEditableWarning
           onInput={handleInput}
+          onPaste={handlePaste}
           onKeyUp={onSelect}
           onMouseUp={onSelect}
           onFocus={onSelect}

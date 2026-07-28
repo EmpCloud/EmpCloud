@@ -53,6 +53,27 @@ export function sanitizeHtml(input: string): string {
     ""
   );
 
+  // 4. Scrub CSS custom properties (`--foo: ...`) out of inline style
+  //    attributes. Pasting content copied from a Tailwind-rendered page carries
+  //    the framework's `--tw-*` variables as inline styles onto every element,
+  //    including <br>, bloating the stored HTML with hundreds of chars of junk
+  //    that leaks as visible text anywhere the content is shown as plain text.
+  //    We keep legitimate declarations (font-size, color, text-align — the ones
+  //    the editor's own formatting emits) and drop only the `--*` ones; a style
+  //    left empty is removed entirely.
+  result = result.replace(
+    /\sstyle\s*=\s*(?:"([^"]*)"|'([^']*)')/gi,
+    (_m, dq, sq) => {
+      const raw = dq !== undefined ? dq : sq;
+      const kept = raw
+        .split(";")
+        .map((d: string) => d.trim())
+        .filter((d: string) => d && !d.startsWith("--"))
+        .join("; ");
+      return kept ? ` style="${kept}"` : "";
+    },
+  );
+
   return result;
 }
 
