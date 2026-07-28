@@ -30,6 +30,57 @@ function sanitizeDocList<T extends Record<string, any>>(docs: T[]): T[] {
 // Categories
 // ---------------------------------------------------------------------------
 
+/**
+ * Default document categories seeded for every organization. Without these the
+ * upload form's Category dropdown is empty and employees can't upload anything
+ * (category is required). New orgs get these on creation; existing orgs are
+ * backfilled by migration 103. `mandatory` drives the "documents to submit"
+ * nudges, so only the universally-required KYC docs are marked.
+ */
+export const DEFAULT_DOCUMENT_CATEGORIES: Array<{
+  name: string;
+  description: string;
+  is_mandatory: boolean;
+}> = [
+  { name: "Identity Proof", description: "Aadhaar, Voter ID or Driving License", is_mandatory: true },
+  { name: "PAN Card", description: "Permanent Account Number card", is_mandatory: true },
+  { name: "Address Proof", description: "Utility bill, rent agreement or passport", is_mandatory: false },
+  { name: "Educational Certificate", description: "Degree, diploma or marksheets", is_mandatory: false },
+  { name: "Experience Letter", description: "Relieving / experience letters from previous employers", is_mandatory: false },
+  { name: "Bank Details", description: "Cancelled cheque or bank passbook for salary payouts", is_mandatory: true },
+  { name: "Resume / CV", description: "Your latest curriculum vitae", is_mandatory: false },
+  { name: "Offer / Appointment Letter", description: "Signed offer or appointment letter", is_mandatory: false },
+  { name: "Photograph", description: "Recent passport-size photograph", is_mandatory: false },
+  { name: "Other", description: "Any other supporting document", is_mandatory: false },
+];
+
+/**
+ * Seed the default category set for an org that has none. Idempotent — skips if
+ * the org already has any category, so it's safe to call on every registration.
+ */
+export async function seedDefaultCategories(orgId: number): Promise<number> {
+  const db = getDB();
+  const existing = await db("document_categories")
+    .where({ organization_id: orgId })
+    .count("* as c")
+    .first();
+  if (Number(existing?.c ?? 0) > 0) return 0;
+
+  const now = new Date();
+  await db("document_categories").insert(
+    DEFAULT_DOCUMENT_CATEGORIES.map((c) => ({
+      organization_id: orgId,
+      name: c.name,
+      description: c.description,
+      is_mandatory: c.is_mandatory,
+      is_active: true,
+      created_at: now,
+      updated_at: now,
+    })),
+  );
+  return DEFAULT_DOCUMENT_CATEGORIES.length;
+}
+
 export async function createCategory(
   orgId: number,
   data: { name: string; description?: string | null; is_mandatory?: boolean },

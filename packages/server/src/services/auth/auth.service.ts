@@ -10,6 +10,7 @@ import { logger } from "../../utils/logger.js";
 import { logAudit } from "../audit/audit.service.js";
 import { issueTokens } from "../oauth/oauth.service.js";
 import { sendPasswordResetEmail, sendWelcomeEmail } from "../email/email.service.js";
+import { seedDefaultCategories } from "../document/document.service.js";
 import { TOKEN_DEFAULTS, AuditAction } from "@empcloud/shared";
 import type { UserRole } from "@empcloud/shared";
 
@@ -75,6 +76,16 @@ export async function register(params: {
 
   const user = await db("users").where({ id: userId }).first();
   const org = await db("organizations").where({ id: orgId }).first();
+
+  // Seed default document categories so the new org's employees can upload
+  // documents immediately (the upload form's Category field is required and
+  // would otherwise be empty). Best-effort: a failure here must not block
+  // registration.
+  try {
+    await seedDefaultCategories(orgId);
+  } catch (err) {
+    logger.error(`Failed to seed default document categories for org ${orgId}:`, err);
+  }
 
   // Issue tokens
   const tokens = await issueTokens({
