@@ -257,17 +257,28 @@ async function recordPunch(orgId: number, userId: number, data: PunchInput) {
       ? Math.max(0, Math.round((lastTime.getTime() - firstTime.getTime()) / 60000))
       : 0;
 
-  let shiftDurationMinutes = 480;
+  // Last-resort defaults ONLY — every `let` below is overwritten as soon as a
+  // shift is resolved. Reached solely when the row has no shift, the user has
+  // no assignment, AND the org has configured no default shift (i.e. the org
+  // uses no shifts at all). With no shift there's no break data, so gross ==
+  // net == a standard 8h working day.
+  const FALLBACK_SHIFT_MINUTES = 8 * 60;
+  let shiftDurationMinutes = FALLBACK_SHIFT_MINUTES;
+  // Gross span (shift start→end, break INCLUDED). Used as the "full day"
+  // present floor; shiftDurationMinutes is the net-of-break working time.
+  let grossShiftMinutes = FALLBACK_SHIFT_MINUTES;
   let earlyDepartureMinutes = 0;
   let overtimeMinutes = 0;
   let lateMinutes = 0;
 
-  // Resolve the applicable shift for late/OT/early-departure calc:
-  //   - prefer the shift_id stored on the attendance row (if any)
-  //   - fall back to the user's current shift_assignment for `today` so a
-  //     row created without a shift (e.g. a leave row, or an admin-created
-  //     row from before the assignment landed) still picks up the right
-  //     shift on the first real punch
+  // Resolve the applicable shift for late/OT/early-departure + classification:
+  //   1. the shift_id stored on the attendance row (if any)
+  //   2. the user's current shift_assignment for `today` so a row created
+  //      without a shift (a leave row, or an admin-created row from before the
+  //      assignment landed) still picks up the right shift on the first punch
+  //   3. the org's default shift (is_default) so a user with no explicit
+  //      assignment still classifies against real configured hours rather than
+  //      the invented 8h fallback above
   let shift: any = null;
   if (record.shift_id) {
     shift = await db("shifts").where({ id: record.shift_id }).first();
@@ -285,6 +296,11 @@ async function recordPunch(orgId: number, userId: number, data: PunchInput) {
       shift = await db("shifts").where({ id: assignment.shift_id }).first();
     }
   }
+  if (!shift) {
+    shift = await db("shifts")
+      .where({ organization_id: orgId, is_default: true })
+      .first();
+  }
 
   if (shift) {
     const [sh, sm] = shift.start_time.split(":").map(Number);
@@ -293,6 +309,7 @@ async function recordPunch(orgId: number, userId: number, data: PunchInput) {
     const shiftEndMinutes = eeh * 60 + eem;
     let diff = shiftEndMinutes - shiftStartMinutes;
     if (diff <= 0) diff += 1440;
+    grossShiftMinutes = diff;
     shiftDurationMinutes = diff - (shift.break_minutes || 0);
 
     // Resolve the timezone the shift's wall-clock times should be interpreted
@@ -358,19 +375,32 @@ async function recordPunch(orgId: number, userId: number, data: PunchInput) {
     }
   }
 
-  const halfShift = Math.floor(shiftDurationMinutes / 2);
-  // #1822 — Bug 17: quarter-shift floor — < 25% of shift → absent,
-  // 25–50% → half_day, ≥ 50% → present.
-  const quarterShift = Math.floor(shiftDurationMinutes / 4);
+  // Attendance day classification. worked_minutes here is the check-in→
+  // check-out SPAN (break included), so it's compared against the shift the
+  // same way:
+  //   • Half-day floor = half the NET working time (span − break).
+  //     10:00–19:00 shift, 60-min break → net 8h, half-day floor = 4h.
+  //   • Present floor  = the FULL shift span the employee is expected to be
+  //     present for (start→end, break INCLUDED) less any early-leave grace —
+  //     a full day for that shift is the whole 9h window.
+  //   • Below the half-day floor → absent.
+  // Net result: worked < 4h → absent, 4h ≤ worked < 9h → half_day, ≥ 9h →
+  // present. (Was: <25% absent / 25–50% half / ≥50% present, which counted a
+  // half-shift as a full present day — #1822 revisited.)
+  const halfDayFloor = Math.floor(shiftDurationMinutes / 2);
+  const presentFloor = Math.max(
+    halfDayFloor,
+    grossShiftMinutes - (shift?.grace_minutes_early || 0),
+  );
 
   // Single-punch day stays "checked_in" — the worker is in but hasn't
   // completed the day yet. Once a second punch lands, the day rolls into
   // a present/half_day/absent bucket based on worked minutes.
   let status: "present" | "absent" | "half_day" | "checked_in" = "checked_in";
   if (punches.length > 1) {
-    if (workedMinutes < quarterShift) {
+    if (workedMinutes < halfDayFloor) {
       status = "absent";
-    } else if (workedMinutes < halfShift) {
+    } else if (workedMinutes < presentFloor) {
       status = "half_day";
     } else {
       status = "present";
@@ -975,10 +1005,10 @@ export async function getMonthlyReport(
 // single round-trip; cells without a stored row fall back to "" / WO / HO
 // based on calendar + organization_holidays.
 //
-// Half-day auto-classification: rows where status = 'present' but
-// `worked_minutes` < halfDayThresholdMinutes get reclassified as 'H'
-// (half day) in the grid. This way a 4-hour shift correctly shows as
-// half day even if the check-in/out path stored it as 'present'.
+// The grid trusts the stored status: half-day classification happens once, at
+// punch time (see the present/half_day/absent thresholds above), and is
+// persisted on the row. The grid renders that status verbatim (see codeFor)
+// and does NOT re-derive it from worked_minutes.
 
 // HPL ("Half Present + Half Leave") records the case where the employee was
 // physically present for half the workday and on leave for the other half
@@ -996,7 +1026,6 @@ export async function getMonthlyGrid(
 ) {
   const db = getDB();
   const { month, year } = params;
-  const halfDayThreshold = params.halfDayThresholdMinutes ?? 240; // 4hrs default
   const monthStart = `${year}-${String(month).padStart(2, "0")}-01`;
   const daysInMonth = new Date(year, month, 0).getDate();
   const monthEnd = `${year}-${String(month).padStart(2, "0")}-${String(daysInMonth).padStart(2, "0")}`;
