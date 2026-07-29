@@ -121,31 +121,58 @@ export async function findActiveAttendanceRecord(orgId: number, userId: number) 
     .first();
   if (!candidate) return null;
 
-  // Determine the staleness threshold:
-  //   - If shift assigned: shift_duration_minutes + OVERTIME_BUFFER (with floor)
-  //   - Else: MIN_ACTIVE_WINDOW_HOURS
+  const shift = candidate.shift_id
+    ? await db("shifts").where({ id: candidate.shift_id }).first()
+    : null;
+
+  // Does this shift legitimately span midnight? Only such shifts may keep an
+  // open (un-checked-out) record alive into the next calendar day.
+  let durationMinutes = 0;
+  let crossesMidnight = false;
+  if (shift) {
+    const [sh, sm] = String(shift.start_time).split(":").map(Number);
+    const [eh, em] = String(shift.end_time).split(":").map(Number);
+    durationMinutes = (eh * 60 + em) - (sh * 60 + sm);
+    crossesMidnight = !!shift.is_night_shift || durationMinutes <= 0;
+    if (durationMinutes <= 0) durationMinutes += 1440;
+  }
+
+  // Day-shift guard. A plain day-shift record must be closed within its own
+  // calendar day: a punch on a LATER date is a NEW day's check-in, not this
+  // record's check-out. Returning null here makes recordPunch start a fresh
+  // row instead of reopening yesterday's.
+  //
+  // Without this, the 24h active window below let the next morning's punch
+  // (~24h later, near the same time) close the prior day's still-open record —
+  // producing a bogus ~24h span and swallowing that morning's check-in. The
+  // day-boundary is the correct cut-off; the age window alone (shift + 12h OT,
+  // floored at 24h) reached right into the next day. Night/cross-midnight
+  // shifts are exempt because their open record is *supposed* to carry over.
+  if (!crossesMidnight) {
+    const recDate =
+      typeof candidate.date === "string"
+        ? candidate.date.slice(0, 10)
+        : new Date(candidate.date).toISOString().slice(0, 10);
+    const today = new Date().toISOString().slice(0, 10);
+    if (recDate < today) return null; // prior day's open record — don't reopen
+  }
+
+  // Staleness threshold for same-day re-punches and night-shift carryover:
+  //   - shift assigned: shift_duration + overtime buffer (floored)
+  //   - else: MIN_ACTIVE_WINDOW_HOURS
   let allowedMinutes = MIN_ACTIVE_WINDOW_HOURS * 60;
-  if (candidate.shift_id) {
-    const shift = await db("shifts").where({ id: candidate.shift_id }).first();
-    if (shift) {
-      const [sh, sm] = String(shift.start_time).split(":").map(Number);
-      const [eh, em] = String(shift.end_time).split(":").map(Number);
-      let durationMinutes = (eh * 60 + em) - (sh * 60 + sm);
-      if (durationMinutes <= 0) durationMinutes += 1440; // crosses midnight
-
-      // Overtime buffer — prefer the per-shift `max_overtime_minutes` config
-      // when the org has set one (>0). Falls back to a generous 12h default
-      // when unset so existing data keeps working.
-      const otMinutes =
-        Number(shift.max_overtime_minutes) > 0
-          ? Number(shift.max_overtime_minutes)
-          : OVERTIME_BUFFER_HOURS * 60;
-
-      allowedMinutes = Math.max(
-        durationMinutes + otMinutes,
-        MIN_ACTIVE_WINDOW_HOURS * 60,
-      );
-    }
+  if (shift) {
+    // Overtime buffer — prefer the per-shift `max_overtime_minutes` config
+    // when the org has set one (>0). Falls back to a generous 12h default
+    // when unset so existing data keeps working.
+    const otMinutes =
+      Number(shift.max_overtime_minutes) > 0
+        ? Number(shift.max_overtime_minutes)
+        : OVERTIME_BUFFER_HOURS * 60;
+    allowedMinutes = Math.max(
+      durationMinutes + otMinutes,
+      MIN_ACTIVE_WINDOW_HOURS * 60,
+    );
   }
 
   const checkInTime = new Date(candidate.check_in).getTime();
