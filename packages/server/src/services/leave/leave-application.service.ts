@@ -167,18 +167,14 @@ export async function applyLeave(
     .select("probation_status")
     .first();
   if (applicant) {
-    // #1920 — Hard-matching on `leaveType.code` against ["sl","sick","eml","emergency"]
-    // missed the legitimate sick-leave rows whose codes admins had typed as
-    // "SICK_LEAVE", "SL_440514", "SICKLV", etc. Probationers were then told
-    // their sick-leave application was a non-sick leave. Match by name OR
-    // code substring so any leave whose label/code contains "sick" or
-    // "emergency" passes the probation gate.
-    const haystack = `${leaveType.name ?? ""} ${leaveType.code ?? ""}`.toLowerCase();
-    const allowedKeywords = ["sick", "emergency", "sl", "eml"];
-    const isAllowed = allowedKeywords.some((kw) => haystack.includes(kw));
-    if (!isAllowed) {
+    // Probationers may only apply for leave types HR has flagged
+    // `allowed_during_probation` (migration 105). This replaced brittle
+    // name/code keyword matching (#1920) — an org whose Emergency leave is
+    // named "Earned Leave" can now allow it with a checkbox instead of the
+    // gate second-guessing the label.
+    if (!leaveType.allowed_during_probation) {
       throw new ValidationError(
-        "Employees on probation can only apply for Sick Leave or Emergency Leave",
+        "This leave type isn't available during probation. Please apply for a leave type your organization allows on probation, or contact HR.",
       );
     }
   }
@@ -491,14 +487,10 @@ export async function updateLeave(
     .whereRaw("probation_end_date >= CURDATE()")
     .select("probation_status")
     .first();
-  if (applicant) {
-    const haystack = `${leaveType.name ?? ""} ${leaveType.code ?? ""}`.toLowerCase();
-    const allowedKeywords = ["sick", "emergency", "sl", "eml"];
-    if (!allowedKeywords.some((kw) => haystack.includes(kw))) {
-      throw new ValidationError(
-        "Employees on probation can only apply for Sick Leave or Emergency Leave",
-      );
-    }
+  if (applicant && !leaveType.allowed_during_probation) {
+    throw new ValidationError(
+      "This leave type isn't available during probation. Please apply for a leave type your organization allows on probation, or contact HR.",
+    );
   }
 
   // Balance check (fiscal-year aware, matches applyLeave)

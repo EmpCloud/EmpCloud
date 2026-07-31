@@ -885,6 +885,10 @@ export const createLeaveTypeSchema = z.object({
   max_carry_forward_days: z.number().int().min(0).default(0),
   is_encashable: z.boolean().default(false),
   requires_approval: z.boolean().default(true),
+  // Employees on probation can only apply for leave types with this flag set
+  // (migration 105). Default off so probation stays restrictive unless HR opts
+  // a type in.
+  allowed_during_probation: z.boolean().default(false),
   color: z.string().max(7).optional().nullable(),
   // #1614 — Annual quota is now mandatory at create time so every new leave
   // type gets an auto-created default policy. Without a policy the type
