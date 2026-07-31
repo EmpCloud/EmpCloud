@@ -1321,7 +1321,20 @@
       },
       "applyLeaveFailed": "Falha ao aplicar a licença"
     },
-    "location": "Local"
+    "location": "Local",
+    "monthlyLate": {
+      "lateDaysOne": "{{count}} dia de atraso",
+      "lateDaysOther": "{{count}} dias de atraso",
+      "lateDaysCol": "Dias de atraso",
+      "totalLateCol": "Atraso total",
+      "presetToday": "Hoje",
+      "presetMonth": "Este mês",
+      "preset15": "Últimos 15 dias",
+      "preset30": "Últimos 30 dias",
+      "presetCustom": "Personalizado",
+      "rangeFrom": "Data inicial",
+      "rangeTo": "Data final"
+    }
   },
   "manager": {
     "title": "Minha Equipe",

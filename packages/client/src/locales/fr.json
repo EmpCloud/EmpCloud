@@ -1321,7 +1321,20 @@
       },
       "applyLeaveFailed": "Échec de l'application du congé"
     },
-    "location": "Emplacement"
+    "location": "Emplacement",
+    "monthlyLate": {
+      "lateDaysOne": "{{count}} jour de retard",
+      "lateDaysOther": "{{count}} jours de retard",
+      "lateDaysCol": "Jours de retard",
+      "totalLateCol": "Retard total",
+      "presetToday": "Aujourd’hui",
+      "presetMonth": "Ce mois",
+      "preset15": "15 derniers jours",
+      "preset30": "30 derniers jours",
+      "presetCustom": "Personnalisé",
+      "rangeFrom": "Date de début",
+      "rangeTo": "Date de fin"
+    }
   },
   "manager": {
     "title": "Mon équipe",

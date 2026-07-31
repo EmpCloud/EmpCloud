@@ -1321,7 +1321,20 @@
       },
       "applyLeaveFailed": "申请请假失败"
     },
-    "location": "地点"
+    "location": "地点",
+    "monthlyLate": {
+      "lateDaysOne": "迟到 {{count}} 天",
+      "lateDaysOther": "迟到 {{count}} 天",
+      "lateDaysCol": "迟到天数",
+      "totalLateCol": "迟到总计",
+      "presetToday": "今天",
+      "presetMonth": "本月",
+      "preset15": "最近15天",
+      "preset30": "最近30天",
+      "presetCustom": "自定义",
+      "rangeFrom": "起始日期",
+      "rangeTo": "结束日期"
+    }
   },
   "manager": {
     "title": "我的团队",

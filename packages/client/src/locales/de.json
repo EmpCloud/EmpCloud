@@ -1321,7 +1321,20 @@
       },
       "applyLeaveFailed": "Urlaub konnte nicht beantragt werden"
     },
-    "location": "Standort"
+    "location": "Standort",
+    "monthlyLate": {
+      "lateDaysOne": "{{count}} Tag zu spät",
+      "lateDaysOther": "{{count}} Tage zu spät",
+      "lateDaysCol": "Verspätete Tage",
+      "totalLateCol": "Gesamtverspätung",
+      "presetToday": "Heute",
+      "presetMonth": "Dieser Monat",
+      "preset15": "Letzte 15 Tage",
+      "preset30": "Letzte 30 Tage",
+      "presetCustom": "Benutzerdefiniert",
+      "rangeFrom": "Von Datum",
+      "rangeTo": "Bis Datum"
+    }
   },
   "manager": {
     "title": "Mein Team",

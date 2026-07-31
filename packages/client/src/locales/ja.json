@@ -1321,7 +1321,20 @@
       },
       "applyLeaveFailed": "休暇の適用に失敗しました"
     },
-    "location": "勤務地"
+    "location": "勤務地",
+    "monthlyLate": {
+      "lateDaysOne": "遅刻{{count}}日",
+      "lateDaysOther": "遅刻{{count}}日",
+      "lateDaysCol": "遅刻日数",
+      "totalLateCol": "遅刻合計",
+      "presetToday": "今日",
+      "presetMonth": "今月",
+      "preset15": "過去15日間",
+      "preset30": "過去30日間",
+      "presetCustom": "カスタム",
+      "rangeFrom": "開始日",
+      "rangeTo": "終了日"
+    }
   },
   "manager": {
     "title": "マイチーム",

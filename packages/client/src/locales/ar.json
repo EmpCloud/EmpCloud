@@ -1321,7 +1321,20 @@
       },
       "applyLeaveFailed": "فشل تطبيق الإجازة"
     },
-    "location": "الموقع"
+    "location": "الموقع",
+    "monthlyLate": {
+      "lateDaysOne": "{{count}} يوم تأخير",
+      "lateDaysOther": "{{count}} أيام تأخير",
+      "lateDaysCol": "أيام التأخير",
+      "totalLateCol": "إجمالي التأخير",
+      "presetToday": "اليوم",
+      "presetMonth": "هذا الشهر",
+      "preset15": "آخر 15 يومًا",
+      "preset30": "آخر 30 يومًا",
+      "presetCustom": "مخصص",
+      "rangeFrom": "من تاريخ",
+      "rangeTo": "إلى تاريخ"
+    }
   },
   "manager": {
     "title": "فريقي",

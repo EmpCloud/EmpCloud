@@ -1321,7 +1321,20 @@
       },
       "applyLeaveFailed": "No se pudo aplicar el permiso"
     },
-    "location": "Ubicación"
+    "location": "Ubicación",
+    "monthlyLate": {
+      "lateDaysOne": "{{count}} día de retraso",
+      "lateDaysOther": "{{count}} días de retraso",
+      "lateDaysCol": "Días de retraso",
+      "totalLateCol": "Retraso total",
+      "presetToday": "Hoy",
+      "presetMonth": "Este mes",
+      "preset15": "Últimos 15 días",
+      "preset30": "Últimos 30 días",
+      "presetCustom": "Personalizado",
+      "rangeFrom": "Fecha desde",
+      "rangeTo": "Fecha hasta"
+    }
   },
   "manager": {
     "title": "Mi Equipo",
