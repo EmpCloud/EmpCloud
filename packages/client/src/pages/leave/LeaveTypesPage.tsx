@@ -27,6 +27,7 @@ interface LeaveType {
   max_carry_forward_days: number;
   is_encashable: boolean;
   requires_approval: boolean;
+  allowed_during_probation: boolean;
   is_active: boolean;
   color: string | null;
 }
@@ -86,6 +87,7 @@ const EMPTY_TYPE = {
   max_carry_forward_days: 0,
   is_encashable: false,
   requires_approval: true,
+  allowed_during_probation: false,
   color: "#6366f1",
   annual_quota: 12,
 };
@@ -260,6 +262,7 @@ export default function LeaveTypesPage() {
       max_carry_forward_days: lt.max_carry_forward_days,
       is_encashable: lt.is_encashable,
       requires_approval: lt.requires_approval,
+      allowed_during_probation: lt.allowed_during_probation,
       color: lt.color ?? "#6366f1",
       annual_quota: 12,
     });
@@ -648,6 +651,20 @@ function TypesSection(props: {
                   className="rounded border-border"
                 />
                 Requires Approval
+              </label>
+              <label
+                className="flex items-center gap-2 text-sm text-foreground"
+                title="If checked, employees still on probation can apply for this leave type."
+              >
+                <input
+                  type="checkbox"
+                  checked={typeForm.allowed_during_probation}
+                  onChange={(e) =>
+                    setTypeForm({ ...typeForm, allowed_during_probation: e.target.checked })
+                  }
+                  className="rounded border-border"
+                />
+                Allowed during probation
               </label>
             </div>
             <div className="md:col-span-3 text-xs text-muted-foreground -mt-2">

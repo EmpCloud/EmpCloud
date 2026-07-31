@@ -113,6 +113,7 @@ export async function createLeaveType(orgId: number, data: CreateLeaveTypeInput)
       max_carry_forward_days: data.max_carry_forward_days ?? 0,
       is_encashable: data.is_encashable ?? false,
       requires_approval: data.requires_approval ?? true,
+      allowed_during_probation: data.allowed_during_probation ?? false,
       color: data.color ?? null,
       is_active: true,
       created_at: new Date(),
