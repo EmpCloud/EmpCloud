@@ -25,6 +25,7 @@ import { useAttendancePolicy } from "@/lib/use-attendance-policy";
 import { showToast } from "@/components/ui/Toast";
 import { richTextToPlainText } from "@/components/ui/RichTextEditor";
 import { CompanyFeedWidget } from "@/features/feed/widgets/CompanyFeedWidget";
+import { ProfileCompletionCard } from "./ProfileCompletionCard";
 
 function QuickLink({ to, icon: Icon, label }: { to: string; icon: any; label: string }) {
   return (
@@ -291,6 +292,9 @@ export default function SelfServiceDashboardPage() {
             accessible. */}
         <div className="mt-6 lg:mt-0 lg:absolute lg:right-0 lg:top-0 lg:w-2/5">
           <div className="space-y-4 lg:sticky lg:top-4 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:pr-1">
+        {/* Profile completion nudge — hides itself once the profile is done */}
+        <ProfileCompletionCard userId={user?.id} />
+
         {/* Attendance Today */}
         <Panel icon={Clock} title={t('attendance.myAttendanceToday')}>
           {todayAttendance ? (() => {
@@ -378,6 +382,31 @@ export default function SelfServiceDashboardPage() {
           )}
         </Panel>
 
+        {/* Recent Announcements — prioritized near the top so company-wide
+            notices are seen; only renders when there are items */}
+        {canViewAnnouncements && announcementList.length > 0 && (
+          <Panel
+            icon={Megaphone}
+            title={t('announcements.title')}
+            action={
+              <Link to="/announcements" className="text-[11px] font-medium text-brand-600 dark:text-brand-400 hover:underline">
+                {t('common.viewAll')}
+              </Link>
+            }
+          >
+            <ul className="-my-1 divide-y divide-border">
+              {announcementList.slice(0, 3).map((a: any) => (
+                <li key={a.id} className="py-2.5">
+                  <p className="text-[13px] font-medium text-foreground">{a.title}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
+                    {richTextToPlainText(a.content) || a.body || ""}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </Panel>
+        )}
+
         {/* Leave Balances */}
         <Panel icon={CalendarDays} title={t('leave.leaveBalance')}>
           {leaveCards.length > 0 ? (
@@ -418,30 +447,6 @@ export default function SelfServiceDashboardPage() {
             <p className="text-[13px] text-muted-foreground">{t('documents.noPending')}</p>
           )}
         </Panel>
-
-        {/* Recent Announcements — only render when there are items */}
-        {canViewAnnouncements && announcementList.length > 0 && (
-          <Panel
-            icon={Megaphone}
-            title={t('announcements.title')}
-            action={
-              <Link to="/announcements" className="text-[11px] font-medium text-brand-600 dark:text-brand-400 hover:underline">
-                {t('common.viewAll')}
-              </Link>
-            }
-          >
-            <ul className="-my-1 divide-y divide-border">
-              {announcementList.slice(0, 3).map((a: any) => (
-                <li key={a.id} className="py-2.5">
-                  <p className="text-[13px] font-medium text-foreground">{a.title}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
-                    {richTextToPlainText(a.content) || a.body || ""}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          </Panel>
-        )}
 
         {/* Policies to Acknowledge — only render when there are items */}
         {policyList.length > 0 && (

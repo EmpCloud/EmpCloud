@@ -12,6 +12,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import ChatWidget from "@/components/ChatWidget";
+import { EmployeeAvatar } from "@/components/EmployeeAvatar";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { NotificationDropdown } from "./NotificationDropdown";
 import { NavSection } from "./NavSection";
@@ -59,6 +60,17 @@ export default function DashboardLayout() {
     queryFn: () => api.get("/subscriptions").then((r) => r.data.data),
     staleTime: 60000,
     enabled: !!(user && HR_ROLES.includes(user.role)),
+  });
+
+  // Avatar meta for the footer — the auth-store user carries no photo, so fetch
+  // the profile once (cached) to know whether to show the uploaded photo, the
+  // kiosk-enrolled biometric face, or fall back to initials.
+  const { data: meProfile } = useQuery({
+    queryKey: ["me-avatar", user?.id],
+    queryFn: () => api.get(`/employees/${user!.id}/profile`).then((r) => r.data.data),
+    enabled: !!user?.id,
+    staleTime: 30 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   // Chat is gated to an allowlist of orgs (pilot rollout). Hide the Messages
@@ -217,11 +229,14 @@ export default function DashboardLayout() {
       <div className="p-4 border-t border-border">
         {!isCollapsed && (
           <div className="flex items-center gap-3 mb-3">
-            <div className="h-8 w-8 rounded-full bg-brand-100 flex items-center justify-center flex-shrink-0">
-              <span className="text-sm font-semibold text-brand-700">
-                {user?.first_name?.[0]}{user?.last_name?.[0]}
-              </span>
-            </div>
+            <EmployeeAvatar
+              userId={user?.id}
+              firstName={user?.first_name}
+              lastName={user?.last_name}
+              hasPhoto={!!meProfile?.photo_path}
+              hasBiometricFace={!!meProfile?.has_biometric_face}
+              size="sm"
+            />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-foreground truncate">
                 {user?.first_name} {user?.last_name}

@@ -194,16 +194,25 @@ export default function MyDocumentsPage() {
               <select
                 value={uploadCategory}
                 onChange={(e) => setUploadCategory(e.target.value)}
-                className="w-full px-3 py-2 border border-border rounded-md text-[13px]"
+                className="w-full px-3 py-2 border border-border rounded-md text-[13px] bg-card text-foreground focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30 focus:outline-none disabled:opacity-60"
                 required
+                disabled={categories.length === 0}
               >
                 <option value="">{t("myDocuments.upload.categoryPlaceholder")}</option>
                 {categories.map((c: any) => (
                   <option key={c.id} value={c.id}>
                     {c.name}
+                    {c.is_mandatory ? " *" : ""}
                   </option>
                 ))}
               </select>
+              {categories.length === 0 && (
+                <p className="mt-1 text-[11px] text-amber-600 dark:text-amber-400">
+                  {t("myDocuments.upload.noCategories", {
+                    defaultValue: "No categories available yet — please ask your HR admin to add one.",
+                  })}
+                </p>
+              )}
             </div>
             <div>
               <label className="block text-[13px] font-medium text-foreground mb-1">
