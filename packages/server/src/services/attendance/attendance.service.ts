@@ -1022,6 +1022,83 @@ export async function getMonthlyReport(
   return { month: params.month, year: params.year, report: records };
 }
 
+// ---------------------------------------------------------------------------
+// Late counts over a date range — per-employee number of LATE days between
+// date_from and date_to (inclusive). Drives the "Late" tab range view ("how
+// many times was each employee late over the last 15 days / this month / a
+// custom range"). Uses the SAME definition of late as the daily dashboard
+// (#1928): a day counts as late only when the row is present/half_day/
+// checked_in AND has positive late_minutes, so a stale late_minutes on a row
+// later flipped to on_leave/absent never inflates the count. Every in-scope
+// employee is returned (0-late included) so any employee is findable/searchable
+// in the modal; ordered most-late first.
+// ---------------------------------------------------------------------------
+export async function getLateCounts(
+  orgId: number,
+  params: { date_from: string; date_to: string; department_id?: number; location_id?: number },
+  userIds?: number[],
+) {
+  const db = getDB();
+  const startDate = params.date_from;
+  const endDate = params.date_to;
+
+  const teamScoped = Array.isArray(userIds);
+  const emptyTeam = teamScoped && userIds!.length === 0;
+
+  // The gated "late day" predicate, reused for both the count and the minutes sum.
+  const latePredicate =
+    "ar.status IN ('present','half_day','checked_in') AND ar.late_minutes > 0";
+
+  // The date window lives in the JOIN (not WHERE) so a LEFT JOIN still yields a
+  // row for employees with zero attendance records in the range (late_count = 0),
+  // instead of dropping them.
+  const query = db("users as u")
+    .leftJoin("organization_departments as d", "u.department_id", "d.id")
+    .leftJoin("organization_locations as loc", "u.location_id", "loc.id")
+    .leftJoin("attendance_records as ar", function () {
+      this.on("ar.user_id", "=", "u.id").andOnBetween("ar.date", [startDate, endDate]);
+    })
+    .where("u.organization_id", orgId)
+    .where("u.status", 1)
+    .whereNot("u.role", "super_admin");
+
+  if (params.department_id) query.where("u.department_id", params.department_id);
+  if (params.location_id) query.where("u.location_id", params.location_id);
+  if (teamScoped) {
+    if (emptyTeam) query.where(db.raw("1 = 0"));
+    else query.whereIn("u.id", userIds!);
+  }
+
+  const rows = await query
+    .select(
+      "u.id as user_id",
+      "u.first_name",
+      "u.last_name",
+      "u.email",
+      "u.emp_code",
+      "d.name as department",
+      "loc.name as location",
+      db.raw(`COUNT(CASE WHEN ${latePredicate} THEN 1 END) as late_count`),
+      db.raw(`SUM(CASE WHEN ${latePredicate} THEN ar.late_minutes ELSE 0 END) as total_late_minutes`),
+    )
+    .groupBy("u.id", "u.first_name", "u.last_name", "u.email", "u.emp_code", "d.name", "loc.name")
+    .orderByRaw("late_count DESC")
+    .orderBy(["u.first_name", "u.last_name"]);
+
+  const employees = rows.map((r: any) => ({
+    ...r,
+    late_count: Number(r.late_count) || 0,
+    total_late_minutes: Number(r.total_late_minutes) || 0,
+  }));
+
+  return {
+    date_from: startDate,
+    date_to: endDate,
+    total_late_employees: employees.filter((e) => e.late_count > 0).length,
+    employees,
+  };
+}
+
 // =============================================================================
 // MONTHLY GRID — per-employee per-day attendance matrix
 // =============================================================================

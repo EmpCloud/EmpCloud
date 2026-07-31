@@ -1321,7 +1321,20 @@
       },
       "applyLeaveFailed": "अवकाश लागू करने में विफल"
     },
-    "location": "स्थान"
+    "location": "स्थान",
+    "monthlyLate": {
+      "lateDaysOne": "{{count}} दिन देरी",
+      "lateDaysOther": "{{count}} दिन देरी",
+      "lateDaysCol": "देरी के दिन",
+      "totalLateCol": "कुल देरी",
+      "presetToday": "आज",
+      "presetMonth": "इस माह",
+      "preset15": "पिछले 15 दिन",
+      "preset30": "पिछले 30 दिन",
+      "presetCustom": "कस्टम",
+      "rangeFrom": "आरंभ तिथि",
+      "rangeTo": "अंत तिथि"
+    }
   },
   "manager": {
     "title": "मेरी टीम",

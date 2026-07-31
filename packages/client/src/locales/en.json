@@ -1326,7 +1326,20 @@
     "checkedOutAt": "Checked out {{time}}",
     "updateCheckOutHint": "Check out again to correct the time",
     "checkInSuccess": "Successfully checked in at {{time}}",
-    "checkOutSuccess": "Successfully checked out at {{time}}"
+    "checkOutSuccess": "Successfully checked out at {{time}}",
+    "monthlyLate": {
+      "lateDaysOne": "{{count}} late day",
+      "lateDaysOther": "{{count}} late days",
+      "lateDaysCol": "Late Days",
+      "totalLateCol": "Total Late",
+      "presetToday": "Today",
+      "presetMonth": "This month",
+      "preset15": "Last 15 days",
+      "preset30": "Last 30 days",
+      "presetCustom": "Custom",
+      "rangeFrom": "From date",
+      "rangeTo": "To date"
+    }
   },
   "manager": {
     "title": "My Team",

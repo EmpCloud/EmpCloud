@@ -699,6 +699,43 @@ router.get("/monthly-report", authenticate, requirePermission("attendance:view_a
   } catch (err) { next(err); }
 });
 
+// GET /api/v1/attendance/late-counts?date_from=&date_to=&department_id=&location_id=
+// Per-employee count of LATE days in the given date range — drives the "Late"
+// tab range view (Last 15 days / This month / custom). Same "late" definition
+// and scope resolution as /dashboard so it stays consistent with the card.
+// Defaults to the current calendar month when the range is not supplied.
+router.get(
+  "/late-counts",
+  authenticate,
+  requirePermission(
+    "attendance:view_all",
+    "attendance:view_team",
+    "attendance:approve_regularization_team", "attendance:approve_regularization_all",
+    "attendance:manage",
+  ),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const now = new Date();
+      const iso = (d: Date) => d.toISOString().slice(0, 10);
+      const monthStart = iso(new Date(now.getFullYear(), now.getMonth(), 1));
+      const monthEnd = iso(new Date(now.getFullYear(), now.getMonth() + 1, 0));
+      // Basic YYYY-MM-DD guard; fall back to the current month on missing/garbage.
+      const isDate = (v: unknown): v is string => typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v);
+      const dateFrom = isDate(req.query.date_from) ? req.query.date_from : monthStart;
+      const dateTo = isDate(req.query.date_to) ? req.query.date_to : monthEnd;
+      const departmentId = req.query.department_id ? Number(req.query.department_id) : undefined;
+      const locationId = req.query.location_id ? Number(req.query.location_id) : undefined;
+      const userIds = await resolveAttendanceScope(req);
+      const result = await attendanceService.getLateCounts(
+        req.user!.org_id,
+        { date_from: dateFrom, date_to: dateTo, department_id: departmentId, location_id: locationId },
+        userIds ?? undefined,
+      );
+      sendSuccess(res, result);
+    } catch (err) { next(err); }
+  },
+);
+
 // GET /api/v1/attendance/grid?month=&year= — per-employee per-day matrix.
 // Powers the new Attendance Grid page (date columns 1..31 with single-letter
 // status codes P / A / H / L / WO / HO).

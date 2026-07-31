@@ -252,6 +252,49 @@ export default function AttendanceDashboardPage() {
   const [breakdownLoc, setBreakdownLoc] = useState("");
   const BREAKDOWN_PAGE_SIZE = 10;
 
+  // "Late" tab range control inside the Attendance Details modal. Presets:
+  // today (default — today's late list), month (current calendar month), d15/d30
+  // (rolling windows), custom (from–to). "today" shows the day list (check-in
+  // time + minutes late); the ranges show each employee's TOTAL late days over
+  // the window. Same "late" definition as the daily cards (late_minutes>0 on a
+  // present/half_day/checked_in row).
+  type LatePreset = "today" | "month" | "d15" | "d30" | "custom";
+  const [latePreset, setLatePreset] = useState<LatePreset>("today");
+  const [lateCustomFrom, setLateCustomFrom] = useState(todayStr);
+  const [lateCustomTo, setLateCustomTo] = useState(todayStr);
+  const shiftDays = (n: number) => { const d = new Date(now); d.setDate(d.getDate() + n); return toDateStr(d); };
+  // Resolve the active preset to a concrete [from,to] window (YYYY-MM-DD).
+  const lateRange: { from: string; to: string } =
+    latePreset === "month"
+      ? { from: toDateStr(new Date(now.getFullYear(), now.getMonth(), 1)), to: toDateStr(new Date(now.getFullYear(), now.getMonth() + 1, 0)) }
+      : latePreset === "d15"
+      ? { from: shiftDays(-14), to: todayStr }
+      : latePreset === "d30"
+      ? { from: shiftDays(-29), to: todayStr }
+      : latePreset === "custom"
+      ? { from: lateCustomFrom || todayStr, to: lateCustomTo || todayStr }
+      : { from: todayStr, to: todayStr };
+  const lateIsRange = breakdownOpen === "late" && latePreset !== "today";
+  // Range mode → per-employee late-day counts over the window.
+  const { data: lateCounts, isLoading: lateCountsLoading } = useQuery({
+    queryKey: ["attendance-late-counts", lateRange.from, lateRange.to],
+    queryFn: () =>
+      api
+        .get("/attendance/late-counts", { params: { date_from: lateRange.from, date_to: lateRange.to } })
+        .then((r) => r.data.data),
+    enabled: lateIsRange,
+  });
+  // "Today" preset → today's late list (check-in time + minutes late), fixed to
+  // today regardless of the shared breakdown date the other tabs use.
+  const { data: lateTodayData, isLoading: lateTodayLoading } = useQuery({
+    queryKey: ["attendance-dashboard-breakdown", todayStr],
+    queryFn: () =>
+      api
+        .get("/attendance/dashboard/breakdown", { params: { date: todayStr } })
+        .then((r) => r.data.data),
+    enabled: breakdownOpen === "late" && latePreset === "today",
+  });
+
   const { data: breakdown, isLoading: breakdownLoading } = useQuery({
     queryKey: ["attendance-dashboard-breakdown", breakdownDate],
     queryFn: () =>
@@ -269,6 +312,10 @@ export default function AttendanceDashboardPage() {
     setBreakdownSearch("");
     setBreakdownDept("");
     setBreakdownLoc("");
+    // Late tab always opens on the "today" preset.
+    setLatePreset("today");
+    setLateCustomFrom(todayStr);
+    setLateCustomTo(todayStr);
     setBreakdownOpen(category);
   };
 
@@ -326,9 +373,20 @@ export default function AttendanceDashboardPage() {
 
       {/* Breakdown Modal ("Attendance Details") */}
       {breakdownOpen !== null && (() => {
+        // Late tab in a range preset shows per-employee late-day COUNTS over the
+        // window; the "today" preset (and all other tabs) show the day-scoped list.
+        const isLateRange = lateIsRange; // breakdownOpen === "late" && preset !== "today"
+        const isLateToday = breakdownOpen === "late" && latePreset === "today";
+        const rangeLabel = lateRange.from === lateRange.to ? lateRange.from : `${lateRange.from} – ${lateRange.to}`;
+        const listLoading = isLateRange ? lateCountsLoading : isLateToday ? lateTodayLoading : breakdownLoading;
+        const fmtDuration = (min: number) => (min >= 60 ? `${Math.floor(min / 60)}h ${min % 60}m` : `${min}m`);
         // Active tab's employees. "total" stitches present + absent + on_leave
         // together (late is a subset of present, so it isn't appended again).
-        const tabList: any[] = breakdownOpen === "total"
+        const tabList: any[] = isLateRange
+          ? (lateCounts?.employees ?? [])
+          : isLateToday
+          ? (lateTodayData?.late ?? [])
+          : breakdownOpen === "total"
           ? [
               ...(breakdown?.present ?? []),
               ...(breakdown?.absent ?? []),
@@ -374,6 +432,24 @@ export default function AttendanceDashboardPage() {
         // Export exactly what's on screen — the current tab + department /
         // location / search filters — as an .xlsx via the shared helper.
         const exportBreakdown = () => {
+          if (isLateRange) {
+            const headers = [
+              t('common.name'),
+              t('attendance.department'),
+              t('attendance.location'),
+              t('attendance.monthlyLate.lateDaysCol'),
+              t('attendance.monthlyLate.totalLateCol'),
+            ];
+            const rows = filteredList.map((emp: any) => [
+              `${emp.first_name ?? ""} ${emp.last_name ?? ""}`.trim(),
+              emp.department ?? "",
+              emp.location ?? "",
+              Number(emp.late_count) || 0,
+              Number(emp.total_late_minutes) > 0 ? fmtDuration(Number(emp.total_late_minutes)) : "",
+            ]);
+            downloadExcel(headers, rows, `late-${lateRange.from}_${lateRange.to}.xlsx`, "Late");
+            return;
+          }
           const headers = [
             t('common.name'),
             t('attendance.department'),
@@ -403,23 +479,25 @@ export default function AttendanceDashboardPage() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between gap-3 px-6 py-4 border-b border-border">
-              <h3 className="text-base font-semibold text-foreground">{t('attendance.breakdown.title', { date: breakdown?.date ?? breakdownDate })}</h3>
+              <h3 className="text-base font-semibold text-foreground">{t('attendance.breakdown.title', { date: breakdownOpen === "late" ? rangeLabel : (breakdown?.date ?? breakdownDate) })}</h3>
               <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2">
-                  <label htmlFor="breakdown-date" className="text-xs font-medium text-muted-foreground whitespace-nowrap">{t('attendance.breakdown.dateLabel')}</label>
-                  <input
-                    id="breakdown-date"
-                    type="date"
-                    value={breakdownDate}
-                    max={todayStr}
-                    onChange={(e) => { setBreakdownDate(e.target.value); setBreakdownPage(1); }}
-                    className="bg-card text-foreground px-2.5 py-1.5 border border-border rounded-md text-[13px]"
-                  />
-                </div>
+                {breakdownOpen !== "late" && (
+                  <div className="flex items-center gap-2">
+                    <label htmlFor="breakdown-date" className="text-xs font-medium text-muted-foreground whitespace-nowrap">{t('attendance.breakdown.dateLabel')}</label>
+                    <input
+                      id="breakdown-date"
+                      type="date"
+                      value={breakdownDate}
+                      max={todayStr}
+                      onChange={(e) => { setBreakdownDate(e.target.value); setBreakdownPage(1); }}
+                      className="bg-card text-foreground px-2.5 py-1.5 border border-border rounded-md text-[13px]"
+                    />
+                  </div>
+                )}
                 <button
                   type="button"
                   onClick={exportBreakdown}
-                  disabled={breakdownLoading || filteredList.length === 0}
+                  disabled={listLoading || filteredList.length === 0}
                   className="inline-flex items-center gap-1.5 rounded-md bg-green-600 px-3 py-1.5 text-[13px] font-medium text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
                   title={t('attendance.breakdown.export')}
                 >
@@ -449,7 +527,14 @@ export default function AttendanceDashboardPage() {
                 ).map((tab) => {
                   const count = tab.key === "total"
                     ? (breakdown?.present?.length ?? 0) + (breakdown?.absent?.length ?? 0) + (breakdown?.on_leave?.length ?? 0)
+                    : tab.key === "late" && isLateRange
+                    ? (lateCounts?.total_late_employees ?? 0)
+                    : tab.key === "late" && isLateToday
+                    ? (lateTodayData?.late?.length ?? 0)
                     : breakdown?.[tab.key]?.length ?? 0;
+                  const tabLoading = tab.key === "late"
+                    ? (isLateRange ? lateCountsLoading : isLateToday ? lateTodayLoading : breakdownLoading)
+                    : breakdownLoading;
                   const active = breakdownOpen === tab.key;
                   return (
                     <button
@@ -460,12 +545,61 @@ export default function AttendanceDashboardPage() {
                         active ? tab.color : "text-muted-foreground border-transparent hover:text-foreground"
                       }`}
                     >
-                      {tab.label} ({breakdownLoading ? "…" : count})
+                      {tab.label} ({tabLoading ? "…" : count})
                     </button>
                   );
                 })}
               </div>
             </div>
+            {breakdownOpen === "late" && (
+              <div className="px-6 pt-3 flex flex-wrap items-center gap-2">
+                {([
+                  { k: "today", label: t('attendance.monthlyLate.presetToday') },
+                  { k: "month", label: t('attendance.monthlyLate.presetMonth') },
+                  { k: "d15", label: t('attendance.monthlyLate.preset15') },
+                  { k: "d30", label: t('attendance.monthlyLate.preset30') },
+                  { k: "custom", label: t('attendance.monthlyLate.presetCustom') },
+                ] as const).map((p) => (
+                  <button
+                    key={p.k}
+                    type="button"
+                    onClick={() => { setLatePreset(p.k); setBreakdownPage(1); }}
+                    className={`px-3 py-1 text-[12px] font-medium rounded-md border transition-colors ${
+                      latePreset === p.k
+                        ? "border-brand-400 bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300"
+                        : "border-border text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+                {latePreset === "custom" && (
+                  <div className="flex items-center gap-1.5">
+                    <input
+                      type="date"
+                      aria-label={t('attendance.monthlyLate.rangeFrom')}
+                      value={lateCustomFrom}
+                      max={lateCustomTo || todayStr}
+                      onChange={(e) => { setLateCustomFrom(e.target.value); setBreakdownPage(1); }}
+                      className="bg-card text-foreground px-2 py-1 border border-border rounded-md text-[12px]"
+                    />
+                    <span className="text-muted-foreground text-[12px]">–</span>
+                    <input
+                      type="date"
+                      aria-label={t('attendance.monthlyLate.rangeTo')}
+                      value={lateCustomTo}
+                      min={lateCustomFrom || undefined}
+                      max={todayStr}
+                      onChange={(e) => { setLateCustomTo(e.target.value); setBreakdownPage(1); }}
+                      className="bg-card text-foreground px-2 py-1 border border-border rounded-md text-[12px]"
+                    />
+                  </div>
+                )}
+                {latePreset !== "today" && latePreset !== "custom" && (
+                  <span className="text-[11px] text-muted-foreground">{rangeLabel}</span>
+                )}
+              </div>
+            )}
             <div className="px-6 py-3 border-b border-border space-y-2">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -503,7 +637,7 @@ export default function AttendanceDashboardPage() {
               </div>
             </div>
             <div className="overflow-y-auto flex-1 px-6 py-4">
-              {breakdownLoading ? (
+              {listLoading ? (
                 <div className="flex justify-center py-12">
                   <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                 </div>
@@ -513,6 +647,43 @@ export default function AttendanceDashboardPage() {
                     ? t('attendance.breakdown.noEmployeesInCategory')
                     : t('attendance.breakdown.noSearchResults')}
                 </p>
+              ) : isLateRange ? (
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-left text-[11px] text-muted-foreground uppercase tracking-wider border-b border-border">
+                      <th className="py-2 font-semibold">{t('common.name')}</th>
+                      <th className="py-2 font-semibold">{t('attendance.department')}</th>
+                      <th className="py-2 font-semibold whitespace-nowrap">{t('attendance.monthlyLate.lateDaysCol')}</th>
+                      <th className="py-2 font-semibold whitespace-nowrap">{t('attendance.monthlyLate.totalLateCol')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {pageList.map((emp: any) => (
+                      <tr key={emp.user_id} className="border-b border-border last:border-0">
+                        <td className="py-3">
+                          <div className="font-medium text-foreground">
+                            {emp.first_name} {emp.last_name}
+                            {emp.emp_code ? <span className="ml-2 text-xs text-muted-foreground">{emp.emp_code}</span> : null}
+                          </div>
+                          <div className="text-xs text-muted-foreground">{emp.email}</div>
+                        </td>
+                        <td className="py-3 text-muted-foreground">{emp.department || "—"}</td>
+                        <td className="py-3">
+                          <span
+                            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[12px] font-semibold whitespace-nowrap ${
+                              Number(emp.late_count) > 0
+                                ? "bg-yellow-50 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300"
+                                : "bg-muted text-muted-foreground"
+                            }`}
+                          >
+                            {t(Number(emp.late_count) === 1 ? 'attendance.monthlyLate.lateDaysOne' : 'attendance.monthlyLate.lateDaysOther', { count: Number(emp.late_count) || 0 })}
+                          </span>
+                        </td>
+                        <td className="py-3 text-muted-foreground whitespace-nowrap">{Number(emp.total_late_minutes) > 0 ? fmtDuration(Number(emp.total_late_minutes)) : "—"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               ) : (
                 <table className="w-full text-sm">
                   <thead>
@@ -552,7 +723,7 @@ export default function AttendanceDashboardPage() {
             </div>
             {/* Pagination footer — always shown when there are results so the
                 control is visibly part of the modal even for a single page. */}
-            {!breakdownLoading && filteredList.length > 0 && (
+            {!listLoading && filteredList.length > 0 && (
               <div className="flex items-center justify-between px-6 py-3 border-t border-border">
                 <p className="text-[13px] tabular-nums text-muted-foreground">{t('attendance.pagination', { page: safePage, totalPages, total: filteredList.length })}</p>
                 <div className="flex gap-2">
@@ -577,6 +748,7 @@ export default function AttendanceDashboardPage() {
         </div>
         );
       })()}
+
 
       {/* Quick Links */}
       <div className="flex gap-2.5 mb-4">
