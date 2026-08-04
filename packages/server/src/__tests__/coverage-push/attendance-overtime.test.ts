@@ -252,6 +252,59 @@ describe("getMonthlyGrid — full-month classification", () => {
     expect(grid.employees[0].weekoffDays["2026-05-05"]).toBe(true);
     expect(grid.employees[0].weekoffDays["2026-05-06"]).toBe(true);
   });
+
+  it("identifies dates governed by a night shift for allowance counting", async () => {
+    seedMonth({
+      attendance: [
+        { user_id: 1, date: "2026-05-04", status: "present", worked_minutes: 480 },
+        { user_id: 1, date: "2026-05-05", status: "half_day", worked_minutes: 240 },
+        { user_id: 1, date: "2026-05-06", status: "half_present_half_leave", worked_minutes: 240 },
+        { user_id: 1, date: "2026-05-07", status: "absent", worked_minutes: 0 },
+        { user_id: 1, date: "2026-05-08", status: "weekoff_overtime", worked_minutes: 480 },
+        { user_id: 1, date: "2026-05-09", status: "holiday_overtime", worked_minutes: 480 },
+        { user_id: 1, date: "2026-05-10", status: "checked_in", worked_minutes: 0 },
+      ],
+      assignments: [
+        {
+          user_id: 1,
+          effective_from: "2026-05-04",
+          effective_to: "2026-05-10",
+          working_days: "1,2,3,4,5",
+          is_weekoff: 0,
+          is_night_shift: 1,
+        },
+      ],
+    });
+
+    const grid = await getMonthlyGrid(ORG, { month: 5, year: 2026 });
+
+    expect(grid.employees[0].nightShiftDays["2026-05-04"]).toBe(true);
+    expect(grid.employees[0].nightShiftDays["2026-05-10"]).toBe(true);
+    expect(grid.employees[0].nightShiftDays["2026-05-11"]).toBeUndefined();
+    expect(grid.employees[0].nightAllowanceCount).toBe(5);
+    expect(grid.employees[0].extraDayDays["2026-05-10"]).toBe(true);
+    expect(grid.employees[0].extraDayCount).toBe(3);
+  });
+
+  it("falls back to the attendance-row shift for night allowance when no assignment covers the date", async () => {
+    seedMonth({
+      attendance: [
+        {
+          user_id: 1,
+          date: "2026-05-04",
+          status: "present",
+          worked_minutes: 480,
+          shift_id: 9,
+          attendance_shift_is_night: 1,
+        },
+      ],
+    });
+
+    const grid = await getMonthlyGrid(ORG, { month: 5, year: 2026 });
+
+    expect(grid.employees[0].nightShiftDays["2026-05-04"]).toBe(true);
+    expect(grid.employees[0].nightAllowanceCount).toBe(1);
+  });
 });
 
 describe("getMonthlyGrid — auto WOT / HOT overtime", () => {

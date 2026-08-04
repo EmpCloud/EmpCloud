@@ -54,6 +54,10 @@ interface EmployeeRow {
   // their off day shows "P" with a WO ribbon — overtime / comp-off
   // candidate).
   weekoffDays?: Record<string, boolean>;
+  nightShiftDays?: Record<string, boolean>;
+  extraDayDays?: Record<string, boolean>;
+  nightAllowanceCount?: number;
+  extraDayCount?: number;
   // Per-employee approved leaves by date: the leave type code (EL / CL / …)
   // and whether it's a half day. The cell's `days[date]` code is already
   // L (full) or HPL (half + worked) from the server; this drives the small
@@ -258,10 +262,15 @@ export default function AttendanceGridPage() {
 
   const summaryFor = useMemo(
     () => (emp: EmployeeRow) => {
-      const counts = { P: 0, A: 0, H: 0, L: 0, HPL: 0, WO: 0, HO: 0, M: 0 };
+      const counts = { P: 0, A: 0, H: 0, L: 0, HPL: 0, WO: 0, HO: 0, M: 0, NIGHT: 0, ED: 0 };
       const weekoff = emp.weekoffDays || {};
       for (const d of data.days) {
         const c = cellCode(emp.user_id, d.date, emp.days[d.date] || "");
+        if (c === "WOT" || c === "HOT" || (c === "M" && emp.extraDayDays?.[d.date])) counts.ED++;
+        if (emp.nightShiftDays?.[d.date]) {
+          if (c === "H" || c === "HPL") counts.NIGHT += 0.5;
+          else if (c === "P" || c === "M" || c === "WOT" || c === "HOT") counts.NIGHT++;
+        }
         // WO count comes from the shift-driven weekoff map, NOT from
         // the attendance code -- since attendance + weekoff can coexist
         // on a single cell (worked on off day shows P with a WO ribbon).
@@ -310,6 +319,8 @@ export default function AttendanceGridPage() {
         "WO",
         "HO",
         "M",
+        "Night Allowance",
+        "Extra Day",
       ];
 
       const rows = filteredEmployees.map((emp) => {
@@ -335,6 +346,8 @@ export default function AttendanceGridPage() {
           counts.WO,
           counts.HO,
           counts.M,
+          counts.NIGHT,
+          counts.ED,
         ];
       });
 
@@ -598,13 +611,25 @@ export default function AttendanceGridPage() {
                 >
                   HPL
                 </th>
+                <th
+                  className="border-b border-gray-200 px-2 py-2 text-center font-semibold text-violet-700 dark:border-gray-700 dark:text-violet-300"
+                  title={t("attendance.grid.nightAllowanceTitle")}
+                >
+                  {t("attendance.grid.nightAllowance")}
+                </th>
+                <th
+                  className="border-b border-gray-200 px-2 py-2 text-center font-semibold text-indigo-700 dark:border-gray-700 dark:text-indigo-300"
+                  title={t("attendance.grid.extraDayTitle")}
+                >
+                  {t("attendance.grid.extraDay")}
+                </th>
               </tr>
             </thead>
             <tbody>
               {filteredEmployees.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={data.days.length + 6}
+                    colSpan={data.days.length + 8}
                     className="px-4 py-8 text-center text-gray-400 dark:text-gray-500"
                   >
                     {data.employees.length === 0
@@ -725,6 +750,18 @@ export default function AttendanceGridPage() {
                       >
                         {summary.HPL}
                       </td>
+                      <td
+                        className="px-2 py-2 text-center font-semibold text-violet-700 dark:text-violet-300"
+                        title={t("attendance.grid.nightAllowanceTitle")}
+                      >
+                        {summary.NIGHT}
+                      </td>
+                      <td
+                        className="px-2 py-2 text-center font-semibold text-indigo-700 dark:text-indigo-300"
+                        title={t("attendance.grid.extraDayTitle")}
+                      >
+                        {summary.ED}
+                      </td>
                     </tr>
                   );
                 })
@@ -751,7 +788,7 @@ export default function AttendanceGridPage() {
                       );
                     })}
                     <td
-                      colSpan={5}
+                      colSpan={7}
                       className={`border-l border-gray-200 px-2 py-1.5 text-center text-[11px] font-bold dark:border-gray-700 ${row.cls}`}
                     >
                       {monthTotals[row.code]}
