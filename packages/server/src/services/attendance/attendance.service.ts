@@ -1259,14 +1259,22 @@ export async function getMonthlyGrid(
     return { days, employees: [], totalEmployees: 0, daysInMonth };
   }
 
-  const rows = await db("attendance_records")
-    .where("organization_id", orgId)
+  const rows = await db("attendance_records as ar")
+    .leftJoin("shifts as attendance_shift", "attendance_shift.id", "ar.shift_id")
+    .where("ar.organization_id", orgId)
     .whereIn(
-      "user_id",
+      "ar.user_id",
       allUsers.map((u: any) => u.user_id),
     )
-    .whereBetween("date", [monthStart, monthEnd])
-    .select("user_id", "date", "status", "worked_minutes");
+    .whereBetween("ar.date", [monthStart, monthEnd])
+    .select(
+      "ar.user_id",
+      "ar.date",
+      "ar.status",
+      "ar.worked_minutes",
+      "ar.shift_id",
+      "attendance_shift.is_night_shift as attendance_shift_is_night",
+    );
 
   // Per-user weekoff resolution -- the single source of truth for WO
   // cells. Week-offs come entirely from the employee's shift assignment,
@@ -1313,12 +1321,14 @@ export async function getMonthlyGrid(
       "sa.effective_to",
       "s.working_days",
       "s.is_weekoff",
+      "s.is_night_shift",
     );
 
   // userId -> dateIso -> "WO" | "WORK"  (always set when an assignment
   // covers the date so a later/older assignment can't "downgrade" a
   // verified working day into a weekoff).
   const userWeekoff: Record<number, Record<string, "WO" | "WORK">> = {};
+  const userNightShift: Record<number, Record<string, "NIGHT" | "DAY">> = {};
   for (const a of assignments as any[]) {
     const uid = Number(a.user_id);
     const from = isoLocal(a.effective_from);
@@ -1329,6 +1339,7 @@ export async function getMonthlyGrid(
       .filter(Boolean)
       .map((s) => Number(s));
     const isWeekoffShift = !!a.is_weekoff;
+    const isNightShift = !!a.is_night_shift;
     for (const d of days) {
       if (d.date < from) continue;
       if (to && d.date > to) continue;
@@ -1340,6 +1351,8 @@ export async function getMonthlyGrid(
         (workingDays.length > 0 && !workingDays.includes(d.dow));
       if (!userWeekoff[uid]) userWeekoff[uid] = {};
       userWeekoff[uid][d.date] = off ? "WO" : "WORK";
+      if (!userNightShift[uid]) userNightShift[uid] = {};
+      userNightShift[uid][d.date] = isNightShift ? "NIGHT" : "DAY";
     }
   }
   // BUG-GridSatAsAbsent — Fill in dow-based fallback for dates NOT covered
@@ -1401,6 +1414,7 @@ export async function getMonthlyGrid(
   };
 
   const byUser: Record<number, Record<string, AttendanceCode>> = {};
+  const attendanceNightByUser: Record<number, Record<string, boolean>> = {};
   // Parallel "did the employee actually work this date" map. We need this
   // because a record can be stamped `on_leave` (codeFor -> "L") while still
   // carrying real punches / worked_minutes -- a HALF-day leave where the
@@ -1419,6 +1433,10 @@ export async function getMonthlyGrid(
     if (!workedByUser[uid]) workedByUser[uid] = {};
     workedByUser[uid][dStr] =
       (r.worked_minutes != null && Number(r.worked_minutes) > 0) || !!r.check_in;
+    if (r.shift_id != null) {
+      if (!attendanceNightByUser[uid]) attendanceNightByUser[uid] = {};
+      attendanceNightByUser[uid][dStr] = !!Number(r.attendance_shift_is_night);
+    }
   }
 
   // Approved leaves overlapping the month, merged into the grid. The grid
@@ -1502,6 +1520,8 @@ export async function getMonthlyGrid(
     // label the cell (e.g. "EL", "½ CL"). Cell code itself is set to
     // L / HPL below.
     const leaves: Record<string, { code: string; isHalf: boolean }> = {};
+    const nightShiftDays: Record<string, true> = {};
+    const extraDayDays: Record<string, true> = {};
     for (const d of days) {
       // Attendance code: real row if any, otherwise the date-level
       // default (HO / "").
@@ -1568,6 +1588,28 @@ export async function getMonthlyGrid(
       if (isWeekoff) {
         weekoffDays[d.date] = true;
       }
+      const assignmentNight = userNightShift[u.user_id]?.[d.date];
+      if (
+        assignmentNight === "NIGHT" ||
+        (assignmentNight === undefined && attendanceNightByUser[u.user_id]?.[d.date] === true)
+      ) {
+        nightShiftDays[d.date] = true;
+      }
+      if (code === "WOT" || code === "HOT" || (code === "M" && (isWeekoff || isMandatoryHoliday))) {
+        extraDayDays[d.date] = true;
+      }
+    }
+    let nightAllowanceCount = 0;
+    let extraDayCount = 0;
+    for (const d of days) {
+      const code = dayCodes[d.date];
+      if (extraDayDays[d.date]) extraDayCount += 1;
+      if (nightShiftDays[d.date]) {
+        if (code === "H" || code === "HPL") nightAllowanceCount += 0.5;
+        else if (code === "P" || code === "M" || code === "WOT" || code === "HOT") {
+          nightAllowanceCount += 1;
+        }
+      }
     }
     return {
       user_id: u.user_id,
@@ -1578,6 +1620,10 @@ export async function getMonthlyGrid(
       location: u.location || null,
       days: dayCodes,
       weekoffDays,
+      nightShiftDays,
+      extraDayDays,
+      nightAllowanceCount,
+      extraDayCount,
       leaves,
     };
   });
