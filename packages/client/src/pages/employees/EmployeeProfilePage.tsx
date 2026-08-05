@@ -104,7 +104,7 @@ export default function EmployeeProfilePage() {
   const { data: allUsers } = useQuery({
     queryKey: ["users-for-manager"],
     queryFn: () => api.get("/users", { params: { per_page: 500 } }).then((r) => r.data.data),
-    enabled: editing,
+    enabled: editing && has("employees:edit_all", "employees:view_all", "employees:invite"),
   });
 
   // #1423 — departments and shifts for the HR-only edit dropdowns. We fetch

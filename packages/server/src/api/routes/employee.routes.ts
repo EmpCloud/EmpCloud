@@ -7,7 +7,7 @@ import multer from "multer";
 import path from "node:path";
 import fs from "node:fs";
 import { authenticate } from "../middleware/auth.middleware.js";
-import { requireSelfOrHR, requireHR, requirePermission } from "../middleware/rbac.middleware.js";
+import { requireEmployeeProfileAccess, requireSelfOrHR, requireHR, requirePermission } from "../middleware/rbac.middleware.js";
 import { sendSuccess, sendPaginated } from "../../utils/response.js";
 import { logAudit } from "../../services/audit/audit.service.js";
 import { AuditAction } from "@empcloud/shared";
@@ -298,7 +298,7 @@ router.post("/bulk-update", authenticate, requirePermission("employees:edit_all"
 });
 
 // GET /api/v1/employees — alias for /directory (#751)
-router.get("/", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/", authenticate, requirePermission("employees:view_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const params = employeeDirectoryQuerySchema.parse(req.query);
     const result = await profileService.getDirectory(req.user!.org_id, params);
@@ -307,7 +307,7 @@ router.get("/", authenticate, async (req: Request, res: Response, next: NextFunc
 });
 
 // GET /api/v1/employees/directory
-router.get("/directory", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/directory", authenticate, requirePermission("employees:view_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const params = employeeDirectoryQuerySchema.parse(req.query);
     const result = await profileService.getDirectory(req.user!.org_id, params);
@@ -455,7 +455,7 @@ router.put("/:id/probation/extend", authenticate, requirePermission("probation:m
 // =========================================================================
 
 // GET /api/v1/employees/:id — Employee detail (alias for /users/:id) (#752)
-router.get("/:id", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/:id", authenticate, requireEmployeeProfileAccess("id"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = await userService.getUser(req.user!.org_id, paramInt(req.params.id));
     sendSuccess(res, user);
@@ -473,7 +473,7 @@ router.post("/", authenticate, requirePermission("employees:invite"), async (req
 });
 
 // GET /api/v1/employees/:id/profile
-router.get("/:id/profile", authenticate, requireSelfOrHR("id", ["employees:view_all", "employees:view_team"], ["employees:view"]), async (req: Request, res: Response, next: NextFunction) => {
+router.get("/:id/profile", authenticate, requireEmployeeProfileAccess("id"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const profile = await profileService.getProfile(req.user!.org_id, paramInt(req.params.id));
     sendSuccess(res, profile);

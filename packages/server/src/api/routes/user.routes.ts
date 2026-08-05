@@ -44,19 +44,14 @@ const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 *
 const router = Router();
 
 // GET /api/v1/users
-router.get("/", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+router.get("/", authenticate, requirePermission("employees:view_all", "employees:edit_all", "employees:invite"), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { page, per_page } = paginationSchema.parse(req.query);
     const search = req.query.search as string | undefined;
     const include_inactive = req.query.include_inactive === "true";
     const result = await userService.listUsers(req.user!.org_id, { page, perPage: per_page, search, include_inactive });
 
-    // RBAC: employees only see directory-safe fields (no role, status, phone, employee_code)
-    const users = isEmployeeRole(req.user!.role)
-      ? result.users.map((u: any) => stripSensitiveForEmployee(u))
-      : result.users;
-
-    sendPaginated(res, users, result.total, page, per_page);
+    sendPaginated(res, result.users, result.total, page, per_page);
   } catch (err) { next(err); }
 });
 

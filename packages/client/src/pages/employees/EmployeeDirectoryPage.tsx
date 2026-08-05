@@ -112,6 +112,7 @@ export default function EmployeeDirectoryPage() {
   // alongside org_admin.
   const { has } = usePermissions();
   const canInvite = isOrgAdmin || has("employees:invite");
+  const canEditAll = has("employees:edit_all");
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [departmentId, setDepartmentId] = useState<string>("");
@@ -512,17 +513,19 @@ export default function EmployeeDirectoryPage() {
             <Download className="h-4 w-4" />
             {exportQuery.isFetching ? tx("exporting") : tx("exportExcel")}
           </button>
-          <label className="flex items-center gap-2 px-4 py-2 border border-border rounded-md text-[13px] font-medium text-muted-foreground hover:bg-muted cursor-pointer">
-            <Upload className="h-4 w-4" />
-            {tx("bulkUpdate")}
-            <input
-              ref={fileRef}
-              type="file"
-              accept=".csv,.xlsx,.xls"
-              onChange={handleFileUpload}
-              className="hidden"
-            />
-          </label>
+          {canEditAll && (
+            <label className="flex items-center gap-2 px-4 py-2 border border-border rounded-md text-[13px] font-medium text-muted-foreground hover:bg-muted cursor-pointer">
+              <Upload className="h-4 w-4" />
+              {tx("bulkUpdate")}
+              <input
+                ref={fileRef}
+                type="file"
+                accept=".csv,.xlsx,.xls"
+                onChange={handleFileUpload}
+                className="hidden"
+              />
+            </label>
+          )}
           {canInvite && (
             <button
               onClick={() => setShowPendingInvitations(true)}
@@ -1190,18 +1193,20 @@ export default function EmployeeDirectoryPage() {
                           )}
                         </button>
                       )}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setEditTargetId(emp.id);
-                          setEditError(null);
-                        }}
-                        className="inline-flex items-center justify-center h-8 w-8 rounded-lg text-muted-foreground hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:text-brand-600 transition-colors"
-                        title={tx("editTooltip") as string}
-                        aria-label={tx("editAria", { name: `${emp.first_name} ${emp.last_name}` }) as string}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </button>
+                      {canEditAll && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditTargetId(emp.id);
+                            setEditError(null);
+                          }}
+                          className="inline-flex items-center justify-center h-8 w-8 rounded-lg text-muted-foreground hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:text-brand-600 transition-colors"
+                          title={tx("editTooltip") as string}
+                          aria-label={tx("editAria", { name: `${emp.first_name} ${emp.last_name}` }) as string}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </button>
+                      )}
                       {canDelete && (
                         <button
                           type="button"

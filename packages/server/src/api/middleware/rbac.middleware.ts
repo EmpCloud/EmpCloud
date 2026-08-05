@@ -8,6 +8,7 @@ import { sendError } from "../../utils/response.js";
 import { ROLE_HIERARCHY } from "@empcloud/shared";
 import type { UserRole } from "@empcloud/shared";
 import { getDB } from "../../db/connection.js";
+import { isManagerOf } from "../../services/team/team-resolver.service.js";
 
 /**
  * Require minimum role level. Must be used after authenticate middleware.
@@ -223,6 +224,48 @@ export function requireSelfOrHR(
 
     // Broader grant for accessing another user's resource.
     if (permissions.length > 0 && hasAny(permissions)) {
+      next();
+      return;
+    }
+
+    sendError(res, 403, "FORBIDDEN", "Insufficient permissions");
+  };
+}
+
+/**
+ * Employee-profile authorization with real team scoping.
+ *
+ * `employees:view_team` is not an organization-wide grant: the target must
+ * actually report to the caller (primary or additional manager). Use this on
+ * profile/detail endpoints instead of treating view_team like view_all.
+ */
+export function requireEmployeeProfileAccess(paramName: string = "id") {
+  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    if (!req.user) {
+      sendError(res, 401, "UNAUTHORIZED", "Authentication required");
+      return;
+    }
+
+    const targetUserId = parseInt(String(req.params[paramName]), 10);
+    const granted = (req.user as any).permissions as string[] | undefined;
+    const has = (permission: string) => Array.isArray(granted) && granted.includes(permission);
+    const userRoleLevel = ROLE_HIERARCHY[req.user.role] ?? 0;
+    const hrLevel = ROLE_HIERARCHY["hr_admin" as UserRole] ?? 60;
+
+    if (userRoleLevel >= hrLevel || has("employees:view_all")) {
+      next();
+      return;
+    }
+
+    if (req.user.sub === targetUserId && has("employees:view")) {
+      next();
+      return;
+    }
+
+    if (
+      has("employees:view_team") &&
+      (await isManagerOf(req.user.org_id, req.user.sub, targetUserId))
+    ) {
       next();
       return;
     }

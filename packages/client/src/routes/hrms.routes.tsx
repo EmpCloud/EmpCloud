@@ -1,5 +1,7 @@
 import { lazy } from "react";
-import { Route } from "react-router-dom";
+import { Navigate, Route } from "react-router-dom";
+import { useAuthStore } from "@/lib/auth-store";
+import { usePermissions } from "@/lib/use-permissions";
 
 const EmployeeDirectoryPage = lazy(() => import("@/pages/employees/EmployeeDirectoryPage"));
 const EmployeeProfilePage = lazy(() => import("@/pages/employees/EmployeeProfilePage"));
@@ -26,10 +28,20 @@ const PoliciesPage = lazy(() => import("@/pages/policies/PoliciesPage"));
 const SelfServiceDashboardPage = lazy(() => import("@/pages/self-service/SelfServiceDashboardPage"));
 const ProbationPage = lazy(() => import("@/pages/employees/ProbationPage"));
 
+function EmployeeDirectoryRoute() {
+  const user = useAuthStore((state) => state.user);
+  const { has } = usePermissions();
+  if (!user) return <Navigate to="/login" replace />;
+  if (!has("employees:view_all")) {
+    return <Navigate to={`/employees/${user.id}`} replace />;
+  }
+  return <EmployeeDirectoryPage />;
+}
+
 export const hrmsRoutes = (
   <>
     <Route path="/self-service" element={<SelfServiceDashboardPage />} />
-    <Route path="/employees" element={<EmployeeDirectoryPage />} />
+    <Route path="/employees" element={<EmployeeDirectoryRoute />} />
     <Route path="/employees/probation" element={<ProbationPage />} />
     <Route path="/employees/import" element={<ImportEmployeesPage />} />
     <Route path="/employees/add" element={<ImportEmployeesPage />} />
