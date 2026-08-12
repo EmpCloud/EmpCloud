@@ -7,6 +7,7 @@ import { getDB } from "../../db/connection.js";
 import { getPayrollDB, isPayrollDBAccessible } from "../../db/payroll-connection.js";
 import { ConflictError, NotFoundError } from "../../utils/errors.js";
 import { logger } from "../../utils/logger.js";
+import { recalculateAttendanceForAssignmentWindow } from "../attendance/attendance.service.js";
 import type { UpsertEmployeeProfileInput } from "@empcloud/shared";
 
 // ---------------------------------------------------------------------------
@@ -221,6 +222,13 @@ export async function upsertProfile(
         updated_at: today,
       });
     }
+
+    await recalculateAttendanceForAssignmentWindow(
+      orgId,
+      [userId],
+      today.toISOString().slice(0, 10),
+      null,
+    );
   }
 
   const existing = await db("employee_profiles")
