@@ -1716,7 +1716,7 @@ export async function getMonthlyGrid(
 // directly settable -- they're calendar-derived defaults.
 export async function updateAttendanceCell(
   orgId: number,
-  params: { userId: number; date: string; code: string },
+  params: { userId: number; date: string; code: string; actorUserId?: number },
 ) {
   const db = getDB();
   if (!/^\d{4}-\d{2}-\d{2}$/.test(params.date)) {
@@ -1753,6 +1753,107 @@ export async function updateAttendanceCell(
     throw new Error(
       `Unknown status code "${params.code}". Use P / A / H / L / HPL / WOT / HOT / WO / HO.`,
     );
+  }
+  // A Present override is authoritative over an approved leave. Reverse a
+  // application date and restore its balance before saving attendance;
+  // otherwise the monthly grid would merge the approved leave back to L on
+  // every refresh. Multi-day applications are split around the worked date so
+  // the rest of the approved leave remains intact.
+  if (upper === "P") {
+    const approvedLeave = await db("leave_applications")
+      .where({ organization_id: orgId, user_id: params.userId, status: "approved" })
+      .where("start_date", "<=", params.date)
+      .where("end_date", ">=", params.date)
+      .first();
+    if (approvedLeave) {
+      const start = String(approvedLeave.start_date).slice(0, 10);
+      const end = String(approvedLeave.end_date).slice(0, 10);
+      const refundDays = approvedLeave.is_half_day ? 0.5 : 1;
+      await db.transaction(async (trx) => {
+        const now = new Date();
+        await trx("leave_applications").where({ id: approvedLeave.id }).update({
+          status: "cancelled",
+          updated_at: now,
+        });
+        const ranges: Array<{ start_date: string; end_date: string }> = [];
+        const before = new Date(`${params.date}T00:00:00Z`);
+        before.setUTCDate(before.getUTCDate() - 1);
+        const after = new Date(`${params.date}T00:00:00Z`);
+        after.setUTCDate(after.getUTCDate() + 1);
+        const beforeIso = before.toISOString().slice(0, 10);
+        const afterIso = after.toISOString().slice(0, 10);
+        if (start <= beforeIso) ranges.push({ start_date: start, end_date: beforeIso });
+        if (afterIso <= end) ranges.push({ start_date: afterIso, end_date: end });
+
+        // Preserve the remaining approved dates as up to two applications.
+        // Allocate the original debit minus the one restored day across the
+        // chronological segments; the final segment receives the exact
+        // remainder, keeping total leave usage unchanged except for this day.
+        let remainingDays = Math.max(0, Number(approvedLeave.days_count) - refundDays);
+        const calendarDays = ranges.map(
+          (range) => Math.floor((Date.parse(range.end_date) - Date.parse(range.start_date)) / 86400000) + 1,
+        );
+        let remainingCalendarDays = calendarDays.reduce((total, days) => total + days, 0);
+        for (let index = 0; index < ranges.length && remainingDays > 0; index += 1) {
+          const segmentDays = index === ranges.length - 1
+            ? remainingDays
+            : Math.min(
+                remainingDays,
+                Math.round((remainingDays * calendarDays[index] / remainingCalendarDays) * 2) / 2,
+              );
+          remainingDays = Math.max(0, remainingDays - segmentDays);
+          remainingCalendarDays -= calendarDays[index];
+          if (segmentDays <= 0) continue;
+          const {
+            id: _id,
+            created_at: _createdAt,
+            updated_at: _updatedAt,
+            ...applicationCopy
+          } = approvedLeave;
+          await trx("leave_applications").insert({
+            ...applicationCopy,
+            ...ranges[index],
+            days_count: segmentDays,
+            status: "approved",
+            reason: `${approvedLeave.reason} [Attendance override on ${params.date}]`,
+            created_at: now,
+            updated_at: now,
+          });
+        }
+        const balance = await trx("leave_balances")
+          .where({
+            organization_id: orgId,
+            user_id: params.userId,
+            leave_type_id: approvedLeave.leave_type_id,
+          })
+          .orderBy("year", "desc")
+          .first()
+          .forUpdate();
+        if (!balance) throw new ValidationError("Leave balance not found; override was not saved.");
+        await trx("leave_balances").where({ id: balance.id }).update({
+          total_used: Math.max(0, Number(balance.total_used) - refundDays),
+          balance: Number(balance.balance) + refundDays,
+          period_used: Math.max(0, Number(balance.period_used || 0) - refundDays),
+          updated_at: now,
+        });
+        const attendance = await trx("attendance_records")
+          .where({ user_id: params.userId, organization_id: orgId, date: params.date })
+          .first();
+        if (attendance) {
+          await trx("attendance_records").where({ id: attendance.id }).update({ status, updated_at: now });
+        } else {
+          await trx("attendance_records").insert({
+            user_id: params.userId,
+            organization_id: orgId,
+            date: params.date,
+            status,
+            created_at: now,
+            updated_at: now,
+          });
+        }
+      });
+      return { ok: true, action: "updated", status, reversed_leave: true };
+    }
   }
   const existing = await db("attendance_records")
     .where({ user_id: params.userId, organization_id: orgId, date: params.date })

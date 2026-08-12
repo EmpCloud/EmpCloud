@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import api from "@/api/client";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { ChevronLeft, ChevronRight, Loader2, Search, X, CalendarPlus, AlertTriangle, Download } from "lucide-react";
 import * as XLSX from "xlsx";
 
@@ -116,6 +117,13 @@ export default function AttendanceGridPage() {
   // without waiting for the refetch (the refetch still fires).
   const [overrides, setOverrides] = useState<Record<string, string>>({});
   const [editing, setEditing] = useState<{ uid: number; date: string } | null>(null);
+  const [pendingLeaveOverride, setPendingLeaveOverride] = useState<{
+    uid: number;
+    date: string;
+    code: string;
+    leaveCode: string;
+  } | null>(null);
+  const [savingLeaveOverride, setSavingLeaveOverride] = useState(false);
   // Client-side filters — the row set is small (one row per active employee
   // in the org) so filtering with useMemo is plenty fast and avoids round-
   // tripping the whole grid on every keystroke.
@@ -222,6 +230,17 @@ export default function AttendanceGridPage() {
   };
 
   async function commitCell(uid: number, date: string, newCode: string) {
+    const employee = data.employees.find((item) => item.user_id === uid);
+    const approvedLeave = employee?.leaves?.[date];
+    if (newCode === "P" && approvedLeave) {
+      setEditing(null);
+      setPendingLeaveOverride({ uid, date, code: newCode, leaveCode: approvedLeave.code });
+      return;
+    }
+    await saveCell(uid, date, newCode);
+  }
+
+  async function saveCell(uid: number, date: string, newCode: string) {
     setOverrides((prev) => ({ ...prev, [cellKey(uid, date)]: newCode }));
     setEditing(null);
     try {
@@ -804,6 +823,35 @@ export default function AttendanceGridPage() {
       <p className="text-xs text-gray-500 dark:text-gray-400">
         {t("attendance.grid.tip")}
       </p>
+
+      <ConfirmDialog
+        open={pendingLeaveOverride !== null}
+        title="Replace approved leave with Present?"
+        description={
+          pendingLeaveOverride
+            ? `This employee has approved ${pendingLeaveOverride.leaveCode} leave on ${pendingLeaveOverride.date}. ` +
+              "The leave for this date will be cancelled and the deducted balance will be restored."
+            : undefined
+        }
+        confirmText="Mark Present"
+        cancelText="Keep Leave"
+        variant="info"
+        loading={savingLeaveOverride}
+        onCancel={() => {
+          if (!savingLeaveOverride) setPendingLeaveOverride(null);
+        }}
+        onConfirm={async () => {
+          if (!pendingLeaveOverride) return;
+          setSavingLeaveOverride(true);
+          await saveCell(
+            pendingLeaveOverride.uid,
+            pendingLeaveOverride.date,
+            pendingLeaveOverride.code,
+          );
+          setSavingLeaveOverride(false);
+          setPendingLeaveOverride(null);
+        }}
+      />
     </div>
   );
 }

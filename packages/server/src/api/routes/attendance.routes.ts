@@ -758,6 +758,7 @@ router.put("/cell", authenticate, requirePermission("attendance:manage"), async 
     const result = await attendanceService.updateAttendanceCell(req.user!.org_id, {
       userId: Number(user_id),
       date: String(date),
+      actorUserId: req.user!.sub,
       code: String(code ?? ""),
     });
     sendSuccess(res, result);
