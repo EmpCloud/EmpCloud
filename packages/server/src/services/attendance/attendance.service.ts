@@ -71,7 +71,7 @@ function wallClockInTZ(date: Date, tz: string): { day: string; minutes: number }
  * comparison; night shifts (start >= end) anchor to the previous day when
  * the punch lands in the small hours of the morning.
  */
-function computeLateMinutes(
+export function computeLateMinutes(
   firstPunch: Date,
   shiftStartMinutes: number,
   graceMinutesLate: number,
@@ -87,6 +87,85 @@ function computeLateMinutes(
   }
   if (diff <= graceMinutesLate) return 0;
   return diff;
+}
+
+/**
+ * Re-resolve persisted attendance after an admin changes a shift assignment.
+ *
+ * Attendance rows intentionally snapshot their shift and late minutes at punch
+ * time. A retroactive assignment therefore has to refresh those snapshots or
+ * reports keep showing the old shift (and old lateness) even though the
+ * schedule UI shows the new one.
+ */
+export async function recalculateAttendanceForAssignmentWindow(
+  orgId: number,
+  userIds: number[],
+  effectiveFrom: string,
+  effectiveTo: string | null,
+) {
+  if (!userIds.length) return;
+  const db = getDB();
+
+  let recordsQuery = db("attendance_records")
+    .where({ organization_id: orgId })
+    .whereIn("user_id", userIds)
+    .where("date", ">=", effectiveFrom)
+    .whereNotNull("check_in")
+    .select("id", "user_id", "date", "check_in");
+  if (effectiveTo) recordsQuery = recordsQuery.where("date", "<=", effectiveTo);
+  const records = await recordsQuery;
+
+  const org = await db("organizations").where({ id: orgId }).select("timezone").first();
+  const users = await db("users as u")
+    .leftJoin("organization_locations as ol", "ol.id", "u.location_id")
+    .where("u.organization_id", orgId)
+    .whereIn("u.id", userIds)
+    .select("u.id", "ol.timezone as location_timezone");
+  const timezoneByUser = new Map<number, string>(
+    users.map((user: any) => [
+      Number(user.id),
+      user.location_timezone || org?.timezone || "UTC",
+    ]),
+  );
+
+  const defaultShift = await db("shifts")
+    .where({ organization_id: orgId, is_default: true, is_active: true })
+    .first();
+
+  for (const record of records) {
+    const date = typeof record.date === "string"
+      ? record.date.slice(0, 10)
+      : `${record.date.getFullYear()}-${String(record.date.getMonth() + 1).padStart(2, "0")}-${String(record.date.getDate()).padStart(2, "0")}`;
+    const assignment = await db("shift_assignments")
+      .where({ organization_id: orgId, user_id: record.user_id })
+      .whereRaw("DATE(effective_from) <= ?", [date])
+      .where(function () {
+        this.whereNull("effective_to").orWhereRaw("DATE(effective_to) >= ?", [date]);
+      })
+      .orderBy("effective_from", "desc")
+      .first();
+    const shift = assignment
+      ? await db("shifts").where({ id: assignment.shift_id, organization_id: orgId }).first()
+      : defaultShift;
+
+    let lateMinutes = 0;
+    if (shift && !shift.is_weekoff) {
+      const [hours, minutes] = String(shift.start_time).split(":").map(Number);
+      lateMinutes = computeLateMinutes(
+        new Date(record.check_in),
+        hours * 60 + minutes,
+        Number(shift.grace_minutes_late) || 0,
+        !!shift.is_night_shift,
+        timezoneByUser.get(Number(record.user_id)) || "UTC",
+      );
+    }
+
+    await db("attendance_records").where({ id: record.id, organization_id: orgId }).update({
+      shift_id: shift?.id ?? null,
+      late_minutes: lateMinutes,
+      updated_at: new Date(),
+    });
+  }
 }
 
 // Generous overtime buffer added on top of the shift's expected duration so

@@ -4,6 +4,7 @@
 
 import { getDB } from "../../db/connection.js";
 import { NotFoundError, ValidationError } from "../../utils/errors.js";
+import { recalculateAttendanceForAssignmentWindow } from "./attendance.service.js";
 import type { CreateShiftInput, BulkAssignShiftInput, ShiftSwapRequestInput, UpdateShiftAssignmentInput } from "@empcloud/shared";
 
 // BUG-09: a shift's is_night_shift flag could disagree with its hours — e.g.
@@ -344,6 +345,13 @@ export async function assignShift(
     updated_at: new Date(),
   });
 
+  await recalculateAttendanceForAssignmentWindow(
+    orgId,
+    [data.user_id],
+    data.effective_from,
+    data.effective_to || null,
+  );
+
   return db("shift_assignments").where({ id }).first();
 }
 
@@ -461,6 +469,17 @@ export async function updateShiftAssignment(
     await db("shift_assignments").where({ id: assignmentId }).update(updates);
   }
 
+  const affectedFrom = newFromStr < oldFromStr ? newFromStr : oldFromStr;
+  const affectedTo = oldToStr === null || newToStr === null
+    ? null
+    : (newToStr > oldToStr ? newToStr : oldToStr);
+  await recalculateAttendanceForAssignmentWindow(
+    orgId,
+    [assignment.user_id],
+    affectedFrom,
+    affectedTo,
+  );
+
   return db("shift_assignments as sa")
     .join("shifts as s", "sa.shift_id", "s.id")
     .join("users as u", "sa.user_id", "u.id")
@@ -507,6 +526,12 @@ export async function deleteShiftAssignment(orgId: number, assignmentId: number)
   if (!assignment) throw new NotFoundError("Shift assignment");
 
   await db("shift_assignments").where({ id: assignmentId }).delete();
+  await recalculateAttendanceForAssignmentWindow(
+    orgId,
+    [assignment.user_id],
+    toDateString(assignment.effective_from),
+    assignment.effective_to ? toDateString(assignment.effective_to) : null,
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -560,6 +585,13 @@ export async function bulkAssignShifts(
   }));
 
   await db("shift_assignments").insert(rows);
+
+  await recalculateAttendanceForAssignmentWindow(
+    orgId,
+    data.user_ids,
+    data.effective_from,
+    data.effective_to || null,
+  );
 
   return { assigned_count: data.user_ids.length, shift_id: data.shift_id };
 }
@@ -779,17 +811,30 @@ export async function approveSwapRequest(orgId: number, requestId: number, appro
 
   await db.transaction(async (trx) => {
     await trx("shift_assignments")
-      .where({ id: assignment1.id })
+      .where({ id: assignment1.id, organization_id: orgId })
       .update({ shift_id: assignment2.shift_id, updated_at: new Date() });
 
     await trx("shift_assignments")
-      .where({ id: assignment2.id })
+      .where({ id: assignment2.id, organization_id: orgId })
       .update({ shift_id: assignment1.shift_id, updated_at: new Date() });
 
     await trx("shift_swap_requests")
-      .where({ id: requestId })
+      .where({ id: requestId, organization_id: orgId })
       .update({ status: "approved", approved_by: approvedBy, updated_at: new Date() });
   });
+
+  await recalculateAttendanceForAssignmentWindow(
+    orgId,
+    [assignment1.user_id],
+    toDateString(assignment1.effective_from),
+    assignment1.effective_to ? toDateString(assignment1.effective_to) : null,
+  );
+  await recalculateAttendanceForAssignmentWindow(
+    orgId,
+    [assignment2.user_id],
+    toDateString(assignment2.effective_from),
+    assignment2.effective_to ? toDateString(assignment2.effective_to) : null,
+  );
 
   return db("shift_swap_requests").where({ id: requestId }).first();
 }
