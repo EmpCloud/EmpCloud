@@ -1754,12 +1754,12 @@ export async function updateAttendanceCell(
       `Unknown status code "${params.code}". Use P / A / H / L / HPL / WOT / HOT / WO / HO.`,
     );
   }
-  // A Present override is authoritative over an approved leave. Reverse a
+  // A Present or Absent override is authoritative over an approved leave. Reverse a
   // application date and restore its balance before saving attendance;
   // otherwise the monthly grid would merge the approved leave back to L on
   // every refresh. Multi-day applications are split around the worked date so
   // the rest of the approved leave remains intact.
-  if (upper === "P") {
+  if (upper === "P" || upper === "A") {
     const approvedLeave = await db("leave_applications")
       .where({ organization_id: orgId, user_id: params.userId, status: "approved" })
       .where("start_date", "<=", params.date)
