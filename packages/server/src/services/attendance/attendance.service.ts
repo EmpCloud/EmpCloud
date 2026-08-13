@@ -1766,6 +1766,16 @@ export async function updateAttendanceCell(
       .where("end_date", ">=", params.date)
       .first();
     if (approvedLeave) {
+      const actor = params.actorUserId
+        ? await db("users")
+            .where({ id: params.actorUserId, organization_id: orgId })
+            .select("first_name", "last_name")
+            .first()
+        : null;
+      const actorName = actor
+        ? `${actor.first_name || ""} ${actor.last_name || ""}`.trim() || `User #${params.actorUserId}`
+        : "an administrator";
+      const cancellationAudit = `[Leave cancelled by ${actorName} via Attendance Grid on ${params.date}]`;
       const start = String(approvedLeave.start_date).slice(0, 10);
       const end = String(approvedLeave.end_date).slice(0, 10);
       const refundDays = approvedLeave.is_half_day ? 0.5 : 1;
@@ -1773,6 +1783,7 @@ export async function updateAttendanceCell(
         const now = new Date();
         await trx("leave_applications").where({ id: approvedLeave.id }).update({
           status: "cancelled",
+          reason: `${approvedLeave.reason ? `${approvedLeave.reason} ` : ""}${cancellationAudit}`,
           updated_at: now,
         });
         const ranges: Array<{ start_date: string; end_date: string }> = [];

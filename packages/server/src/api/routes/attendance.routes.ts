@@ -793,7 +793,16 @@ router.get(
             "leave_applications.organization_id": orgId,
             "leave_applications.user_id": userId,
           })
-          .whereNotIn("leave_applications.status", ["cancelled", "rejected"])
+          .whereNot("leave_applications.status", "rejected")
+          .andWhere(function () {
+            this.whereNot("leave_applications.status", "cancelled").orWhere(function () {
+              this.where("leave_applications.status", "cancelled").andWhere(
+                "leave_applications.reason",
+                "like",
+                `%[Leave cancelled by % via Attendance Grid on ${date}]%`,
+              );
+            });
+          })
           .where("leave_applications.start_date", "<=", date)
           .where("leave_applications.end_date", ">=", date)
           .select(
@@ -831,7 +840,17 @@ router.get(
         };
       });
 
-      sendSuccess(res, { leaveTypes: merged, existingApplications: existing });
+      const existingWithAudit = existing.map((application: any) => {
+        const match = String(application.reason || "").match(
+          /\[Leave cancelled by (.+?) via Attendance Grid on \d{4}-\d{2}-\d{2}\]/,
+        );
+        return {
+          ...application,
+          cancelled_by_name: match?.[1] || null,
+        };
+      });
+
+      sendSuccess(res, { leaveTypes: merged, existingApplications: existingWithAudit });
     } catch (err) {
       next(err);
     }

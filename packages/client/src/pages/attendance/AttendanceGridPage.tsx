@@ -250,6 +250,7 @@ export default function AttendanceGridPage() {
         code: newCode,
       });
       qc.invalidateQueries({ queryKey });
+      qc.invalidateQueries({ queryKey: ["grid-leave-context", uid, date] });
       setStatus({ kind: "ok", text: t("attendance.grid.savedToast", { code: newCode || "—", date }) });
     } catch (err: any) {
       // Roll the override back on failure.
@@ -919,6 +920,7 @@ function CellEditor({
     days_count: number;
     is_half_day: boolean;
     half_day_type: "first_half" | "second_half" | null;
+    cancelled_by_name: string | null;
   }> = ctxRes?.existingApplications ?? [];
 
   useEffect(() => {
@@ -998,11 +1000,18 @@ function CellEditor({
 
       {existingApplications.length > 0 && (
         <div className="mb-3 rounded-md border border-blue-200 bg-blue-50 p-2 text-xs text-blue-900 dark:border-blue-700 dark:bg-blue-900/30 dark:text-blue-200">
-          <p className="mb-1 font-semibold">{t("attendance.grid.editor.existingLeave")}</p>
+          <p className="mb-1 font-semibold">
+            {existingApplications.every((application) => application.status === "cancelled")
+              ? "Leave cancellation history"
+              : t("attendance.grid.editor.existingLeave")}
+          </p>
           <ul className="space-y-0.5">
             {existingApplications.map((a) => (
               <li key={a.id} className="flex items-center justify-between gap-2">
                 <span className="truncate">
+                  {a.status === "cancelled" && a.cancelled_by_name
+                    ? "Leave cancelled by " + a.cancelled_by_name + ": "
+                    : null}
                   {a.leave_type_name}
                   {a.is_half_day && (
                     <span className="ml-1 text-blue-700/70">
