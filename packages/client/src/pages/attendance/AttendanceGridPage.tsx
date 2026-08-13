@@ -232,7 +232,7 @@ export default function AttendanceGridPage() {
   async function commitCell(uid: number, date: string, newCode: string) {
     const employee = data.employees.find((item) => item.user_id === uid);
     const approvedLeave = employee?.leaves?.[date];
-    if (newCode === "P" && approvedLeave) {
+    if ((newCode === "P" || newCode === "A") && approvedLeave) {
       setEditing(null);
       setPendingLeaveOverride({ uid, date, code: newCode, leaveCode: approvedLeave.code });
       return;
@@ -826,14 +826,16 @@ export default function AttendanceGridPage() {
 
       <ConfirmDialog
         open={pendingLeaveOverride !== null}
-        title="Replace approved leave with Present?"
+        title={pendingLeaveOverride?.code === "A"
+          ? "Replace approved leave with Absent?"
+          : "Replace approved leave with Present?"}
         description={
           pendingLeaveOverride
             ? `This employee has approved ${pendingLeaveOverride.leaveCode} leave on ${pendingLeaveOverride.date}. ` +
               "The leave for this date will be cancelled and the deducted balance will be restored."
             : undefined
         }
-        confirmText="Mark Present"
+        confirmText={pendingLeaveOverride?.code === "A" ? "Mark Absent" : "Mark Present"}
         cancelText="Keep Leave"
         variant="info"
         loading={savingLeaveOverride}
