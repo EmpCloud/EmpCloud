@@ -2,7 +2,7 @@
 // EMP CLOUD — Field Tracking shared-secret middleware
 //
 // Gate for the emp-monitor-compatible EMP Field surface mounted at
-// /api/v3/hrms/* and /api/v3/user/fieldAllEmployeeList. emp-monitor's field
+// /api/v3/hrms/* and /api/v3/user/fieldAllEmployeeList* routes. emp-monitor's field
 // endpoints authenticated with a single shared secret carried in the request
 // body (`req.body.secretKey === process.env.FIELD_TRACKING_SECRET_KEY`); there
 // is no per-request JWT. We mirror that contract so the existing field client

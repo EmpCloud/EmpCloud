@@ -7,6 +7,7 @@
 // public paths are exactly:
 //
 //   POST /api/v3/user/fieldAllEmployeeList
+//   POST /api/v3/user/fieldAllEmployeeListMultiOrg
 //   POST /api/v3/hrms/getAttendanceField
 //   POST /api/v3/hrms/attendance-fieldtracking
 //   POST /api/v3/hrms/markAttendanceField
@@ -30,6 +31,8 @@ import { AppError } from "../../utils/errors.js";
 import { logger } from "../../utils/logger.js";
 import { sendLegacyResponse } from "../../utils/legacy-response.js";
 import { fieldAuthenticate } from "../../services/field-legacy/field-auth.middleware.js";
+import { multiOrgFieldEmployeeListSchema } from "../../services/field-legacy/field-legacy.validation.js";
+import type { ParsedMultiOrgFieldEmployeeListInput } from "../../services/field-legacy/field-legacy.validation.js";
 import * as svc from "../../services/field-legacy/field-legacy.service.js";
 
 const router = Router();
@@ -67,6 +70,20 @@ router.post("/user/fieldAllEmployeeList", fieldAuthenticate, async (req, res) =>
     const users = await svc.listFieldEmployees(req.body || {});
     if (!users.length) return resp(res, 400, null, "Employees not found.");
     return resp(res, 200, users, "User data.");
+  } catch (err) {
+    return fail(res, err);
+  }
+});
+
+// ---------------------------------------------------------------------------
+// /user/fieldAllEmployeeListMultiOrg
+// ---------------------------------------------------------------------------
+router.post("/user/fieldAllEmployeeListMultiOrg", fieldAuthenticate, async (req, res) => {
+  try {
+    const input = multiOrgFieldEmployeeListSchema.safeParse(req.body || {});
+    if (!input.success) throw new AppError(input.error.errors[0]?.message || "Validation Failed", 400, "VALIDATION_ERROR");
+    const result = await svc.listFieldEmployeesMultiOrg(input.data as ParsedMultiOrgFieldEmployeeListInput);
+    return resp(res, 200, result, "Employees found successfully");
   } catch (err) {
     return fail(res, err);
   }
