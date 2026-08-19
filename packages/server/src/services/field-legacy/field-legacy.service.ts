@@ -29,6 +29,7 @@ import { NotFoundError, ValidationError } from "../../utils/errors.js";
 import * as attendanceService from "../attendance/attendance.service.js";
 import * as regularizationService from "../attendance/regularization.service.js";
 import * as leaveApplicationService from "../leave/leave-application.service.js";
+import type { ParsedMultiOrgFieldEmployeeListInput } from "./field-legacy.validation.js";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -302,6 +303,7 @@ export async function listFieldEmployees(body: {
     // work location (organization_locations.timezone), already joined as `loc`.
     "loc.timezone as timezone",
     "u.date_of_joining as date_join",
+    "u.date_of_exit",
   );
 
   // Roles per user, fetched separately and merged in (mirrors emp-monitor's
@@ -342,6 +344,7 @@ export async function listFieldEmployees(body: {
       email: r.email,
       phone: r.phone ?? null,
       date_join: toDateOnly(r.date_join),
+      date_of_exit: toDateOnly(r.date_of_exit),
       address: r.address ?? null,
       photo_path: r.photo_path ?? null,
       status: r.status,
@@ -374,6 +377,201 @@ export async function listFieldEmployees(body: {
       assigned: [],
     };
   });
+}
+
+// ---------------------------------------------------------------------------
+// /user/fieldAllEmployeeListMultiOrg — paginated cross-organization directory
+// ---------------------------------------------------------------------------
+export async function listFieldEmployeesMultiOrg(input: ParsedMultiOrgFieldEmployeeListInput) {
+  const db = getDB();
+  let query = db("users as u")
+    .leftJoin("organization_departments as dept", "u.department_id", "dept.id")
+    .leftJoin("organization_locations as loc", "u.location_id", "loc.id")
+    .whereIn("u.organization_id", input.organization_ids)
+    .whereNot("u.role", "super_admin");
+
+  if (input.department_ids.length) query = query.whereIn("u.department_id", input.department_ids);
+  if (input.location_id) query = query.where("u.location_id", input.location_id);
+  if (input.role_id) {
+    query = query.whereIn("u.id", db("user_roles").where("role_id", input.role_id).select("user_id"));
+  }
+  if (input.employee_ids.length) query = query.whereIn("u.id", input.employee_ids);
+  if (input.status !== null) query = query.where("u.status", input.status);
+  if (input.non_admin_id) {
+    query = query.where(function () {
+      this.where("u.reporting_manager_id", input.non_admin_id).orWhereExists(
+        db("user_additional_managers as uam")
+          .join("users as assigned_manager", "uam.manager_id", "assigned_manager.id")
+          .select(db.raw("1"))
+          .whereRaw("?? = ??", ["uam.user_id", "u.id"])
+          .whereRaw("?? = ??", ["assigned_manager.organization_id", "u.organization_id"])
+          .whereIn("assigned_manager.organization_id", input.organization_ids)
+          .where("uam.manager_id", input.non_admin_id as number),
+      );
+    });
+  }
+  if (input.name) {
+    const term = `%${input.name}%`;
+    query = query.where(function () {
+      this.where(db.raw("CONCAT(COALESCE(u.first_name,''),' ',COALESCE(u.last_name,''))"), "like", term)
+        .orWhere("u.first_name", "like", term)
+        .orWhere("u.last_name", "like", term)
+        .orWhere("u.email", "like", term)
+        .orWhere("u.emp_code", "like", term)
+        .orWhere("u.contact_number", "like", term)
+        .orWhere("dept.name", "like", term)
+        .orWhere("loc.name", "like", term);
+    });
+  }
+  // EmpCloud has no project assignment column. Its legacy project_name field is
+  // always null, so a non-empty project filter correctly has no matches.
+  if (input.project_name) query = query.whereRaw("1 = 0");
+
+  const [{ count }] = await query.clone().clearSelect().countDistinct("u.id as count");
+  const totalCount = Number(count);
+  const rows = await query
+    .clone()
+    .orderBy("u.first_name", "asc")
+    .orderBy("u.id", "asc")
+    .limit(input.limit)
+    .offset(input.skip)
+    .select(
+      "u.id",
+      "u.first_name",
+      "u.last_name",
+      "u.email",
+      "u.password",
+      "u.emp_code",
+      "u.contact_number as phone",
+      "u.address",
+      "u.photo_path",
+      "u.status",
+      "u.organization_id",
+      "u.department_id",
+      "dept.name as department",
+      "u.location_id",
+      "loc.name as location",
+      "u.role",
+      "loc.timezone as timezone",
+      "u.date_of_joining as date_join",
+      "u.date_of_exit",
+      "u.reporting_manager_id",
+    );
+
+  const userIds = rows.map((row: any) => Number(row.id));
+  const roleRows = userIds.length
+    ? await db("user_roles as ur")
+        .join("roles as rn", "rn.id", "ur.role_id")
+        .whereIn("ur.user_id", userIds)
+        .select("ur.user_id", "ur.role_id", "rn.name as role", "rn.type as role_type")
+    : [];
+  const rolesByUser = new Map<number, Array<{ role_id: number; role: string; role_type: number }>>();
+  for (const roleRow of roleRows as any[]) {
+    const roles = rolesByUser.get(Number(roleRow.user_id)) ?? [];
+    roles.push({ role_id: roleRow.role_id, role: roleRow.role, role_type: roleRow.role_type });
+    rolesByUser.set(Number(roleRow.user_id), roles);
+  }
+
+  const primaryAssignments = userIds.length
+    ? await db("users as employee")
+        .join("users as manager", "employee.reporting_manager_id", "manager.id")
+        .leftJoin("user_roles as mur", "manager.id", "mur.user_id")
+        .leftJoin("roles as mr", "mur.role_id", "mr.id")
+        .whereIn("employee.id", userIds)
+        .whereRaw("?? = ??", ["employee.organization_id", "manager.organization_id"])
+        .select(
+          "employee.id as employee_id",
+          "manager.id as to_assigned_id",
+          "mur.role_id",
+          "mr.name as role_name",
+          "manager.emp_code",
+          "manager.first_name",
+          "manager.last_name",
+          "manager.email as a_email",
+        )
+    : [];
+  const additionalAssignments = userIds.length
+    ? await db("user_additional_managers as uam")
+        .join("users as employee", "uam.user_id", "employee.id")
+        .join("users as manager", "uam.manager_id", "manager.id")
+        .leftJoin("user_roles as mur", "manager.id", "mur.user_id")
+        .leftJoin("roles as mr", "mur.role_id", "mr.id")
+        .whereIn("uam.user_id", userIds)
+        .whereRaw("?? = ??", ["employee.organization_id", "manager.organization_id"])
+        .select(
+          "uam.user_id as employee_id",
+          "manager.id as to_assigned_id",
+          "mur.role_id",
+          "mr.name as role_name",
+          "manager.emp_code",
+          "manager.first_name",
+          "manager.last_name",
+          "manager.email as a_email",
+        )
+    : [];
+  const assignmentsByUser = new Map<number, any[]>();
+  for (const assignment of [...(primaryAssignments as any[]), ...(additionalAssignments as any[])]) {
+    const employeeId = Number(assignment.employee_id);
+    const assignments = assignmentsByUser.get(employeeId) ?? [];
+    if (!assignments.some((item) => Number(item.to_assigned_id) === Number(assignment.to_assigned_id))) {
+      assignments.push(assignment);
+    }
+    assignmentsByUser.set(employeeId, assignments);
+  }
+
+  const users = rows.map((row: any) => {
+    const roles = rolesByUser.get(Number(row.id)) ?? [];
+    const primary = roles[0];
+    const employee: Record<string, unknown> = {
+      id: row.id,
+      u_id: row.id,
+      first_name: row.first_name,
+      name: row.first_name,
+      last_name: row.last_name,
+      email: row.email,
+      phone: row.phone ?? null,
+      date_join: toDateOnly(row.date_join),
+      date_of_exit: toDateOnly(row.date_of_exit),
+      address: row.address ?? null,
+      photo_path: row.photo_path ?? null,
+      status: row.status,
+      organization_id: row.organization_id,
+      location_id: row.location_id ?? null,
+      location: row.location ?? null,
+      department_id: row.department_id ?? null,
+      department: row.department ?? null,
+      emp_code: row.emp_code ?? null,
+      shift_id: null,
+      timezone: row.timezone ?? null,
+      tracking_mode: null,
+      tracking_rule_type: null,
+      role_id: primary?.role_id ?? null,
+      role: primary?.role ?? row.role ?? null,
+      role_type: primary?.role_type ?? null,
+      total_count: totalCount,
+      full_name: `${row.first_name ?? ""} ${row.last_name ?? ""}`.trim(),
+      software_version: null,
+      password: row.password ?? null,
+      computer_name: null,
+      username: null,
+      domain: null,
+      shift_name: null,
+      shift_data: null,
+      employee_unique_id: row.email,
+      project_name: null,
+      roles,
+      encriptedpassword: row.password ?? null,
+      assigned: assignmentsByUser.get(Number(row.id)) ?? [],
+    };
+    if (input.non_admin_id) {
+      employee.user_id = row.id;
+      employee.to_assigned_id = input.non_admin_id;
+      employee.system_architecture = null;
+    }
+    return employee;
+  });
+
+  return { users, count: totalCount };
 }
 
 // ---------------------------------------------------------------------------
