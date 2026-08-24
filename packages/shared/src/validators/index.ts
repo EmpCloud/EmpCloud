@@ -341,6 +341,11 @@ export const updateLocationSchema = z.object({
   timezone: z.string().max(50).optional(),
 });
 
+export const locationsDepartmentsByOrgSchema = z.object({
+  secretKey: z.string().min(1, "secretKey is required"),
+  organization_id: z.coerce.number().int().positive("organization_id must be a positive integer"),
+});
+
 // ---------------------------------------------------------------------------
 // Modules
 // ---------------------------------------------------------------------------
