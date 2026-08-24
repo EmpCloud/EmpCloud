@@ -75,6 +75,7 @@ import aiConfigRoutes from "./api/routes/ai-config.routes.js";
 import logRoutes from "./api/routes/logs.routes.js";
 import roleRoutes from "./api/routes/role.routes.js";
 import apiKeyRoutes from "./api/routes/api-key.routes.js";
+import locationLegacyRoutes from "./api/routes/location-legacy.routes.js";
 import assistantRoutes from "./api/routes/assistant.routes.js";
 
 async function main() {
@@ -277,6 +278,7 @@ async function main() {
   // emp-monitor's v3/hrms/* + v3/user/fieldAllEmployeeList field-tracking
   // endpoints, gated by FIELD_TRACKING_SECRET_KEY, backed by EmpCloud tables.
   app.use("/api/v3", apiLimiter, fieldLegacyRoutes);
+  app.use("/api/v3/location", apiLimiter, locationLegacyRoutes);
   // Legacy emp-monitor NAS (SFTP file storage) surface.
   app.use("/api/v3/nas", apiLimiter, nasRoutes);
   app.use("/api/v1/helpdesk", apiLimiter, helpdeskRoutes);
