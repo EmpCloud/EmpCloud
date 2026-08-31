@@ -1637,14 +1637,19 @@ export async function getMonthlyGrid(
         if (isMandatoryHoliday) code = "HOT";
         else if (isWeekoff) code = "WOT";
       }
-      // Approved leave on this date wins over a plain present/blank cell:
+      // Approved leave on a WORKING date wins over a plain present/blank cell.
+      // A multi-day application may span intervening week-offs or holidays
+      // (for example Fri -> Mon). Those non-working dates remain WO / HO and
+      // must not acquire a leave badge or inflate the grid's leave total.
+      // This also makes Reset restore the calendar-derived status instead of
+      // exposing CL/EL from the surrounding application range.
       //   full-day leave                       -> L
       //   half-day leave + other half worked   -> HPL (½ present + ½ leave)
       //   half-day leave + half_day row (no
       //     punch — approveLeave's no-show marker) -> H  (½ paid + ½ unpaid)
       //   half-day leave + nothing worked      -> L
       const lv = leaveMap[d.date];
-      if (lv) {
+      if (lv && !isWeekoff && !isHoliday) {
         if (lv.isHalf) {
           // HPL ONLY when the OTHER half was genuinely worked: a full present
           // row, or any row carrying real punches / worked_minutes (this also

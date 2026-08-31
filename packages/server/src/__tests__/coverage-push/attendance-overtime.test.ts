@@ -235,6 +235,90 @@ describe("getMonthlyGrid — full-month classification", () => {
     expect(grid.employees[0].weekoffDays["2026-05-04"]).toBeUndefined();
   });
 
+  it("keeps intervening week-offs as WO when approved leave spans Friday through Monday", async () => {
+    seedMonth({
+      assignments: [
+        {
+          user_id: 1,
+          effective_from: "2026-05-01",
+          effective_to: null,
+          working_days: "1,2,3,4,5",
+          is_weekoff: 0,
+        },
+      ],
+      leaves: [
+        {
+          user_id: 1,
+          start_date: "2026-05-01", // Friday
+          end_date: "2026-05-04",   // Monday
+          is_half_day: 0,
+          half_day_type: null,
+          leave_code: "CL",
+          leave_name: "Casual Leave",
+        },
+      ],
+    });
+
+    const grid = await getMonthlyGrid(ORG, { month: 5, year: 2026 });
+    const employee = grid.employees[0];
+
+    expect(employee.days["2026-05-01"]).toBe("L");
+    expect(employee.days["2026-05-02"]).toBe("");
+    expect(employee.days["2026-05-03"]).toBe("");
+    expect(employee.days["2026-05-04"]).toBe("L");
+    expect(employee.weekoffDays["2026-05-02"]).toBe(true);
+    expect(employee.weekoffDays["2026-05-03"]).toBe(true);
+    expect(employee.leaves["2026-05-02"]).toBeUndefined();
+    expect(employee.leaves["2026-05-03"]).toBeUndefined();
+    expect(employee.leaves["2026-05-01"]).toEqual({ code: "CL", isHalf: false });
+    expect(employee.leaves["2026-05-04"]).toEqual({ code: "CL", isHalf: false });
+  });
+
+  it("preserves existing full-day and half-day leave classification on working dates", async () => {
+    seedMonth({
+      attendance: [
+        { user_id: 1, date: "2026-05-05", status: "present", worked_minutes: 240, check_in: "09:00:00" },
+      ],
+      assignments: [
+        {
+          user_id: 1,
+          effective_from: "2026-05-01",
+          effective_to: null,
+          working_days: "1,2,3,4,5",
+          is_weekoff: 0,
+        },
+      ],
+      leaves: [
+        {
+          user_id: 1,
+          start_date: "2026-05-04",
+          end_date: "2026-05-04",
+          is_half_day: 0,
+          half_day_type: null,
+          leave_code: "CL",
+          leave_name: "Casual Leave",
+        },
+        {
+          user_id: 1,
+          start_date: "2026-05-05",
+          end_date: "2026-05-05",
+          is_half_day: 1,
+          half_day_type: "second_half",
+          leave_code: "CL",
+          leave_name: "Casual Leave",
+        },
+      ],
+    });
+
+    const grid = await getMonthlyGrid(ORG, { month: 5, year: 2026 });
+    const employee = grid.employees[0];
+
+    expect(employee.days["2026-05-04"]).toBe("L");
+    expect(employee.leaves["2026-05-04"]).toEqual({ code: "CL", isHalf: false });
+    expect(employee.days["2026-05-05"]).toBe("HPL");
+    expect(employee.leaves["2026-05-05"]).toEqual({ code: "CL", isHalf: true });
+  });
+
   it("honours a per-assignment is_weekoff flag (carved-out off range)", async () => {
     seedMonth({
       assignments: [
