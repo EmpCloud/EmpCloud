@@ -26,6 +26,7 @@ const captured = {
   updates: [] as Array<{ table: string; data: any }>,
   dels: [] as Array<{ table: string }>,
   wheres: [] as Array<{ table: string; arg: any }>,
+  locks: [] as string[],
 };
 
 const CHAIN_METHODS = [
@@ -69,7 +70,10 @@ function makeChain(table: string) {
   chain.first = vi.fn(() => {
     const value = st.firsts.length ? st.firsts.shift() : null;
     const result: any = {
-      forUpdate: vi.fn(() => Promise.resolve(value)),
+      forUpdate: vi.fn(() => {
+        captured.locks.push(table);
+        return Promise.resolve(value);
+      }),
       then: (resolve: any, reject: any) => Promise.resolve(value).then(resolve, reject),
     };
     return result;
@@ -121,6 +125,7 @@ beforeEach(() => {
   captured.updates.length = 0;
   captured.dels.length = 0;
   captured.wheres.length = 0;
+  captured.locks.length = 0;
   vi.clearAllMocks();
 });
 
@@ -406,8 +411,8 @@ describe("updateAttendanceCell — overtime + status mapping", () => {
       user_id: 1,
       leave_type_id: 7,
       start_date: "2026-05-04",
-      end_date: "2026-05-04",
-      days_count: 1,
+      end_date: "2026-05-06",
+      days_count: 3,
       is_half_day: 0,
       reason: "Family appointment",
       status: "approved",
@@ -419,7 +424,7 @@ describe("updateAttendanceCell — overtime + status mapping", () => {
       balance: 4,
       period_used: 2,
     }];
-    tableState("attendance_records").firsts = [null];
+    tableState("attendance_records").firsts = [{ id: 55 }];
 
     const result = await updateAttendanceCell(ORG, {
       userId: 1,
@@ -433,6 +438,10 @@ describe("updateAttendanceCell — overtime + status mapping", () => {
       (update) => update.table === "leave_applications" && update.data.status === "cancelled",
     );
     expect(cancelled?.data.reason).toBeUndefined();
+    const splitApplication = captured.inserts.find(
+      (insert) => insert.table === "leave_applications" && insert.data.status === "approved",
+    );
+    expect(splitApplication?.data.reason).toBe("Family appointment");
     const audit = captured.inserts.find((insert) => insert.table === "audit_logs");
     expect(audit?.data).toEqual(expect.objectContaining({
       organization_id: ORG,
@@ -447,6 +456,12 @@ describe("updateAttendanceCell — overtime + status mapping", () => {
       actor_name: "Ananya Gupta",
       attendance_status: "absent",
     });
+    expect(captured.locks).toEqual(expect.arrayContaining(["leave_applications", "leave_balances"]));
+    expect(captured.wheres).toEqual(expect.arrayContaining([
+      { table: "leave_applications", arg: { id: 91, organization_id: ORG } },
+      { table: "leave_balances", arg: { id: 33, organization_id: ORG } },
+      { table: "attendance_records", arg: { id: 55, organization_id: ORG } },
+    ]));
   });
 
   it("maps WOT -> weekoff_overtime on a new row (insert)", async () => {

@@ -759,6 +759,14 @@ export const attendanceGridCellSchema = z.object({
   code: z.enum(["P", "A", "H", "L", "HPL", "WOT", "HOT", "WO", "HO", "", "-"]).default(""),
 });
 
+export const attendanceGridApplyLeaveSchema = z.object({
+  user_id: z.coerce.number().int().positive(),
+  date: attendanceGridDateSchema,
+  leave_type_id: z.coerce.number().int().positive(),
+  is_half_day: z.boolean().default(false),
+  half_day_type: z.enum(["first_half", "second_half"]).default("first_half"),
+});
+
 export const createGeoFenceSchema = z.object({
   name: z.string().min(1).max(100),
   latitude: z.number().min(-90).max(90),

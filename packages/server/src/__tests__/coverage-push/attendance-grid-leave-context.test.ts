@@ -28,6 +28,12 @@ vi.mock("../../db/connection.js", () => ({ getDB: () => mockDB }));
 const leaveMocks = vi.hoisted(() => ({ getBalances: vi.fn() }));
 vi.mock("../../services/leave/leave-balance.service", () => ({ getBalances: leaveMocks.getBalances }));
 vi.mock("../../services/leave/leave-balance.service.js", () => ({ getBalances: leaveMocks.getBalances }));
+const leaveApplicationMocks = vi.hoisted(() => ({
+  applyLeave: vi.fn(),
+  approveLeave: vi.fn(),
+}));
+vi.mock("../../services/leave/leave-application.service", () => leaveApplicationMocks);
+vi.mock("../../services/leave/leave-application.service.js", () => leaveApplicationMocks);
 vi.mock("../../services/attendance/attendance-settings.service", () => ({
   assertChannelAllowed: vi.fn(),
 }));
@@ -35,8 +41,12 @@ vi.mock("../../services/attendance/attendance-settings.service.js", () => ({
   assertChannelAllowed: vi.fn(),
 }));
 
-import { getAttendanceGridLeaveContext } from "../../services/attendance/attendance.service.js";
 import {
+  applyAttendanceGridLeave,
+  getAttendanceGridLeaveContext,
+} from "../../services/attendance/attendance.service.js";
+import {
+  attendanceGridApplyLeaveSchema,
   attendanceGridCellSchema,
   attendanceGridLeaveContextQuerySchema,
 } from "@empcloud/shared";
@@ -112,5 +122,63 @@ describe("attendance-grid leave context", () => {
       .toEqual({ user_id: 25, date: "2026-08-09", code: "A" });
     expect(() => attendanceGridCellSchema.parse({ user_id: 25, date: "2026-08-09", code: "INVALID" }))
       .toThrow();
+    expect(attendanceGridApplyLeaveSchema.parse({
+      user_id: "25",
+      date: "2026-08-09",
+      leave_type_id: "7",
+    })).toEqual({
+      user_id: 25,
+      date: "2026-08-09",
+      leave_type_id: 7,
+      is_half_day: false,
+      half_day_type: "first_half",
+    });
+    expect(() => attendanceGridApplyLeaveSchema.parse({
+      user_id: 25,
+      date: "bad-date",
+      leave_type_id: 7,
+    })).toThrow();
+  });
+
+  it("delegates apply-leave business logic to the service with validated input", async () => {
+    leaveApplicationMocks.applyLeave.mockResolvedValue({ id: 501 });
+    leaveApplicationMocks.approveLeave.mockResolvedValue({ id: 501, status: "approved" });
+    const actor: any = {
+      sub: 44,
+      first_name: "Ananya",
+      last_name: "Gupta",
+      role: "org_admin",
+      permissions: ["attendance:manage"],
+    };
+
+    const result = await applyAttendanceGridLeave(3, actor, {
+      user_id: 25,
+      date: "2026-08-09",
+      leave_type_id: 7,
+      is_half_day: true,
+      half_day_type: "second_half",
+    });
+
+    expect(leaveApplicationMocks.applyLeave).toHaveBeenCalledWith(
+      3,
+      25,
+      expect.objectContaining({
+        leave_type_id: 7,
+        start_date: "2026-08-09",
+        end_date: "2026-08-09",
+        days_count: 0.5,
+        is_half_day: true,
+        half_day_type: "second_half",
+      }),
+      { skipBackdateCheck: true },
+    );
+    expect(leaveApplicationMocks.approveLeave).toHaveBeenCalledWith(
+      3,
+      44,
+      501,
+      expect.stringContaining("Ananya Gupta"),
+      ["attendance:manage"],
+    );
+    expect(result).toEqual({ id: 501, status: "approved" });
   });
 });

@@ -9,7 +9,6 @@ import { sendSuccess, sendPaginated } from "../../utils/response.js";
 import { logAudit } from "../../services/audit/audit.service.js";
 import * as shiftService from "../../services/attendance/shift.service.js";
 import * as attendanceService from "../../services/attendance/attendance.service.js";
-import * as leaveApplicationService from "../../services/leave/leave-application.service.js";
 import * as geoFenceService from "../../services/attendance/geo-fence.service.js";
 import * as regularizationService from "../../services/attendance/regularization.service.js";
 import * as settingsService from "../../services/attendance/attendance-settings.service.js";
@@ -24,6 +23,7 @@ import {
   shiftScheduleQuerySchema,
   attendanceGridLeaveContextQuerySchema,
   attendanceGridCellSchema,
+  attendanceGridApplyLeaveSchema,
   createGeoFenceSchema,
   checkInSchema,
   checkOutSchema,
@@ -799,54 +799,12 @@ router.post(
   requirePermission("attendance:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { user_id, date, leave_type_id, is_half_day, half_day_type } = req.body || {};
-      if (!user_id || !date || !leave_type_id) {
-        throw new Error("user_id, date and leave_type_id are required");
-      }
-      const orgId = req.user!.org_id;
-      const halfDay = Boolean(is_half_day);
-      // Whitelist the half_day_type — only the two enum values are accepted.
-      // Anything else (including legacy callers that omit it) falls back to
-      // "first_half" so back-compat is preserved.
-      const resolvedHalf: "first_half" | "second_half" =
-        half_day_type === "second_half" ? "second_half" : "first_half";
-
-      // Capture WHO applied this so HR can audit later (the original
-      // "Applied by HR via Attendance Grid" was anonymous).
-      const actorFirst = (req.user as any).first_name || "";
-      const actorLast = (req.user as any).last_name || "";
-      const actorName = `${actorFirst} ${actorLast}`.trim() || "an admin";
-      const actorRole = (req.user as any).role
-        ? String((req.user as any).role).replace(/_/g, " ")
-        : "admin";
-      const reasonText = `Applied by ${actorName} (${actorRole}) via Attendance Grid`;
-
-      const application = await leaveApplicationService.applyLeave(
-        orgId,
-        Number(user_id),
-        {
-          leave_type_id: Number(leave_type_id),
-          start_date: String(date),
-          end_date: String(date),
-          days_count: halfDay ? 0.5 : 1,
-          is_half_day: halfDay,
-          half_day_type: halfDay ? resolvedHalf : undefined,
-          reason: reasonText,
-        } as any,
-        // HR is recording attendance on behalf, often retroactively (an
-        // employee brings sick-leave documentation a week or two later).
-        // The 7-day employee-side guard does not apply here.
-        { skipBackdateCheck: true },
+      const input = attendanceGridApplyLeaveSchema.parse(req.body);
+      const approved = await attendanceService.applyAttendanceGridLeave(
+        req.user!.org_id,
+        req.user!,
+        input,
       );
-
-      const approved = await leaveApplicationService.approveLeave(
-        orgId,
-        req.user!.sub,
-        Number((application as any).id),
-        `Approved on behalf by ${actorName} via Attendance Grid`,
-        (req.user as any).permissions,
-      );
-
       sendSuccess(res, { application: approved });
     } catch (err) {
       next(err);
