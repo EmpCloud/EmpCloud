@@ -1002,7 +1002,7 @@ function CellEditor({
         <div className="mb-3 rounded-md border border-blue-200 bg-blue-50 p-2 text-xs text-blue-900 dark:border-blue-700 dark:bg-blue-900/30 dark:text-blue-200">
           <p className="mb-1 font-semibold">
             {existingApplications.every((application) => application.status === "cancelled")
-              ? "Leave cancellation history"
+              ? t("attendance.grid.editor.cancellationHistory")
               : t("attendance.grid.editor.existingLeave")}
           </p>
           <ul className="space-y-0.5">
@@ -1010,7 +1010,7 @@ function CellEditor({
               <li key={a.id} className="flex items-center justify-between gap-2">
                 <span className="truncate">
                   {a.status === "cancelled" && a.cancelled_by_name
-                    ? "Leave cancelled by " + a.cancelled_by_name + ": "
+                    ? t("attendance.grid.editor.cancelledBy", { name: a.cancelled_by_name })
                     : null}
                   {a.leave_type_name}
                   {a.is_half_day && (

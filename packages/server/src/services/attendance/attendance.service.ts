@@ -22,7 +22,8 @@ import { getDB } from "../../db/connection.js";
 import { ValidationError } from "../../utils/errors.js";
 import { calculateOvertime } from "../../utils/payroll-rules.js";
 import { assertChannelAllowed } from "./attendance-settings.service.js";
-import type { CheckInInput, CheckOutInput } from "@empcloud/shared";
+import { getBalances as getLeaveBalances } from "../leave/leave-balance.service.js";
+import { AuditAction, type CheckInInput, type CheckOutInput } from "@empcloud/shared";
 
 interface PunchInput {
   source?: string;
@@ -1710,6 +1711,105 @@ export async function getMonthlyGrid(
   return { days, employees, totalEmployees: employees.length, daysInMonth };
 }
 
+export async function getAttendanceGridLeaveContext(
+  orgId: number,
+  userId: number,
+  date: string,
+) {
+  const db = getDB();
+  const [types, balances, applications] = await Promise.all([
+    db("leave_types")
+      .where({ organization_id: orgId, is_active: true })
+      .select("id", "name", "code", "color", "requires_approval")
+      .orderBy("name", "asc"),
+    getLeaveBalances(orgId, userId),
+    db("leave_applications")
+      .leftJoin("leave_types", "leave_applications.leave_type_id", "leave_types.id")
+      .where({
+        "leave_applications.organization_id": orgId,
+        "leave_applications.user_id": userId,
+      })
+      .whereNot("leave_applications.status", "rejected")
+      .where("leave_applications.start_date", "<=", date)
+      .where("leave_applications.end_date", ">=", date)
+      .select(
+        "leave_applications.id",
+        "leave_applications.leave_type_id",
+        "leave_applications.status",
+        "leave_applications.start_date",
+        "leave_applications.end_date",
+        "leave_applications.days_count",
+        "leave_applications.is_half_day",
+        "leave_applications.half_day_type",
+        "leave_applications.reason",
+        "leave_types.name as leave_type_name",
+        "leave_types.color as leave_type_color",
+      ),
+  ]);
+
+  const cancelledIds = applications
+    .filter((application: any) => application.status === "cancelled")
+    .map((application: any) => String(application.id));
+  const cancellationAudits = cancelledIds.length
+    ? await db("audit_logs as al")
+        .leftJoin("users as actor", "al.user_id", "actor.id")
+        .where({
+          "al.organization_id": orgId,
+          "al.action": "leave_cancelled",
+          "al.resource_type": "leave_application",
+        })
+        .whereIn("al.resource_id", cancelledIds)
+        .select(
+          "al.resource_id",
+          "al.details",
+          "actor.first_name as actor_first_name",
+          "actor.last_name as actor_last_name",
+        )
+    : [];
+
+  const auditByApplication = new Map<string, { actorName: string | null }>();
+  for (const audit of cancellationAudits as any[]) {
+    try {
+      const details = typeof audit.details === "string" ? JSON.parse(audit.details) : audit.details;
+      if (details?.source !== "attendance_grid" || details?.date !== date) continue;
+      const currentActorName = `${audit.actor_first_name || ""} ${audit.actor_last_name || ""}`.trim();
+      auditByApplication.set(String(audit.resource_id), {
+        actorName: details.actor_name || currentActorName || null,
+      });
+    } catch {
+      // Ignore malformed legacy audit details; they must not expose an
+      // unrelated cancelled application in this date-specific context.
+    }
+  }
+
+  const existingApplications = applications
+    .filter(
+      (application: any) =>
+        application.status !== "cancelled" || auditByApplication.has(String(application.id)),
+    )
+    .map((application: any) => ({
+      ...application,
+      cancelled_by_name: auditByApplication.get(String(application.id))?.actorName ?? null,
+    }));
+
+  // Use the first balance row, matching applyLeave's lookup when legacy
+  // duplicate balance rows exist.
+  const leaveTypes = types.map((type: any) => {
+    const balance = balances.find((item: any) => Number(item.leave_type_id) === Number(type.id));
+    return {
+      id: type.id,
+      name: type.name,
+      code: type.code,
+      color: type.color,
+      requires_approval: !!type.requires_approval,
+      available_now: balance ? Number((balance as any).available_now ?? balance.balance ?? 0) : 0,
+      fiscal_year_label: balance ? (balance as any).fiscal_year_label : null,
+    };
+  });
+
+  return { leaveTypes, existingApplications };
+}
+
 // Update a single attendance cell from the grid's double-click edit.
 // Codes accepted: P / A / H / L / "" (revert -> deletes the row so the
 // day falls back to its default WO / HO / blank). WO and HO are NOT
@@ -1775,7 +1875,6 @@ export async function updateAttendanceCell(
       const actorName = actor
         ? `${actor.first_name || ""} ${actor.last_name || ""}`.trim() || `User #${params.actorUserId}`
         : "an administrator";
-      const cancellationAudit = `[Leave cancelled by ${actorName} via Attendance Grid on ${params.date}]`;
       const start = String(approvedLeave.start_date).slice(0, 10);
       const end = String(approvedLeave.end_date).slice(0, 10);
       const refundDays = approvedLeave.is_half_day ? 0.5 : 1;
@@ -1783,8 +1882,21 @@ export async function updateAttendanceCell(
         const now = new Date();
         await trx("leave_applications").where({ id: approvedLeave.id }).update({
           status: "cancelled",
-          reason: `${approvedLeave.reason ? `${approvedLeave.reason} ` : ""}${cancellationAudit}`,
           updated_at: now,
+        });
+        await trx("audit_logs").insert({
+          organization_id: orgId,
+          user_id: params.actorUserId ?? null,
+          action: AuditAction.LEAVE_CANCELLED,
+          resource_type: "leave_application",
+          resource_id: String(approvedLeave.id),
+          details: JSON.stringify({
+            source: "attendance_grid",
+            date: params.date,
+            actor_name: actorName,
+            attendance_status: status,
+          }),
+          created_at: now,
         });
         const ranges: Array<{ start_date: string; end_date: string }> = [];
         const before = new Date(`${params.date}T00:00:00Z`);

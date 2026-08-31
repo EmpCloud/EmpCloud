@@ -1308,6 +1308,8 @@
       "editor": {
         "close": "Close",
         "existingLeave": "Existing leave on this date",
+        "cancellationHistory": "Leave cancellation history",
+        "cancelledBy": "Leave cancelled by {{name}}: ",
         "halfPm": "½ PM",
         "halfAm": "½ AM",
         "halfDayShort": "half day",

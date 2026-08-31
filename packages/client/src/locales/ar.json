@@ -1308,6 +1308,8 @@
       "editor": {
         "close": "إغلاق",
         "existingLeave": "إجازة موجودة في هذا التاريخ",
+        "cancellationHistory": "سجل إلغاء الإجازات",
+        "cancelledBy": "تم إلغاء الإجازة بواسطة {{name}}: ",
         "halfPm": "½ مساءً",
         "halfAm": "½ صباحًا",
         "halfDayShort": "نصف يوم",

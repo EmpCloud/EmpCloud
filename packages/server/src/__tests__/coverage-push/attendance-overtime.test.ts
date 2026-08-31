@@ -33,6 +33,7 @@ const CHAIN_METHODS = [
   "whereNot", "whereRaw", "whereBetween", "andWhere", "orWhere", "orWhereRaw",
   "orWhereNull", "orderBy", "groupBy", "limit", "offset", "join", "leftJoin",
   "on", "andOn", "clone",
+  "forUpdate",
 ];
 
 // getMonthlyGrid uses aliased table names (e.g. db("users as u")). Normalise so
@@ -65,7 +66,14 @@ function makeChain(table: string) {
       return chain;
     });
   }
-  chain.first = vi.fn(() => Promise.resolve(st.firsts.length ? st.firsts.shift() : null));
+  chain.first = vi.fn(() => {
+    const value = st.firsts.length ? st.firsts.shift() : null;
+    const result: any = {
+      forUpdate: vi.fn(() => Promise.resolve(value)),
+      then: (resolve: any, reject: any) => Promise.resolve(value).then(resolve, reject),
+    };
+    return result;
+  });
   chain.insert = vi.fn((data: any) => {
     captured.inserts.push({ table, data });
     return Promise.resolve([1]);
@@ -391,6 +399,56 @@ describe("getMonthlyGrid — tenant scoping", () => {
 });
 
 describe("updateAttendanceCell — overtime + status mapping", () => {
+  it("records approved-leave cancellation as structured audit data without changing the leave reason", async () => {
+    tableState("leave_applications").firsts = [{
+      id: 91,
+      organization_id: ORG,
+      user_id: 1,
+      leave_type_id: 7,
+      start_date: "2026-05-04",
+      end_date: "2026-05-04",
+      days_count: 1,
+      is_half_day: 0,
+      reason: "Family appointment",
+      status: "approved",
+    }];
+    tableState("users").firsts = [{ first_name: "Ananya", last_name: "Gupta" }];
+    tableState("leave_balances").firsts = [{
+      id: 33,
+      total_used: 3,
+      balance: 4,
+      period_used: 2,
+    }];
+    tableState("attendance_records").firsts = [null];
+
+    const result = await updateAttendanceCell(ORG, {
+      userId: 1,
+      date: "2026-05-04",
+      code: "A",
+      actorUserId: 44,
+    });
+
+    expect(result).toEqual({ ok: true, action: "updated", status: "absent", reversed_leave: true });
+    const cancelled = captured.updates.find(
+      (update) => update.table === "leave_applications" && update.data.status === "cancelled",
+    );
+    expect(cancelled?.data.reason).toBeUndefined();
+    const audit = captured.inserts.find((insert) => insert.table === "audit_logs");
+    expect(audit?.data).toEqual(expect.objectContaining({
+      organization_id: ORG,
+      user_id: 44,
+      action: "leave_cancelled",
+      resource_type: "leave_application",
+      resource_id: "91",
+    }));
+    expect(JSON.parse(audit!.data.details)).toEqual({
+      source: "attendance_grid",
+      date: "2026-05-04",
+      actor_name: "Ananya Gupta",
+      attendance_status: "absent",
+    });
+  });
+
   it("maps WOT -> weekoff_overtime on a new row (insert)", async () => {
     tableState("attendance_records").firsts = [null]; // no existing row
     const res = await updateAttendanceCell(ORG, { userId: 1, date: "2026-05-02", code: "WOT" });

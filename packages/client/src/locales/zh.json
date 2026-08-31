@@ -1308,6 +1308,8 @@
       "editor": {
         "close": "关闭",
         "existingLeave": "此日期已有请假",
+        "cancellationHistory": "请假取消记录",
+        "cancelledBy": "请假由 {{name}} 取消：",
         "halfPm": "½ 下午",
         "halfAm": "½ 上午",
         "halfDayShort": "半天",

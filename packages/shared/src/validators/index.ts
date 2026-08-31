@@ -737,6 +737,28 @@ export const shiftScheduleQuerySchema = z.object({
   department_id: z.coerce.number().int().positive().optional(),
 });
 
+const attendanceGridDateSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "date must be YYYY-MM-DD")
+  .refine(
+    (value) => {
+      const parsed = new Date(`${value}T00:00:00Z`);
+      return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
+    },
+    "date must be a valid calendar date",
+  );
+
+export const attendanceGridLeaveContextQuerySchema = z.object({
+  user_id: z.coerce.number().int().positive(),
+  date: attendanceGridDateSchema,
+});
+
+export const attendanceGridCellSchema = z.object({
+  user_id: z.coerce.number().int().positive(),
+  date: attendanceGridDateSchema,
+  code: z.enum(["P", "A", "H", "L", "HPL", "WOT", "HOT", "WO", "HO", "", "-"]).default(""),
+});
+
 export const createGeoFenceSchema = z.object({
   name: z.string().min(1).max(100),
   latitude: z.number().min(-90).max(90),

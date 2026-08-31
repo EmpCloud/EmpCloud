@@ -10,7 +10,6 @@ import { logAudit } from "../../services/audit/audit.service.js";
 import * as shiftService from "../../services/attendance/shift.service.js";
 import * as attendanceService from "../../services/attendance/attendance.service.js";
 import * as leaveApplicationService from "../../services/leave/leave-application.service.js";
-import * as leaveBalanceService from "../../services/leave/leave-balance.service.js";
 import * as geoFenceService from "../../services/attendance/geo-fence.service.js";
 import * as regularizationService from "../../services/attendance/regularization.service.js";
 import * as settingsService from "../../services/attendance/attendance-settings.service.js";
@@ -23,6 +22,8 @@ import {
   updateShiftAssignmentSchema,
   shiftSwapRequestSchema,
   shiftScheduleQuerySchema,
+  attendanceGridLeaveContextQuerySchema,
+  attendanceGridCellSchema,
   createGeoFenceSchema,
   checkInSchema,
   checkOutSchema,
@@ -753,13 +754,12 @@ router.get("/grid", authenticate, requirePermission("attendance:view_all", "atte
 // Body: { user_id: number, date: "YYYY-MM-DD", code: "P"|"A"|"H"|"L"|"" }
 router.put("/cell", authenticate, requirePermission("attendance:manage"), async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { user_id, date, code } = req.body || {};
-    if (!user_id || !date) throw new Error("user_id and date are required");
+    const { user_id, date, code } = attendanceGridCellSchema.parse(req.body);
     const result = await attendanceService.updateAttendanceCell(req.user!.org_id, {
-      userId: Number(user_id),
-      date: String(date),
+      userId: user_id,
+      date,
       actorUserId: req.user!.sub,
-      code: String(code ?? ""),
+      code,
     });
     sendSuccess(res, result);
   } catch (err) { next(err); }
@@ -775,82 +775,13 @@ router.get(
   requirePermission("attendance:manage"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userId = Number(req.query.user_id);
-      const date = String(req.query.date || "");
-      if (!userId || !date) throw new Error("user_id and date are required");
-      const orgId = req.user!.org_id;
-      const db = (await import("../../db/connection.js")).getDB();
-
-      const [types, balances, existing] = await Promise.all([
-        db("leave_types")
-          .where({ organization_id: orgId, is_active: true })
-          .select("id", "name", "code", "color", "requires_approval")
-          .orderBy("name", "asc"),
-        leaveBalanceService.getBalances(orgId, userId),
-        db("leave_applications")
-          .leftJoin("leave_types", "leave_applications.leave_type_id", "leave_types.id")
-          .where({
-            "leave_applications.organization_id": orgId,
-            "leave_applications.user_id": userId,
-          })
-          .whereNot("leave_applications.status", "rejected")
-          .andWhere(function () {
-            this.whereNot("leave_applications.status", "cancelled").orWhere(function () {
-              this.where("leave_applications.status", "cancelled").andWhere(
-                "leave_applications.reason",
-                "like",
-                `%[Leave cancelled by % via Attendance Grid on ${date}]%`,
-              );
-            });
-          })
-          .where("leave_applications.start_date", "<=", date)
-          .where("leave_applications.end_date", ">=", date)
-          .select(
-            "leave_applications.id",
-            "leave_applications.leave_type_id",
-            "leave_applications.status",
-            "leave_applications.start_date",
-            "leave_applications.end_date",
-            "leave_applications.days_count",
-            "leave_applications.is_half_day",
-            "leave_applications.half_day_type",
-            "leave_applications.reason",
-            "leave_types.name as leave_type_name",
-            "leave_types.color as leave_type_color",
-          ),
-      ]);
-
-      // Merge balance into each type. Use .find() (first match) instead of
-      // a Map (which overwrites with the last) so the popover sees the same
-      // balance row that applyLeave will validate against -- otherwise a
-      // duplicate balance row produces "1 left" in the popover but
-      // "0 available" on submit.
-      const balanceFor = (id: number) =>
-        balances.find((b: any) => Number(b.leave_type_id) === id);
-      const merged = types.map((t: any) => {
-        const b = balanceFor(Number(t.id));
-        return {
-          id: t.id,
-          name: t.name,
-          code: t.code,
-          color: t.color,
-          requires_approval: !!t.requires_approval,
-          available_now: b ? Number((b as any).available_now ?? b.balance ?? 0) : 0,
-          fiscal_year_label: b ? (b as any).fiscal_year_label : null,
-        };
-      });
-
-      const existingWithAudit = existing.map((application: any) => {
-        const match = String(application.reason || "").match(
-          /\[Leave cancelled by (.+?) via Attendance Grid on \d{4}-\d{2}-\d{2}\]/,
-        );
-        return {
-          ...application,
-          cancelled_by_name: match?.[1] || null,
-        };
-      });
-
-      sendSuccess(res, { leaveTypes: merged, existingApplications: existingWithAudit });
+      const query = attendanceGridLeaveContextQuerySchema.parse(req.query);
+      const context = await attendanceService.getAttendanceGridLeaveContext(
+        req.user!.org_id,
+        query.user_id,
+        query.date,
+      );
+      sendSuccess(res, context);
     } catch (err) {
       next(err);
     }

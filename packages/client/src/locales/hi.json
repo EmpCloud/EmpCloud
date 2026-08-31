@@ -1308,6 +1308,8 @@
       "editor": {
         "close": "बंद करें",
         "existingLeave": "इस तिथि पर मौजूदा अवकाश",
+        "cancellationHistory": "अवकाश रद्दीकरण इतिहास",
+        "cancelledBy": "{{name}} द्वारा अवकाश रद्द किया गया: ",
         "halfPm": "½ दोपहर",
         "halfAm": "½ सुबह",
         "halfDayShort": "आधा दिन",

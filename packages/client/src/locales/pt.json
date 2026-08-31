@@ -1308,6 +1308,8 @@
       "editor": {
         "close": "Fechar",
         "existingLeave": "Licença existente nesta data",
+        "cancellationHistory": "Histórico de cancelamento de licenças",
+        "cancelledBy": "Licença cancelada por {{name}}: ",
         "halfPm": "½ tarde",
         "halfAm": "½ manhã",
         "halfDayShort": "meio período",

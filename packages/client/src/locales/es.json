@@ -1308,6 +1308,8 @@
       "editor": {
         "close": "Cerrar",
         "existingLeave": "Permiso existente en esta fecha",
+        "cancellationHistory": "Historial de cancelaciones de permisos",
+        "cancelledBy": "Permiso cancelado por {{name}}: ",
         "halfPm": "½ tarde",
         "halfAm": "½ mañana",
         "halfDayShort": "medio día",

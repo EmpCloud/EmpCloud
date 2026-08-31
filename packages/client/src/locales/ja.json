@@ -1308,6 +1308,8 @@
       "editor": {
         "close": "閉じる",
         "existingLeave": "この日付の既存の休暇",
+        "cancellationHistory": "休暇取消履歴",
+        "cancelledBy": "{{name}} が休暇を取り消しました: ",
         "halfPm": "½午後",
         "halfAm": "½午前",
         "halfDayShort": "半休",

@@ -1308,6 +1308,8 @@
       "editor": {
         "close": "Fermer",
         "existingLeave": "Congé existant à cette date",
+        "cancellationHistory": "Historique des annulations de congés",
+        "cancelledBy": "Congé annulé par {{name}} : ",
         "halfPm": "½ après-midi",
         "halfAm": "½ matin",
         "halfDayShort": "demi-journée",

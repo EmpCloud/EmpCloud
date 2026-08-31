@@ -1308,6 +1308,8 @@
       "editor": {
         "close": "Schließen",
         "existingLeave": "Vorhandener Urlaub an diesem Datum",
+        "cancellationHistory": "Stornierungsverlauf für Abwesenheiten",
+        "cancelledBy": "Abwesenheit storniert von {{name}}: ",
         "halfPm": "½ Nachm.",
         "halfAm": "½ Vorm.",
         "halfDayShort": "halber Tag",
