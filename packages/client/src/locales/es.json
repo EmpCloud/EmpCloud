@@ -3018,6 +3018,10 @@
       "actions": "Acciones",
       "dueDatePrefix": "vence"
     },
+    "group": {
+      "unmappedClient": "Cliente de facturación sin asignar",
+      "noClientDetails": "Sin datos del cliente"
+    },
     "loading": "Cargando…",
     "empty": "No hay facturas que coincidan.",
     "actions": {
@@ -3339,11 +3343,16 @@
         "organization": "Organización",
         "adminEmail": "Correo del administrador",
         "employees": "Empleados",
+        "comment": "Comentario",
         "activeModules": "Módulos activos",
         "monthlySpend": "Gasto mensual",
         "status": "Estado",
         "joined": "Fecha de alta"
       }
+    },
+    "comment": {
+      "addHint": "Haz doble clic para añadir un comentario",
+      "editHint": "Haz doble clic para editar este comentario"
     },
     "status": {
       "active": "activa",

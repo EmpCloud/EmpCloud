@@ -14,6 +14,14 @@ vi.mock("../services/oauth/jwt.service", () => ({
   verifyAccessToken: (...args: any[]) => mockVerifyAccessToken(...args),
 }));
 
+const mockEvaluateOrganizationAccess = vi.fn(async () => ({
+  allowed: true,
+  paymentRestricted: false,
+}));
+vi.mock("../services/auth/organization-access-policy.service", () => ({
+  evaluateOrganizationAccess: (...args: any[]) => mockEvaluateOrganizationAccess(...args),
+}));
+
 // Mock getDB — returns a Knex-like builder chain
 const mockFirst = vi.fn();
 const mockWhereNull = vi.fn(() => ({ first: mockFirst }));
@@ -158,6 +166,71 @@ describe("EmpCloud Auth Middleware", () => {
       expect(mockVerifyAccessToken).toHaveBeenCalledWith("valid-token");
       expect(req.user).toEqual(decoded);
       expect(next).toHaveBeenCalled();
+    });
+
+    it("immediately blocks an existing session when its organization is login-blocked", async () => {
+      const decoded = { sub: 1, jti: "jti-blocked", role: "org_admin", org_id: 8 };
+      mockVerifyAccessToken.mockReturnValue(decoded);
+      mockFirst.mockResolvedValue({ id: 1, jti: "jti-blocked" });
+      mockEvaluateOrganizationAccess.mockResolvedValueOnce({
+        allowed: false,
+        code: "LOGIN_BLOCKED",
+        statusCode: 403,
+        message: "Login has been disabled for this organization. Contact support.",
+        paymentRestricted: false,
+      });
+
+      const req = mockReq({
+        method: "GET",
+        originalUrl: "/api/v1/employees/directory",
+        headers: { authorization: "Bearer valid-token" },
+      });
+      const res = mockRes();
+      const next = vi.fn();
+
+      authenticate(req, res, next);
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
+      expect(mockEvaluateOrganizationAccess).toHaveBeenCalledWith({
+        organizationId: 8,
+        path: "/api/v1/employees/directory",
+        method: "GET",
+      });
+      expect(res.status).toHaveBeenCalledWith(403);
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({ error: expect.objectContaining({ code: "LOGIN_BLOCKED" }) }),
+      );
+      expect(next).not.toHaveBeenCalled();
+    });
+
+    it("returns payment-required for a restricted non-billing request", async () => {
+      const decoded = { sub: 1, jti: "jti-payment", role: "employee", org_id: 8 };
+      mockVerifyAccessToken.mockReturnValue(decoded);
+      mockFirst.mockResolvedValue({ id: 1, jti: "jti-payment" });
+      mockEvaluateOrganizationAccess.mockResolvedValueOnce({
+        allowed: false,
+        code: "PAYMENT_REQUIRED",
+        statusCode: 402,
+        message: "Access is restricted until the organization's overdue payment is completed.",
+        paymentRestricted: true,
+      });
+
+      const req = mockReq({
+        method: "GET",
+        originalUrl: "/api/v1/leave/balances",
+        headers: { authorization: "Bearer valid-token" },
+      });
+      const res = mockRes();
+      const next = vi.fn();
+
+      authenticate(req, res, next);
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
+      expect(res.status).toHaveBeenCalledWith(402);
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({ error: expect.objectContaining({ code: "PAYMENT_REQUIRED" }) }),
+      );
+      expect(next).not.toHaveBeenCalled();
     });
 
     it("rejects when token is revoked (no DB record)", async () => {

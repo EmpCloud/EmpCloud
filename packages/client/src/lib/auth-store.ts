@@ -6,7 +6,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { queryClient } from "@/main";
 
-interface AuthUser {
+export interface AuthUser {
   id: number;
   email: string;
   first_name: string;
@@ -14,6 +14,7 @@ interface AuthUser {
   role: string;
   org_id: number;
   org_name: string;
+  payment_restricted?: boolean;
 }
 
 interface AuthState {
@@ -24,6 +25,7 @@ interface AuthState {
 
   setTokens: (access: string, refresh: string) => void;
   setUser: (user: AuthUser) => void;
+  setPaymentRestriction: (restricted: boolean) => void;
   login: (user: AuthUser, tokens: { access_token: string; refresh_token: string }) => void;
   logout: () => void;
 }
@@ -41,6 +43,13 @@ export const useAuthStore = create<AuthState>()(
 
       setUser: (user) =>
         set({ user, isAuthenticated: true }),
+
+      setPaymentRestriction: (restricted) =>
+        set((state) => ({
+          user: state.user
+            ? { ...state.user, payment_restricted: restricted }
+            : state.user,
+        })),
 
       login: (user, tokens) => {
         // Purge any cached queries from a previous session on the same

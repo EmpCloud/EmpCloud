@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuthStore } from "@/lib/auth-store";
 import { showToast } from "@/components/ui/Toast";
+import api from "@/api/client";
 import {
   useBillingInvoices,
   useBillingPayments,
@@ -39,7 +40,10 @@ import {
   FolderKanban,
   GraduationCap,
   Package,
+  RefreshCw,
 } from "lucide-react";
+
+const PAYPAL_ENABLED = import.meta.env.VITE_PAYPAL_ENABLED === "true";
 
 // ---------------------------------------------------------------------------
 // Module icon & color mapping
@@ -289,7 +293,36 @@ type TabId = (typeof TABS)[number]["id"];
 
 export default function BillingPage() {
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState<TabId>("subscriptions");
+  const paymentRestricted = useAuthStore((state) => Boolean(state.user?.payment_restricted));
+  const setPaymentRestriction = useAuthStore((state) => state.setPaymentRestriction);
+  const [activeTab, setActiveTab] = useState<TabId>(paymentRestricted ? "invoices" : "subscriptions");
+  const [checkingAccess, setCheckingAccess] = useState(false);
+  const visibleTabs = paymentRestricted
+    ? TABS.filter((tab) => tab.id !== "subscriptions")
+    : TABS;
+
+  useEffect(() => {
+    if (paymentRestricted && activeTab === "subscriptions") setActiveTab("invoices");
+  }, [activeTab, paymentRestricted]);
+
+  async function checkOrganizationAccess() {
+    setCheckingAccess(true);
+    try {
+      const response = await api.get("/auth/access-status");
+      const restricted = Boolean(response.data?.data?.payment_restricted);
+      setPaymentRestriction(restricted);
+      showToast(
+        restricted ? "info" : "success",
+        restricted
+          ? "The overdue payment is still pending."
+          : "Payment confirmed. Organization access has been restored.",
+      );
+    } catch (error: any) {
+      showToast("error", error?.response?.data?.error?.message || "Could not check payment status.");
+    } finally {
+      setCheckingAccess(false);
+    }
+  }
 
   // PayPal redirect-return handler. PayPal's hosted checkout is a two-step
   // flow — the buyer "approves" on PayPal, then the order must be "captured"
@@ -325,7 +358,15 @@ export default function BillingPage() {
         });
         const data = await res.json();
         if (data.success) {
-          showToast("success", "Payment successful — the invoice has been marked paid.");
+          const accessResponse = await api.get("/auth/access-status");
+          const stillRestricted = Boolean(accessResponse.data?.data?.payment_restricted);
+          setPaymentRestriction(stillRestricted);
+          showToast(
+            stillRestricted ? "info" : "success",
+            stillRestricted
+              ? "Payment recorded, but other overdue invoices still require payment."
+              : "Payment confirmed. Organization access has been restored.",
+          );
           // Reload to the clean URL so the invoice list reflects the new
           // status — short delay so the success toast is seen before refresh.
           setTimeout(() => window.location.replace(cleanUrl), 1800);
@@ -340,7 +381,7 @@ export default function BillingPage() {
         window.history.replaceState({}, "", cleanUrl);
       }
     })();
-  }, []);
+  }, [setPaymentRestriction]);
 
   return (
     <div>
@@ -351,10 +392,30 @@ export default function BillingPage() {
         </p>
       </div>
 
+      {paymentRestricted && (
+        <div className="mb-6 flex flex-col gap-3 rounded-xl border border-red-200 bg-red-50 p-4 sm:flex-row sm:items-center sm:justify-between dark:border-red-900 dark:bg-red-950/30">
+          <div>
+            <p className="text-sm font-semibold text-red-800 dark:text-red-200">Organization access is payment-restricted</p>
+            <p className="mt-0.5 text-xs leading-5 text-red-700 dark:text-red-300">
+              Review and pay the overdue invoice below. Other EmpCloud pages remain unavailable until payment is confirmed.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={checkOrganizationAccess}
+            disabled={checkingAccess}
+            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg border border-red-300 bg-white px-3 py-2 text-xs font-medium text-red-700 hover:bg-red-100 disabled:opacity-60 dark:border-red-800 dark:bg-red-950/50 dark:text-red-200"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${checkingAccess ? "animate-spin" : ""}`} />
+            {checkingAccess ? "Checking…" : "Check payment status"}
+          </button>
+        </div>
+      )}
+
       {/* Tab bar */}
       <div className="border-b border-border mb-6">
         <nav className="flex gap-6 -mb-px">
-          {TABS.map((tab) => {
+          {visibleTabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
             return (
@@ -939,12 +1000,17 @@ function PayNowButton({ invoiceId }: { invoiceId: string }) {
           <button onClick={(e) => { e.stopPropagation(); handlePay("stripe"); }} className="w-full text-left px-4 py-2.5 text-[13px] hover:bg-muted rounded-t-md font-medium text-muted-foreground">
             Stripe (Card)
           </button>
-          <button onClick={(e) => { e.stopPropagation(); handlePay("razorpay"); }} className="w-full text-left px-4 py-2.5 text-[13px] hover:bg-muted font-medium text-muted-foreground">
+          <button
+            onClick={(e) => { e.stopPropagation(); handlePay("razorpay"); }}
+            className={`w-full text-left px-4 py-2.5 text-[13px] hover:bg-muted font-medium text-muted-foreground ${PAYPAL_ENABLED ? "" : "rounded-b-md"}`}
+          >
             Razorpay (UPI/Card)
           </button>
-          <button onClick={(e) => { e.stopPropagation(); handlePay("paypal"); }} className="w-full text-left px-4 py-2.5 text-[13px] hover:bg-muted rounded-b-md font-medium text-muted-foreground">
-            PayPal
-          </button>
+          {PAYPAL_ENABLED && (
+            <button onClick={(e) => { e.stopPropagation(); handlePay("paypal"); }} className="w-full text-left px-4 py-2.5 text-[13px] hover:bg-muted rounded-b-md font-medium text-muted-foreground">
+              PayPal
+            </button>
+          )}
         </div>
       )}
     </div>

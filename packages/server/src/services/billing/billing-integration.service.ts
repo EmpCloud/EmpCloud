@@ -69,7 +69,8 @@ async function billingFetch<T = any>(
 export async function billingFetchRaw(
   method: string,
   path: string,
-  body?: unknown
+  body?: unknown,
+  timeoutMs?: number,
 ): Promise<any | null> {
   if (!isBillingConfigured()) return null;
 
@@ -79,6 +80,7 @@ export async function billingFetchRaw(
       method,
       headers: getHeaders(),
       body: body ? JSON.stringify(body) : undefined,
+      signal: timeoutMs ? AbortSignal.timeout(timeoutMs) : undefined,
     });
 
     if (!response.ok) {
@@ -92,6 +94,43 @@ export async function billingFetchRaw(
     logger.warn(`Billing API unreachable: ${method} ${path} → ${err.message}`);
     return null;
   }
+}
+
+export type OrganizationOverdueStatus = "overdue" | "clear" | "unavailable";
+
+/**
+ * Ask EMP Billing whether an organization currently has an overdue invoice.
+ * Billing is the financial source of truth; the EmpCloud subscription status
+ * is only an access-control mirror and can lag after a dump restore or a
+ * missed webhook.
+ */
+export async function getOrganizationOverdueStatus(
+  organizationId: number,
+): Promise<OrganizationOverdueStatus> {
+  const mapping = await getDB()("billing_client_mappings")
+    .where({ organization_id: organizationId })
+    .select("billing_client_id")
+    .first();
+
+  if (!mapping?.billing_client_id) return "clear";
+
+  const clientId = String(mapping.billing_client_id);
+  const response = await billingFetchRaw(
+    "POST",
+    "/clients/payment-summaries",
+    { clientIds: [clientId] },
+    5_000,
+  );
+  if (!response || !Array.isArray(response.data)) return "unavailable";
+
+  const summary = response.data.find(
+    (item: any) => String(item.clientId) === clientId,
+  );
+  if (!summary) return "unavailable";
+
+  return summary.status === "overdue" || Number(summary.overdueInvoiceCount) > 0
+    ? "overdue"
+    : "clear";
 }
 
 // ---------------------------------------------------------------------------
@@ -134,7 +173,7 @@ export async function autoProvisionClient(
       name: orgName,
       email: orgEmail,
       currency,
-      metadata: { empcloud_org_id: orgId },
+      metadata: { empcloud_org_id: String(orgId) },
     }
   );
 

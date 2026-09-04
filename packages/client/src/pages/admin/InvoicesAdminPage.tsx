@@ -2,6 +2,8 @@ import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
+import { AdminOrganizationGroupHeader } from "@/components/admin/AdminOrganizationGroupHeader";
+import { AdminTableIconButton } from "@/components/admin/AdminTableIconButton";
 import {
   Receipt,
   Search,
@@ -10,10 +12,10 @@ import {
   CheckCircle2,
   FileText,
   Plus,
-  Building2,
   X,
 } from "lucide-react";
 import { showToast } from "@/components/ui/Toast";
+import { groupOrganizationRows } from "./group-organization-rows";
 
 const toast = {
   success: (m: string) => showToast("success", m),
@@ -35,6 +37,13 @@ type Invoice = {
   empcloud_organization_id: number | null;
   empcloud_organization_name: string | null;
   empcloud_organization_email: string | null;
+  empcloud_plans: Array<{
+    id: number;
+    plan_tier: string;
+    status: string;
+    module_name: string;
+    internal_notes: string | null;
+  }>;
 };
 
 const STATUS_COLOR: Record<string, string> = {
@@ -48,46 +57,115 @@ const STATUS_COLOR: Record<string, string> = {
   written_off: "bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300",
 };
 
-const CURRENCY_SYMBOL: Record<string, string> = {
-  INR: "₹",
-  USD: "$",
-  GBP: "£",
-  EUR: "€",
+const SUBSCRIPTION_STATUS_COLOR: Record<string, string> = {
+  active: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300",
+  trial: "bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300",
+  past_due: "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-300",
+  suspended: "bg-orange-100 text-orange-700 dark:bg-orange-950/40 dark:text-orange-300",
+  deactivated: "bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
+  cancelled: "bg-muted text-muted-foreground",
+  expired: "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-300",
 };
 
-function fmtMoney(amount: number, currency: string) {
-  const sym = CURRENCY_SYMBOL[currency] || currency;
-  return `${sym}${(amount / 100).toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`;
+const moneyFormatters = new Map<string, Intl.NumberFormat>();
+const dateFormatters = new Map<string, Intl.DateTimeFormat>();
+const ORGANIZATIONS_PER_PAGE = 10;
+
+function fmtMoney(amount: number, currency: string, locale: string) {
+  const key = `${locale}:${currency}`;
+  let formatter = moneyFormatters.get(key);
+  if (!formatter) {
+    formatter = new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+    moneyFormatters.set(key, formatter);
+  }
+  return formatter.format(amount / 100);
 }
 
-function fmtDate(d?: string | null) {
+function fmtDate(d: string | null | undefined, locale: string) {
   if (!d) return "—";
-  return new Date(d).toLocaleDateString();
+  let formatter = dateFormatters.get(locale);
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat(locale);
+    dateFormatters.set(locale, formatter);
+  }
+  return formatter.format(new Date(d));
 }
 
 export default function InvoicesAdminPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = i18n.resolvedLanguage || i18n.language || "en";
   const qc = useQueryClient();
 
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<string>("");
   const [page, setPage] = useState(1);
 
-  const params: Record<string, any> = { page, limit: 25 };
-  if (search.trim()) params.q = search.trim();
-  if (status) params.status = status;
+  const filters: Record<string, string> = {};
+  if (search.trim()) filters.q = search.trim();
+  if (status) filters.status = status;
 
   const listQ = useQuery({
-    queryKey: ["admin-billing-invoices", params],
-    queryFn: () => api.get("/admin/billing/invoices", { params }).then((r) => r.data),
+    queryKey: ["admin-billing-invoices", filters],
+    queryFn: async () => {
+      const firstResponse = await api.get("/admin/billing/invoices", {
+        params: { ...filters, page: 1, limit: 200 },
+      });
+      const firstPage = firstResponse.data?.data ?? {};
+      const pageCount = Math.max(1, Number(firstPage.totalPages ?? 1));
+      const remainingRows: Invoice[] = [];
+      for (let nextPage = 2; nextPage <= pageCount; nextPage += 1) {
+        const response = await api.get("/admin/billing/invoices", {
+          params: { ...filters, page: nextPage, limit: 200 },
+        });
+        remainingRows.push(...((response.data?.data?.data ?? []) as Invoice[]));
+      }
+      return {
+        rows: [
+          ...((firstPage.data ?? []) as Invoice[]),
+          ...remainingRows,
+        ],
+        total: Number(firstPage.total ?? 0),
+      };
+    },
   });
 
-  const rows: Invoice[] = listQ.data?.data?.data ?? [];
-  const total = Number(listQ.data?.data?.total ?? 0);
-  const totalPages = Number(listQ.data?.data?.totalPages ?? 1);
+  const rows = listQ.data?.rows ?? [];
+  const total = listQ.data?.total ?? 0;
+  const allOrganizationGroups = useMemo(
+    () =>
+      groupOrganizationRows(rows, (row) => ({
+        key: row.empcloud_organization_id != null
+          ? `organization:${row.empcloud_organization_id}`
+          : `client:${row.client_id || row.id}`,
+        id: row.empcloud_organization_id,
+        name: row.empcloud_organization_name,
+        email: row.empcloud_organization_email,
+      })).map((group) => ({
+        ...group,
+        clientId: group.rows[0]?.client_id ?? null,
+        plans: Array.from(
+          new Map(
+            group.rows
+              .flatMap((invoice) => invoice.empcloud_plans ?? [])
+              .map((plan) => [plan.id, plan] as const),
+          ).values(),
+        ),
+      })),
+    [rows],
+  );
+  const totalPages = Math.max(1, Math.ceil(allOrganizationGroups.length / ORGANIZATIONS_PER_PAGE));
+  const organizationGroups = useMemo(
+    () => allOrganizationGroups.slice(
+      (page - 1) * ORGANIZATIONS_PER_PAGE,
+      page * ORGANIZATIONS_PER_PAGE,
+    ),
+    [allOrganizationGroups, page],
+  );
 
   // ---- Mark-paid modal ----
   const [payTarget, setPayTarget] = useState<Invoice | null>(null);
@@ -230,8 +308,8 @@ export default function InvoicesAdminPage() {
     <div className="space-y-6 p-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground dark:text-gray-100 flex items-center gap-2">
-            <Receipt className="h-6 w-6 text-brand-600 dark:text-brand-400" />
+          <h1 className="flex items-center gap-2 text-pretty text-2xl font-bold text-foreground dark:text-gray-100">
+            <Receipt className="h-6 w-6 text-brand-600 dark:text-brand-400" aria-hidden="true" />
             {t("invoicesAdmin.title")}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground dark:text-muted-foreground">
@@ -239,6 +317,7 @@ export default function InvoicesAdminPage() {
           </p>
         </div>
         <button
+          type="button"
           onClick={() => {
             setSubForm({
               organization_id: "",
@@ -252,9 +331,9 @@ export default function InvoicesAdminPage() {
             setOrgDropdownOpen(false);
             setSubOpen(true);
           }}
-          className="flex items-center gap-1.5 rounded-lg bg-brand-600 px-3 py-2 text-sm font-medium text-white hover:bg-brand-700"
+          className="flex touch-manipulation items-center gap-1.5 rounded-lg bg-brand-600 px-3 py-2 text-sm font-medium text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
         >
-          <Plus className="h-4 w-4" /> {t("invoicesAdmin.subscribeOnBehalf")}
+          <Plus className="h-4 w-4" aria-hidden="true" /> {t("invoicesAdmin.subscribeOnBehalf")}
         </button>
       </div>
 
@@ -262,23 +341,29 @@ export default function InvoicesAdminPage() {
       <div className="rounded-xl border border-border bg-card p-4 dark:border-gray-700 dark:bg-gray-900">
         <div className="flex flex-wrap items-end gap-3">
           <div className="flex-1 min-w-[220px]">
-            <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("invoicesAdmin.filters.searchLabel")}</label>
+            <label htmlFor="invoice-search" className="mb-1 block text-xs font-medium text-muted-foreground">{t("invoicesAdmin.filters.searchLabel")}</label>
             <div className="relative">
-              <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
               <input
+                id="invoice-search"
+                name="invoice_search"
+                type="search"
+                autoComplete="off"
                 value={search}
                 onChange={(e) => { setSearch(e.target.value); setPage(1); }}
                 placeholder={t("invoicesAdmin.filters.searchPlaceholder")}
-                className="w-full rounded-lg border border-border bg-card pl-8 pr-3 py-2 text-sm"
+                className="w-full rounded-lg border border-border bg-card py-2 pl-8 pr-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
               />
             </div>
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("invoicesAdmin.filters.statusLabel")}</label>
+            <label htmlFor="invoice-status" className="mb-1 block text-xs font-medium text-muted-foreground">{t("invoicesAdmin.filters.statusLabel")}</label>
             <select
+              id="invoice-status"
+              name="invoice_status"
               value={status}
               onChange={(e) => { setStatus(e.target.value); setPage(1); }}
-              className="rounded-lg border border-border px-3 py-2 text-sm bg-card text-foreground"
+              className="rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
             >
               <option value="">{t("invoicesAdmin.status.all")}</option>
               <option value="draft">{t("invoicesAdmin.status.draft")}</option>
@@ -291,122 +376,184 @@ export default function InvoicesAdminPage() {
               <option value="written_off">{t("invoicesAdmin.status.written_off")}</option>
             </select>
           </div>
-          <div className="ml-auto text-sm text-muted-foreground">{t("invoicesAdmin.invoiceCount", { count: total })}</div>
+          <div className="ml-auto rounded-full bg-muted px-3 py-1.5 text-sm font-medium tabular-nums text-muted-foreground">
+            {t("invoicesAdmin.invoiceCount", { count: total })}
+          </div>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto rounded-xl border border-border bg-card dark:border-gray-700 dark:bg-gray-900">
+      {/* Organization groups */}
+      <div className="overflow-hidden rounded-xl border border-border bg-card dark:border-gray-700 dark:bg-gray-900">
         {listQ.isLoading ? (
-          <div className="flex items-center justify-center py-12 text-sm text-muted-foreground">
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t("invoicesAdmin.loading")}
+          <div className="flex items-center justify-center py-12 text-sm text-muted-foreground" role="status" aria-live="polite">
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" /> {t("invoicesAdmin.loading")}
           </div>
         ) : rows.length === 0 ? (
           <div className="py-12 text-center text-sm text-muted-foreground">{t("invoicesAdmin.empty")}</div>
         ) : (
-          <table className="min-w-full text-sm">
-            <thead className="bg-muted text-xs uppercase text-muted-foreground dark:bg-gray-800 dark:text-muted-foreground">
-              <tr>
-                <th className="px-3 py-2 text-left">{t("invoicesAdmin.table.invoice")}</th>
-                <th className="px-3 py-2 text-left">{t("invoicesAdmin.table.org")}</th>
-                <th className="px-3 py-2 text-left">{t("invoicesAdmin.table.status")}</th>
-                <th className="px-3 py-2 text-right">{t("invoicesAdmin.table.total")}</th>
-                <th className="px-3 py-2 text-right">{t("invoicesAdmin.table.due")}</th>
-                <th className="px-3 py-2 text-left">{t("invoicesAdmin.table.issued")}</th>
-                <th className="px-3 py-2 text-right">{t("invoicesAdmin.table.actions")}</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border dark:divide-gray-800">
-              {rows.map((r) => (
-                <tr key={r.id}>
-                  <td className="px-3 py-2 font-mono text-xs">{r.invoice_number}</td>
-                  <td className="px-3 py-2">
-                    {r.empcloud_organization_name ? (
-                      <div>
-                        <div className="font-medium flex items-center gap-1 text-foreground dark:text-gray-100">
-                          <Building2 className="h-3.5 w-3.5 text-muted-foreground" />
-                          {r.empcloud_organization_name}
-                        </div>
-                        <div className="text-xs text-muted-foreground">{r.empcloud_organization_email}</div>
-                      </div>
-                    ) : (
-                      <span className="text-xs text-muted-foreground font-mono">
-                        {r.client_id ? `${r.client_id.slice(0, 8)}…` : "—"}
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-3 py-2">
-                    <span
-                      className={`rounded px-2 py-0.5 text-xs font-medium ${STATUS_COLOR[r.status] || "bg-muted text-muted-foreground"}`}
-                    >
-                      {t(`invoicesAdmin.status.${r.status}`, { defaultValue: r.status })}
-                    </span>
-                  </td>
-                  <td className="px-3 py-2 text-right font-mono">
-                    {fmtMoney(Number(r.total), r.currency)}
-                  </td>
-                  <td className="px-3 py-2 text-right font-mono">
-                    {fmtMoney(Number(r.amount_due), r.currency)}
-                  </td>
-                  <td className="px-3 py-2 text-xs text-muted-foreground dark:text-muted-foreground">
-                    {fmtDate(r.issue_date)}
-                    {r.due_date && r.due_date !== r.issue_date && (
-                      <div className="text-muted-foreground">{t("invoicesAdmin.table.dueDatePrefix")} {fmtDate(r.due_date)}</div>
-                    )}
-                  </td>
-                  <td className="px-3 py-2 text-right">
-                    <div className="flex justify-end gap-1">
-                      {Number(r.amount_due) > 0 && r.status !== "void" && r.status !== "paid" && (
-                        <button
-                          onClick={() => setPayTarget(r)}
-                          className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800"
-                          title={t("invoicesAdmin.actions.markPaid")}
-                        >
-                          <CheckCircle2 className="h-4 w-4" />
-                        </button>
-                      )}
-                      <button
-                        onClick={() => sendEmail.mutate(r.id)}
-                        className="text-blue-600 dark:text-blue-400 hover:text-blue-800"
-                        title={t("invoicesAdmin.actions.sendEmail")}
-                      >
-                        <Send className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => openPdf(r.id)}
-                        disabled={pdfLoadingId === r.id}
-                        className="text-muted-foreground hover:text-foreground disabled:opacity-40"
-                        title={t("invoicesAdmin.actions.pdf")}
-                      >
-                        {pdfLoadingId === r.id ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <FileText className="h-4 w-4" />
-                        )}
-                      </button>
-                    </div>
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[1040px] table-fixed text-sm">
+              <caption className="sr-only">{t("invoicesAdmin.title")}</caption>
+              <colgroup>
+                <col className="w-[20%]" />
+                <col className="w-[11%]" />
+                <col className="w-[16%]" />
+                <col className="w-[16%]" />
+                <col className="w-[17%]" />
+                <col className="w-[20%]" />
+              </colgroup>
+              <thead className="border-b border-border bg-muted/60 text-[11px] uppercase tracking-wide text-muted-foreground dark:bg-gray-800/70">
+                <tr>
+                  <th className="px-4 py-2.5 text-left font-semibold">{t("invoicesAdmin.table.invoice")}</th>
+                  <th className="px-3 py-2.5 text-left font-semibold">{t("invoicesAdmin.table.status")}</th>
+                  <th className="px-3 py-2.5 text-right font-semibold">{t("invoicesAdmin.table.total")}</th>
+                  <th className="px-3 py-2.5 text-right font-semibold">{t("invoicesAdmin.table.due")}</th>
+                  <th className="px-3 py-2.5 text-left font-semibold">{t("invoicesAdmin.table.issued")}</th>
+                  <th className="px-4 py-2.5 text-right font-semibold">{t("invoicesAdmin.table.actions")}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              {organizationGroups.map((group) => {
+                const plansWithComments = group.plans.filter((plan) => plan.internal_notes?.trim());
+
+                return (
+                  <tbody key={group.key} className="border-t-4 border-muted first:border-t-0 dark:border-gray-800">
+                    <tr>
+                      <th colSpan={6} scope="rowgroup" className="bg-muted/35 px-4 py-3 text-left font-normal dark:bg-gray-800/45">
+                        <AdminOrganizationGroupHeader
+                          name={group.name || t("invoicesAdmin.group.unmappedClient")}
+                          organizationId={group.id}
+                          email={group.email || group.clientId || t("invoicesAdmin.group.noClientDetails")}
+                          countLabel={t("invoicesAdmin.invoiceCount", { count: group.rows.length })}
+                        />
+                      </th>
+                    </tr>
+                    <tr className="border-t border-border/70 bg-muted/10 dark:border-gray-800">
+                      <td colSpan={6} className="px-4 py-2.5">
+                        <div className="grid gap-x-6 gap-y-3 xl:grid-cols-[minmax(0,1.65fr)_minmax(280px,1fr)]">
+                          <div className="min-w-0">
+                            <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                              {t("invoicesAdmin.table.plan")}
+                            </p>
+                            {group.plans.length ? (
+                              <div className="flex flex-wrap gap-1.5">
+                                {group.plans.map((plan) => (
+                                  <span key={plan.id} className="inline-flex max-w-full items-center gap-1.5 rounded-md border border-border bg-card px-2 py-1 text-[11px] shadow-sm">
+                                    <span className="max-w-52 truncate font-medium text-foreground">{plan.module_name}</span>
+                                    <span className="text-border" aria-hidden="true">/</span>
+                                    <span className="capitalize text-brand-700 dark:text-brand-300">{plan.plan_tier.replace(/_/g, " ")}</span>
+                                    <span className={`rounded px-1.5 py-0.5 font-medium capitalize ${SUBSCRIPTION_STATUS_COLOR[plan.status] || "bg-muted text-muted-foreground"}`}>
+                                      {t(`subscriptionsAdmin.status.${plan.status}`, {
+                                        defaultValue: plan.status.replace(/_/g, " "),
+                                      })}
+                                    </span>
+                                  </span>
+                                ))}
+                              </div>
+                            ) : (
+                              <span className="text-xs text-muted-foreground">{t("invoicesAdmin.table.noPlan")}</span>
+                            )}
+                          </div>
+                          <div className="min-w-0 xl:border-l xl:border-border xl:pl-6 dark:xl:border-gray-800">
+                            <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                              {t("invoicesAdmin.table.internalComment")}
+                            </p>
+                            {plansWithComments.length ? (
+                              <div className="grid min-w-0 gap-1.5 sm:grid-cols-2 xl:grid-cols-1">
+                                {plansWithComments.map((plan) => (
+                                  <div key={plan.id} className="min-w-0 rounded-md bg-card px-2 py-1.5 ring-1 ring-inset ring-border">
+                                    <p className="text-[10px] font-semibold text-muted-foreground">{plan.module_name}</p>
+                                    <p className="max-w-full whitespace-pre-wrap text-xs leading-4 text-foreground [overflow-wrap:anywhere]">
+                                      {plan.internal_notes}
+                                    </p>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <span className="text-xs text-muted-foreground">{t("invoicesAdmin.table.noInternalComment")}</span>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                    {group.rows.map((r) => (
+                      <tr key={r.id} className="border-t border-border/70 align-middle transition-colors hover:bg-muted/25 dark:border-gray-800">
+                        <td className="px-4 py-2.5 font-mono text-xs font-medium text-foreground">{r.invoice_number}</td>
+                        <td className="px-3 py-2.5">
+                          <span className={`inline-flex rounded-md px-2 py-1 text-xs font-medium ${STATUS_COLOR[r.status] || "bg-muted text-muted-foreground"}`}>
+                            {t(`invoicesAdmin.status.${r.status}`, { defaultValue: r.status })}
+                          </span>
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-2.5 text-right font-mono text-xs tabular-nums text-foreground">
+                          {fmtMoney(Number(r.total), r.currency, locale)}
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-2.5 text-right font-mono text-xs tabular-nums text-foreground">
+                          {fmtMoney(Number(r.amount_due), r.currency, locale)}
+                        </td>
+                        <td className="px-3 py-2.5 text-xs text-muted-foreground">
+                          {fmtDate(r.issue_date, locale)}
+                          {r.due_date && r.due_date !== r.issue_date ? (
+                            <div className="mt-0.5 text-[11px] text-muted-foreground">
+                              {t("invoicesAdmin.table.dueDatePrefix")} {fmtDate(r.due_date, locale)}
+                            </div>
+                          ) : null}
+                        </td>
+                        <td className="px-3 py-1.5 text-right">
+                          <div className="flex justify-end gap-0.5" role="group" aria-label={`${r.invoice_number} ${t("invoicesAdmin.table.actions")}`}>
+                            {Number(r.amount_due) > 0 && r.status !== "void" && r.status !== "paid" ? (
+                              <AdminTableIconButton
+                                label={t("invoicesAdmin.actions.markPaid")}
+                                onClick={() => setPayTarget(r)}
+                                className="text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 dark:text-emerald-400 dark:hover:bg-emerald-950/40"
+                              >
+                                <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
+                              </AdminTableIconButton>
+                            ) : null}
+                            <AdminTableIconButton
+                              label={t("invoicesAdmin.actions.sendEmail")}
+                              onClick={() => sendEmail.mutate(r.id)}
+                              className="text-blue-600 hover:bg-blue-50 hover:text-blue-700 dark:text-blue-400 dark:hover:bg-blue-950/40"
+                            >
+                              <Send className="h-4 w-4" aria-hidden="true" />
+                            </AdminTableIconButton>
+                            <AdminTableIconButton
+                              label={t("invoicesAdmin.actions.pdf")}
+                              onClick={() => openPdf(r.id)}
+                              disabled={pdfLoadingId === r.id}
+                            >
+                              {pdfLoadingId === r.id ? (
+                                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                              ) : (
+                                <FileText className="h-4 w-4" aria-hidden="true" />
+                              )}
+                            </AdminTableIconButton>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                );
+              })}
+            </table>
+          </div>
         )}
       </div>
 
       {totalPages > 1 && (
         <div className="flex items-center justify-end gap-2">
           <button
+            type="button"
             disabled={page <= 1}
             onClick={() => setPage((p) => Math.max(1, p - 1))}
-            className="rounded border border-border px-3 py-1 text-sm disabled:opacity-40 bg-card text-foreground"
+            className="touch-manipulation rounded-md border border-border bg-card px-3 py-1.5 text-sm text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:pointer-events-none disabled:opacity-40"
           >
             {t("invoicesAdmin.pagination.prev")}
           </button>
-          <span className="text-sm text-muted-foreground">{page} / {totalPages}</span>
+          <span className="text-sm tabular-nums text-muted-foreground">{page} / {totalPages}</span>
           <button
+            type="button"
             disabled={page >= totalPages}
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            className="rounded border border-border px-3 py-1 text-sm disabled:opacity-40 bg-card text-foreground"
+            className="touch-manipulation rounded-md border border-border bg-card px-3 py-1.5 text-sm text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:pointer-events-none disabled:opacity-40"
           >
             {t("invoicesAdmin.pagination.next")}
           </button>
@@ -418,7 +565,7 @@ export default function InvoicesAdminPage() {
         <Modal title={t("invoicesAdmin.markPaid.title")} onClose={() => (markPaid.isPending ? null : setPayTarget(null))}>
           <p className="text-sm text-muted-foreground mb-3">
             Records a payment for the full outstanding amount{" "}
-            <strong>{fmtMoney(Number(payTarget.amount_due), payTarget.currency)}</strong> against{" "}
+            <strong>{fmtMoney(Number(payTarget.amount_due), payTarget.currency, locale)}</strong> against{" "}
             <strong>{payTarget.invoice_number}</strong>. emp-billing will flip the status to paid
             and notify the customer (if email is configured).
           </p>

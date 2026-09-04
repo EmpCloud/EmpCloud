@@ -5,7 +5,13 @@
 
 import { getDB } from "../../db/connection.js";
 import { hashPassword, verifyPassword, randomHex, hashToken } from "../../utils/crypto.js";
-import { UnauthorizedError, ConflictError, NotFoundError, ValidationError } from "../../utils/errors.js";
+import {
+  UnauthorizedError,
+  ConflictError,
+  NotFoundError,
+  ValidationError,
+  OrganizationLoginBlockedError,
+} from "../../utils/errors.js";
 import { logger } from "../../utils/logger.js";
 import { logAudit } from "../audit/audit.service.js";
 import { issueTokens } from "../oauth/oauth.service.js";
@@ -13,6 +19,7 @@ import { sendPasswordResetEmail, sendWelcomeEmail } from "../email/email.service
 import { seedDefaultCategories } from "../document/document.service.js";
 import { TOKEN_DEFAULTS, AuditAction } from "@empcloud/shared";
 import type { UserRole } from "@empcloud/shared";
+import { evaluateOrganizationAccess } from "./organization-access-policy.service.js";
 
 // Internal client_id used for direct auth (login/register via EMP Cloud itself)
 const EMPCLOUD_CLIENT_ID = "empcloud-dashboard";
@@ -122,7 +129,13 @@ export async function register(params: {
 export async function login(params: {
   email: string;
   password: string;
-}): Promise<{ user: object; org: object; tokens: object; password_expired?: boolean }> {
+}): Promise<{
+  user: object;
+  org: object | null;
+  tokens: object;
+  password_expired?: boolean;
+  payment_restricted: boolean;
+}> {
   const db = getDB();
 
   const user = await db("users").where({ email: params.email }).first();
@@ -169,6 +182,17 @@ export async function login(params: {
     throw new UnauthorizedError("Organization is inactive");
   }
 
+  const organizationAccess = await evaluateOrganizationAccess({
+    organizationId: org?.id ?? 0,
+    organization: org,
+    // Payment-restricted organizations must still be able to authenticate so
+    // an authorized admin can reach the invoice and checkout screens.
+    paymentResolutionRequest: true,
+  });
+  if (!organizationAccess.allowed && organizationAccess.code === "LOGIN_BLOCKED") {
+    throw new OrganizationLoginBlockedError(organizationAccess.message);
+  }
+
   // --- Password expiry check ---
   // If the org has a password_expiry_days policy (> 0), check if the user's
   // password is older than that many days and flag it in the response.
@@ -199,7 +223,13 @@ export async function login(params: {
   });
 
   const { password: _, ...safeUser } = user;
-  return { user: safeUser, org, tokens, password_expired: passwordExpired };
+  return {
+    user: safeUser,
+    org,
+    tokens,
+    password_expired: passwordExpired,
+    payment_restricted: organizationAccess.paymentRestricted,
+  };
 }
 
 // ---------------------------------------------------------------------------

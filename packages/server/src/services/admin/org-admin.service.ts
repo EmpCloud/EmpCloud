@@ -9,9 +9,59 @@
 import { getDB } from "../../db/connection.js";
 import { NotFoundError, ValidationError, ForbiddenError } from "../../utils/errors.js";
 import { logger } from "../../utils/logger.js";
+import { sanitizePlainText } from "../../utils/sanitize-html.js";
+import { clearOrganizationPaymentAccessCache } from "../auth/organization-access-policy.service.js";
 
 /** org_id 0 is the platform org that owns super-admin accounts (migration 036). */
 const PLATFORM_ORG_ID = 0;
+
+// ---------------------------------------------------------------------------
+// Organization access controls
+// ---------------------------------------------------------------------------
+
+export interface OrganizationAccessControls {
+  id: number;
+  login_blocked: boolean;
+  payment_block_enabled: boolean;
+}
+
+export async function updateOrganizationAccessControls(params: {
+  orgId: number;
+  loginBlocked?: boolean;
+  paymentBlockEnabled?: boolean;
+}): Promise<OrganizationAccessControls> {
+  if (params.orgId === PLATFORM_ORG_ID) {
+    throw new ForbiddenError("The platform organization cannot be blocked");
+  }
+
+  const db = getDB();
+  await assertOrgExists(params.orgId);
+
+  const update: Record<string, boolean | Date> = { updated_at: new Date() };
+  if (params.loginBlocked !== undefined) update.login_blocked = params.loginBlocked;
+  if (params.paymentBlockEnabled !== undefined) {
+    update.payment_block_enabled = params.paymentBlockEnabled;
+  }
+
+  if (Object.keys(update).length === 1) {
+    throw new ValidationError("Provide login_blocked and/or payment_block_enabled");
+  }
+
+  await db("organizations").where({ id: params.orgId }).update(update);
+  if (params.paymentBlockEnabled !== undefined) {
+    clearOrganizationPaymentAccessCache(params.orgId);
+  }
+  const organization = await db("organizations")
+    .where({ id: params.orgId })
+    .select("id", "login_blocked", "payment_block_enabled")
+    .first();
+
+  return {
+    id: Number(organization.id),
+    login_blocked: Boolean(organization.login_blocked),
+    payment_block_enabled: Boolean(organization.payment_block_enabled),
+  };
+}
 
 // ---------------------------------------------------------------------------
 // Comments
@@ -36,7 +86,9 @@ function normalizeComment(raw: unknown): string {
   if (text.length > MAX_COMMENT_LENGTH) {
     throw new ValidationError(`Comment cannot exceed ${MAX_COMMENT_LENGTH} characters`);
   }
-  return text;
+  const sanitized = sanitizePlainText(text);
+  if (!sanitized) throw new ValidationError("Comment cannot be empty");
+  return sanitized;
 }
 
 async function assertOrgExists(orgId: number): Promise<{ id: number; name: string }> {
@@ -68,7 +120,8 @@ export async function listOrgComments(orgId: number): Promise<OrgComment[]> {
       ),
       "u.email as author_email",
     )
-    .orderBy("oc.created_at", "desc");
+    .orderBy("oc.created_at", "desc")
+    .orderBy("oc.id", "desc");
 
   return rows as OrgComment[];
 }

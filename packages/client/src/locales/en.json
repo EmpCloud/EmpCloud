@@ -3016,12 +3016,20 @@
     "table": {
       "invoice": "Invoice",
       "org": "Org",
+      "plan": "Plan & subscription",
       "status": "Status",
       "total": "Total",
       "due": "Due",
       "issued": "Issued",
+      "internalComment": "Internal comment",
+      "noPlan": "No plan",
+      "noInternalComment": "No internal comment",
       "actions": "Actions",
       "dueDatePrefix": "due"
+    },
+    "group": {
+      "unmappedClient": "Unmapped billing client",
+      "noClientDetails": "No client details"
     },
     "loading": "Loading…",
     "empty": "No invoices match.",
@@ -3424,11 +3432,16 @@
         "organization": "Organization",
         "adminEmail": "Admin Email",
         "employees": "Employees",
+        "comment": "Comment",
         "activeModules": "Active Modules",
         "monthlySpend": "Monthly Spend",
         "status": "Status",
         "joined": "Joined"
       }
+    },
+    "comment": {
+      "addHint": "Double-click to add a comment",
+      "editHint": "Double-click to edit this comment"
     },
     "status": {
       "active": "active",
@@ -3706,8 +3719,8 @@
     }
   },
   "subscriptionMetrics": {
-    "title": "Subscription Metrics",
-    "subtitle": "Plan distribution, seat utilization, and billing metrics.",
+    "title": "Subscriptions & Analytics",
+    "subtitle": "Monitor subscription health, plan adoption, seat capacity, billing cadence, and churn.",
     "loading": "Loading...",
     "stats": {
       "totalSeats": "Total Seats",

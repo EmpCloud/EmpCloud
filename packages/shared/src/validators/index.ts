@@ -39,6 +39,65 @@ export const idParamSchema = z.object({
   id: z.coerce.number().int().positive(),
 });
 
+export const adminOrganizationCommentParamsSchema = z.object({
+  id: z.coerce.number().int().positive(),
+  commentId: z.coerce.number().int().positive(),
+});
+
+export const adminOrganizationCommentSchema = z.object({
+  comment: z.string().trim().min(1).max(5000),
+});
+
+export const adminOrganizationListQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  per_page: z.coerce.number().int().min(1).max(500).default(20),
+  search: z.string().trim().max(100).optional(),
+  sort_by: z.enum([
+    "name",
+    "created_at",
+    "user_count",
+    "subscription_count",
+    "total_licenses",
+    "used_licenses",
+  ]).optional(),
+  sort_order: z.enum(["asc", "desc"]).default("desc"),
+  status: z.enum(["active", "inactive"]).optional(),
+  date_from: z.string().date().optional(),
+  date_to: z.string().date().optional(),
+  country: z.string().regex(/^[A-Za-z]{2}$/).transform((value) => value.toUpperCase()).optional(),
+  has_subscription: z.enum(["true", "false"]).optional(),
+  plan_tier: z.string().trim().min(1).max(50).regex(/^[A-Za-z0-9_-]+$/).optional(),
+  subscription_status: z.enum([
+    "active",
+    "trial",
+    "past_due",
+    "suspended",
+    "deactivated",
+    "cancelled",
+    "expired",
+    "attention",
+  ]).optional(),
+  payment_status: z.enum([
+    "paid",
+    "unpaid",
+    "overdue",
+    "no_invoice",
+    "not_configured",
+    "unavailable",
+    "attention",
+  ]).optional(),
+});
+
+export const adminOrganizationAccessControlsSchema = z
+  .object({
+    login_blocked: z.boolean().optional(),
+    payment_block_enabled: z.boolean().optional(),
+  })
+  .refine(
+    (value) => value.login_blocked !== undefined || value.payment_block_enabled !== undefined,
+    { message: "Provide login_blocked and/or payment_block_enabled" },
+  );
+
 // ---------------------------------------------------------------------------
 // Auth
 // ---------------------------------------------------------------------------
