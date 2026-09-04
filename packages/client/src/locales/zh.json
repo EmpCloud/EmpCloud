@@ -3018,6 +3018,10 @@
       "actions": "操作",
       "dueDatePrefix": "到期"
     },
+    "group": {
+      "unmappedClient": "未映射的账单客户",
+      "noClientDetails": "无客户详细信息"
+    },
     "loading": "加载中…",
     "empty": "没有匹配的发票。",
     "actions": {
@@ -3339,11 +3343,16 @@
         "organization": "组织",
         "adminEmail": "管理员邮箱",
         "employees": "员工数",
+        "comment": "评论",
         "activeModules": "已启用模块",
         "monthlySpend": "月度支出",
         "status": "状态",
         "joined": "加入时间"
       }
+    },
+    "comment": {
+      "addHint": "双击添加评论",
+      "editHint": "双击编辑此评论"
     },
     "status": {
       "active": "活跃",

@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "@/lib/auth-store";
 import { usePermissions } from "@/lib/use-permissions";
 import { useViewModeStore, hasAnyAdminPermission } from "@/lib/use-view-mode";
@@ -7,6 +7,10 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import api from "@/api/client";
 import ToastContainer from "@/components/ui/Toast";
 import { SocketProvider } from "@/realtime/SocketProvider";
+import {
+  getPaymentRestrictionDestination,
+  isPaymentResolutionPage,
+} from "@/lib/organization-access";
 
 // Route config imports
 import { hrmsRoutes } from "./routes/hrms.routes";
@@ -39,10 +43,21 @@ const AcceptInvitationPage = lazy(() => import("@/pages/auth/AcceptInvitationPag
 const DashboardPage = lazy(() => import("@/pages/dashboard/DashboardPage"));
 const OnboardingWizard = lazy(() => import("@/pages/onboarding/OnboardingWizard"));
 const SelfServiceDashboardPage = lazy(() => import("@/pages/self-service/SelfServiceDashboardPage"));
+const PaymentRequiredPage = lazy(() => import("@/pages/billing/PaymentRequiredPage"));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   if (!isAuthenticated) return <Navigate to="/login" replace />;
+  return <>{children}</>;
+}
+
+function RequireOrganizationAccess({ children }: { children: React.ReactNode }) {
+  const user = useAuthStore((state) => state.user);
+  const location = useLocation();
+
+  if (user?.payment_restricted && !isPaymentResolutionPage(location.pathname)) {
+    return <Navigate to={getPaymentRestrictionDestination(user)} replace />;
+  }
   return <>{children}</>;
 }
 
@@ -166,7 +181,18 @@ export default function App() {
           path="/onboarding"
           element={
             <ProtectedRoute>
-              <OnboardingWizard />
+              <RequireOrganizationAccess>
+                <OnboardingWizard />
+              </RequireOrganizationAccess>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/payment-required"
+          element={
+            <ProtectedRoute>
+              <PaymentRequiredPage />
             </ProtectedRoute>
           }
         />
@@ -175,11 +201,13 @@ export default function App() {
         <Route
           element={
             <ProtectedRoute>
-              <RequireOnboarding>
-                <SocketProvider>
-                  <DashboardLayout />
-                </SocketProvider>
-              </RequireOnboarding>
+              <RequireOrganizationAccess>
+                <RequireOnboarding>
+                  <SocketProvider>
+                    <DashboardLayout />
+                  </SocketProvider>
+                </RequireOnboarding>
+              </RequireOrganizationAccess>
             </ProtectedRoute>
           }
         >

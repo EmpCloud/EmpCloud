@@ -5,6 +5,10 @@
 import axios from "axios";
 import { useAuthStore } from "@/lib/auth-store";
 import { showToast } from "@/components/ui/Toast";
+import {
+  getPaymentRestrictionDestination,
+  isPaymentResolutionPage,
+} from "@/lib/organization-access";
 
 const api = axios.create({
   baseURL: "/api/v1",
@@ -93,6 +97,32 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    const errorCode = error.response?.data?.error?.code;
+
+    if (error.response?.status === 402 && errorCode === "PAYMENT_REQUIRED") {
+      const store = useAuthStore.getState();
+      store.setPaymentRestriction(true);
+      const user = store.user;
+      if (user && !isPaymentResolutionPage(window.location.pathname)) {
+        window.location.replace(getPaymentRestrictionDestination(user));
+      }
+      return Promise.reject(error);
+    }
+
+    if (
+      error.response?.status === 403
+      && errorCode === "LOGIN_BLOCKED"
+      && !isAuthEndpoint(originalRequest?.url)
+    ) {
+      useAuthStore.getState().logout();
+      try {
+        showToast("error", "Login has been disabled for this organization. Contact support.");
+      } catch {
+        // The redirect is the authoritative signal if the toast host is absent.
+      }
+      window.location.replace("/login?session=blocked");
+      return Promise.reject(error);
+    }
 
     if (
       error.response?.status === 401 &&

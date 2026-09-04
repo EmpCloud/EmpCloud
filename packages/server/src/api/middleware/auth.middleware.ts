@@ -12,6 +12,7 @@ import {
   resolveApiKeyPrincipal,
 } from "../../services/auth/api-key.service.js";
 import type { AccessTokenPayload } from "@empcloud/shared";
+import { evaluateOrganizationAccess } from "../../services/auth/organization-access-policy.service.js";
 
 // Extend Express Request
 declare global {
@@ -34,6 +35,20 @@ export function authenticate(req: Request, res: Response, next: NextFunction): v
 
   const token = authHeader.slice(7);
 
+  const authorizePrincipal = async (principal: AccessTokenPayload): Promise<void> => {
+    const access = await evaluateOrganizationAccess({
+      organizationId: principal.org_id,
+      path: req.originalUrl || req.url,
+      method: req.method,
+    });
+    if (!access.allowed) {
+      sendError(res, access.statusCode, access.code, access.message);
+      return;
+    }
+    req.user = principal;
+    next();
+  };
+
   // API-key path — an `empc_` token is an opaque programmatic key, not a JWT.
   // Resolve it to the owner's live RBAC principal (same shape as a JWT user)
   // so every downstream permission check works unchanged.
@@ -44,8 +59,7 @@ export function authenticate(req: Request, res: Response, next: NextFunction): v
           sendError(res, 401, "UNAUTHORIZED", "Invalid or expired API key");
           return;
         }
-        req.user = principal;
-        next();
+        return authorizePrincipal(principal);
       })
       .catch(() => {
         sendError(res, 401, "UNAUTHORIZED", "API key validation failed");
@@ -66,8 +80,7 @@ export function authenticate(req: Request, res: Response, next: NextFunction): v
           sendError(res, 401, "UNAUTHORIZED", "Token has been revoked");
           return;
         }
-        req.user = decoded;
-        next();
+        return authorizePrincipal(decoded);
       })
       .catch(() => {
         sendError(res, 401, "UNAUTHORIZED", "Token validation failed");

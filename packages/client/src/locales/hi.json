@@ -3018,6 +3018,10 @@
       "actions": "कार्रवाइयाँ",
       "dueDatePrefix": "देय"
     },
+    "group": {
+      "unmappedClient": "असंबद्ध बिलिंग ग्राहक",
+      "noClientDetails": "कोई ग्राहक विवरण नहीं"
+    },
     "loading": "लोड हो रहा है…",
     "empty": "कोई इनवॉइस मेल नहीं खाती।",
     "actions": {
@@ -3339,11 +3343,16 @@
         "organization": "संगठन",
         "adminEmail": "एडमिन ईमेल",
         "employees": "कर्मचारी",
+        "comment": "टिप्पणी",
         "activeModules": "सक्रिय मॉड्यूल",
         "monthlySpend": "मासिक व्यय",
         "status": "स्थिति",
         "joined": "शामिल होने की तिथि"
       }
+    },
+    "comment": {
+      "addHint": "टिप्पणी जोड़ने के लिए डबल-क्लिक करें",
+      "editHint": "इस टिप्पणी को संपादित करने के लिए डबल-क्लिक करें"
     },
     "status": {
       "active": "सक्रिय",

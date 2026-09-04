@@ -17,6 +17,7 @@ import {
   resetPasswordSchema,
   AuditAction,
 } from "@empcloud/shared";
+import { evaluateOrganizationAccess } from "../../services/auth/organization-access-policy.service.js";
 
 const router = Router();
 
@@ -92,10 +93,13 @@ router.post("/login", loginLimiter, async (req: Request, res: Response, next: Ne
 
     sendSuccess(res, result);
   } catch (err: any) {
-    if (err.statusCode === 401) {
+    if (err.statusCode === 401 || err.code === "LOGIN_BLOCKED") {
       await logAudit({
         action: AuditAction.LOGIN_FAILED,
-        details: { email: req.body?.email },
+        details: {
+          email: req.body?.email,
+          reason: err.code === "LOGIN_BLOCKED" ? "organization_login_blocked" : undefined,
+        },
         ipAddress: req.ip,
         userAgent: req.headers["user-agent"],
       });
@@ -176,6 +180,22 @@ router.get("/me", authenticate, async (req: Request, res: Response, next: NextFu
   }
 });
 
+// GET /api/v1/auth/access-status — payment-page polling endpoint. This remains
+// reachable during a payment restriction so the UI can unlock as soon as the
+// paid-invoice webhook restores all affected subscriptions.
+router.get("/access-status", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const access = await evaluateOrganizationAccess({
+      organizationId: req.user!.org_id,
+      paymentResolutionRequest: true,
+      refreshPaymentStatus: true,
+    });
+    sendSuccess(res, { payment_restricted: access.paymentRestricted });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // POST /api/v1/auth/sso/validate — Validate an SSO/JWT token (#750)
 router.post("/sso/validate", async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -186,6 +206,25 @@ router.post("/sso/validate", async (req: Request, res: Response, next: NextFunct
     }
     const { verifyAccessToken } = await import("../../services/oauth/jwt.service.js");
     const payload = verifyAccessToken(token);
+    const access = await evaluateOrganizationAccess({ organizationId: payload.org_id });
+    if (!access.allowed) {
+      await logAudit({
+        organizationId: payload.org_id,
+        userId: payload.sub,
+        action: AuditAction.OAUTH_TOKEN,
+        resourceType: "sso_validation",
+        resourceId: payload.client_id,
+        details: {
+          outcome: "denied",
+          reason: "organization_login_blocked",
+          flow: "sso_validation",
+        },
+        ipAddress: req.ip,
+        userAgent: req.headers["user-agent"],
+      });
+      sendSuccess(res, { valid: false, error: access.message });
+      return;
+    }
     sendSuccess(res, { valid: true, user: payload });
   } catch (err: any) {
     sendSuccess(res, { valid: false, error: err.message || "Invalid token" });

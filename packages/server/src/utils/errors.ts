@@ -37,6 +37,13 @@ export class ForbiddenError extends AppError {
   }
 }
 
+export class OrganizationLoginBlockedError extends AppError {
+  constructor(message = "Login has been disabled for this organization. Contact support.") {
+    super(message, 403, "LOGIN_BLOCKED");
+    this.name = "OrganizationLoginBlockedError";
+  }
+}
+
 export class NotFoundError extends AppError {
   constructor(resource = "Resource") {
     super(`${resource} not found`, 404, "NOT_FOUND");

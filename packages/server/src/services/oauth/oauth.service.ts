@@ -20,6 +20,9 @@ import {
 } from "./jwt.service.js";
 import { config } from "../../config/index.js";
 import { resolveUserPermissions } from "../permissions/permissions.service.js";
+import { evaluateOrganizationAccess } from "../auth/organization-access-policy.service.js";
+import { logAudit } from "../audit/audit.service.js";
+import { AuditAction } from "@empcloud/shared";
 import type {
   OAuthClient,
   UserRole,
@@ -156,6 +159,28 @@ export async function exchangeAuthorizationCode(params: {
 
   if (!user || !org) {
     throw new OAuthError("invalid_grant", "User or organization not found");
+  }
+
+  const organizationAccess = await evaluateOrganizationAccess({
+    organizationId: org.id,
+    organization: org,
+    paymentResolutionRequest: true,
+  });
+  if (!organizationAccess.allowed) {
+    await logAudit({
+      organizationId: org.id,
+      userId: user.id,
+      action: AuditAction.OAUTH_TOKEN,
+      resourceType: "oauth_token",
+      resourceId: params.clientId,
+      details: {
+        outcome: "denied",
+        reason: "organization_login_blocked",
+        grant_type: "authorization_code",
+        client_id: params.clientId,
+      },
+    });
+    throw new OAuthError("access_denied", organizationAccess.message, 403);
   }
 
   // Issue tokens
@@ -326,6 +351,28 @@ export async function refreshAccessToken(params: {
     throw new OAuthError("invalid_grant", "User or organization not found");
   }
 
+  const organizationAccess = await evaluateOrganizationAccess({
+    organizationId: org.id,
+    organization: org,
+    paymentResolutionRequest: true,
+  });
+  if (!organizationAccess.allowed) {
+    await logAudit({
+      organizationId: org.id,
+      userId: user.id,
+      action: AuditAction.OAUTH_TOKEN,
+      resourceType: "oauth_token",
+      resourceId: params.clientId,
+      details: {
+        outcome: "denied",
+        reason: "organization_login_blocked",
+        grant_type: "refresh_token",
+        client_id: params.clientId,
+      },
+    });
+    throw new OAuthError("access_denied", organizationAccess.message, 403);
+  }
+
   // Issue new token pair (same family)
   const jti = uuidv4();
   const expiresIn = parseExpiry(config.oauth.accessTokenExpiry);
@@ -442,6 +489,11 @@ export async function introspectToken(params: {
       return { active: false };
     }
 
+    const organizationAccess = await evaluateOrganizationAccess({
+      organizationId: decoded.org_id,
+    });
+    if (!organizationAccess.allowed) return { active: false };
+
     return {
       active: true,
       scope: decoded.scope,
@@ -466,6 +518,10 @@ export async function introspectToken(params: {
     .first();
 
   if (refreshToken && !refreshToken.revoked_at && new Date(refreshToken.expires_at) > new Date()) {
+    const organizationAccess = await evaluateOrganizationAccess({
+      organizationId: Number(refreshToken.organization_id),
+    });
+    if (!organizationAccess.allowed) return { active: false };
     return {
       active: true,
       scope: refreshToken.scope,

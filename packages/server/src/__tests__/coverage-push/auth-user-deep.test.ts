@@ -138,6 +138,27 @@ describe("Auth Service Coverage", () => {
       await expect(login({ email: "a@a.com", password: "p" })).rejects.toThrow("inactive");
     });
 
+    it("rejects login when the organization login block is enabled", async () => {
+      mockChain.first
+        .mockResolvedValueOnce({ id: 1, email: "a@a.com", password: "h", status: 1, organization_id: 1, date_of_exit: null })
+        .mockResolvedValueOnce({ id: 1, name: "O", is_active: true, login_blocked: true, payment_block_enabled: false });
+
+      await expect(login({ email: "a@a.com", password: "p" })).rejects.toMatchObject({
+        code: "LOGIN_BLOCKED",
+        statusCode: 403,
+      });
+    });
+
+    it("allows login but marks the session payment-restricted when payment is overdue", async () => {
+      mockChain.first
+        .mockResolvedValueOnce({ id: 1, email: "a@a.com", password: "h", status: 1, organization_id: 1, date_of_exit: null, first_name: "A", last_name: "B", role: "org_admin", created_at: new Date(), password_changed_at: new Date() })
+        .mockResolvedValueOnce({ id: 1, name: "O", is_active: true, login_blocked: false, payment_block_enabled: true, password_expiry_days: 0 })
+        .mockResolvedValueOnce({ id: 9, status: "past_due" });
+
+      const result = await login({ email: "a@a.com", password: "p" });
+      expect(result.payment_restricted).toBe(true);
+    });
+
     it("logs in successfully", async () => {
       mockChain.first
         .mockResolvedValueOnce({ id: 1, email: "a@a.com", password: "h", status: 1, organization_id: 1, date_of_exit: null, first_name: "A", last_name: "B", role: "employee", created_at: new Date(), password_changed_at: new Date() })

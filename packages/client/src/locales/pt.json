@@ -3018,6 +3018,10 @@
       "actions": "Ações",
       "dueDatePrefix": "vence"
     },
+    "group": {
+      "unmappedClient": "Cliente de faturamento não associado",
+      "noClientDetails": "Sem detalhes do cliente"
+    },
     "loading": "A carregar…",
     "empty": "Nenhuma fatura corresponde.",
     "actions": {
@@ -3339,11 +3343,16 @@
         "organization": "Organização",
         "adminEmail": "Email do Administrador",
         "employees": "Funcionários",
+        "comment": "Comentário",
         "activeModules": "Módulos Ativos",
         "monthlySpend": "Gasto Mensal",
         "status": "Estado",
         "joined": "Data de Adesão"
       }
+    },
+    "comment": {
+      "addHint": "Faça duplo clique para adicionar um comentário",
+      "editHint": "Faça duplo clique para editar este comentário"
     },
     "status": {
       "active": "ativa",

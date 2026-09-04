@@ -9,6 +9,7 @@ import { useAuthStore } from "@/lib/auth-store";
 import { Eye, EyeOff } from "lucide-react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { getPaymentRestrictionDestination } from "@/lib/organization-access";
 
 export default function LoginPage() {
   const { t } = useTranslation();
@@ -37,8 +38,7 @@ export default function LoginPage() {
     setError("");
     try {
       const result = await login.mutateAsync(data);
-      setAuth(
-        {
+      const authUser = {
           id: result.user.id,
           email: result.user.email,
           first_name: result.user.first_name,
@@ -51,10 +51,17 @@ export default function LoginPage() {
           // server" for a successful login.
           org_id: result.org?.id ?? result.user.organization_id ?? 0,
           org_name: result.org?.name ?? "EMP Cloud Platform",
-        },
+          payment_restricted: Boolean(result.payment_restricted),
+        };
+      setAuth(
+        authUser,
         result.tokens
       );
-      navigate("/");
+      navigate(
+        authUser.payment_restricted
+          ? getPaymentRestrictionDestination(authUser)
+          : "/",
+      );
     } catch (err: any) {
       // #1648 — surface rate-limit 429s explicitly. express-rate-limit sets
       // Retry-After (in seconds) and our middleware also returns a structured
@@ -101,6 +108,11 @@ export default function LoginPage() {
           {sessionState === "expired" && !error && (
             <div className="bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200 text-sm px-4 py-3 rounded-lg border border-amber-200 dark:border-amber-900">
               Your session has expired. Please sign in again.
+            </div>
+          )}
+          {sessionState === "blocked" && !error && (
+            <div className="bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 text-sm px-4 py-3 rounded-lg border border-red-200 dark:border-red-900">
+              Login has been disabled for this organization. Contact support.
             </div>
           )}
           {justReset && !error && (

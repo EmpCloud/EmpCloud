@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import { showToast } from "@/components/ui/Toast";
+import { AdminOrganizationGroupHeader } from "@/components/admin/AdminOrganizationGroupHeader";
+import { AdminTableIconButton } from "@/components/admin/AdminTableIconButton";
 const toast = { success: (m: string) => showToast("success", m), error: (m: string) => showToast("error", m) };
 import {
   Pencil,
@@ -14,9 +16,9 @@ import {
   Search,
   Loader2,
   X,
-  Building2,
   CreditCard,
 } from "lucide-react";
+import { groupOrganizationRows } from "./group-organization-rows";
 
 // Subscriptions Admin
 // -------------------
@@ -72,18 +74,38 @@ const STATUS_COLOR: Record<string, string> = {
   expired: "bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300",
 };
 
-function fmtPrice(amount: number, currency: string) {
-  const sym: Record<string, string> = { INR: "₹", USD: "$", GBP: "£", EUR: "€" };
-  return `${sym[currency] || currency} ${(amount / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+const moneyFormatters = new Map<string, Intl.NumberFormat>();
+const dateFormatters = new Map<string, Intl.DateTimeFormat>();
+const ORGANIZATIONS_PER_PAGE = 10;
+
+function fmtPrice(amount: number, currency: string, locale: string) {
+  const key = `${locale}:${currency}`;
+  let formatter = moneyFormatters.get(key);
+  if (!formatter) {
+    formatter = new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+    moneyFormatters.set(key, formatter);
+  }
+  return formatter.format(amount / 100);
 }
 
-function fmtDate(d?: string | null) {
+function fmtDate(d: string | null | undefined, locale: string) {
   if (!d) return "—";
-  return new Date(d).toLocaleDateString();
+  let formatter = dateFormatters.get(locale);
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat(locale);
+    dateFormatters.set(locale, formatter);
+  }
+  return formatter.format(new Date(d));
 }
 
 export default function SubscriptionsAdminPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = i18n.resolvedLanguage || i18n.language || "en";
   const qc = useQueryClient();
 
   const [search, setSearch] = useState("");
@@ -91,20 +113,56 @@ export default function SubscriptionsAdminPage() {
   const [currency, setCurrency] = useState<string>("");
   const [page, setPage] = useState(1);
 
-  const params: Record<string, any> = { page, limit: 25 };
-  if (search.trim()) params.q = search.trim();
-  if (status) params.status = status;
-  if (currency) params.currency = currency;
+  const filters: Record<string, string> = {};
+  if (search.trim()) filters.q = search.trim();
+  if (status) filters.status = status;
+  if (currency) filters.currency = currency;
 
   const listQ = useQuery({
-    queryKey: ["admin-subs-list", params],
-    queryFn: () =>
-      api.get("/admin/subscriptions/list", { params }).then((r) => r.data),
+    queryKey: ["admin-subs-list", filters],
+    queryFn: async () => {
+      const firstResponse = await api.get("/admin/subscriptions/list", {
+        params: { ...filters, page: 1, limit: 200 },
+      });
+      const firstPage = firstResponse.data?.data ?? {};
+      const pageCount = Math.max(1, Number(firstPage.totalPages ?? 1));
+      const remainingRows: Subscription[] = [];
+      for (let nextPage = 2; nextPage <= pageCount; nextPage += 1) {
+        const response = await api.get("/admin/subscriptions/list", {
+          params: { ...filters, page: nextPage, limit: 200 },
+        });
+        remainingRows.push(...((response.data?.data?.data ?? []) as Subscription[]));
+      }
+      return {
+        rows: [
+          ...((firstPage.data ?? []) as Subscription[]),
+          ...remainingRows,
+        ],
+        total: Number(firstPage.total ?? 0),
+      };
+    },
   });
 
-  const rows: Subscription[] = listQ.data?.data?.data ?? [];
-  const total = Number(listQ.data?.data?.total ?? 0);
-  const totalPages = Number(listQ.data?.data?.totalPages ?? 1);
+  const rows = listQ.data?.rows ?? [];
+  const total = listQ.data?.total ?? 0;
+  const allOrganizationGroups = useMemo(
+    () =>
+      groupOrganizationRows(rows, (row) => ({
+        key: `organization:${row.organization_id}`,
+        id: row.organization_id,
+        name: row.organization_name,
+        email: row.organization_email,
+      })),
+    [rows],
+  );
+  const totalPages = Math.max(1, Math.ceil(allOrganizationGroups.length / ORGANIZATIONS_PER_PAGE));
+  const organizationGroups = useMemo(
+    () => allOrganizationGroups.slice(
+      (page - 1) * ORGANIZATIONS_PER_PAGE,
+      page * ORGANIZATIONS_PER_PAGE,
+    ),
+    [allOrganizationGroups, page],
+  );
 
   // -------- Edit modal --------
   const [editRow, setEditRow] = useState<Subscription | null>(null);
@@ -236,7 +294,7 @@ export default function SubscriptionsAdminPage() {
   return (
     <div className="space-y-6 p-6">
       <div>
-        <h1 className="text-2xl font-bold text-foreground dark:text-gray-100">{t("subscriptionsAdmin.title")}</h1>
+        <h1 className="text-pretty text-2xl font-bold text-foreground dark:text-gray-100">{t("subscriptionsAdmin.title")}</h1>
         <p className="mt-1 text-sm text-muted-foreground dark:text-muted-foreground">
           {t("subscriptionsAdmin.subtitle")}
         </p>
@@ -246,212 +304,247 @@ export default function SubscriptionsAdminPage() {
       <div className="rounded-xl border border-border bg-card p-4 dark:border-gray-700 dark:bg-gray-900">
         <div className="flex flex-wrap items-end gap-3">
           <div className="flex-1 min-w-[200px]">
-            <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("subscriptionsAdmin.filters.searchOrg.label")}</label>
+            <label htmlFor="subscription-org-search" className="mb-1 block text-xs font-medium text-muted-foreground">{t("subscriptionsAdmin.filters.searchOrg.label")}</label>
             <div className="relative">
-              <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
               <input
+                id="subscription-org-search"
+                name="subscription_org_search"
+                type="search"
+                autoComplete="off"
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
                   setPage(1);
                 }}
                 placeholder={t("subscriptionsAdmin.filters.searchOrg.placeholder")}
-                className="w-full rounded-lg border border-border bg-card pl-8 pr-3 py-2 text-sm"
+                className="w-full rounded-lg border border-border bg-card py-2 pl-8 pr-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
               />
             </div>
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("subscriptionsAdmin.filters.status.label")}</label>
+            <label htmlFor="subscription-status" className="mb-1 block text-xs font-medium text-muted-foreground">{t("subscriptionsAdmin.filters.status.label")}</label>
             <select
+              id="subscription-status"
+              name="subscription_status"
               value={status}
               onChange={(e) => {
                 setStatus(e.target.value);
                 setPage(1);
               }}
-              className="rounded-lg border border-border px-3 py-2 text-sm bg-card text-foreground"
+              className="rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
             >
               <option value="">{t("subscriptionsAdmin.filters.all")}</option>
               {STATUSES.map((s) => <option key={s} value={s}>{t(`subscriptionsAdmin.status.${s}`, { defaultValue: s })}</option>)}
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("subscriptionsAdmin.filters.currency.label")}</label>
+            <label htmlFor="subscription-currency" className="mb-1 block text-xs font-medium text-muted-foreground">{t("subscriptionsAdmin.filters.currency.label")}</label>
             <select
+              id="subscription-currency"
+              name="subscription_currency"
               value={currency}
               onChange={(e) => {
                 setCurrency(e.target.value);
                 setPage(1);
               }}
-              className="rounded-lg border border-border px-3 py-2 text-sm bg-card text-foreground"
+              className="rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
             >
               <option value="">{t("subscriptionsAdmin.filters.all")}</option>
               {CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
-          <div className="ml-auto text-sm text-muted-foreground">{t("subscriptionsAdmin.count.subscriptions", { count: total })}</div>
+          <div className="ml-auto rounded-full bg-muted px-3 py-1.5 text-sm font-medium tabular-nums text-muted-foreground">
+            {t("subscriptionsAdmin.count.subscriptions", { count: total })}
+          </div>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto rounded-xl border border-border bg-card dark:border-gray-700 dark:bg-gray-900">
+      {/* Organization groups */}
+      <div className="overflow-hidden rounded-xl border border-border bg-card dark:border-gray-700 dark:bg-gray-900">
         {listQ.isLoading ? (
-          <div className="flex items-center justify-center py-12 text-sm text-muted-foreground">
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t("subscriptionsAdmin.loading")}
+          <div className="flex items-center justify-center py-12 text-sm text-muted-foreground" role="status" aria-live="polite">
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" /> {t("subscriptionsAdmin.loading")}
           </div>
         ) : rows.length === 0 ? (
           <div className="py-12 text-center text-sm text-muted-foreground">{t("subscriptionsAdmin.empty")}</div>
         ) : (
-          <table className="min-w-full text-sm">
-            <thead className="bg-muted text-xs uppercase text-muted-foreground dark:bg-gray-800 dark:text-muted-foreground">
-              <tr>
-                <th className="px-3 py-2 text-left">{t("subscriptionsAdmin.table.columns.org")}</th>
-                <th className="px-3 py-2 text-left">{t("subscriptionsAdmin.table.columns.module")}</th>
-                <th className="px-3 py-2 text-left">{t("subscriptionsAdmin.table.columns.tier")}</th>
-                <th className="px-3 py-2 text-left">{t("subscriptionsAdmin.table.columns.status")}</th>
-                <th className="px-3 py-2 text-right">{t("subscriptionsAdmin.table.columns.seats")}</th>
-                <th className="px-3 py-2 text-right">{t("subscriptionsAdmin.table.columns.pricePerSeat")}</th>
-                <th className="px-3 py-2 text-left">{t("subscriptionsAdmin.table.columns.period")}</th>
-                <th className="px-3 py-2 text-center">{t("subscriptionsAdmin.table.columns.flags")}</th>
-                <th className="px-3 py-2 text-right">{t("subscriptionsAdmin.table.columns.actions")}</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border dark:divide-gray-800">
-              {rows.map((r) => (
-                <tr key={r.id}>
-                  <td className="px-3 py-2">
-                    <div className="font-medium text-foreground dark:text-gray-100 flex items-center gap-1">
-                      <Building2 className="h-3.5 w-3.5 text-muted-foreground" />
-                      {r.organization_name}
-                    </div>
-                    <div className="text-xs text-muted-foreground">{r.organization_email}</div>
-                  </td>
-                  <td className="px-3 py-2 text-muted-foreground dark:text-muted-foreground/50">{r.module_name}</td>
-                  <td className="px-3 py-2 text-muted-foreground dark:text-muted-foreground/50">{r.plan_tier}</td>
-                  <td className="px-3 py-2">
-                    <span className={`rounded px-2 py-0.5 text-xs font-medium ${STATUS_COLOR[r.status] || "bg-muted text-muted-foreground"}`}>
-                      {t(`subscriptionsAdmin.status.${r.status}`, { defaultValue: r.status })}
-                    </span>
-                  </td>
-                  <td className="px-3 py-2 text-right font-mono">
-                    {r.used_seats}/{r.total_seats}
-                  </td>
-                  <td className="px-3 py-2 text-right font-mono">
-                    {fmtPrice(r.price_per_seat, r.currency)}
-                  </td>
-                  <td className="px-3 py-2 text-xs text-muted-foreground dark:text-muted-foreground">
-                    {fmtDate(r.current_period_start)} → {fmtDate(r.current_period_end)}
-                    {r.trial_ends_at && (
-                      <div className="text-blue-600 dark:text-blue-400">{t("subscriptionsAdmin.period.trialEnds", { date: fmtDate(r.trial_ends_at) })}</div>
-                    )}
-                  </td>
-                  <td className="px-3 py-2 text-center">
-                    <div className="flex flex-wrap gap-1 justify-center">
-                      {Number(r.is_free) ? (
-                        <span className="rounded bg-pink-100 dark:bg-pink-950/40 px-1.5 py-0.5 text-[10px] text-pink-700 dark:text-pink-300" title={r.free_reason || ""}>{t("subscriptionsAdmin.badges.free")}</span>
-                      ) : null}
-                      {Number(r.manually_overridden) ? (
-                        <span className="rounded bg-purple-100 dark:bg-purple-950/40 px-1.5 py-0.5 text-[10px] text-purple-700 dark:text-purple-300">{t("subscriptionsAdmin.badges.manual")}</span>
-                      ) : null}
-                      {Number(r.auto_renew) ? null : (
-                        <span className="rounded bg-amber-100 dark:bg-amber-950/40 px-1.5 py-0.5 text-[10px] text-amber-700 dark:text-amber-300">{t("subscriptionsAdmin.badges.noRenew")}</span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-3 py-2 text-right">
-                    <div className="flex justify-end gap-1">
-                      <button
-                        onClick={() => openEdit(r)}
-                        className="text-muted-foreground hover:text-foreground"
-                        title={t("subscriptionsAdmin.actions.edit")}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </button>
-                      {r.status === "active" || r.status === "trial" ? (
-                        <button
-                          onClick={() => {
-                            if (window.confirm(t("subscriptionsAdmin.confirm.suspend", { org: r.organization_name, module: r.module_name })))
-                              suspend.mutate(r.id);
-                          }}
-                          className="text-orange-500 hover:text-orange-700"
-                          title={t("subscriptionsAdmin.actions.suspend")}
-                        >
-                          <Pause className="h-4 w-4" />
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => activate.mutate(r.id)}
-                          className="text-emerald-500 hover:text-emerald-700"
-                          title={t("subscriptionsAdmin.actions.activate")}
-                        >
-                          <Play className="h-4 w-4" />
-                        </button>
-                      )}
-                      <button
-                        onClick={() => {
-                          if (window.confirm(t("subscriptionsAdmin.confirm.cancel", { org: r.organization_name, module: r.module_name })))
-                            cancel.mutate(r.id);
-                        }}
-                        className="text-red-500 hover:text-red-700"
-                        title={t("subscriptionsAdmin.actions.cancel")}
-                      >
-                        <XCircle className="h-4 w-4" />
-                      </button>
-                      {Number(r.is_free) ? (
-                        <button
-                          onClick={() => {
-                            if (window.confirm(t("subscriptionsAdmin.confirm.removeFree")))
-                              unmakeFree.mutate(r.id);
-                          }}
-                          className="text-pink-500 hover:text-pink-700"
-                          title={t("subscriptionsAdmin.actions.removeFreeFlag")}
-                        >
-                          <Gift className="h-4 w-4" />
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => {
-                            setFreeRow(r);
-                            setFreeReason("");
-                          }}
-                          className="text-muted-foreground hover:text-pink-700"
-                          title={t("subscriptionsAdmin.actions.markFree")}
-                        >
-                          <Gift className="h-4 w-4" />
-                        </button>
-                      )}
-                      <button
-                        onClick={() => {
-                          setInvRow(r);
-                          setInvForm({ amount: "", description: "", due_date: "" });
-                        }}
-                        className="text-muted-foreground hover:text-brand-700"
-                        title={t("subscriptionsAdmin.actions.recordManualInvoice")}
-                      >
-                        <Receipt className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[1280px] table-fixed text-sm">
+              <caption className="sr-only">{t("subscriptionsAdmin.title")}</caption>
+              <colgroup>
+                <col className="w-[16%]" />
+                <col className="w-[7%]" />
+                <col className="w-[9%]" />
+                <col className="w-[7%]" />
+                <col className="w-[12%]" />
+                <col className="w-[19%]" />
+                <col className="w-[8%]" />
+                <col className="w-[22%]" />
+              </colgroup>
+              <thead className="border-b border-border bg-muted/60 text-[11px] uppercase tracking-wide text-muted-foreground dark:bg-gray-800/70">
+                <tr>
+                  <th className="px-4 py-2.5 text-left font-semibold">{t("subscriptionsAdmin.table.columns.module")}</th>
+                  <th className="px-3 py-2.5 text-left font-semibold">{t("subscriptionsAdmin.table.columns.tier")}</th>
+                  <th className="px-3 py-2.5 text-left font-semibold">{t("subscriptionsAdmin.table.columns.status")}</th>
+                  <th className="px-3 py-2.5 text-right font-semibold">{t("subscriptionsAdmin.table.columns.seats")}</th>
+                  <th className="px-3 py-2.5 text-right font-semibold">{t("subscriptionsAdmin.table.columns.pricePerSeat")}</th>
+                  <th className="px-3 py-2.5 text-left font-semibold">{t("subscriptionsAdmin.table.columns.period")}</th>
+                  <th className="px-3 py-2.5 text-center font-semibold">{t("subscriptionsAdmin.table.columns.flags")}</th>
+                  <th className="px-4 py-2.5 text-right font-semibold">{t("subscriptionsAdmin.table.columns.actions")}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              {organizationGroups.map((group) => {
+                const country = group.rows[0]?.organization_country;
+
+                return (
+                  <tbody key={group.key} className="border-t-4 border-muted first:border-t-0 dark:border-gray-800">
+                    <tr>
+                      <th colSpan={8} scope="rowgroup" className="bg-muted/35 px-4 py-3 text-left font-normal dark:bg-gray-800/45">
+                        <AdminOrganizationGroupHeader
+                          name={group.name || ""}
+                          organizationId={group.id}
+                          email={group.email}
+                          meta={country}
+                          countLabel={t("subscriptionsAdmin.count.subscriptions", { count: group.rows.length })}
+                        />
+                      </th>
+                    </tr>
+                    {group.rows.map((r) => (
+                      <tr key={r.id} className="border-t border-border/70 align-middle transition-colors hover:bg-muted/25 dark:border-gray-800">
+                        <td className="px-4 py-2.5 font-medium text-foreground">{r.module_name}</td>
+                        <td className="px-3 py-2.5 capitalize text-muted-foreground">{r.plan_tier.replace(/_/g, " ")}</td>
+                        <td className="px-3 py-2.5">
+                          <span className={`inline-flex rounded-md px-2 py-1 text-xs font-medium ${STATUS_COLOR[r.status] || "bg-muted text-muted-foreground"}`}>
+                            {t(`subscriptionsAdmin.status.${r.status}`, { defaultValue: r.status })}
+                          </span>
+                        </td>
+                        <td className="px-3 py-2.5 text-right font-mono text-xs tabular-nums text-foreground">
+                          {r.used_seats}/{r.total_seats}
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-2.5 text-right font-mono text-xs tabular-nums text-foreground">
+                          {fmtPrice(r.price_per_seat, r.currency, locale)}
+                        </td>
+                        <td className="px-3 py-2.5 text-xs text-muted-foreground">
+                          <div className="whitespace-nowrap">{fmtDate(r.current_period_start, locale)} → {fmtDate(r.current_period_end, locale)}</div>
+                          {r.trial_ends_at ? (
+                            <div className="mt-0.5 text-blue-600 dark:text-blue-400">
+                              {t("subscriptionsAdmin.period.trialEnds", { date: fmtDate(r.trial_ends_at, locale) })}
+                            </div>
+                          ) : null}
+                        </td>
+                        <td className="px-3 py-2.5 text-center">
+                          <div className="flex flex-wrap justify-center gap-1">
+                            {Number(r.is_free) ? (
+                              <span className="rounded-md bg-pink-100 px-1.5 py-0.5 text-[10px] font-medium text-pink-700 dark:bg-pink-950/40 dark:text-pink-300" title={r.free_reason || ""}>{t("subscriptionsAdmin.badges.free")}</span>
+                            ) : null}
+                            {Number(r.manually_overridden) ? (
+                              <span className="rounded-md bg-purple-100 px-1.5 py-0.5 text-[10px] font-medium text-purple-700 dark:bg-purple-950/40 dark:text-purple-300">{t("subscriptionsAdmin.badges.manual")}</span>
+                            ) : null}
+                            {Number(r.auto_renew) ? null : (
+                              <span className="rounded-md bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 dark:bg-amber-950/40 dark:text-amber-300">{t("subscriptionsAdmin.badges.noRenew")}</span>
+                            )}
+                            {!Number(r.is_free) && !Number(r.manually_overridden) && Number(r.auto_renew) ? (
+                              <span className="text-xs text-muted-foreground">—</span>
+                            ) : null}
+                          </div>
+                        </td>
+                        <td className="px-3 py-1.5 text-right">
+                          <div className="flex justify-end gap-0.5" role="group" aria-label={`${r.module_name} ${t("subscriptionsAdmin.table.columns.actions")}`}>
+                            <AdminTableIconButton label={t("subscriptionsAdmin.actions.edit")} onClick={() => openEdit(r)}>
+                              <Pencil className="h-4 w-4" aria-hidden="true" />
+                            </AdminTableIconButton>
+                            {r.status === "active" || r.status === "trial" ? (
+                              <AdminTableIconButton
+                                label={t("subscriptionsAdmin.actions.suspend")}
+                                onClick={() => {
+                                  if (window.confirm(t("subscriptionsAdmin.confirm.suspend", { org: r.organization_name, module: r.module_name })))
+                                    suspend.mutate(r.id);
+                                }}
+                                className="text-orange-600 hover:bg-orange-50 hover:text-orange-700 dark:hover:bg-orange-950/40"
+                              >
+                                <Pause className="h-4 w-4" aria-hidden="true" />
+                              </AdminTableIconButton>
+                            ) : (
+                              <AdminTableIconButton
+                                label={t("subscriptionsAdmin.actions.activate")}
+                                onClick={() => activate.mutate(r.id)}
+                                className="text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-emerald-950/40"
+                              >
+                                <Play className="h-4 w-4" aria-hidden="true" />
+                              </AdminTableIconButton>
+                            )}
+                            <AdminTableIconButton
+                              label={t("subscriptionsAdmin.actions.cancel")}
+                              onClick={() => {
+                                if (window.confirm(t("subscriptionsAdmin.confirm.cancel", { org: r.organization_name, module: r.module_name })))
+                                  cancel.mutate(r.id);
+                              }}
+                              className="text-red-600 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950/40"
+                            >
+                              <XCircle className="h-4 w-4" aria-hidden="true" />
+                            </AdminTableIconButton>
+                            {Number(r.is_free) ? (
+                              <AdminTableIconButton
+                                label={t("subscriptionsAdmin.actions.removeFreeFlag")}
+                                onClick={() => {
+                                  if (window.confirm(t("subscriptionsAdmin.confirm.removeFree")))
+                                    unmakeFree.mutate(r.id);
+                                }}
+                                className="text-pink-600 hover:bg-pink-50 hover:text-pink-700 dark:hover:bg-pink-950/40"
+                              >
+                                <Gift className="h-4 w-4" aria-hidden="true" />
+                              </AdminTableIconButton>
+                            ) : (
+                              <AdminTableIconButton
+                                label={t("subscriptionsAdmin.actions.markFree")}
+                                onClick={() => {
+                                  setFreeRow(r);
+                                  setFreeReason("");
+                                }}
+                                className="hover:bg-pink-50 hover:text-pink-700 dark:hover:bg-pink-950/40"
+                              >
+                                <Gift className="h-4 w-4" aria-hidden="true" />
+                              </AdminTableIconButton>
+                            )}
+                            <AdminTableIconButton
+                              label={t("subscriptionsAdmin.actions.recordManualInvoice")}
+                              onClick={() => {
+                                setInvRow(r);
+                                setInvForm({ amount: "", description: "", due_date: "" });
+                              }}
+                              className="hover:bg-brand-50 hover:text-brand-700 dark:hover:bg-brand-950/40"
+                            >
+                              <Receipt className="h-4 w-4" aria-hidden="true" />
+                            </AdminTableIconButton>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                );
+              })}
+            </table>
+          </div>
         )}
       </div>
 
       {totalPages > 1 && (
         <div className="flex items-center justify-end gap-2">
           <button
+            type="button"
             disabled={page <= 1}
             onClick={() => setPage((p) => Math.max(1, p - 1))}
-            className="rounded border border-border px-3 py-1 text-sm disabled:opacity-40 bg-card text-foreground"
+            className="touch-manipulation rounded-md border border-border bg-card px-3 py-1.5 text-sm text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:pointer-events-none disabled:opacity-40"
           >
             {t("subscriptionsAdmin.pagination.prev")}
           </button>
-          <span className="text-sm text-muted-foreground">{t("subscriptionsAdmin.pagination.pageOf", { page, totalPages })}</span>
+          <span className="text-sm tabular-nums text-muted-foreground">{t("subscriptionsAdmin.pagination.pageOf", { page, totalPages })}</span>
           <button
+            type="button"
             disabled={page >= totalPages}
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            className="rounded border border-border px-3 py-1 text-sm disabled:opacity-40 bg-card text-foreground"
+            className="touch-manipulation rounded-md border border-border bg-card px-3 py-1.5 text-sm text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:pointer-events-none disabled:opacity-40"
           >
             {t("subscriptionsAdmin.pagination.next")}
           </button>
@@ -630,7 +723,7 @@ export default function SubscriptionsAdminPage() {
           small
         >
           <p className="text-sm text-muted-foreground mb-3 flex items-start gap-2">
-            <CreditCard className="h-4 w-4 mt-0.5 text-muted-foreground flex-shrink-0" />
+            <CreditCard className="mt-0.5 h-4 w-4 flex-shrink-0 text-muted-foreground" aria-hidden="true" />
             <span>
               {t("subscriptionsAdmin.invoiceModal.description")}
             </span>

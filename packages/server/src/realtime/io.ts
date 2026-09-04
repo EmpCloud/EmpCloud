@@ -21,6 +21,7 @@ import { logger } from "../utils/logger.js";
 import * as chatService from "../services/chat/chat.service.js";
 import * as presence from "../services/chat/presence.service.js";
 import { setChatEmitter, type ChatEmitter } from "../services/chat/chat-events.js";
+import { evaluateOrganizationAccess } from "../services/auth/organization-access-policy.service.js";
 
 type SocketUser = AccessTokenPayload;
 
@@ -146,6 +147,9 @@ export async function attachChatRealtime(server: HttpServer): Promise<Server> {
         .whereNull("revoked_at")
         .first();
       if (!rec) return next(new Error("UNAUTHORIZED"));
+
+      const access = await evaluateOrganizationAccess({ organizationId: decoded.org_id });
+      if (!access.allowed) return next(new Error(access.code));
 
       // Gate chat to allowlisted orgs (same source of truth as the REST guard).
       if (!isChatEnabledForOrg((decoded as SocketUser).org_id)) {

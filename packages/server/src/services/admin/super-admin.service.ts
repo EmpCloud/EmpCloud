@@ -5,9 +5,20 @@
 
 import { getDB } from "../../db/connection.js";
 import { logger } from "../../utils/logger.js";
+import type { AdminOrganizationCommentSummary } from "@empcloud/shared";
+import type { Knex } from "knex";
 // Single source of truth for module health (DB-driven, per-environment URLs).
 // health-check.service does not import this file, so there is no cycle.
 import { getServiceHealth } from "./health-check.service.js";
+import { getOrganizationPaymentSummaries } from "./admin-billing.service.js";
+import {
+  ACCESS_SUBSCRIPTION_STATUSES,
+  SUBSCRIPTION_ATTENTION_STATUSES,
+  SUBSCRIPTION_PORTFOLIO_STATUSES,
+  emptyOrganizationSubscriptionSummary,
+  summarizeSubscriptionsByOrganization,
+  type OrganizationPaymentSummary,
+} from "./organization-analytics.js";
 
 // ---------------------------------------------------------------------------
 // Platform Overview
@@ -113,11 +124,87 @@ export async function getOrgStats() {
 
   const [withSub] = await db("org_subscriptions")
     .where("organization_id", ">", 0)
-    .whereIn("status", ["active", "trial"])
+    .whereIn("status", ACCESS_SUBSCRIPTION_STATUSES)
     .countDistinct("organization_id as count");
+
+  const [seatTotals] = await db("org_subscriptions")
+    .where("organization_id", ">", 0)
+    .whereIn("status", ACCESS_SUBSCRIPTION_STATUSES)
+    .select(
+      db.raw("COALESCE(SUM(total_seats), 0) as total_seats"),
+      db.raw("COALESCE(SUM(used_seats), 0) as used_seats"),
+    );
+
+  const mrrByCurrency = await db("org_subscriptions as s")
+    .leftJoin("billing_cycle_discounts as b", "s.billing_cycle", "b.cycle")
+    .where("s.organization_id", ">", 0)
+    .whereIn("s.status", ACCESS_SUBSCRIPTION_STATUSES)
+    .groupBy("s.currency")
+    .select(
+      "s.currency",
+      db.raw(
+        "COALESCE(SUM((CASE WHEN s.is_free = 1 THEN 0 ELSE s.price_per_seat * s.total_seats END) / COALESCE(b.months_in_cycle, 1)), 0) as amount",
+      ),
+    )
+    .orderBy("s.currency", "asc");
+
+  const planDistribution = await db("org_subscriptions")
+    .where("organization_id", ">", 0)
+    .whereIn("status", ACCESS_SUBSCRIPTION_STATUSES)
+    .groupBy("plan_tier")
+    .select("plan_tier")
+    .countDistinct("organization_id as organization_count")
+    .orderBy("organization_count", "desc");
+
+  const subscriptionStatusDistribution = await db("org_subscriptions")
+    .where("organization_id", ">", 0)
+    .whereIn("status", SUBSCRIPTION_PORTFOLIO_STATUSES)
+    .groupBy("status")
+    .select("status")
+    .countDistinct("organization_id as organization_count")
+    .orderBy("organization_count", "desc");
+
+  const [trialOrganizations] = await db("org_subscriptions")
+    .where("organization_id", ">", 0)
+    .where("status", "trial")
+    .countDistinct("organization_id as count");
+  const [subscriptionAttentionOrganizations] = await db("org_subscriptions")
+    .where("organization_id", ">", 0)
+    .whereIn("status", SUBSCRIPTION_ATTENTION_STATUSES)
+    .countDistinct("organization_id as count");
+  const [expiringNext30Days] = await db("org_subscriptions")
+    .where("organization_id", ">", 0)
+    .where("status", "active")
+    .where("auto_renew", true)
+    .where("current_period_end", ">=", db.raw("NOW()"))
+    .where("current_period_end", "<", db.raw("DATE_ADD(NOW(), INTERVAL 30 DAY)"))
+    .countDistinct("organization_id as count");
+  const [freeOrganizations] = await db("org_subscriptions")
+    .where("organization_id", ">", 0)
+    .whereIn("status", ACCESS_SUBSCRIPTION_STATUSES)
+    .where(function () {
+      this.where("is_free", true).orWhere("plan_tier", "free");
+    })
+    .countDistinct("organization_id as count");
+
+  const organizationIds = (await orgs().select("id")).map((row: any) => Number(row.id));
+  const paymentSummaries = await getOrganizationPaymentSummaries(organizationIds);
+  const paymentStatusCounts = new Map<string, number>();
+  for (const summary of paymentSummaries.values()) {
+    paymentStatusCounts.set(
+      summary.status,
+      (paymentStatusCounts.get(summary.status) ?? 0) + 1,
+    );
+  }
+  const unavailablePaymentCount = paymentStatusCounts.get("unavailable") ?? 0;
+  const paymentAttentionOrganizations =
+    (paymentStatusCounts.get("unpaid") ?? 0) +
+    (paymentStatusCounts.get("overdue") ?? 0);
 
   const totalOrgs = Number(total.count);
   const subscribed = Number(withSub.count);
+  const totalSeats = Number(seatTotals.total_seats);
+  const usedSeats = Number(seatTotals.used_seats);
 
   return {
     total: totalOrgs,
@@ -131,12 +218,78 @@ export async function getOrgStats() {
     mrr: Number(mrrResult.mrr),
     with_subscription: subscribed,
     without_subscription: Math.max(0, totalOrgs - subscribed),
+    total_licenses: totalSeats,
+    used_licenses: usedSeats,
+    available_licenses: Math.max(0, totalSeats - usedSeats),
+    license_utilization: totalSeats ? Math.round((usedSeats / totalSeats) * 100) : 0,
+    trial_organizations: Number(trialOrganizations.count),
+    payment_attention_organizations: paymentAttentionOrganizations,
+    subscription_attention_organizations: Number(subscriptionAttentionOrganizations.count),
+    payment_analytics_available: unavailablePaymentCount === 0,
+    expiring_next_30_days: Number(expiringNext30Days.count),
+    free_organizations: Number(freeOrganizations.count),
+    mrr_by_currency: mrrByCurrency.map((row: any) => ({
+      currency: row.currency,
+      amount: Math.round(Number(row.amount)),
+    })),
+    plan_distribution: planDistribution.map((row: any) => ({
+      plan_tier: row.plan_tier,
+      organization_count: Number(row.organization_count),
+    })),
+    subscription_status_distribution: subscriptionStatusDistribution.map((row: any) => ({
+      status: row.status,
+      organization_count: Number(row.organization_count),
+    })),
+    payment_status_distribution: Array.from(paymentStatusCounts)
+      .map(([status, organization_count]) => ({ status, organization_count }))
+      .sort((a, b) => b.organization_count - a.organization_count),
   };
 }
 
 // ---------------------------------------------------------------------------
 // Organization List (paginated, searchable, sortable)
 // ---------------------------------------------------------------------------
+
+export async function getLatestOrganizationComments(
+  db: Knex | Knex.Transaction,
+  organizationIds: number[],
+): Promise<Map<number, AdminOrganizationCommentSummary>> {
+  if (!organizationIds.length) return new Map();
+
+  // Match the detail-page definition of "latest": newest created_at first,
+  // then highest id when timestamps are equal. The NOT EXISTS form works on
+  // MySQL versions without window functions and keeps this as one set query.
+  const rows = await db("organization_comments as oc")
+    .whereIn("oc.organization_id", organizationIds)
+    .whereNotExists(
+      db
+        .select(db.raw("1"))
+        .from("organization_comments as newer")
+        .whereRaw("newer.organization_id = oc.organization_id")
+        .whereRaw(`
+          (
+            (newer.created_at IS NOT NULL AND oc.created_at IS NULL)
+            OR newer.created_at > oc.created_at
+            OR (newer.created_at <=> oc.created_at AND newer.id > oc.id)
+          )
+        `),
+    )
+    .select(
+      "oc.id",
+      "oc.organization_id",
+      "oc.comment",
+      "oc.edited_at",
+      "oc.created_at",
+      "oc.updated_at",
+    );
+
+  return new Map(
+    rows.map((comment: any) => [
+      Number(comment.organization_id),
+      comment as AdminOrganizationCommentSummary,
+    ]),
+  );
+}
 
 export async function getOrgList(params: {
   page?: number;
@@ -151,12 +304,18 @@ export async function getOrgList(params: {
   date_to?: string;
   /** ISO country code stored on organizations.country (e.g. "IN") */
   country?: string;
-  /** "true" = has an active/trial subscription, "false" = has none */
+  /** "true" = has a current subscription, "false" = has none */
   has_subscription?: string;
+  /** Filter organizations that have at least one subscription on this tier. */
+  plan_tier?: string;
+  /** Filter organizations that have at least one subscription in this lifecycle state. */
+  subscription_status?: string;
+  /** Authoritative invoice status returned by EMP Billing. */
+  payment_status?: string;
 }) {
   const db = getDB();
-  const page = params.page || 1;
-  const perPage = params.per_page || 20;
+  const page = Math.max(1, params.page || 1);
+  const perPage = Math.min(100, Math.max(1, params.per_page || 20));
   const offset = (page - 1) * perPage;
 
   // Hide the platform sentinel org (id=0) from every super-admin org
@@ -192,7 +351,7 @@ export async function getOrgList(params: {
 
   if (params.country) baseQuery = baseQuery.where("o.country", params.country);
 
-  // Has an active/trial subscription (EXISTS keeps the row count intact —
+  // Has a current subscription (EXISTS keeps the row count intact —
   // a join here would multiply orgs by their subscription rows). Built as an
   // explicit correlated sub-query (not a callback) so it does not depend on
   // knex binding the builder to `this`.
@@ -201,11 +360,51 @@ export async function getOrgList(params: {
       .select(db.raw("1"))
       .from("org_subscriptions as s2")
       .whereRaw("s2.organization_id = o.id")
-      .whereIn("s2.status", ["active", "trial"]);
+      .whereIn("s2.status", ACCESS_SUBSCRIPTION_STATUSES);
     baseQuery =
       params.has_subscription === "true"
         ? baseQuery.whereExists(subQuery)
         : baseQuery.whereNotExists(subQuery);
+  }
+
+  if (params.plan_tier) {
+    baseQuery = baseQuery.whereExists(
+      db
+        .select(db.raw("1"))
+        .from("org_subscriptions as plan_sub")
+        .whereRaw("plan_sub.organization_id = o.id")
+        .where("plan_sub.plan_tier", params.plan_tier)
+        .whereIn("plan_sub.status", ACCESS_SUBSCRIPTION_STATUSES),
+    );
+  }
+
+  if (params.subscription_status) {
+    const statusQuery = db
+      .select(db.raw("1"))
+      .from("org_subscriptions as status_sub")
+      .whereRaw("status_sub.organization_id = o.id");
+    if (params.subscription_status === "attention") {
+      statusQuery.whereIn("status_sub.status", SUBSCRIPTION_ATTENTION_STATUSES);
+    } else {
+      statusQuery.where("status_sub.status", params.subscription_status);
+    }
+    baseQuery = baseQuery.whereExists(statusQuery);
+  }
+
+  let filteredPaymentSummaries: Map<number, OrganizationPaymentSummary> | null = null;
+  if (params.payment_status) {
+    const candidateIds = (await baseQuery.clone().select("o.id")).map((row: any) => Number(row.id));
+    filteredPaymentSummaries = await getOrganizationPaymentSummaries(candidateIds);
+    const acceptedStatuses = params.payment_status === "attention"
+      ? new Set(["unpaid", "overdue"])
+      : new Set([params.payment_status]);
+    const matchingIds = candidateIds.filter((orgId) => {
+      const summary = filteredPaymentSummaries?.get(orgId);
+      return summary ? acceptedStatuses.has(summary.status) : false;
+    });
+    baseQuery = matchingIds.length
+      ? baseQuery.whereIn("o.id", matchingIds)
+      : baseQuery.whereRaw("1 = 0");
   }
 
   const [totalResult] = await baseQuery.clone().count("o.id as count");
@@ -217,7 +416,8 @@ export async function getOrgList(params: {
     created_at: "o.created_at",
     user_count: "user_count",
     subscription_count: "subscription_count",
-    monthly_spend: "monthly_spend",
+    total_licenses: "total_licenses",
+    used_licenses: "used_licenses",
   };
   const sortCol = allowedSorts[params.sort_by || "created_at"] || "o.created_at";
   const sortOrder = params.sort_order === "asc" ? "asc" : "desc";
@@ -236,58 +436,107 @@ export async function getOrgList(params: {
     .leftJoin(
       db("org_subscriptions")
         .select("organization_id")
-        .whereIn("status", ["active", "trial"])
+        .whereIn("status", ACCESS_SUBSCRIPTION_STATUSES)
         .count("id as sub_count")
+        .sum("total_seats as total_licenses")
+        .sum("used_seats as used_licenses")
         .groupBy("organization_id")
         .as("sc"),
       "o.id",
       "sc.organization_id"
     )
-    .leftJoin(
-      // monthly_spend per org. price_per_seat is the EFFECTIVE per-cycle
-      // amount, so normalise by months_in_cycle to get a true MRR.
-      // Annual ₹4,800/seat → ₹400/seat/mo. Otherwise the org-list inflates
-      // annual customers by 12x in the "monthly spend" column.
-      db("org_subscriptions as s")
-        .leftJoin("billing_cycle_discounts as b", "s.billing_cycle", "b.cycle")
-        .select("s.organization_id")
-        .whereIn("s.status", ["active", "trial"])
-        .select(
-          db.raw(
-            "COALESCE(SUM((s.price_per_seat * s.total_seats) / COALESCE(b.months_in_cycle, 1)), 0) as spend",
-          ),
-        )
-        .groupBy("s.organization_id")
-        .as("sp"),
-      "o.id",
-      "sp.organization_id"
-    )
     .select(
       "o.id",
       "o.name",
       "o.email",
+      "o.contact_number",
+      "o.country",
+      "o.currency",
+      "o.timezone",
       "o.is_active",
+      "o.login_blocked",
+      "o.payment_block_enabled",
       "o.created_at",
       db.raw("COALESCE(uc.user_count, 0) as user_count"),
       db.raw("COALESCE(sc.sub_count, 0) as subscription_count"),
-      db.raw("COALESCE(sp.spend, 0) as monthly_spend")
+      db.raw("COALESCE(sc.total_licenses, 0) as total_licenses"),
+      db.raw("COALESCE(sc.used_licenses, 0) as used_licenses")
     )
     .orderBy(sortCol, sortOrder)
     .limit(perPage)
     .offset(offset);
 
+  const organizationIds = orgs.map((org: any) => Number(org.id));
+  const latestComments = await getLatestOrganizationComments(db, organizationIds);
+  const subscriptionRows = organizationIds.length
+    ? await db("org_subscriptions as s")
+        .join("modules as m", "s.module_id", "m.id")
+        .leftJoin("billing_cycle_discounts as b", "s.billing_cycle", "b.cycle")
+        .whereIn("s.organization_id", organizationIds)
+        .select(
+          "s.id",
+          "s.organization_id",
+          "s.module_id",
+          "m.name as module_name",
+          "m.slug as module_slug",
+          "s.plan_tier",
+          "s.status",
+          "s.total_seats",
+          "s.used_seats",
+          "s.billing_cycle",
+          "s.price_per_seat",
+          "s.currency",
+          db.raw("COALESCE(b.months_in_cycle, 1) as months_in_cycle"),
+          "s.trial_ends_at",
+          "s.current_period_start",
+          "s.current_period_end",
+          "s.auto_renew",
+          "s.is_free",
+        )
+        .orderBy("m.name", "asc")
+    : [];
+  const subscriptionSummaries = summarizeSubscriptionsByOrganization(subscriptionRows as any[]);
+  const paymentSummaries = filteredPaymentSummaries
+    ?? await getOrganizationPaymentSummaries(organizationIds);
+
   return {
-    data: orgs.map((o: any) => ({
-      ...o,
-      // The organizations table stores activation as the boolean `is_active`,
-      // but the org-list UI renders a status pill via i18n key
-      // `orgList.status.<status>`. Derive a string status here so the pill
-      // resolves ("active"/"inactive") instead of showing the raw key.
-      status: o.is_active ? "active" : "inactive",
-      user_count: Number(o.user_count),
-      subscription_count: Number(o.subscription_count),
-      monthly_spend: Number(o.monthly_spend),
-    })),
+    data: orgs.map((o: any) => {
+      const subscriptionSummary =
+        subscriptionSummaries.get(Number(o.id)) ?? emptyOrganizationSubscriptionSummary();
+      // Preserve the legacy scalar only when it is meaningful. A value from
+      // multiple currencies must never be added together; modern clients use
+      // monthly_spend_by_currency instead.
+      const legacyMonthlySpend =
+        subscriptionSummary.monthly_spend_by_currency.length === 1
+          ? subscriptionSummary.monthly_spend_by_currency[0].amount
+          : 0;
+      const paymentSummary = paymentSummaries.get(Number(o.id)) ?? {
+        status: "not_configured" as const,
+        outstanding_by_currency: [],
+        overdue_invoice_count: 0,
+        unpaid_invoice_count: 0,
+        latest_invoice: null,
+      };
+      return {
+        ...o,
+        login_blocked: Boolean(o.login_blocked),
+        payment_block_enabled: Boolean(o.payment_block_enabled),
+        payment_block_active:
+          Boolean(o.payment_block_enabled)
+          && (paymentSummary.status === "overdue" || paymentSummary.overdue_invoice_count > 0),
+        // The organizations table stores activation as the boolean `is_active`,
+        // but the org-list UI renders a status pill via i18n key
+        // `orgList.status.<status>`. Derive a string status here so the pill
+        // resolves ("active"/"inactive") instead of showing the raw key.
+        status: o.is_active ? "active" : "inactive",
+        user_count: Number(o.user_count),
+        subscription_count: Number(o.subscription_count),
+        monthly_spend: legacyMonthlySpend,
+        ...subscriptionSummary,
+        payment_summary: paymentSummary,
+        latest_comment: latestComments.get(Number(o.id)) ?? null,
+      };
+    }),
     total,
     page,
     per_page: perPage,

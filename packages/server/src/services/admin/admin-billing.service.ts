@@ -20,6 +20,55 @@ import { logger } from "../../utils/logger.js";
 import { NotFoundError, ValidationError } from "../../utils/errors.js";
 import { billingFetchRaw } from "../billing/billing-integration.service.js";
 import { createSubscription } from "../subscription/subscription.service.js";
+import type { OrganizationPaymentSummary } from "./organization-analytics.js";
+
+interface NormalizedInvoice {
+  id: string;
+  invoice_number: string;
+  status: string;
+  total: number;
+  amount_paid: number;
+  amount_due: number;
+  currency: string;
+  issue_date: string | null;
+  due_date: string | null;
+  client_id: string | null;
+  org_id: string | null;
+  notes: string;
+}
+
+function normalizeInvoice(inv: any): NormalizedInvoice {
+  return {
+    id: String(inv.id),
+    invoice_number: inv.invoice_number ?? inv.invoiceNumber ?? "",
+    status: inv.status ?? "draft",
+    total: Number(inv.total ?? 0),
+    amount_paid: Number(inv.amount_paid ?? inv.amountPaid ?? 0),
+    amount_due: Number(inv.amount_due ?? inv.amountDue ?? 0),
+    currency: inv.currency ?? "INR",
+    issue_date: inv.issue_date ?? inv.issueDate ?? null,
+    due_date: inv.due_date ?? inv.dueDate ?? null,
+    client_id: inv.client_id ?? inv.clientId ?? null,
+    org_id: inv.org_id ?? inv.orgId ?? null,
+    notes: inv.notes ?? "",
+  };
+}
+
+function readEmpCloudOrganizationId(client: any): number | null {
+  let customFields = client?.customFields ?? client?.custom_fields;
+  if (typeof customFields === "string") {
+    try {
+      customFields = JSON.parse(customFields);
+    } catch {
+      return null;
+    }
+  }
+
+  const organizationId = Number(customFields?.empcloud_org_id);
+  return Number.isInteger(organizationId) && organizationId > 0
+    ? organizationId
+    : null;
+}
 
 // ---------------------------------------------------------------------------
 // List invoices across ALL orgs
@@ -57,20 +106,7 @@ export async function listInvoices(params?: {
   // know about the boundary. Accept either form on read (defensive
   // against schema drift between emp-billing versions).
   const rawInvoices = Array.isArray(result.data) ? result.data : [];
-  const invoices = rawInvoices.map((inv: any) => ({
-    id: inv.id,
-    invoice_number: inv.invoice_number ?? inv.invoiceNumber ?? "",
-    status: inv.status ?? "draft",
-    total: Number(inv.total ?? 0),
-    amount_paid: Number(inv.amount_paid ?? inv.amountPaid ?? 0),
-    amount_due: Number(inv.amount_due ?? inv.amountDue ?? 0),
-    currency: inv.currency ?? "INR",
-    issue_date: inv.issue_date ?? inv.issueDate ?? null,
-    due_date: inv.due_date ?? inv.dueDate ?? null,
-    client_id: inv.client_id ?? inv.clientId ?? null,
-    org_id: inv.org_id ?? inv.orgId ?? null,
-    notes: inv.notes ?? "",
-  }));
+  const invoices = rawInvoices.map(normalizeInvoice);
 
   // Enrich each invoice with the EmpCloud org name/email via the
   // billing_client_mappings bridge. emp-billing's clientId → EmpCloud's
@@ -94,13 +130,99 @@ export async function listInvoices(params?: {
   const byClient: Record<string, any> = {};
   for (const m of mappings) byClient[String(m.billing_client_id)] = m;
 
+  // A Billing organization can contain legacy duplicate clients for the same
+  // EmpCloud organization. Resolve unmapped invoice clients through the stable
+  // organization id stored in Billing client metadata, without mutating data.
+  const unmappedClientIds = clientIds.filter((clientId) => !byClient[clientId]);
+  const metadataMappings = await Promise.all(
+    unmappedClientIds.map(async (clientId) => {
+      const result = await billingFetchRaw(
+        "GET",
+        `/clients/${encodeURIComponent(clientId)}`,
+      );
+      const organizationId = readEmpCloudOrganizationId(result?.data ?? result);
+      return organizationId ? { clientId, organizationId } : null;
+    }),
+  );
+  const fallbackOrganizationIds = Array.from(
+    new Set(
+      metadataMappings
+        .map((mapping) => mapping?.organizationId)
+        .filter((id): id is number => Boolean(id)),
+    ),
+  );
+  const fallbackOrganizations = fallbackOrganizationIds.length
+    ? await db("organizations")
+        .whereIn("id", fallbackOrganizationIds)
+        .select("id", "name", "email")
+    : [];
+  const fallbackOrganizationById = new Map(
+    fallbackOrganizations.map((organization: any) => [Number(organization.id), organization]),
+  );
+  for (const mapping of metadataMappings) {
+    if (!mapping) continue;
+    const organization = fallbackOrganizationById.get(mapping.organizationId);
+    if (!organization) continue;
+    byClient[mapping.clientId] = {
+      billing_client_id: mapping.clientId,
+      organization_id: mapping.organizationId,
+      organization_name: organization.name,
+      organization_email: organization.email,
+    };
+  }
+
+  const organizationIds = Array.from(
+    new Set(
+      Object.values(byClient)
+        .map((mapping: any) => Number(mapping.organization_id))
+        .filter(Boolean),
+    ),
+  );
+  const subscriptionRows = organizationIds.length
+    ? await db("org_subscriptions as os")
+        .leftJoin("modules as m", "os.module_id", "m.id")
+        .whereIn("os.organization_id", organizationIds)
+        .orderBy("m.name", "asc")
+        .select(
+          "os.id",
+          "os.organization_id",
+          "os.plan_tier",
+          "os.status",
+          "os.internal_notes",
+          "m.name as module_name",
+        )
+    : [];
+  const plansByOrganization = new Map<number, Array<{
+    id: number;
+    plan_tier: string;
+    status: string;
+    module_name: string;
+    internal_notes: string | null;
+  }>>();
+  for (const subscription of subscriptionRows) {
+    const organizationId = Number(subscription.organization_id);
+    const plans = plansByOrganization.get(organizationId) ?? [];
+    plans.push({
+      id: Number(subscription.id),
+      plan_tier: String(subscription.plan_tier),
+      status: String(subscription.status),
+      module_name: String(subscription.module_name ?? "Module"),
+      internal_notes: subscription.internal_notes == null
+        ? null
+        : String(subscription.internal_notes),
+    });
+    plansByOrganization.set(organizationId, plans);
+  }
+
   let enriched = invoices.map((inv: any) => {
     const m = inv.client_id ? byClient[inv.client_id] || {} : {};
+    const organizationId = m.organization_id ? Number(m.organization_id) : null;
     return {
       ...inv,
-      empcloud_organization_id: m.organization_id ?? null,
+      empcloud_organization_id: organizationId,
       empcloud_organization_name: m.organization_name ?? null,
       empcloud_organization_email: m.organization_email ?? null,
+      empcloud_plans: organizationId ? plansByOrganization.get(organizationId) ?? [] : [],
     };
   });
   if (params?.organization_id) {
@@ -117,6 +239,98 @@ export async function listInvoices(params?: {
     limit: meta.limit ?? limit,
     totalPages: meta.totalPages ?? 1,
   };
+}
+
+// ---------------------------------------------------------------------------
+// Organization list payment summaries
+// ---------------------------------------------------------------------------
+
+/**
+ * Load one compact payment summary for each organization displayed on the
+ * Super Admin organization page. Billing is queried by mapped client id, so
+ * no invoice can leak from another customer. A failed Billing request is
+ * represented as "unavailable" rather than the much more damaging "unpaid".
+ */
+export async function getOrganizationPaymentSummaries(
+  organizationIds: number[],
+): Promise<Map<number, OrganizationPaymentSummary>> {
+  const orgIds = Array.from(new Set(organizationIds.map(Number).filter((id) => id > 0)));
+  const summaries = new Map<number, OrganizationPaymentSummary>();
+
+  for (const orgId of orgIds) {
+    summaries.set(orgId, {
+      status: "not_configured",
+      outstanding_by_currency: [],
+      overdue_invoice_count: 0,
+      unpaid_invoice_count: 0,
+      latest_invoice: null,
+    });
+  }
+  if (orgIds.length === 0) return summaries;
+
+  const mappings = await getDB()("billing_client_mappings")
+    .whereIn("organization_id", orgIds)
+    .select("organization_id", "billing_client_id");
+
+  const orgIdByClientId = new Map<string, number>();
+  for (const mapping of mappings) {
+    const orgId = Number(mapping.organization_id);
+    const clientId = String(mapping.billing_client_id);
+    orgIdByClientId.set(clientId, orgId);
+    summaries.set(orgId, {
+      status: "unavailable",
+      outstanding_by_currency: [],
+      overdue_invoice_count: 0,
+      unpaid_invoice_count: 0,
+      latest_invoice: null,
+    });
+  }
+
+  const clientIds = Array.from(orgIdByClientId.keys());
+  const batches: string[][] = [];
+  for (let index = 0; index < clientIds.length; index += 100) {
+    batches.push(clientIds.slice(index, index + 100));
+  }
+
+  const responses = await Promise.all(
+    batches.map((batch) =>
+      billingFetchRaw("POST", "/clients/payment-summaries", { clientIds: batch }, 5_000),
+    ),
+  );
+  const validStatuses = new Set(["paid", "unpaid", "overdue", "no_invoice"]);
+
+  for (const response of responses) {
+    if (!response || !Array.isArray(response.data)) continue;
+    for (const item of response.data) {
+      const orgId = orgIdByClientId.get(String(item.clientId));
+      if (!orgId) continue;
+      summaries.set(orgId, {
+        status: validStatuses.has(item.status) ? item.status : "unavailable",
+        outstanding_by_currency: Array.isArray(item.outstandingByCurrency)
+          ? item.outstandingByCurrency.map((amount: any) => ({
+              currency: String(amount.currency || "INR").toUpperCase(),
+              amount: Number(amount.amount) || 0,
+            }))
+          : [],
+        overdue_invoice_count: Number(item.overdueInvoiceCount) || 0,
+        unpaid_invoice_count: Number(item.unpaidInvoiceCount) || 0,
+        latest_invoice: item.latestInvoice
+          ? {
+              id: String(item.latestInvoice.id),
+              invoice_number: item.latestInvoice.invoiceNumber ?? "",
+              status: item.latestInvoice.status ?? "draft",
+              amount_due: Number(item.latestInvoice.amountDue) || 0,
+              total: Number(item.latestInvoice.total) || 0,
+              currency: item.latestInvoice.currency ?? "INR",
+              issue_date: item.latestInvoice.issueDate ?? null,
+              due_date: item.latestInvoice.dueDate ?? null,
+            }
+          : null,
+      });
+    }
+  }
+
+  return summaries;
 }
 
 // ---------------------------------------------------------------------------

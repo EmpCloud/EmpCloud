@@ -58,6 +58,22 @@ vi.mock("../../services/oauth/jwt.service", () => ({
 
 vi.mock("uuid", () => ({ v4: vi.fn(() => "mock-uuid") }));
 
+const mockEvaluateOrganizationAccess = vi.fn(async () => ({
+  allowed: true,
+  paymentRestricted: false,
+}));
+vi.mock("../../services/auth/organization-access-policy.service", () => ({
+  evaluateOrganizationAccess: (...args: any[]) => mockEvaluateOrganizationAccess(...args),
+}));
+
+vi.mock("../../services/audit/audit.service", () => ({
+  logAudit: vi.fn().mockResolvedValue(undefined),
+}));
+
+vi.mock("../../services/permissions/permissions.service", () => ({
+  resolveUserPermissions: vi.fn().mockResolvedValue([]),
+}));
+
 import { getDB } from "../../db/connection.js";
 import {
   findClientById, validateClient, createAuthorizationCode,
@@ -249,6 +265,18 @@ describe("OAuth Service Coverage", () => {
     });
     it("returns inactive for revoked access token", async () => {
       chain.first.mockResolvedValueOnce({ jti: "test-jti", revoked_at: new Date() });
+      const r: any = await introspectToken({ token: "v" });
+      expect(r.active).toBe(false);
+    });
+    it("returns inactive when organization access is blocked", async () => {
+      chain.first.mockResolvedValueOnce({ jti: "test-jti", revoked_at: null });
+      mockEvaluateOrganizationAccess.mockResolvedValueOnce({
+        allowed: false,
+        code: "LOGIN_BLOCKED",
+        statusCode: 403,
+        message: "blocked",
+        paymentRestricted: false,
+      });
       const r: any = await introspectToken({ token: "v" });
       expect(r.active).toBe(false);
     });

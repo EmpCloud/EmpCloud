@@ -3086,6 +3086,10 @@
       "actions": "الإجراءات",
       "dueDatePrefix": "الاستحقاق"
     },
+    "group": {
+      "unmappedClient": "عميل فوترة غير مرتبط",
+      "noClientDetails": "لا توجد تفاصيل للعميل"
+    },
     "loading": "جارٍ التحميل…",
     "empty": "لا توجد فواتير مطابقة.",
     "actions": {
@@ -3447,11 +3451,16 @@
         "organization": "المؤسسة",
         "adminEmail": "البريد الإلكتروني للمسؤول",
         "employees": "الموظفون",
+        "comment": "تعليق",
         "activeModules": "الوحدات النشطة",
         "monthlySpend": "الإنفاق الشهري",
         "status": "الحالة",
         "joined": "تاريخ الانضمام"
       }
+    },
+    "comment": {
+      "addHint": "انقر نقرًا مزدوجًا لإضافة تعليق",
+      "editHint": "انقر نقرًا مزدوجًا لتعديل هذا التعليق"
     },
     "status": {
       "active": "نشطة",

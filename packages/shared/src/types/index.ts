@@ -231,6 +231,124 @@ export interface Organization {
   updated_at: Date;
 }
 
+export interface AdminMoneyAmount {
+  currency: string;
+  amount: number;
+}
+
+export interface AdminOrganizationSubscription {
+  id: number;
+  organization_id: number;
+  module_id: number;
+  module_name: string;
+  module_slug: string;
+  plan_tier: string;
+  status: string;
+  total_seats: number;
+  used_seats: number;
+  available_seats: number;
+  billing_cycle: string;
+  price_per_seat: number;
+  monthly_amount: number;
+  currency: string;
+  months_in_cycle: number;
+  trial_ends_at: string | null;
+  current_period_start: string | null;
+  current_period_end: string | null;
+  auto_renew: boolean;
+  is_free: boolean;
+}
+
+export type AdminOrganizationPaymentStatus =
+  | "paid"
+  | "unpaid"
+  | "overdue"
+  | "no_invoice"
+  | "not_configured"
+  | "unavailable";
+
+export interface AdminOrganizationInvoiceSummary {
+  id: string;
+  invoice_number: string;
+  status: string;
+  amount_due: number;
+  total: number;
+  currency: string;
+  issue_date: string | null;
+  due_date: string | null;
+}
+
+export interface AdminOrganizationPaymentSummary {
+  status: AdminOrganizationPaymentStatus;
+  outstanding_by_currency: AdminMoneyAmount[];
+  overdue_invoice_count: number;
+  unpaid_invoice_count: number;
+  latest_invoice: AdminOrganizationInvoiceSummary | null;
+}
+
+export interface AdminOrganizationCommentSummary {
+  id: number;
+  comment: string;
+  edited_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AdminOrganizationListItem {
+  id: number;
+  name: string;
+  email: string | null;
+  contact_number: string | null;
+  country: string;
+  currency: string;
+  timezone: string | null;
+  is_active: boolean;
+  login_blocked: boolean;
+  payment_block_enabled: boolean;
+  payment_block_active: boolean;
+  status: "active" | "inactive";
+  created_at: string;
+  user_count: number;
+  active_module_count: number;
+  plans: string[];
+  subscription_statuses: string[];
+  total_licenses: number;
+  used_licenses: number;
+  available_licenses: number;
+  license_utilization: number;
+  monthly_spend_by_currency: AdminMoneyAmount[];
+  payment_summary: AdminOrganizationPaymentSummary;
+  latest_comment: AdminOrganizationCommentSummary | null;
+  subscriptions: AdminOrganizationSubscription[];
+}
+
+export interface AdminOrganizationStats {
+  total: number;
+  active: number;
+  inactive: number;
+  today: number;
+  this_week: number;
+  this_month: number;
+  this_year: number;
+  total_users: number;
+  with_subscription: number;
+  without_subscription: number;
+  total_licenses: number;
+  used_licenses: number;
+  available_licenses: number;
+  license_utilization: number;
+  trial_organizations: number;
+  payment_attention_organizations: number;
+  subscription_attention_organizations: number;
+  payment_analytics_available: boolean;
+  expiring_next_30_days: number;
+  free_organizations: number;
+  mrr_by_currency: AdminMoneyAmount[];
+  plan_distribution: Array<{ plan_tier: string; organization_count: number }>;
+  subscription_status_distribution: Array<{ status: string; organization_count: number }>;
+  payment_status_distribution: Array<{ status: AdminOrganizationPaymentStatus; organization_count: number }>;
+}
+
 export interface Department {
   id: number;
   name: string;

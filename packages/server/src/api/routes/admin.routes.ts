@@ -40,7 +40,14 @@ import * as planPricingAdmin from "../../services/admin/plan-pricing-admin.servi
 import * as subscriptionAdmin from "../../services/admin/subscription-admin.service.js";
 import * as orgAdmin from "../../services/admin/org-admin.service.js";
 import { logAudit } from "../../services/audit/audit.service.js";
-import { AuditAction } from "@empcloud/shared";
+import {
+  adminOrganizationAccessControlsSchema,
+  adminOrganizationCommentParamsSchema,
+  adminOrganizationCommentSchema,
+  adminOrganizationListQuerySchema,
+  AuditAction,
+  idParamSchema,
+} from "@empcloud/shared";
 import * as adminBilling from "../../services/admin/admin-billing.service.js";
 import { billingFetchRaw } from "../../services/billing/billing-integration.service.js";
 import { hashPassword } from "../../utils/crypto.js";
@@ -63,24 +70,8 @@ router.get("/overview", async (req: Request, res: Response, next: NextFunction) 
 // GET /api/v1/admin/organizations — paginated org list
 router.get("/organizations", async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const page = parseInt(req.query.page as string, 10) || 1;
-    const perPage = parseInt(req.query.per_page as string, 10) || 20;
-    const search = (req.query.search as string) || undefined;
-    const sortBy = (req.query.sort_by as string) || undefined;
-    const sortOrder = (req.query.sort_order as string) as "asc" | "desc" | undefined;
-
-    const result = await getOrgList({
-      page,
-      per_page: perPage,
-      search,
-      sort_by: sortBy,
-      sort_order: sortOrder,
-      status: (req.query.status as string) || undefined,
-      date_from: (req.query.date_from as string) || undefined,
-      date_to: (req.query.date_to as string) || undefined,
-      country: (req.query.country as string) || undefined,
-      has_subscription: (req.query.has_subscription as string) || undefined,
-    });
+    const query = adminOrganizationListQuerySchema.parse(req.query);
+    const result = await getOrgList(query);
     sendPaginated(res, result.data, result.total, result.page, result.per_page);
   } catch (err) {
     next(err);
@@ -110,6 +101,38 @@ router.get("/organizations/:id", async (req: Request, res: Response, next: NextF
   }
 });
 
+// PATCH /api/v1/admin/organizations/:id/access-controls — immediately apply
+// tenant-wide login and overdue-payment restrictions.
+router.patch(
+  "/organizations/:id/access-controls",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const orgId = idParamSchema.parse(req.params).id;
+      const data = adminOrganizationAccessControlsSchema.parse(req.body);
+      const controls = await orgAdmin.updateOrganizationAccessControls({
+        orgId,
+        loginBlocked: data.login_blocked,
+        paymentBlockEnabled: data.payment_block_enabled,
+      });
+
+      await logAudit({
+        organizationId: orgId,
+        userId: req.user!.sub,
+        action: AuditAction.ORG_UPDATED,
+        resourceType: "organization_access_controls",
+        resourceId: String(orgId),
+        details: controls,
+        ipAddress: req.ip,
+        userAgent: req.get("user-agent"),
+      });
+
+      sendSuccess(res, controls);
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
 // ---------------------------------------------------------------------------
 // Organization comments — operator notes kept against a tenant
 // ---------------------------------------------------------------------------
@@ -117,7 +140,8 @@ router.get("/organizations/:id", async (req: Request, res: Response, next: NextF
 // GET /api/v1/admin/organizations/:id/comments
 router.get("/organizations/:id/comments", async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const comments = await orgAdmin.listOrgComments(parseInt(String(req.params.id), 10));
+    const orgId = idParamSchema.parse(req.params).id;
+    const comments = await orgAdmin.listOrgComments(orgId);
     sendSuccess(res, comments);
   } catch (err) {
     next(err);
@@ -127,11 +151,12 @@ router.get("/organizations/:id/comments", async (req: Request, res: Response, ne
 // POST /api/v1/admin/organizations/:id/comments
 router.post("/organizations/:id/comments", async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const orgId = parseInt(String(req.params.id), 10);
+    const orgId = idParamSchema.parse(req.params).id;
+    const data = adminOrganizationCommentSchema.parse(req.body);
     const comment = await orgAdmin.addOrgComment({
       orgId,
       authorUserId: req.user!.sub,
-      comment: req.body?.comment,
+      comment: data.comment,
     });
     await logAudit({
       organizationId: orgId,
@@ -153,12 +178,12 @@ router.put(
   "/organizations/:id/comments/:commentId",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const orgId = parseInt(String(req.params.id), 10);
-      const commentId = parseInt(String(req.params.commentId), 10);
+      const { id: orgId, commentId } = adminOrganizationCommentParamsSchema.parse(req.params);
+      const data = adminOrganizationCommentSchema.parse(req.body);
       const comment = await orgAdmin.updateOrgComment({
         orgId,
         commentId,
-        comment: req.body?.comment,
+        comment: data.comment,
       });
       await logAudit({
         organizationId: orgId,
@@ -181,8 +206,7 @@ router.delete(
   "/organizations/:id/comments/:commentId",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const orgId = parseInt(String(req.params.id), 10);
-      const commentId = parseInt(String(req.params.commentId), 10);
+      const { id: orgId, commentId } = adminOrganizationCommentParamsSchema.parse(req.params);
       await orgAdmin.deleteOrgComment({ orgId, commentId });
       await logAudit({
         organizationId: orgId,

@@ -3018,6 +3018,10 @@
       "actions": "Aktionen",
       "dueDatePrefix": "fällig"
     },
+    "group": {
+      "unmappedClient": "Nicht zugeordneter Abrechnungskunde",
+      "noClientDetails": "Keine Kundendetails"
+    },
     "loading": "Wird geladen…",
     "empty": "Keine passenden Rechnungen.",
     "actions": {
@@ -3339,11 +3343,16 @@
         "organization": "Organisation",
         "adminEmail": "E-Mail des Administrators",
         "employees": "Mitarbeiter",
+        "comment": "Kommentar",
         "activeModules": "Aktive Module",
         "monthlySpend": "Monatliche Ausgaben",
         "status": "Status",
         "joined": "Beigetreten"
       }
+    },
+    "comment": {
+      "addHint": "Doppelklicken, um einen Kommentar hinzuzufügen",
+      "editHint": "Doppelklicken, um diesen Kommentar zu bearbeiten"
     },
     "status": {
       "active": "aktiv",

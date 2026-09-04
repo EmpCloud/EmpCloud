@@ -3018,6 +3018,10 @@
       "actions": "操作",
       "dueDatePrefix": "期限"
     },
+    "group": {
+      "unmappedClient": "未関連付けの請求先顧客",
+      "noClientDetails": "顧客情報がありません"
+    },
     "loading": "読み込み中…",
     "empty": "一致する請求書はありません。",
     "actions": {
@@ -3339,11 +3343,16 @@
         "organization": "組織",
         "adminEmail": "管理者のメールアドレス",
         "employees": "従業員数",
+        "comment": "コメント",
         "activeModules": "有効なモジュール",
         "monthlySpend": "月間支出",
         "status": "ステータス",
         "joined": "登録日"
       }
+    },
+    "comment": {
+      "addHint": "ダブルクリックしてコメントを追加",
+      "editHint": "ダブルクリックしてこのコメントを編集"
     },
     "status": {
       "active": "有効",
