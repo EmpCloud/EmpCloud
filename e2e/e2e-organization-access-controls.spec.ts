@@ -19,6 +19,9 @@ test("super admin can see tenant login and overdue-payment controls", async ({ p
 
   await page.goto(`${BASE_URL}/admin/organizations`);
   await expect(page.getByRole("heading", { name: /organizations/i })).toBeVisible();
+  await expect(
+    page.getByText("Some organization analytics could not be loaded. Existing data may be incomplete."),
+  ).toHaveCount(0);
   await expect(page.getByRole("switch", { name: /^Login:/ }).first()).toBeVisible();
   await expect(page.getByRole("switch", { name: /^Overdue gate:/ }).first()).toBeVisible();
 });
