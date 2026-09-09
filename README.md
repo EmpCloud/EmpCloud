@@ -66,9 +66,10 @@ from the sidebar. Try: *"What is the salary of Priya Patel?"*, *"What was her ne
 `docker compose up -d`, run the server + client). Then add the assistant config to `packages/server/.env`:
 
 ```env
-# --- Assistant: OpenAI (GPT-5.6) ---
-ASSISTANT_OPENAI_API_KEY=<your OpenAI key>   # falls back to OPENAI_API_KEY
-ASSISTANT_MODEL=<openai model>               # the OpenAI model to use
+# --- Assistant: centralized Gemini proxy ---
+ASSISTANT_GEMINI_API_KEY=<your proxy key>    # falls back to GLB_KEY
+ASSISTANT_OPENAI_BASE_URL=https://centralized-gemini.globussoft.com/nx/direct
+ASSISTANT_MODEL=gemini-2.5-flash
 
 # --- Cross-system tools: reach the Payroll + Monitor services ---
 PAYROLL_MODULE_URL=http://localhost:4000
