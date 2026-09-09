@@ -195,10 +195,13 @@ Migration `099_ai_assistant.ts` creates the conversation tables and seeds `assis
 
 ## OpenAI and module configuration
 
-The assistant uses the OpenAI SDK with Chat Completions function calling, not the Responses API. The model and OpenAI-compatible endpoint are configurable.
+The assistant uses OpenAI Chat Completions for OpenAI-compatible providers. When a Gemini model is configured with the centralized `/nx/direct` proxy, it automatically uses the native Google Gen AI `generateContent` API and preserves the same server-controlled tool loop.
 
 ```env
 ASSISTANT_OPENAI_API_KEY=
+# Preferred key for the direct Gemini proxy; falls back to GLB_KEY and then ASSISTANT_OPENAI_API_KEY.
+ASSISTANT_GEMINI_API_KEY=
+GLB_KEY=
 ASSISTANT_OPENAI_BASE_URL=
 ASSISTANT_OPENAI_ORGANIZATION=
 ASSISTANT_OPENAI_PROJECT=
@@ -216,7 +219,7 @@ MONITOR_MODULE_URL=http://localhost:5000
 INTERNAL_SERVICE_SECRET=
 ```
 
-Assistant-specific OpenAI settings fall back to their global OpenAI equivalents. Set `ASSISTANT_USE_LEGACY_MAX_TOKENS=true` only for compatible providers that require `max_tokens` instead of `max_completion_tokens`.
+Assistant-specific OpenAI settings fall back to their global OpenAI equivalents. The direct Gemini proxy is detected when `ASSISTANT_MODEL` starts with `gemini` and `ASSISTANT_OPENAI_BASE_URL` ends in `/nx/direct`. Set `ASSISTANT_USE_LEGACY_MAX_TOKENS=true` only for OpenAI-compatible providers that require `max_tokens`; it is ignored by the native Gemini client.
 
 EMP Cloud sends `x-internal-service` and `x-internal-secret` to Payroll and Monitor. The same non-empty `INTERNAL_SERVICE_SECRET` must be configured in all three running services. Restart each process after environment changes.
 

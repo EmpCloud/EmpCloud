@@ -1,7 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { config } from "../config/index.js";
 
-const mocks = vi.hoisted(() => ({ create: vi.fn(), execute: vi.fn(), constructor: vi.fn() }));
+const mocks = vi.hoisted(() => ({
+  create: vi.fn(),
+  execute: vi.fn(),
+  constructor: vi.fn(),
+  geminiGenerate: vi.fn(),
+  geminiConstructor: vi.fn(),
+}));
 
 vi.mock("openai", () => ({
   default: class OpenAI {
@@ -9,6 +15,16 @@ vi.mock("openai", () => ({
       mocks.constructor(options);
     }
     chat = { completions: { create: mocks.create } };
+  },
+}));
+
+vi.mock("@google/genai", () => ({
+  FunctionCallingConfigMode: { ANY: "ANY", AUTO: "AUTO" },
+  GoogleGenAI: class GoogleGenAI {
+    constructor(options: unknown) {
+      mocks.geminiConstructor(options);
+    }
+    models = { generateContent: mocks.geminiGenerate };
   },
 }));
 
@@ -24,7 +40,10 @@ describe("assistant Chat Completions loop", () => {
     mocks.create.mockReset();
     mocks.execute.mockReset();
     mocks.constructor.mockReset();
+    mocks.geminiGenerate.mockReset();
+    mocks.geminiConstructor.mockReset();
     config.assistant.openaiApiKey = "test-key";
+    config.assistant.geminiApiKey = "";
     config.assistant.openaiBaseUrl = "";
     config.assistant.openaiOrganization = "";
     config.assistant.openaiProject = "";
@@ -105,6 +124,57 @@ describe("assistant Chat Completions loop", () => {
     expect(mocks.create.mock.calls[0][0]).not.toHaveProperty("max_completion_tokens");
   });
 
+  it("uses native generateContent for the direct Gemini proxy", async () => {
+    config.assistant.openaiBaseUrl = "https://centralized-gemini.globussoft.com/nx/direct/";
+    config.assistant.model = "gemini-2.5-flash";
+    config.assistant.geminiApiKey = "gemini-proxy-key";
+    mocks.geminiGenerate
+      .mockResolvedValueOnce({
+        functionCalls: [{ id: "gemini-call-1", name: "search_employees", args: { query: "Priya" } }],
+        candidates: [{ content: { role: "model", parts: [{ functionCall: { id: "gemini-call-1", name: "search_employees", args: { query: "Priya" } } }] } }],
+      })
+      .mockResolvedValueOnce({
+        text: "Priya was found.",
+        candidates: [{ content: { role: "model", parts: [{ text: "Priya was found." }] } }],
+      });
+    mocks.execute.mockResolvedValue('{"employees":[{"employee_id":42}]}');
+
+    const result = await runAssistantAgent(
+      { orgId: 7, userId: 9, role: "employee", permissions: new Set(["assistant:use"]) },
+      "Find employee Priya",
+      [],
+    );
+
+    expect(mocks.constructor).not.toHaveBeenCalled();
+    expect(mocks.geminiConstructor).toHaveBeenCalledWith({
+      apiKey: "gemini-proxy-key",
+      httpOptions: {
+        baseUrl: "https://centralized-gemini.globussoft.com/nx/direct",
+        headers: { Authorization: "Bearer gemini-proxy-key" },
+        retryOptions: { attempts: 1 },
+      },
+    });
+    expect(mocks.geminiGenerate).toHaveBeenCalledTimes(2);
+    expect(mocks.geminiGenerate.mock.calls[0][0]).toEqual(expect.objectContaining({
+      model: "gemini-2.5-flash",
+      config: expect.objectContaining({
+        maxOutputTokens: config.assistant.maxTokens,
+        toolConfig: { functionCallingConfig: { mode: "ANY" } },
+      }),
+    }));
+    expect(mocks.geminiGenerate.mock.calls[1][0].contents).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        role: "user",
+        parts: expect.arrayContaining([
+          expect.objectContaining({
+            functionResponse: expect.objectContaining({ name: "search_employees" }),
+          }),
+        ]),
+      }),
+    ]));
+    expect(result).toEqual({ answer: "Priya was found.", toolsUsed: ["search_employees"] });
+  });
+
   it("retries transient provider failures and then succeeds", async () => {
     mocks.create
       .mockRejectedValueOnce({ status: 503 })
@@ -120,7 +190,7 @@ describe("assistant Chat Completions loop", () => {
     expect(result.answer).toBe("Recovered.");
   });
 
-  it("does not retry insufficient-credit errors and returns a stable code", async () => {
+  it("does not retry insufficient-credit errors or expose provider billing details", async () => {
     mocks.create.mockRejectedValueOnce({ status: 402 });
 
     await expect(runAssistantAgent(
@@ -130,6 +200,7 @@ describe("assistant Chat Completions loop", () => {
     )).rejects.toMatchObject({
       statusCode: 402,
       code: "ASSISTANT_PROVIDER_CREDITS_REQUIRED",
+      message: "We're having trouble reaching the assistant right now. Please try again in a few moments.",
     });
     expect(mocks.create).toHaveBeenCalledTimes(1);
   });

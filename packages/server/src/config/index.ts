@@ -171,6 +171,7 @@ export const config = {
 
   assistant: {
     openaiApiKey: process.env.ASSISTANT_OPENAI_API_KEY || process.env.OPENAI_API_KEY || "",
+    geminiApiKey: process.env.ASSISTANT_GEMINI_API_KEY || process.env.GLB_KEY || "",
     openaiBaseUrl: process.env.ASSISTANT_OPENAI_BASE_URL || process.env.OPENAI_BASE_URL || "",
     openaiOrganization:
       process.env.ASSISTANT_OPENAI_ORGANIZATION || process.env.OPENAI_ORGANIZATION || "",
