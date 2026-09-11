@@ -62,6 +62,8 @@ The model never chooses or supplies `organization_id`. EMP Cloud injects it from
 
 The new UI is available at `/assistant`. The floating EmpAI launcher opens this route. The sidebar lists only the new HR Assistant; the legacy `/chatbot` route remains available but is intentionally not shown in navigation. Conversation rename uses an accessible in-app form modal, and deletion uses the shared danger confirmation dialog; browser-native prompt/confirm dialogs are not used. Every completed assistant answer includes a `Download PDF` action that creates a branded, paginated EmpCloud report in the browser. The PDF generator and its dependency are loaded only when the action is used.
 
+The composer also provides a hands-free voice mode in browsers that support the Web Speech API (current Chrome and Edge). Voice recognition is handled by the browser and the resulting transcript is submitted through the normal assistant stream. The completed response is spoken with the browser speech-synthesis voice, then listening resumes for the next turn. Stopping voice mode cancels both listening and playback. EmpCloud does not receive or store the recorded audio; the browser vendor may process speech according to its own browser policy.
+
 ### Buffered message API
 
 `POST /api/v1/assistant`

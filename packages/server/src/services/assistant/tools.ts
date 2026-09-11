@@ -49,6 +49,35 @@ function rangeFromDays(days: number) {
   return { start_date: start.toISOString().slice(0, 10), end_date: end.toISOString().slice(0, 10) };
 }
 
+function validTimezone(timezone: unknown): string {
+  if (typeof timezone !== "string" || !timezone.trim()) return "UTC";
+  try {
+    new Intl.DateTimeFormat("en-CA", { timeZone: timezone }).format();
+    return timezone;
+  } catch {
+    return "UTC";
+  }
+}
+
+function attendanceTimestampInTimezone(value: Date | string | null, timezone: string): string | null {
+  if (!value) return null;
+  const instant = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(instant.getTime())) return typeof value === "string" ? value : null;
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: timezone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(instant);
+  const part = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((item) => item.type === type)?.value || "00";
+  return `${part("year")}-${part("month")}-${part("day")} ${part("hour")}:${part("minute")}:${part("second")}`;
+}
+
 const HR_ROLES = new Set(["hr_admin", "org_admin", "super_admin"]);
 
 async function pendingRequestScope(
@@ -201,8 +230,25 @@ const tools: AssistantTool[] = [
     execute: async (ctx, args) => {
       const employeeId = args.employee_id || ctx.userId;
       await assertTargetAccess(ctx, employeeId, "attendance:view", "attendance:view_team", "attendance:view_all");
+      const timezoneRow = await getDB()("users as u")
+        .leftJoin("organization_locations as l", function () { this.on("l.id", "u.location_id").andOn("l.organization_id", "u.organization_id"); })
+        .join("organizations as o", "o.id", "u.organization_id")
+        .where({ "u.id": employeeId, "u.organization_id": ctx.orgId })
+        .select("l.timezone as location_timezone", "o.timezone as organization_timezone")
+        .first();
+      const timezone = validTimezone(timezoneRow?.location_timezone || timezoneRow?.organization_timezone);
       const records = await getDB()("attendance_records").where({ organization_id: ctx.orgId, user_id: employeeId }).whereBetween("date", [args.start_date, args.end_date]).orderBy("date", "desc").select("date", "status", "check_in", "check_out", "worked_minutes", "late_minutes", "overtime_minutes");
-      return { employee_id: employeeId, start_date: args.start_date, end_date: args.end_date, records };
+      return {
+        employee_id: employeeId,
+        start_date: args.start_date,
+        end_date: args.end_date,
+        timezone,
+        records: records.map((record: any) => ({
+          ...record,
+          check_in: attendanceTimestampInTimezone(record.check_in, timezone),
+          check_out: attendanceTimestampInTimezone(record.check_out, timezone),
+        })),
+      };
     },
   }),
   tool({

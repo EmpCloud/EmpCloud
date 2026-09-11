@@ -1,11 +1,13 @@
 import { FormEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
-import { Bot, Download, LoaderCircle, Menu, MessageSquare, Pencil, Plus, Send, Sparkles, Square, Trash2, User, X } from "lucide-react";
+import { Bot, Download, LoaderCircle, Menu, MessageSquare, Mic, Pencil, Plus, Send, Sparkles, Square, Trash2, User, Volume2, X } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import * as Dialog from "@radix-ui/react-dialog";
+import { useTranslation } from "react-i18next";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
+import { useAssistantVoice } from "./assistant-voice";
 
 type ChatMessage = {
   id: string;
@@ -77,6 +79,7 @@ function AssistantAnswer({ children }: { children: string }) {
 }
 
 export default function AssistantPage() {
+  const { i18n } = useTranslation();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [conversationId, setConversationId] = useState<number>();
@@ -97,6 +100,21 @@ export default function AssistantPage() {
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const streamAbortRef = useRef<AbortController | null>(null);
+  const isSendingRef = useRef(false);
+  const voice = useAssistantVoice({
+    language: i18n.resolvedLanguage || i18n.language || "en",
+    onTranscriptionChange: setInput,
+    onTranscriptionSubmit: (transcript) => void sendMessage(transcript),
+    onError: setError,
+  });
+
+  const voiceStatus = voice.activity === "listening"
+    ? "Listening… Speak your question."
+    : voice.activity === "waiting"
+      ? "Voice question sent. Preparing the assistant's reply…"
+      : voice.activity === "speaking"
+        ? "The assistant is speaking. Voice input will resume when it finishes."
+        : "Voice mode is ready.";
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -119,6 +137,7 @@ export default function AssistantPage() {
 
   function newChat() {
     streamAbortRef.current?.abort();
+    voice.stop();
     setConversationId(undefined);
     setMessages([]);
     setError(undefined);
@@ -128,6 +147,7 @@ export default function AssistantPage() {
 
   async function openConversation(id: number) {
     if (isSending || isOpeningConversation) return;
+    voice.stop();
     setIsOpeningConversation(true);
     setError(undefined);
     try {
@@ -188,7 +208,8 @@ export default function AssistantPage() {
 
   async function sendMessage(text = input) {
     const message = text.trim();
-    if (!message || isSending) return;
+    if (!message || isSendingRef.current) return;
+    isSendingRef.current = true;
 
     const userMessage: ChatMessage = {
       id: `${Date.now()}-user`,
@@ -205,6 +226,8 @@ export default function AssistantPage() {
     setMessages((current) => [...current, { id: assistantMessageId, role: "assistant", content: "" }]);
     const abortController = new AbortController();
     streamAbortRef.current = abortController;
+    let assistantAnswer = "";
+    let completed = false;
 
     try {
       const token = useAuthStore.getState().accessToken;
@@ -233,6 +256,7 @@ export default function AssistantPage() {
         if (event === "conversation") setConversationId(Number(data.conversation_id));
         if (event === "status") setStreamStatus(data.message || "Checking live HR data…");
         if (event === "delta" && data.text) {
+          assistantAnswer += String(data.text);
           setStreamStatus(undefined);
           setMessages((current) => current.map((item) => item.id === assistantMessageId
             ? { ...item, content: item.content + String(data.text) }
@@ -254,22 +278,36 @@ export default function AssistantPage() {
       if (buffer.trim()) handleEvent(buffer);
       if (streamError) throw new Error(streamError);
       await loadConversations();
+      completed = true;
     } catch (requestError: any) {
+      voice.stop();
       if (requestError?.name !== "AbortError") {
         setError(requestError?.message || "I couldn't answer that right now. Please try again.");
         setMessages((current) => current.filter((item) => item.id !== assistantMessageId || item.content.length > 0));
       }
     } finally {
       streamAbortRef.current = null;
+      isSendingRef.current = false;
       setIsSending(false);
       setStreamStatus(undefined);
       setStreamingMessageId(undefined);
       inputRef.current?.focus();
     }
+    if (completed) voice.speak(assistantAnswer);
   }
 
   function stopStreaming() {
     streamAbortRef.current?.abort();
+    voice.stop();
+  }
+
+  function toggleVoiceMode() {
+    setError(undefined);
+    if (isSending && !voice.enabled) {
+      setError("Wait for the current response to finish before starting voice mode.");
+      return;
+    }
+    voice.toggle();
   }
 
   function handleSubmit(event: FormEvent) {
@@ -450,7 +488,36 @@ export default function AssistantPage() {
       <div className="border-t bg-card/95 px-4 py-3 backdrop-blur md:px-6 md:py-4">
         <form onSubmit={handleSubmit} className="mx-auto w-full max-w-4xl">
           {error && <p className="mb-2 text-sm text-red-600" role="alert">{error}</p>}
+          {voice.enabled && (
+            <p id="assistant-voice-status" className="mb-2 text-sm font-medium text-brand-700 dark:text-brand-300" role="status" aria-live="polite">
+              {voiceStatus}
+            </p>
+          )}
           <div className="flex items-end gap-2 rounded-2xl border bg-background p-2 shadow-sm focus-within:border-brand-400 focus-within:ring-2 focus-within:ring-brand-100 dark:focus-within:ring-brand-950">
+            <button
+              type="button"
+              onClick={toggleVoiceMode}
+              aria-label={voice.enabled ? "Stop voice mode" : "Start voice mode"}
+              aria-pressed={voice.enabled}
+              aria-disabled={!voice.supported || (isSending && !voice.enabled)}
+              aria-describedby={voice.enabled ? "assistant-voice-status" : "assistant-voice-help"}
+              title={voice.supported ? "Start a hands-free voice conversation" : "Voice mode requires the latest Chrome or Edge"}
+              className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 ${
+                voice.enabled
+                  ? "bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-950/30 dark:text-red-300"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              }`}
+            >
+              {voice.activity === "speaking"
+                ? <Volume2 className="h-5 w-5" aria-hidden="true" />
+                : <Mic className={`h-5 w-5 ${voice.activity === "listening" ? "animate-pulse" : ""}`} aria-hidden="true" />}
+              {voice.activity === "listening" && <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-500" aria-hidden="true" />}
+            </button>
+            <span id="assistant-voice-help" className="sr-only">
+              {voice.supported
+                ? "Starts a hands-free conversation. Your speech is submitted and the assistant reply is read aloud."
+                : "Voice mode requires the latest Chrome or Edge browser."}
+            </span>
             <textarea
               ref={inputRef}
               value={input}
@@ -461,14 +528,15 @@ export default function AssistantPage() {
               maxLength={4000}
               disabled={isSending}
               aria-label="Message HR Assistant"
-              className="max-h-32 min-h-10 flex-1 resize-none bg-transparent px-2 py-2 text-sm text-foreground outline-none placeholder:text-muted-foreground disabled:opacity-60"
+              aria-describedby={voice.enabled ? "assistant-voice-status" : undefined}
+              className="max-h-32 min-h-11 flex-1 resize-none bg-transparent px-2 py-2.5 text-sm text-foreground outline-none placeholder:text-muted-foreground disabled:opacity-60"
             />
             {isSending ? (
-              <button type="button" onClick={stopStreaming} aria-label="Stop response" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-foreground text-background transition-opacity hover:opacity-80">
+              <button type="button" onClick={stopStreaming} aria-label="Stop response" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-foreground text-background transition-opacity hover:opacity-80">
                 <Square className="h-4 w-4 fill-current" />
               </button>
             ) : (
-              <button type="submit" disabled={!input.trim()} aria-label="Send message" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-600 text-white transition-colors hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-40">
+              <button type="submit" disabled={!input.trim()} aria-label="Send message" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-600 text-white transition-colors hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-40">
                 <Send className="h-4 w-4" />
               </button>
             )}
