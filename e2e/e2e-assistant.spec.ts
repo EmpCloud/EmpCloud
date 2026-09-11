@@ -28,7 +28,65 @@ test.describe("AI assistant API", () => {
     expect(body).toMatchObject({ success: false, error: { code: "VALIDATION_ERROR" } });
   });
 
-  test("opens the new full-height assistant UI and sends a suggested question", async ({ page }) => {
+  test("uses PDF download and hands-free voice mode in the assistant UI", async ({ page }) => {
+    await page.addInitScript(() => {
+      const voiceTest = { spokenTexts: [] as string[] };
+      (window as any).__assistantVoiceTest = voiceTest;
+      let recognitionStarts = 0;
+
+      class MockSpeechRecognition {
+        continuous = false;
+        interimResults = false;
+        lang = "";
+        onstart: (() => void) | null = null;
+        onresult: ((event: any) => void) | null = null;
+        onerror: ((event: any) => void) | null = null;
+        onend: (() => void) | null = null;
+
+        start() {
+          recognitionStarts += 1;
+          this.onstart?.();
+          if (recognitionStarts !== 1) return;
+          setTimeout(() => {
+            const result = Object.assign([{ transcript: "What is my leave balance?" }], { isFinal: true });
+            this.onresult?.({ results: [result] });
+          }, 0);
+        }
+
+        stop() {
+          setTimeout(() => this.onend?.(), 0);
+        }
+
+        abort() {
+          this.onend = null;
+        }
+      }
+
+      class MockSpeechSynthesisUtterance {
+        lang = "";
+        rate = 1;
+        pitch = 1;
+        voice: SpeechSynthesisVoice | null = null;
+        onend: (() => void) | null = null;
+        onerror: ((event: { error: string }) => void) | null = null;
+
+        constructor(public text: string) {}
+      }
+
+      Object.defineProperty(window, "webkitSpeechRecognition", { configurable: true, value: MockSpeechRecognition });
+      Object.defineProperty(window, "SpeechSynthesisUtterance", { configurable: true, value: MockSpeechSynthesisUtterance });
+      Object.defineProperty(window, "speechSynthesis", {
+        configurable: true,
+        value: {
+          cancel() {},
+          getVoices() { return []; },
+          speak(utterance: MockSpeechSynthesisUtterance) {
+            voiceTest.spokenTexts.push(utterance.text);
+            setTimeout(() => utterance.onend?.(), 0);
+          },
+        },
+      });
+    });
     await page.goto(`${FRONTEND}/login`);
     await page.fill('input[name="email"]', EMAIL);
     await page.fill('input[name="password"]', PASSWORD);
@@ -95,8 +153,14 @@ test.describe("AI assistant API", () => {
     expect(download.suggestedFilename()).toMatch(/^empcloud-what-is-my-leave-balance-\d{4}-\d{2}-\d{2}\.pdf$/);
     await page.getByRole("button", { name: "New chat" }).first().click();
     await expect(page.getByText("How can I help?")).toBeVisible();
-    await page.getByRole("button", { name: "What is my leave balance?" }).click();
+    await page.getByRole("button", { name: "Start voice mode" }).click();
+    await expect(page.getByText("What is my leave balance?", { exact: true }).last()).toBeVisible();
     await expect(page.getByText("You have 12 days of leave available.")).toBeVisible();
+    await expect.poll(() => page.evaluate(() => (window as any).__assistantVoiceTest.spokenTexts.join(" ")))
+      .toContain("You have 12 days of leave available.");
+    await expect(page.getByRole("button", { name: "Stop voice mode" })).toBeVisible();
+    await page.getByRole("button", { name: "Stop voice mode" }).click();
+    await expect(page.getByRole("button", { name: "Start voice mode" })).toBeVisible();
     await expect(page.getByLabel("Message HR Assistant")).toBeVisible();
   });
 });
