@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { ASSISTANT_TOOL_NAMES, openAITools } from "../services/assistant/tools.js";
+import {
+  ASSISTANT_TOOL_NAMES,
+  filterBalancesByApplicableLeaveTypes,
+  openAITools,
+} from "../services/assistant/tools.js";
 
 const EXPECTED = [
   "search_employees", "count_employees", "get_attendance", "get_leave_balance",
@@ -60,5 +64,16 @@ describe("assistant tool registry", () => {
         properties: { direct_reports_only: { type: "boolean" } },
       });
     }
+  });
+
+  it("removes gender-restricted leave balances that are not applicable to the employee", () => {
+    const balances = [
+      { leave_type_id: 1, leave_type_code: "EL", balance: 4 },
+      { leave_type_id: 2, leave_type_code: "ML", balance: 11 },
+      { leave_type_id: 3, leave_type_code: "PL", balance: 5 },
+    ];
+
+    expect(filterBalancesByApplicableLeaveTypes(balances, [{ id: 1 }, { id: 3 }]))
+      .toEqual([balances[0], balances[2]]);
   });
 });

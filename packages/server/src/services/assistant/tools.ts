@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { getDB } from "../../db/connection.js";
 import { getBalances } from "../leave/leave-balance.service.js";
+import { listLeaveTypesForUser } from "../leave/leave-type.service.js";
 import { getSchedule } from "../attendance/shift.service.js";
 import { ValidationError } from "../../utils/errors.js";
 import {
@@ -33,6 +34,13 @@ const objectSchema = (properties: JsonSchema, required: string[] = []): JsonSche
   type: "object", properties, required, additionalProperties: false,
 });
 const tool = (value: AssistantTool) => value;
+
+export function filterBalancesByApplicableLeaveTypes<
+  TBalance extends { leave_type_id: number | string },
+>(balances: TBalance[], applicableLeaveTypes: Array<{ id: number | string }>): TBalance[] {
+  const applicableIds = new Set(applicableLeaveTypes.map((leaveType) => Number(leaveType.id)));
+  return balances.filter((balance) => applicableIds.has(Number(balance.leave_type_id)));
+}
 
 function rangeFromDays(days: number) {
   const end = new Date();
@@ -205,7 +213,14 @@ const tools: AssistantTool[] = [
     execute: async (ctx, args) => {
       const employeeId = args.employee_id || ctx.userId;
       await assertTargetAccess(ctx, employeeId, "leave:view", "leave:view_team", "leave:view_all");
-      return { employee_id: employeeId, balances: await getBalances(ctx.orgId, employeeId, args.fiscal_year) };
+      const [balances, applicableLeaveTypes] = await Promise.all([
+        getBalances(ctx.orgId, employeeId, args.fiscal_year),
+        listLeaveTypesForUser(ctx.orgId, employeeId),
+      ]);
+      return {
+        employee_id: employeeId,
+        balances: filterBalancesByApplicableLeaveTypes(balances, applicableLeaveTypes),
+      };
     },
   }),
   tool({
