@@ -213,6 +213,8 @@ ASSISTANT_PROVIDER_MAX_RETRIES=2
 ASSISTANT_PROVIDER_RETRY_BASE_MS=500
 ASSISTANT_MODULE_MAX_RETRIES=2
 ASSISTANT_MODULE_RETRY_BASE_MS=300
+# Disabled by default. Enable temporarily to include complete tool JSON in diagnostic logs.
+ASSISTANT_LOG_TOOL_RESPONSES=false
 
 PAYROLL_MODULE_URL=http://localhost:4000
 MONITOR_MODULE_URL=http://localhost:5000
@@ -222,6 +224,8 @@ INTERNAL_SERVICE_SECRET=
 Assistant-specific OpenAI settings fall back to their global OpenAI equivalents. The direct Gemini proxy is detected when `ASSISTANT_MODEL` starts with `gemini` and `ASSISTANT_OPENAI_BASE_URL` ends in `/nx/direct`. Set `ASSISTANT_USE_LEGACY_MAX_TOKENS=true` only for OpenAI-compatible providers that require `max_tokens`; it is ignored by the native Gemini client.
 
 EMP Cloud sends `x-internal-service` and `x-internal-secret` to Payroll and Monitor. The same non-empty `INTERNAL_SERVICE_SECRET` must be configured in all three running services. Restart each process after environment changes.
+
+Every tool call writes an `Assistant tool result` structured log containing its outcome, safe date/scope arguments, response field names, collection sizes, and the exact tool error when one occurs. Successful HR payload values are excluded by default. For short-lived debugging in a controlled environment, set `ASSISTANT_LOG_TOOL_RESPONSES=true` to include the complete tool JSON; disable it again after diagnosis because those payloads can contain employee, attendance, monitoring, or payroll data.
 
 For EmpMonitor, internal API health also depends on working `MYSQL_*` settings in the Admin service. A MySQL 500/503 is a Monitor database configuration problem, not assistant-user authentication.
 

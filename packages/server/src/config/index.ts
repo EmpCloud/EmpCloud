@@ -184,6 +184,7 @@ export const config = {
     providerRetryBaseMs: Math.max(envInt("ASSISTANT_PROVIDER_RETRY_BASE_MS", 500), 100),
     moduleMaxRetries: Math.min(Math.max(envInt("ASSISTANT_MODULE_MAX_RETRIES", 2), 0), 5),
     moduleRetryBaseMs: Math.max(envInt("ASSISTANT_MODULE_RETRY_BASE_MS", 300), 100),
+    logToolResponses: env("ASSISTANT_LOG_TOOL_RESPONSES", "false") === "true",
     payrollUrl: env("PAYROLL_MODULE_URL", "http://localhost:4000"),
     monitorUrl: env("MONITOR_MODULE_URL", "http://localhost:5000"),
     internalServiceSecret: process.env.INTERNAL_SERVICE_SECRET || "",
