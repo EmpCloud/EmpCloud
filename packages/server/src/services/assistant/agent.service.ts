@@ -47,6 +47,11 @@ Use short headings and bullet lists for summaries. Use a Markdown table only for
 Format currency with its symbol/code, dates in a human-readable form, durations with units, and percentages consistently. Omit database IDs, null fields, empty columns, and implementation details unless the user explicitly asks for them.
 Do not repeat the same facts in both a table and a summary. Keep answers direct and concise.`;
 
+function systemPrompt(currentDate: string): string {
+  return `${SYSTEM_PROMPT}
+The authoritative current server date is ${currentDate} (UTC). Ignore dates from model training or memory. Interpret requests for the current month as month-to-date, ending on ${currentDate}; never send a future end_date to an EmpMonitor tool. For relative periods such as "last 7 days", prefer the tool's days parameter and trust the date range returned by the tool.`;
+}
+
 const LIVE_DATA_INTENT = /\b(employee|headcount|attendance|leave|shift|salary|payroll|pay\s*slip|payslip|net\s*pay|gross\s*pay|deduction|productivity|application|website|timesheet|keystroke|ai\s+(?:tool\s+)?usage)\b/i;
 
 function missingComparisonTools(message: string, toolsUsed: string[]): string[] {
@@ -61,6 +66,7 @@ function missingComparisonTools(message: string, toolsUsed: string[]): string[] 
   if (/\b(?:payroll|pay\s*slip|payslip|net\s*pay|gross\s*pay)\b/i.test(message)
     && !toolsUsed.some((name) => ["get_net_pay", "get_salary_structure", "get_payroll_run_totals"].includes(name))) missing.push("a Payroll tool");
   if (/\bproductivity\b/i.test(message) && !toolsUsed.includes("get_productivity_summary")) missing.push("get_productivity_summary");
+  if (/\btimesheets?\b/i.test(message) && !toolsUsed.includes("get_timesheet_details")) missing.push("get_timesheet_details");
   return missing;
 }
 
@@ -427,7 +433,7 @@ export async function runAssistantAgent(
       : client.chat.completions.create(request);
   }
   const messages: any[] = [
-    { role: "system", content: SYSTEM_PROMPT },
+    { role: "system", content: systemPrompt(new Date().toISOString().slice(0, 10)) },
     ...history.slice(-20),
     { role: "user", content: message },
   ];

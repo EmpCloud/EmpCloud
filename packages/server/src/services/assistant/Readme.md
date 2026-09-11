@@ -183,8 +183,10 @@ Migration `099_ai_assistant.ts` creates the conversation tables and seeds `assis
 ## Agent behavior and safeguards
 
 - Live-data questions must use tools rather than unsupported prose.
+- The current UTC server date is injected into every agent request. Current-month Monitor questions are interpreted month-to-date, and relative ranges use server-derived dates rather than model memory.
 - Employee names are resolved through `search_employees`; users are not asked for internal IDs.
 - Multi-domain comparisons must call every requested domain tool.
+- Timesheet questions must call `get_timesheet_details`; resolving an employee alone is not considered a complete lookup.
 - Pending leave and regularization questions require their exact workflow tools; balances or raw attendance are not substitutes.
 - Payroll answers must include the requested period and currency.
 - Returned earnings and deductions must be used when explaining a payslip.
