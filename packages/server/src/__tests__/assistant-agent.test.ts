@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
   constructor: vi.fn(),
   geminiGenerate: vi.fn(),
   geminiConstructor: vi.fn(),
+  loggerInfo: vi.fn(),
 }));
 
 vi.mock("openai", () => ({
@@ -33,6 +34,10 @@ vi.mock("../services/assistant/tools.js", () => ({
   executeAssistantTool: mocks.execute,
 }));
 
+vi.mock("../utils/logger.js", () => ({
+  logger: { info: mocks.loggerInfo, warn: vi.fn() },
+}));
+
 import { runAssistantAgent } from "../services/assistant/agent.service.js";
 
 describe("assistant Chat Completions loop", () => {
@@ -42,6 +47,7 @@ describe("assistant Chat Completions loop", () => {
     mocks.constructor.mockReset();
     mocks.geminiGenerate.mockReset();
     mocks.geminiConstructor.mockReset();
+    mocks.loggerInfo.mockReset();
     config.assistant.openaiApiKey = "test-key";
     config.assistant.geminiApiKey = "";
     config.assistant.openaiBaseUrl = "";
@@ -52,6 +58,7 @@ describe("assistant Chat Completions loop", () => {
     config.assistant.providerMaxRetries = 2;
     config.assistant.providerRetryBaseMs = 100;
     config.assistant.maxToolRounds = 8;
+    config.assistant.logToolResponses = false;
   });
 
   it("executes a function call and feeds its result into the next completion", async () => {
@@ -315,5 +322,32 @@ describe("assistant Chat Completions loop", () => {
     expect(deltas.join("")).toBe(result.answer);
     expect(result.answer).toBe("Streaming works without exposing system instructions.");
     expect(mocks.create).toHaveBeenCalledTimes(1);
+  });
+
+  it("logs safe tool-result diagnostics and the exact validation error", async () => {
+    mocks.create
+      .mockResolvedValueOnce({ choices: [{ message: { role: "assistant", content: null, tool_calls: [{ id: "timesheet", type: "function", function: { name: "get_timesheet_details", arguments: '{"employee_id":42,"scope":"own","start_date":"2026-09-01","end_date":"2026-09-30"}' } }] } }] })
+      .mockResolvedValueOnce({ choices: [{ message: { role: "assistant", content: "The requested range includes future dates." } }] });
+    mocks.execute.mockResolvedValue('{"error":"EmpMonitor queries must fall within the last 165 days and cannot include future dates"}');
+
+    await runAssistantAgent(
+      { orgId: 7, userId: 9, role: "org_admin", permissions: new Set(["assistant:use", "monitor:view_all"]) },
+      "Get Karan's timesheet for September 2026",
+      [],
+    );
+
+    expect(mocks.loggerInfo).toHaveBeenCalledWith("Assistant tool result", expect.objectContaining({
+      tool: "get_timesheet_details",
+      cache_hit: false,
+      outcome: "error",
+      safe_args: {
+        scope: "own",
+        start_date: "2026-09-01",
+        end_date: "2026-09-30",
+      },
+      error: "EmpMonitor queries must fall within the last 165 days and cannot include future dates",
+    }));
+    const resultLog = mocks.loggerInfo.mock.calls.find(([loggedMessage]) => loggedMessage === "Assistant tool result")?.[1];
+    expect(resultLog).not.toHaveProperty("response");
   });
 });

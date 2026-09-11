@@ -340,6 +340,45 @@ const TOOL_STATUS: Record<string, string> = {
   get_productivity_summary: "Fetching productivity data…",
 };
 
+const SAFE_TOOL_ARGUMENT_KEYS = new Set([
+  "scope",
+  "start_date",
+  "end_date",
+  "days",
+  "month",
+  "year",
+  "direct_reports_only",
+  "limit",
+]);
+
+function toolResultLogMeta(content: string, args: unknown) {
+  let response: unknown = content;
+  try { response = JSON.parse(content); } catch { /* retain non-JSON output for diagnostics */ }
+
+  const safeArgs = typeof args === "object" && args !== null && !Array.isArray(args)
+    ? Object.fromEntries(Object.entries(args).filter(([key]) => SAFE_TOOL_ARGUMENT_KEYS.has(key)))
+    : {};
+  const responseObject = typeof response === "object" && response !== null && !Array.isArray(response)
+    ? response as Record<string, unknown>
+    : undefined;
+  const error = typeof responseObject?.error === "string" ? responseObject.error : undefined;
+  const collectionSizes = responseObject
+    ? Object.fromEntries(Object.entries(responseObject)
+      .filter(([, value]) => Array.isArray(value))
+      .map(([key, value]) => [key, (value as unknown[]).length]))
+    : {};
+
+  return {
+    outcome: error ? "error" : "success",
+    safe_args: safeArgs,
+    response_chars: content.length,
+    response_fields: responseObject ? Object.keys(responseObject) : [],
+    collection_sizes: collectionSizes,
+    ...(error ? { error } : {}),
+    ...(config.assistant.logToolResponses ? { response } : {}),
+  };
+}
+
 async function emitApprovedDraft(draft: string, options: AssistantAgentOptions): Promise<string> {
   if (!options.onDelta) return draft;
   for (let offset = 0; offset < draft.length; offset += 72) {
@@ -468,10 +507,19 @@ export async function runAssistantAgent(
       options.onStatus?.({ tool: name, message: TOOL_STATUS[name] || "Checking live HR data…" });
       const cacheKey = `${name}:${JSON.stringify(args)}`;
       let content = toolResultCache.get(cacheKey);
+      const cacheHit = content !== undefined;
       if (content === undefined) {
         content = await executeAssistantTool(ctx, name, args);
         toolResultCache.set(cacheKey, content);
       }
+      logger.info("Assistant tool result", {
+        tool: name,
+        org_id: ctx.orgId,
+        user_id: ctx.userId,
+        round: round + 1,
+        cache_hit: cacheHit,
+        ...toolResultLogMeta(content, args),
+      });
       if (name === "get_net_pay") {
         try {
           const parsed = JSON.parse(content) as { deduction_breakdown_available?: boolean; deduction_breakdown?: unknown[]; deductions?: unknown[] };
