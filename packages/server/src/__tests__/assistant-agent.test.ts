@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { config } from "../config/index.js";
 
 const mocks = vi.hoisted(() => ({
@@ -41,6 +41,10 @@ vi.mock("../utils/logger.js", () => ({
 import { runAssistantAgent } from "../services/assistant/agent.service.js";
 
 describe("assistant Chat Completions loop", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   beforeEach(() => {
     mocks.create.mockReset();
     mocks.execute.mockReset();
@@ -349,5 +353,39 @@ describe("assistant Chat Completions loop", () => {
     }));
     const resultLog = mocks.loggerInfo.mock.calls.find(([loggedMessage]) => loggedMessage === "Assistant tool result")?.[1];
     expect(resultLog).not.toHaveProperty("response");
+  });
+
+  it("requires a current-month timesheet lookup after resolving the employee", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-09-10T12:00:00Z"));
+    mocks.create
+      .mockResolvedValueOnce({ choices: [{ message: { role: "assistant", content: null, tool_calls: [{ id: "search", type: "function", function: { name: "search_employees", arguments: '{"query":"Karan Tiwari"}' } }] } }] })
+      .mockResolvedValueOnce({ choices: [{ message: { role: "assistant", content: "EmpMonitor timesheets cannot be retrieved because I assume today is November 19, 2023." } }] })
+      .mockResolvedValueOnce({ choices: [{ message: { role: "assistant", content: null, tool_calls: [{ id: "timesheet", type: "function", function: { name: "get_timesheet_details", arguments: '{"employee_id":323,"scope":"own","start_date":"2026-09-01","end_date":"2026-09-10"}' } }] } }] })
+      .mockResolvedValueOnce({ choices: [{ message: { role: "assistant", content: "Karan has 72 tracked hours for September 1–10, 2026." } }] });
+    mocks.execute
+      .mockResolvedValueOnce('{"employees":[{"employee_id":323,"first_name":"Karan","last_name":"Tiwari"}],"count":1}')
+      .mockResolvedValueOnce('{"start_date":"2026-09-01","end_date":"2026-09-10","tracked_minutes":4320}');
+
+    const result = await runAssistantAgent(
+      { orgId: 1, userId: 1, role: "org_admin", permissions: new Set(["assistant:use", "monitor:view_all"]) },
+      "Get timesheet of Karan Tiwari for September 2026",
+      [],
+    );
+
+    expect(result.toolsUsed).toEqual(["search_employees", "get_timesheet_details"]);
+    expect(result.answer).toContain("September 1–10, 2026");
+    expect(mocks.create).toHaveBeenCalledTimes(4);
+    expect(mocks.create.mock.calls[0][0].messages[0].content).toContain("2026-09-10");
+    expect(mocks.create.mock.calls[2][0].messages).toContainEqual(expect.objectContaining({
+      role: "system",
+      content: expect.stringContaining("get_timesheet_details"),
+    }));
+    expect(mocks.execute).toHaveBeenLastCalledWith(expect.anything(), "get_timesheet_details", {
+      employee_id: 323,
+      scope: "own",
+      start_date: "2026-09-01",
+      end_date: "2026-09-10",
+    });
   });
 });
