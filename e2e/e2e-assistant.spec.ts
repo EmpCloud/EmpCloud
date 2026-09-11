@@ -89,6 +89,10 @@ test.describe("AI assistant API", () => {
     await page.getByRole("button", { name: "Cancel" }).click();
     await page.getByText("Leave balance", { exact: true }).click();
     await expect(page.getByText("You have 12 days available.")).toBeVisible();
+    const downloadPromise = page.waitForEvent("download");
+    await page.getByRole("button", { name: "Download response as PDF" }).click();
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toMatch(/^empcloud-what-is-my-leave-balance-\d{4}-\d{2}-\d{2}\.pdf$/);
     await page.getByRole("button", { name: "New chat" }).first().click();
     await expect(page.getByText("How can I help?")).toBeVisible();
     await page.getByRole("button", { name: "What is my leave balance?" }).click();

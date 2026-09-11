@@ -388,4 +388,37 @@ describe("assistant Chat Completions loop", () => {
       end_date: "2026-09-10",
     });
   });
+
+  it("routes employee login and logout time questions to EmpCloud attendance", async () => {
+    mocks.create
+      .mockResolvedValueOnce({ choices: [{ message: { role: "assistant", content: null, tool_calls: [{ id: "search", type: "function", function: { name: "search_employees", arguments: '{"query":"Rajendra Pal"}' } }] } }] })
+      .mockResolvedValueOnce({ choices: [{ message: { role: "assistant", content: "I couldn't find any employee named Rajendra Pal." } }] })
+      .mockResolvedValueOnce({ choices: [{ message: { role: "assistant", content: null, tool_calls: [{ id: "broader-search", type: "function", function: { name: "search_employees", arguments: '{"query":"Rajendra"}' } }] } }] })
+      .mockResolvedValueOnce({ choices: [{ message: { role: "assistant", content: "Rajendra was found, but I could not retrieve login and logout times." } }] })
+      .mockResolvedValueOnce({ choices: [{ message: { role: "assistant", content: null, tool_calls: [{ id: "attendance", type: "function", function: { name: "get_attendance", arguments: '{"employee_id":411,"start_date":"2026-09-01","end_date":"2026-09-10"}' } }] } }] })
+      .mockResolvedValueOnce({ choices: [{ message: { role: "assistant", content: "Rajendra's EmpCloud attendance includes the requested check-in and check-out times." } }] });
+    mocks.execute
+      .mockResolvedValueOnce('{"employees":[],"count":0}')
+      .mockResolvedValueOnce('{"employees":[{"employee_id":411,"first_name":"Rajendra","last_name":"Pal"}],"count":1}')
+      .mockResolvedValueOnce('{"records":[{"date":"2026-09-10","check_in":"09:15:00","check_out":"18:10:00"}]}');
+
+    const result = await runAssistantAgent(
+      { orgId: 1, userId: 1, role: "org_admin", permissions: new Set(["assistant:use", "attendance:view_all"]) },
+      "Login and log out time of Rajendra Pal from Sep 1 to 10 Sept 2026",
+      [],
+    );
+
+    expect(result.toolsUsed).toEqual(["search_employees", "get_attendance"]);
+    expect(result.answer).toContain("EmpCloud attendance");
+    expect(mocks.create).toHaveBeenCalledTimes(6);
+    expect(mocks.create.mock.calls[2][0].messages).toContainEqual(expect.objectContaining({
+      role: "system",
+      content: expect.stringContaining("distinctive individual name token"),
+    }));
+    expect(mocks.execute).toHaveBeenLastCalledWith(expect.anything(), "get_attendance", {
+      employee_id: 411,
+      start_date: "2026-09-01",
+      end_date: "2026-09-10",
+    });
+  });
 });

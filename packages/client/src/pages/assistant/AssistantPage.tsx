@@ -1,5 +1,5 @@
 import { FormEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
-import { Bot, LoaderCircle, Menu, MessageSquare, Pencil, Plus, Send, Sparkles, Square, Trash2, User, X } from "lucide-react";
+import { Bot, Download, LoaderCircle, Menu, MessageSquare, Pencil, Plus, Send, Sparkles, Square, Trash2, User, X } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import * as Dialog from "@radix-ui/react-dialog";
@@ -93,6 +93,7 @@ export default function AssistantPage() {
   const [deleteTarget, setDeleteTarget] = useState<Conversation>();
   const [isRenaming, setIsRenaming] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [exportingMessageId, setExportingMessageId] = useState<string>();
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const streamAbortRef = useRef<AbortController | null>(null);
@@ -283,6 +284,22 @@ export default function AssistantPage() {
     }
   }
 
+  async function downloadMessageAsPdf(message: ChatMessage, messageIndex: number) {
+    if (exportingMessageId) return;
+    const question = messages.slice(0, messageIndex).reverse().find((item) => item.role === "user")?.content
+      || "EmpCloud HR Assistant report";
+    setExportingMessageId(message.id);
+    setError(undefined);
+    try {
+      const { downloadAssistantReport } = await import("./assistant-report");
+      await downloadAssistantReport({ question, answer: message.content });
+    } catch {
+      setError("Unable to create the PDF report. Please try again.");
+    } finally {
+      setExportingMessageId(undefined);
+    }
+  }
+
   return (
     <section className="-m-4 flex h-[calc(100vh-4rem)] flex-col overflow-hidden bg-background md:-m-8">
       <header className="flex items-center gap-3 border-b bg-card px-4 py-3 md:px-6">
@@ -369,7 +386,7 @@ export default function AssistantPage() {
             </div>
           ) : (
             <div className="space-y-6" aria-live="polite">
-              {messages.map((message) => (
+              {messages.map((message, messageIndex) => (
                 <div
                   key={message.id}
                   className={`flex gap-3 ${message.role === "user" ? "justify-end" : "justify-start"}`}
@@ -391,6 +408,22 @@ export default function AssistantPage() {
                         <div>
                           <AssistantAnswer>{message.content}</AssistantAnswer>
                           {streamingMessageId === message.id && <span className="ml-0.5 inline-block h-4 w-0.5 animate-pulse bg-brand-500 align-middle" aria-hidden="true" />}
+                          {streamingMessageId !== message.id && (
+                            <div className="mt-3 border-t border-border/70 pt-2">
+                              <button
+                                type="button"
+                                onClick={() => void downloadMessageAsPdf(message, messageIndex)}
+                                disabled={Boolean(exportingMessageId)}
+                                className="inline-flex min-h-9 items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium text-brand-700 transition-colors hover:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-wait disabled:opacity-60 dark:text-brand-300 dark:hover:bg-brand-950/40"
+                                aria-label="Download response as PDF"
+                              >
+                                {exportingMessageId === message.id
+                                  ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+                                  : <Download className="h-3.5 w-3.5" aria-hidden="true" />}
+                                {exportingMessageId === message.id ? "Creating PDF…" : "Download PDF"}
+                              </button>
+                            </div>
+                          )}
                         </div>
                       ) : (
                         <span className="flex items-center gap-2 text-muted-foreground">

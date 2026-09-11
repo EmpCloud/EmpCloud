@@ -32,7 +32,8 @@ const SYSTEM_PROMPT = `You are EMP Assistant, a read-only HR data assistant.
 Use tools for every factual claim about employees, attendance, leave, shifts, salary, payroll, productivity, applications, websites, timesheets, keystrokes, or AI usage.
 For pending leave-request questions, call get_pending_leave_requests. For pending attendance-regularization questions, call get_pending_attendance_regularizations. These read-only workflow tools exist; never claim they are unavailable or substitute leave balances/attendance records as proxies.
 Never guess a number or employee identity. Resolve names with search_employees before employee-specific tools.
-If multiple employees match, ask the user to clarify. Never disclose data returned as an error or outside the caller's authorization.
+If a full-name search returns no matches, retry once with the most distinctive individual name token. If multiple employees match, ask the user to clarify. Never disclose data returned as an error or outside the caller's authorization.
+Treat login/logout, log-in/log-out, check-in/check-out, clock-in/clock-out, and punch-in/punch-out time questions as EMP Cloud attendance requests. Resolve the employee, then call get_attendance; do not substitute EmpMonitor timesheets.
 For payroll, salary, or net-pay questions, always call the relevant Payroll tool for the requested employee and period. Never claim payroll data is unavailable merely because it was not present in conversation history.
 When explaining a payslip, use the earnings and deductions arrays returned by get_net_pay. Explain each available line item and reconcile it to the returned totals; do not direct the user to another portal when the tool returned a breakdown.
 If get_net_pay returns deduction_breakdown_available=true, you must list deduction_breakdown and must not say that only aggregate totals are available.
@@ -53,6 +54,11 @@ The authoritative current server date is ${currentDate} (UTC). Ignore dates from
 }
 
 const LIVE_DATA_INTENT = /\b(employee|headcount|attendance|leave|shift|salary|payroll|pay\s*slip|payslip|net\s*pay|gross\s*pay|deduction|productivity|application|website|timesheet|keystroke|ai\s+(?:tool\s+)?usage)\b/i;
+const ATTENDANCE_TIME_INTENT = /\b(?:log\s*in|login)[^\n]{0,30}\b(?:log\s*out|logout)\b|\b(?:check|clock|punch)[-\s]?(?:in|out)\b/i;
+
+function hasAttendanceIntent(message: string): boolean {
+  return /\battendance\b/i.test(message) || ATTENDANCE_TIME_INTENT.test(message);
+}
 
 function missingComparisonTools(message: string, toolsUsed: string[]): string[] {
   const missing: string[] = [];
@@ -62,7 +68,7 @@ function missingComparisonTools(message: string, toolsUsed: string[]): string[] 
     && !toolsUsed.includes("get_pending_leave_requests")) missing.push("get_pending_leave_requests");
   if (pendingRegularizationIntent
     && !toolsUsed.includes("get_pending_attendance_regularizations")) missing.push("get_pending_attendance_regularizations");
-  if (/\battendance\b/i.test(message) && !pendingRegularizationIntent && !toolsUsed.includes("get_attendance")) missing.push("get_attendance");
+  if (hasAttendanceIntent(message) && !pendingRegularizationIntent && !toolsUsed.includes("get_attendance")) missing.push("get_attendance");
   if (/\b(?:payroll|pay\s*slip|payslip|net\s*pay|gross\s*pay)\b/i.test(message)
     && !toolsUsed.some((name) => ["get_net_pay", "get_salary_structure", "get_payroll_run_totals"].includes(name))) missing.push("a Payroll tool");
   if (/\bproductivity\b/i.test(message) && !toolsUsed.includes("get_productivity_summary")) missing.push("get_productivity_summary");
@@ -444,12 +450,16 @@ export async function runAssistantAgent(
   let requestedAttendanceCorrection = false;
   let requestedDeductionCorrection = false;
   let requestedPendingToolCorrection = false;
+  let requestedBroaderEmployeeSearch = false;
+  const employeeSearch: {
+    state: "not-searched" | "none" | "unique" | "ambiguous";
+  } = { state: "not-searched" };
 
   for (let round = 0; round < config.assistant.maxToolRounds; round++) {
     const tokenLimit = config.assistant.useLegacyMaxTokens
       ? { max_tokens: config.assistant.maxTokens }
       : { max_completion_tokens: config.assistant.maxTokens };
-    const mustUseLiveDataTool = round === 0 && LIVE_DATA_INTENT.test(message);
+    const mustUseLiveDataTool = round === 0 && (LIVE_DATA_INTENT.test(message) || ATTENDANCE_TIME_INTENT.test(message));
     const completion = await createCompletionWithRetry(createCompletion, {
       model: config.assistant.model,
       messages,
@@ -463,6 +473,20 @@ export async function runAssistantAgent(
     if (!assistant.tool_calls?.length) {
       const answer = assistant.content?.trim();
       if (!answer) throw new AppError("OpenAI returned an empty answer", 502, "ASSISTANT_EMPTY_RESPONSE");
+      if (employeeSearch.state === "none") {
+        if (!requestedBroaderEmployeeSearch) {
+          requestedBroaderEmployeeSearch = true;
+          messages.push({
+            role: "system",
+            content: "The exact employee-name search returned no matches. Retry search_employees once with the most distinctive individual name token from the user's request. Do not call an employee-specific data tool without resolving a unique employee.",
+          });
+          continue;
+        }
+        return { answer: await emitApprovedDraft(answer, options), toolsUsed: [...new Set(toolsUsed)] };
+      }
+      if (employeeSearch.state === "ambiguous") {
+        return { answer: await emitApprovedDraft(answer, options), toolsUsed: [...new Set(toolsUsed)] };
+      }
       const missingTools = missingComparisonTools(message, toolsUsed);
       if (missingTools.length > 0 && !requestedMissingComparisonTools) {
         requestedMissingComparisonTools = true;
@@ -526,6 +550,16 @@ export async function runAssistantAgent(
         cache_hit: cacheHit,
         ...toolResultLogMeta(content, args),
       });
+      if (name === "search_employees") {
+        try {
+          const parsed = JSON.parse(content) as { employees?: unknown[] };
+          if (Array.isArray(parsed.employees)) {
+            employeeSearch.state = parsed.employees.length === 0
+              ? "none"
+              : parsed.employees.length === 1 ? "unique" : "ambiguous";
+          }
+        } catch { /* malformed tool output remains available to the model */ }
+      }
       if (name === "get_net_pay") {
         try {
           const parsed = JSON.parse(content) as { deduction_breakdown_available?: boolean; deduction_breakdown?: unknown[]; deductions?: unknown[] };

@@ -60,7 +60,7 @@ The model never chooses or supplies `organization_id`. EMP Cloud injects it from
 
 ## API and UI
 
-The new UI is available at `/assistant`. The floating EmpAI launcher opens this route. The sidebar lists only the new HR Assistant; the legacy `/chatbot` route remains available but is intentionally not shown in navigation. Conversation rename uses an accessible in-app form modal, and deletion uses the shared danger confirmation dialog; browser-native prompt/confirm dialogs are not used.
+The new UI is available at `/assistant`. The floating EmpAI launcher opens this route. The sidebar lists only the new HR Assistant; the legacy `/chatbot` route remains available but is intentionally not shown in navigation. Conversation rename uses an accessible in-app form modal, and deletion uses the shared danger confirmation dialog; browser-native prompt/confirm dialogs are not used. Every completed assistant answer includes a `Download PDF` action that creates a branded, paginated EmpCloud report in the browser. The PDF generator and its dependency are loaded only when the action is used.
 
 ### Buffered message API
 
@@ -185,8 +185,11 @@ Migration `099_ai_assistant.ts` creates the conversation tables and seeds `assis
 - Live-data questions must use tools rather than unsupported prose.
 - The current UTC server date is injected into every agent request. Current-month Monitor questions are interpreted month-to-date, and relative ranges use server-derived dates rather than model memory.
 - Employee names are resolved through `search_employees`; users are not asked for internal IDs.
+- A zero-result full-name lookup is retried once with a broader individual name token. Multiple or still-unresolved matches require clarification; the assistant never guesses an employee.
 - Multi-domain comparisons must call every requested domain tool.
 - Timesheet questions must call `get_timesheet_details`; resolving an employee alone is not considered a complete lookup.
+- Login/logout, check-in/check-out, clock-in/clock-out, and punch-in/punch-out questions use EMP Cloud `get_attendance`, not EmpMonitor timesheets.
+- Leave balances are filtered through the target employee's gender-applicable leave types before they are returned to the model.
 - Pending leave and regularization questions require their exact workflow tools; balances or raw attendance are not substitutes.
 - Payroll answers must include the requested period and currency.
 - Returned earnings and deductions must be used when explaining a payslip.
