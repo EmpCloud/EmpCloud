@@ -11,7 +11,7 @@
    Values are HSL channels (no hsl() wrapper) so Tailwind can apply opacity.
 --------------------------------------------------------------------------- */
 :root {
-  --background: 210 20% 98%;        /* gray-50 — app canvas */
+  --background: 214 100% 98%;       /* cool blue-white — EMP Cloud canvas */
   --foreground: 222 47% 11%;        /* gray-900 — primary text */
   --card: 0 0% 100%;                /* white — surfaces/cards */
   --card-foreground: 222 47% 11%;
@@ -207,6 +207,38 @@
 }
 
 @layer components {
+  /* Compact sidebar scrollbar: a slim brand-blue thumb without a heavy track.
+     The WebKit width stays exact in Chrome/Edge; Firefox uses its thin preset. */
+  @supports (-moz-appearance: none) {
+    .sidebar-scrollbar {
+      scrollbar-width: thin;
+      scrollbar-color: hsl(var(--ring) / 0.7) transparent;
+    }
+  }
+
+  .sidebar-scrollbar::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  .sidebar-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .sidebar-scrollbar::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--ring) / 0.7);
+    border-radius: 9999px;
+  }
+
+  .sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--ring) / 0.95);
+  }
+
+  .sidebar-scrollbar::-webkit-scrollbar-button,
+  .sidebar-scrollbar::-webkit-scrollbar-corner {
+    display: none;
+  }
+
   /* Rich-text content — shared by the policy RichTextEditor's editable surface
      and the read-only display panels (dangerouslySetInnerHTML). Tailwind's
      preflight (@layer base) strips heading sizes and list markers, and the

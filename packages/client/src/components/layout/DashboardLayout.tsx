@@ -31,6 +31,7 @@ import { usePermissions } from "@/lib/use-permissions";
 import { useViewModeStore, hasAnyAdminPermission } from "@/lib/use-view-mode";
 import { ViewModeToggle } from "./ViewModeToggle";
 import { ThemeToggle } from "./ThemeToggle";
+import GlobalNavSearch from "./GlobalNavSearch";
 
 export default function DashboardLayout() {
   const { t } = useTranslation();
@@ -122,6 +123,14 @@ export default function DashboardLayout() {
     .filter((i): i is NavItem => i !== null)
     // Hide the Messages link when chat isn't enabled for this org.
     .filter((i) => chatEnabled || i.path !== "/messages");
+  const searchableNavItems: NavItem[] = user?.role === "super_admin"
+    ? platformAdminNavItems
+    : [
+        ...sidebarItems,
+        ...(isHR ? positionNavItems : []),
+        ...(hasBiometrics ? biometricsNavItems : []),
+        ...(isOrgAdmin ? orgAdminOnlyNavItems : []),
+      ];
 
   // Auto-close sidebar on navigation
   useEffect(() => {
@@ -150,15 +159,15 @@ export default function DashboardLayout() {
   // component.
   const renderSidebar = (isCollapsed: boolean) => (
     <div
-      className={`flex h-full flex-col bg-card border-r border-border transition-[width] duration-200 ${
-        isCollapsed ? "w-16 sidebar-collapsed" : "w-64"
+      className={`flex h-full flex-col overflow-x-hidden bg-card border-r border-border transition-[width] duration-200 ${
+        isCollapsed ? "w-16 sidebar-collapsed" : "w-[220px]"
       }`}
     >
       <Link
         to="/"
         title={isCollapsed ? "EMP Cloud" : undefined}
         className={`block border-b border-border hover:bg-background transition-colors ${
-          isCollapsed ? "p-2" : "px-4 py-4"
+          isCollapsed ? "p-2" : "px-3 py-2"
         }`}
       >
         {isCollapsed ? (
@@ -176,11 +185,11 @@ export default function DashboardLayout() {
           // Centered logo block — visually balanced inside the 256px sidebar
           // and the org name reads as a caption beneath, instead of a
           // misaligned left-hugging stack.
-          <div className="flex flex-col items-center gap-2">
+          <div className="flex flex-col items-center gap-0.5">
             <img
               src="/empcloud-logo.png"
               alt="EmpCloud"
-              className="h-10 w-auto max-w-full object-contain"
+              className="h-9 w-auto max-w-full object-contain"
             />
             <p className="text-xs text-muted-foreground truncate w-full text-center">
               {user?.org_name}
@@ -191,13 +200,19 @@ export default function DashboardLayout() {
 
       {/* Close button on mobile */}
       <button
+        type="button"
+        aria-label={t("dashboard.closeNavigation")}
         className="md:hidden absolute top-4 right-4 rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-muted-foreground"
         onClick={() => setSidebarOpen(false)}
       >
-        <X className="h-5 w-5" />
+        <X aria-hidden="true" className="h-5 w-5" />
       </button>
 
-      <nav ref={sidebarNavRef} className="flex-1 p-4 space-y-1 overflow-y-auto">
+      <nav
+        ref={sidebarNavRef}
+        aria-label={t("dashboard.mainNavigation", { defaultValue: "Main navigation" })}
+        className="sidebar-scrollbar flex-1 space-y-1 overflow-x-hidden overflow-y-auto p-3"
+      >
         {user?.role !== "super_admin" && <>
           <NavSection label="" items={sidebarItems} location={location} t={t} unreadByPath={unreadByPath} />
           {isHR && (
@@ -226,7 +241,7 @@ export default function DashboardLayout() {
         )}
       </nav>
 
-      <div className="p-4 border-t border-border">
+      <div className="border-t border-border p-3">
         {!isCollapsed && (
           <div className="flex items-center gap-3 mb-3">
             <EmployeeAvatar
@@ -264,6 +279,12 @@ export default function DashboardLayout() {
 
   return (
     <div className="flex h-screen bg-background">
+      <a
+        href="#main-content"
+        className="fixed start-4 top-3 z-[100] -translate-y-20 rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-transform focus:translate-y-0"
+      >
+        {t("dashboard.skipToContent")}
+      </a>
       {/* Desktop sidebar */}
       {/* #1575 — overflow-visible on the relative wrapper so the collapse
           chevron (which intentionally protrudes at -right-3) isn't clipped
@@ -279,9 +300,10 @@ export default function DashboardLayout() {
             both width states, far from any other clickable target, and
             matches the dominant convention (Slack, Linear, Notion). */}
         <button
+          type="button"
           onClick={() => setSidebarCollapsed((c) => !c)}
-          aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-          title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          aria-label={t(sidebarCollapsed ? "dashboard.expandSidebar" : "dashboard.collapseSidebar")}
+          title={t(sidebarCollapsed ? "dashboard.expandSidebar" : "dashboard.collapseSidebar")}
           className="sidebar-collapse-toggle hidden md:flex absolute top-1/2 -right-3 -translate-y-1/2 z-30 h-6 w-6 rounded-full bg-card border border-border text-muted-foreground hover:text-brand-600 hover:border-brand-300 shadow-sm items-center justify-center transition-colors"
         >
           {sidebarCollapsed ? (
@@ -295,7 +317,9 @@ export default function DashboardLayout() {
       {/* Mobile sidebar overlay with slide-in animation */}
       {sidebarOpen && (
         <div className="fixed inset-0 z-50 md:hidden">
-          <div
+          <button
+            type="button"
+            aria-label={t("dashboard.closeNavigation")}
             className="fixed inset-0 bg-black/50 transition-opacity duration-300"
             onClick={() => setSidebarOpen(false)}
           />
@@ -309,24 +333,28 @@ export default function DashboardLayout() {
       {/* Main content */}
       <div className="flex-1 overflow-hidden flex flex-col">
         {/* Top header bar */}
-        <div className="flex items-center justify-between px-4 md:px-8 py-3 border-b border-border bg-card shrink-0 relative z-20">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="rounded-lg p-2 text-muted-foreground hover:bg-muted md:hidden"
-          >
-            <Menu className="h-5 w-5" />
-          </button>
-          <div className="flex-1" />
-          <div className="flex items-center gap-3">
-            {showViewToggle && <ViewModeToggle />}
-            <ThemeToggle />
-            <LanguageSwitcher />
-            <NotificationDropdown />
+        <header className="relative z-20 min-h-11 shrink-0 border-b border-border bg-card px-4 py-1 md:px-5">
+          <div className="flex min-h-9 w-full items-center gap-3">
+            <button
+              type="button"
+              aria-label={t("dashboard.openNavigation")}
+              onClick={() => setSidebarOpen(true)}
+              className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 md:hidden"
+            >
+              <Menu aria-hidden="true" className="h-5 w-5" />
+            </button>
+            <GlobalNavSearch items={searchableNavItems} />
+            <div className="ms-auto flex items-center gap-2 md:gap-3">
+              {showViewToggle && <ViewModeToggle />}
+              <ThemeToggle />
+              <LanguageSwitcher />
+              <NotificationDropdown />
+            </div>
           </div>
-        </div>
-        <div className="flex-1 overflow-auto p-4 md:p-8 bg-background">
+        </header>
+        <main id="main-content" className="flex-1 overflow-auto bg-background p-4">
           <Outlet />
-        </div>
+        </main>
       </div>
 
       {/* Floating AI Chat Widget */}

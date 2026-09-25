@@ -11,11 +11,13 @@ import {
   ArrowRight,
   CheckCircle2,
   XCircle,
-  Pencil,
   LogIn,
   LogOut,
   Loader2,
   Lock,
+  UserRound,
+  MessageSquareText,
+  Sun,
 } from "lucide-react";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
@@ -27,16 +29,51 @@ import { richTextToPlainText } from "@/components/ui/RichTextEditor";
 import { CompanyFeedWidget } from "@/features/feed/widgets/CompanyFeedWidget";
 import { ProfileCompletionCard } from "./ProfileCompletionCard";
 
-function QuickLink({ to, icon: Icon, label }: { to: string; icon: any; label: string }) {
+const quickLinkTones = {
+  blue: {
+    card: "border-blue-100 bg-gradient-to-br from-blue-50/90 to-card dark:border-blue-900/60 dark:from-blue-950/30",
+    icon: "bg-blue-100 text-blue-600 dark:bg-blue-950 dark:text-blue-300",
+  },
+  violet: {
+    card: "border-violet-100 bg-gradient-to-br from-violet-50/90 to-card dark:border-violet-900/60 dark:from-violet-950/30",
+    icon: "bg-violet-100 text-violet-600 dark:bg-violet-950 dark:text-violet-300",
+  },
+  emerald: {
+    card: "border-emerald-100 bg-gradient-to-br from-emerald-50/90 to-card dark:border-emerald-900/60 dark:from-emerald-950/30",
+    icon: "bg-emerald-100 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-300",
+  },
+  orange: {
+    card: "border-orange-100 bg-gradient-to-br from-orange-50/90 to-card dark:border-orange-900/60 dark:from-orange-950/30",
+    icon: "bg-orange-100 text-orange-600 dark:bg-orange-950 dark:text-orange-300",
+  },
+} as const;
+
+function QuickLink({
+  to,
+  icon: Icon,
+  label,
+  description,
+  tone,
+}: {
+  to: string;
+  icon: any;
+  label: string;
+  description: string;
+  tone: keyof typeof quickLinkTones;
+}) {
+  const styles = quickLinkTones[tone];
   return (
     <Link
       to={to}
-      className="group flex items-center gap-2.5 px-3 py-2.5 bg-card border border-border rounded-md hover:border-brand-400 hover:bg-brand-50/40 dark:hover:bg-brand-950/20 transition-colors duration-150"
+      className={`group flex min-h-[74px] items-center gap-3 rounded-xl border px-3.5 py-3 shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${styles.card}`}
     >
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-brand-50 dark:bg-brand-950/40 text-brand-600 dark:text-brand-400 group-hover:bg-brand-100 dark:group-hover:bg-brand-900/50 transition-colors">
-        <Icon className="h-4 w-4" />
+      <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${styles.icon}`}>
+        <Icon aria-hidden="true" className="h-5 w-5" />
       </span>
-      <span className="text-[13px] font-medium text-foreground truncate">{label}</span>
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-[13px] font-semibold text-foreground">{label}</span>
+        <span className="mt-0.5 block truncate text-[11px] text-muted-foreground">{description}</span>
+      </span>
       <ArrowRight className="h-3.5 w-3.5 text-muted-foreground/60 ml-auto shrink-0 transition-transform duration-150 group-hover:translate-x-0.5 group-hover:text-brand-500" />
     </Link>
   );
@@ -58,23 +95,23 @@ function Panel({
   children: ReactNode;
 }) {
   return (
-    <section className="bg-card border border-border rounded-lg">
-      <header className="flex items-center justify-between gap-2 px-4 py-2.5 border-b border-border">
+    <section className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+      <header className="flex items-center justify-between gap-2 border-b border-border px-3.5 py-2.5">
         <div className="flex items-center gap-2 min-w-0">
           <Icon className="h-4 w-4 text-brand-600 dark:text-brand-400 shrink-0" />
-          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground truncate">
+          <h2 className="truncate text-sm font-semibold text-foreground">
             {title}
           </h2>
         </div>
         {action}
       </header>
-      <div className="p-4">{children}</div>
+      <div className="p-3.5">{children}</div>
     </section>
   );
 }
 
 export default function SelfServiceDashboardPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const qc = useQueryClient();
   const { dashboardAllowed } = useAttendancePolicy();
@@ -232,37 +269,49 @@ export default function SelfServiceDashboardPage() {
   const pendingDocs = Array.isArray(documentsData) ? documentsData : [];
   const announcementList = Array.isArray(announcements) ? announcements : [];
   const policyList = Array.isArray(policies) ? policies : [];
+  const locale = i18n.language === "de" ? "de-DE" : i18n.language === "es" ? "es-ES" : "en-IN";
+  const formattedToday = new Intl.DateTimeFormat(locale, {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(new Date());
 
   return (
-    <div>
-      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+    <div className="mx-auto w-full max-w-[1600px]">
+      <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight text-foreground">
-            {t('selfService.welcomeBack', { name: user?.first_name })}
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">
+            {t('selfService.welcomeBack', { name: user?.first_name })}{" "}
+            <span aria-hidden="true">👋</span>
           </h1>
-          <p className="text-[13px] text-muted-foreground mt-0.5">{t('selfService.overviewDesc')}</p>
+          <p className="mt-0.5 text-[13px] text-muted-foreground">{t('selfService.overviewDesc')}</p>
         </div>
         {/* Primary Check In / Check Out action — always visible in the page
             header so it doesn't require scrolling or navigating to
             /attendance/my to clock in for the day. */}
-        <AttendanceHeaderAction
-          todayRecord={todayAttendance}
-          onCheckIn={() => checkIn.mutate()}
-          onCheckOut={() => checkOut.mutate()}
-          checkInPending={checkIn.isPending}
-          checkOutPending={checkOut.isPending}
-          dashboardAllowed={dashboardAllowed}
-        />
+        <div className="flex items-center gap-3 rounded-xl border border-border bg-card px-3 py-2 shadow-sm">
+          <CalendarDays aria-hidden="true" className="h-4 w-4 text-brand-600" />
+          <div className="text-right">
+            <p className="text-xs font-semibold text-foreground">{formattedToday}</p>
+            <p className="flex items-center justify-end gap-1 text-[10px] text-muted-foreground">
+              {t("selfService.greatDay", { defaultValue: "Have a great day!" })}
+              <Sun aria-hidden="true" className="h-3 w-3 text-amber-500" />
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Quick Links */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 mb-6">
-        <QuickLink to="/my-profile" icon={FileText} label={t('nav.myProfile')} />
-        <QuickLink to={`/employees/${user?.id}`} icon={Pencil} label={t('selfService.editMyDetails')} />
-        <QuickLink to="/leave" icon={CalendarDays} label={t('leave.applyLeave')} />
-        <QuickLink to="/attendance/my" icon={Clock} label={t('nav.attendance')} />
-        <QuickLink to="/helpdesk/my-tickets" icon={FileText} label={t('selfService.requestUpdate')} />
-      </div>
+      <nav
+        aria-label={t("selfService.quickActions", { defaultValue: "Quick actions" })}
+        className="mb-4 grid grid-cols-1 gap-2.5 sm:grid-cols-2 xl:grid-cols-4"
+      >
+        <QuickLink to="/my-profile" icon={UserRound} label={t('nav.myProfile')} description={t("selfService.profileDescription", { defaultValue: "View and update your details" })} tone="blue" />
+        <QuickLink to="/leave" icon={CalendarDays} label={t('leave.applyLeave')} description={t("selfService.leaveDescription", { defaultValue: "Request time off" })} tone="violet" />
+        <QuickLink to="/attendance/my" icon={Clock} label={t('nav.attendance')} description={t("selfService.attendanceDescription", { defaultValue: "View attendance and logs" })} tone="emerald" />
+        <QuickLink to="/helpdesk/my-tickets" icon={MessageSquareText} label={t('selfService.requestUpdate')} description={t("selfService.requestDescription", { defaultValue: "Raise a request" })} tone="orange" />
+      </nav>
 
       {/*
         Two-column layout — Company Feed on the left as the focal point,
@@ -279,10 +328,10 @@ export default function SelfServiceDashboardPage() {
           via absolute positioning, keep sticky + internal scroll intact, and
           have the left column reserve its gutter. Mobile still stacks in
           natural flow. */}
-      <div className="lg:relative">
+      <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1.65fr)_minmax(330px,1fr)]">
         {/* Left column — Company Feed. Reserves 2/5 width + gap on the right
             for the absolutely positioned card stack. */}
-        <div className="lg:pr-[calc(40%+1.5rem)]">
+        <div className="min-w-0">
           <CompanyFeedWidget />
         </div>
 
@@ -290,8 +339,8 @@ export default function SelfServiceDashboardPage() {
             page height is driven by the feed column only. Inner wrapper is
             sticky + internally scrollable so tall card stacks remain
             accessible. */}
-        <div className="mt-6 lg:mt-0 lg:absolute lg:right-0 lg:top-0 lg:w-2/5">
-          <div className="space-y-4 lg:sticky lg:top-4 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:pr-1">
+        <aside aria-label={t("selfService.summary", { defaultValue: "Employee summary" })} className="min-w-0">
+          <div className="space-y-3 xl:sticky xl:top-4">
         {/* Profile completion nudge — hides itself once the profile is done */}
         <ProfileCompletionCard userId={user?.id} />
 
@@ -372,12 +421,32 @@ export default function SelfServiceDashboardPage() {
                     <span className="font-semibold text-foreground">{workedText}</span>
                   </div>
                 )}
+                <div className="flex justify-end">
+                  <AttendanceHeaderAction
+                    todayRecord={todayAttendance}
+                    onCheckIn={() => checkIn.mutate()}
+                    onCheckOut={() => checkOut.mutate()}
+                    checkInPending={checkIn.isPending}
+                    checkOutPending={checkOut.isPending}
+                    dashboardAllowed={dashboardAllowed}
+                  />
+                </div>
               </div>
             );
           })() : (
-            <div className="flex items-center gap-2.5">
-              <XCircle className="h-4 w-4 text-muted-foreground/50" />
-              <p className="text-[13px] text-muted-foreground">{t('attendance.notCheckedInYet')}</p>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <XCircle className="h-4 w-4 text-muted-foreground/50" />
+                <p className="text-[13px] text-muted-foreground">{t('attendance.notCheckedInYet')}</p>
+              </div>
+              <AttendanceHeaderAction
+                todayRecord={todayAttendance}
+                onCheckIn={() => checkIn.mutate()}
+                onCheckOut={() => checkOut.mutate()}
+                checkInPending={checkIn.isPending}
+                checkOutPending={checkOut.isPending}
+                dashboardAllowed={dashboardAllowed}
+              />
             </div>
           )}
         </Panel>
@@ -484,7 +553,7 @@ export default function SelfServiceDashboardPage() {
           </Panel>
         )}
           </div>
-        </div>
+        </aside>
       </div>
     </div>
   );
@@ -526,7 +595,7 @@ function AttendanceHeaderAction({
   if (!dashboardAllowed) {
     return (
       <div
-        className="inline-flex items-center gap-2 rounded-md bg-muted border border-border px-4 py-2.5 text-sm font-medium text-muted-foreground"
+        className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-muted px-3 py-2 text-xs font-medium text-muted-foreground"
         title="Use the EmpCloud mobile app or a biometric device to check in / out."
       >
         <Lock className="h-4 w-4" />
@@ -541,7 +610,7 @@ function AttendanceHeaderAction({
         type="button"
         onClick={onCheckIn}
         disabled={checkInPending}
-        className="inline-flex items-center gap-2 rounded-md bg-green-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-green-700 hover:shadow transition-all disabled:opacity-50"
+        className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition-all hover:bg-emerald-700 hover:shadow disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
       >
         {checkInPending ? (
           <Loader2 className="h-4 w-4 animate-spin" />
@@ -578,7 +647,7 @@ function AttendanceHeaderAction({
         onClick={onCheckOut}
         disabled={checkOutPending}
         title={hasCheckedOut ? t('attendance.updateCheckOutHint', { defaultValue: 'Check out again to correct the time' }) : undefined}
-        className="inline-flex items-center gap-2 rounded-md bg-red-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-700 hover:shadow transition-all disabled:opacity-50"
+        className="inline-flex items-center gap-1.5 rounded-lg bg-red-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition-all hover:bg-red-700 hover:shadow disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
       >
         {checkOutPending ? (
           <Loader2 className="h-4 w-4 animate-spin" />

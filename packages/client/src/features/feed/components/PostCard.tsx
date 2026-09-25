@@ -14,9 +14,10 @@ type Props = {
   // When true we only render the first 2 preview replies and don't expand
   // to the full thread. Used in the dashboard widget to keep the card short.
   compactComments?: boolean;
+  dashboardCompact?: boolean;
 };
 
-export function PostCard({ post, compactComments }: Props) {
+export function PostCard({ post, compactComments, dashboardCompact = false }: Props) {
   const user = useAuthStore((s) => s.user);
   const isOwner = user?.id === post.author_id;
   const isHR = !!user && HR_ROLES.includes(user.role);
@@ -47,7 +48,7 @@ export function PostCard({ post, compactComments }: Props) {
   };
 
   return (
-    <article className="rounded-xl border border-border bg-card p-5">
+    <article className={dashboardCompact ? "bg-card p-3.5" : "rounded-xl border border-border bg-card p-5"}>
       <header className="flex items-start justify-between gap-2">
         <AuthorChip
           userId={post.author_id}
@@ -92,7 +93,7 @@ export function PostCard({ post, compactComments }: Props) {
         )}
       </header>
 
-      <div className="mt-3">
+      <div className={dashboardCompact ? "mt-2" : "mt-3"}>
         {editing ? (
           <form onSubmit={submitEdit} className="space-y-2">
             <textarea
@@ -135,7 +136,7 @@ export function PostCard({ post, compactComments }: Props) {
                 setShowComments((v) => !v);
               }
             }}
-            className="whitespace-pre-wrap break-words text-sm text-foreground leading-relaxed cursor-pointer hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 rounded"
+            className={`whitespace-pre-wrap break-words text-foreground cursor-pointer hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 rounded ${dashboardCompact ? "text-[13px] leading-5" : "text-sm leading-relaxed"}`}
           >
             {post.content}
           </p>
@@ -143,7 +144,7 @@ export function PostCard({ post, compactComments }: Props) {
         {post.media && post.media.length > 0 && <MediaGrid media={post.media} />}
       </div>
 
-      <footer className="mt-4 flex items-center gap-2 text-sm">
+      <footer className={`${dashboardCompact ? "mt-2" : "mt-4"} flex items-center gap-2 text-sm`}>
         <button
           type="button"
           onClick={() => toggleLike.mutate(post.id)}
