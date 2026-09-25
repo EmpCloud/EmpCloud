@@ -2,10 +2,11 @@ import { useOrgStats, useSubscriptions, useModules, useDashboardWidgets, useBill
 import { useAuthStore } from "@/lib/auth-store";
 import { usePermissions } from "@/lib/use-permissions";
 import { useTranslation } from "react-i18next";
-import { Users, Package, ExternalLink, Building2, Shield, Clock, CalendarDays, FileText, Megaphone, BookOpen, ChevronRight, Briefcase, Target, Award, UserMinus, Receipt, GraduationCap, AlertCircle, MonitorPlay } from "lucide-react";
+import { AlertCircle, Award, BookOpen, Briefcase, Building2, CalendarDays, CheckCircle2, ChevronRight, Clock, ExternalLink, FileText, Fingerprint, FolderKanban, GraduationCap, MapPin, Megaphone, MonitorPlay, Package, Receipt, Shield, Target, UserMinus, Users } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState, useCallback } from "react";
+import { useCallback } from "react";
 import WidgetCard, { Stat } from "@/components/dashboard/WidgetCard";
+import DashboardMetricCard from "@/components/dashboard/DashboardMetricCard";
 import axios from "axios";
 
 interface Subscription {
@@ -27,15 +28,41 @@ interface Module {
 
 function StatCardSkeleton() {
   return (
-    <div className="bg-card rounded-lg border border-border p-4 animate-pulse">
-      <div className="flex items-center gap-4">
-        <div className="h-10 w-10 rounded-md bg-muted" />
+    <div className="min-h-[88px] animate-pulse rounded-xl border border-border bg-card p-3">
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <div className="h-6 w-12 rounded bg-muted mb-2" />
-          <div className="h-4 w-20 rounded bg-muted" />
+          <div className="mb-3 h-3 w-20 rounded bg-muted" />
+          <div className="h-7 w-16 rounded bg-muted" />
         </div>
+        <div className="h-10 w-10 rounded-xl bg-muted" />
       </div>
     </div>
+  );
+}
+
+function MiniBars({ color }: { color: "emerald" | "violet" }) {
+  const colorClass = color === "emerald" ? "bg-emerald-400" : "bg-violet-400";
+  return (
+    <span className="flex h-6 items-end gap-1 opacity-75">
+      {[9, 14, 19, 24].map((height, index) => (
+        <span key={height} className={`${colorClass} w-1.5 rounded-t-sm`} style={{ height: `${height - index}px` }} />
+      ))}
+    </span>
+  );
+}
+
+function PeopleCluster({ count }: { count: number }) {
+  return (
+    <span className="flex items-center -space-x-1.5">
+      {["bg-blue-200", "bg-violet-200", "bg-amber-200"].map((color) => (
+        <span key={color} className={`flex h-6 w-6 items-center justify-center rounded-full border-2 border-card ${color}`}>
+          <Users className="h-3 w-3 text-slate-600" />
+        </span>
+      ))}
+      <span className="relative flex h-6 min-w-6 items-center justify-center rounded-full border-2 border-card bg-muted px-1.5 text-[9px] font-semibold text-muted-foreground">
+        +{Math.max(0, count - 3)}
+      </span>
+    </span>
   );
 }
 
@@ -48,8 +75,30 @@ const hrmsQuickLinkKeys = [
   { path: "/policies", labelKey: "dashboard.quickLinks.policies", icon: BookOpen, color: "bg-teal-50 dark:bg-teal-950/40 text-teal-600 dark:text-teal-400" },
 ];
 
+const moduleIconMap = {
+  "emp-recruit": Briefcase,
+  "emp-performance": Target,
+  "emp-rewards": Award,
+  "emp-exit": UserMinus,
+  "emp-lms": GraduationCap,
+  "emp-monitor": MonitorPlay,
+  "emp-projects": FolderKanban,
+  "emp-field": MapPin,
+  "emp-biometrics": Fingerprint,
+  "emp-payroll": Receipt,
+} as const;
+
+const dashboardModuleOrder = [
+  "emp-biometrics",
+  "emp-lms",
+  "emp-recruit",
+  "emp-performance",
+  "emp-field",
+  "emp-exit",
+] as const;
+
 export default function DashboardPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const { hasAll } = usePermissions();
   const { data: stats, isLoading: statsLoading, isError: statsError } = useOrgStats();
@@ -57,12 +106,17 @@ export default function DashboardPage() {
   const { data: modules } = useModules();
   const { data: widgets, isLoading: widgetsLoading } = useDashboardWidgets();
   const { data: billingSummary, isLoading: billingLoading } = useBillingOverviewSummary();
-  const [expandedModule, setExpandedModule] = useState<number | null>(null);
   const activeSubscriptions: Subscription[] = subscriptions?.filter(
     (s: Subscription) => s.status === "active" || s.status === "trial"
   ) || [];
 
   const moduleMap = new Map<number, Module>(modules?.map((m: Module) => [m.id, m]) || []);
+  const moduleOrderIndex = new Map<string, number>(dashboardModuleOrder.map((slug, index) => [slug, index]));
+  const orderedActiveSubscriptions = [...activeSubscriptions].sort((first, second) => {
+    const firstOrder = moduleOrderIndex.get(moduleMap.get(first.module_id)?.slug ?? "") ?? dashboardModuleOrder.length;
+    const secondOrder = moduleOrderIndex.get(moduleMap.get(second.module_id)?.slug ?? "") ?? dashboardModuleOrder.length;
+    return firstOrder - secondOrder;
+  });
 
   // Build lookup sets for widget visibility and module URLs
   const subscribedSlugs = new Set(
@@ -120,18 +174,42 @@ export default function DashboardPage() {
     name: t('dashboard.coreHRMSName'),
     description: t('dashboard.coreHRMSDescription'),
   };
+  const locale = i18n.resolvedLanguage || i18n.language || "en";
+  const formattedToday = new Intl.DateTimeFormat(locale, {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(new Date());
+  const formattedBilling = billingSummary
+    ? new Intl.NumberFormat(locale, {
+        style: "currency",
+        currency: billingSummary.currency || "INR",
+        maximumFractionDigits: 0,
+      }).format((billingSummary.monthlyRecurring ?? 0) / 100)
+    : "--";
 
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          {t('common.welcome')}, {user?.first_name}
-        </h1>
-        <p className="text-[13px] text-muted-foreground mt-0.5">{t('dashboard.subtitle')}</p>
+    <div className="mx-auto w-full max-w-[1600px]">
+      <div className="mb-1 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h1 className="text-pretty text-xl font-bold leading-6 tracking-tight text-foreground">
+            <span aria-hidden="true" className="me-2">👋</span>
+            {t('common.welcome')}, {user?.first_name}
+          </h1>
+          <p className="mt-0.5 text-xs text-muted-foreground">{t('dashboard.subtitle')}</p>
+        </div>
+        <div className="inline-flex items-center gap-2.5 self-start rounded-xl border border-border bg-card px-3 py-1.5 shadow-sm">
+          <CalendarDays aria-hidden="true" className="h-4 w-4 text-brand-500" />
+          <div>
+            <time className="block text-xs font-semibold text-foreground" dateTime={new Date().toISOString().slice(0, 10)}>{formattedToday}</time>
+            <p className="mt-0.5 text-[10px] text-muted-foreground">{t("dashboard.productiveDay")}</p>
+          </div>
+        </div>
       </div>
 
       {/* Stats cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 mb-6">
+      <div className="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
         {statsLoading ? (
           <>
             <StatCardSkeleton />
@@ -141,142 +219,158 @@ export default function DashboardPage() {
             <StatCardSkeleton />
           </>
         ) : statsError ? (
-          <div className="sm:col-span-2 lg:col-span-5 bg-card rounded-lg border border-red-200 dark:border-red-900/40 p-6 text-center">
-            <AlertCircle className="h-8 w-8 text-red-400 mx-auto mb-2" />
-            <p className="text-sm text-red-600 dark:text-red-400">Failed to load organization stats. Please try refreshing the page.</p>
+          <div className="rounded-2xl border border-red-200 bg-card p-6 text-center sm:col-span-2 xl:col-span-5 dark:border-red-900/40">
+            <AlertCircle aria-hidden="true" className="mx-auto mb-2 h-8 w-8 text-red-400" />
+            <p className="text-sm text-red-600 dark:text-red-400">{t("dashboard.statsError")}</p>
           </div>
         ) : (
           <>
-            <Link
+            <DashboardMetricCard
               to="/users"
-              className="bg-card rounded-lg border border-border p-4 hover:border-brand-400 transition-colors duration-150"
-            >
-              <div className="flex items-center gap-4">
-                <div className="h-10 w-10 rounded-md bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center">
-                  <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                </div>
-                <div>
-                  <p className="text-2xl font-semibold tabular-nums leading-none text-foreground">{stats?.total_users ?? 0}</p>
-                  <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{t('dashboard.totalUsers')}</p>
-                </div>
-              </div>
-            </Link>
-            <Link
+              label={t("dashboard.totalUsers")}
+              value={stats?.total_users ?? 0}
+              icon={Users}
+              tone="blue"
+              decoration={<PeopleCluster count={stats?.total_users ?? 0} />}
+            />
+            <DashboardMetricCard
               to="/modules"
-              className="bg-card rounded-lg border border-border p-4 hover:border-brand-400 transition-colors duration-150"
-            >
-              <div className="flex items-center gap-4">
-                <div className="h-10 w-10 rounded-md bg-green-50 dark:bg-green-950/40 flex items-center justify-center">
-                  <Package className="h-5 w-5 text-green-600 dark:text-green-400" />
-                </div>
-                <div>
-                  <p className="text-2xl font-semibold tabular-nums leading-none text-foreground">{stats?.active_subscriptions ?? 0}</p>
-                  <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{t('dashboard.activeModules')}</p>
-                </div>
-              </div>
-            </Link>
-            <Link
+              label={t("dashboard.activeModules")}
+              value={stats?.active_subscriptions ?? 0}
+              icon={Package}
+              tone="emerald"
+              decoration={<MiniBars color="emerald" />}
+            />
+            <DashboardMetricCard
               to="/settings"
-              className="bg-card rounded-lg border border-border p-4 hover:border-brand-400 transition-colors duration-150"
-            >
-              <div className="flex items-center gap-4">
-                <div className="h-10 w-10 rounded-md bg-purple-50 dark:bg-purple-950/40 flex items-center justify-center">
-                  <Building2 className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-                </div>
-                <div>
-                  <p className="text-2xl font-semibold tabular-nums leading-none text-foreground">{stats?.total_departments ?? 0}</p>
-                  <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{t('dashboard.departments')}</p>
-                </div>
-              </div>
-            </Link>
-            <div className="bg-card rounded-lg border border-border p-4">
-              <div className="flex items-center gap-4">
-                <div className="h-10 w-10 rounded-md bg-amber-50 dark:bg-amber-950/40 flex items-center justify-center">
-                  <Shield className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-                </div>
-                <div>
-                  <p className="text-2xl font-semibold tabular-nums leading-none text-foreground">SOC 2</p>
-                  <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{t('dashboard.compliant')}</p>
-                </div>
-              </div>
-            </div>
-            <Link
+              label={t("dashboard.departments")}
+              value={stats?.total_departments ?? 0}
+              icon={Building2}
+              tone="violet"
+              decoration={<MiniBars color="violet" />}
+            />
+            <DashboardMetricCard
+              label={t("dashboard.compliant")}
+              value="SOC 2"
+              icon={Shield}
+              tone="amber"
+              supporting={
+                <span className="inline-flex items-center gap-1 font-medium text-emerald-600 dark:text-emerald-400">
+                  <CheckCircle2 aria-hidden="true" className="h-3.5 w-3.5" />
+                  {t("dashboard.certified")}
+                </span>
+              }
+            />
+            <DashboardMetricCard
               to="/billing"
-              className="bg-card rounded-lg border border-border p-4 hover:border-brand-400 transition-colors duration-150"
-            >
-              <div className="flex items-center gap-4">
-                <div className="h-10 w-10 rounded-md bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center">
-                  <Receipt className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                </div>
-                <div>
-                  <p className="text-2xl font-semibold tabular-nums leading-none text-foreground">
-                    {billingLoading ? (
-                      <span className="inline-block h-6 w-20 bg-muted rounded animate-pulse" />
-                    ) : billingSummary ? (
-                      new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(
-                        (billingSummary.monthlyRecurring ?? 0) / 100
-                      )
-                    ) : (
-                      "--"
-                    )}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {t('nav.billing')}{billingSummary?.overdueCount ? ` (${billingSummary.overdueCount} ${t('dashboard.overdue')})` : ""}
-                  </p>
-                </div>
-              </div>
-            </Link>
+              label={t("nav.billing")}
+              value={billingLoading ? <span className="inline-block h-7 w-24 animate-pulse rounded bg-muted" /> : formattedBilling}
+              icon={Receipt}
+              tone="cyan"
+              supporting={billingSummary?.overdueCount ? `${billingSummary.overdueCount} ${t("dashboard.overdue")}` : t("dashboard.billingUpToDate")}
+            />
           </>
         )}
       </div>
 
       {/* Core HRMS — Always shown (it IS the platform) */}
-      {hrmsModule && (
-        <div className="mb-8">
-          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-4">{t('dashboard.coreHRMS')}</h2>
-          <div className="bg-gradient-to-r from-brand-600 to-brand-700 rounded-lg p-8 text-white">
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full font-medium">
-                    {t('dashboard.includedFree')}
-                  </span>
-                  <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full font-medium">
-                    {t('common.active')}
-                  </span>
-                </div>
-                <h3 className="text-xl font-bold mb-2">{hrmsModule.name}</h3>
-              </div>
-              <div className="h-12 w-12 rounded-lg bg-white/10 flex items-center justify-center">
-                <Building2 className="h-7 w-7 text-white" />
-              </div>
-            </div>
-            <p className="text-sm text-white/80 leading-relaxed mb-6 max-w-3xl">
-              {hrmsModule.description?.substring(0, 300)}...
-            </p>
+      <section aria-labelledby="core-hrms-heading" className="mb-3">
+        <div className="relative overflow-hidden rounded-2xl border border-[#b9dcff] bg-gradient-to-br from-[#e5f3ff] via-[#edf7ff] to-[#ddf2ff] p-3 shadow-sm dark:border-brand-900/70 dark:from-brand-950/50 dark:via-card dark:to-cyan-950/30">
+          <div aria-hidden="true" className="absolute -end-24 -top-24 h-64 w-64 rounded-full bg-brand-200/55 blur-3xl dark:bg-brand-800/20" />
+          <div aria-hidden="true" className="absolute bottom-0 start-1/3 h-28 w-72 rounded-full bg-cyan-200/50 blur-3xl dark:bg-cyan-900/20" />
+          <div aria-hidden="true" className="absolute inset-y-0 end-0 w-2/5 bg-[linear-gradient(135deg,transparent_15%,rgba(255,255,255,0.52)_15%,rgba(255,255,255,0.18)_62%,transparent_62%)] dark:opacity-10" />
 
-            {/* Quick Links Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-              {hrmsQuickLinkKeys.map((link) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  className="bg-white/10 hover:bg-white/20 rounded-lg p-3 text-center transition-colors group"
+          <div className="relative grid min-h-[128px] items-start gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.55fr)_minmax(145px,0.35fr)]">
+            <div>
+              <div className="mb-2 flex flex-wrap items-center gap-2">
+                <span className="rounded-full bg-brand-600 px-3 py-1 text-[10px] font-semibold text-white">
+                  {t("dashboard.includedFree")}
+                </span>
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-3 py-1 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
+                  <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                  {t("common.active")}
+                </span>
+              </div>
+              <h2 id="core-hrms-heading" className="text-pretty text-2xl font-bold tracking-tight text-foreground">
+                {hrmsModule.name}
+              </h2>
+              <p className="mt-1.5 max-w-3xl text-[11px] leading-[1.55] text-muted-foreground">
+                {hrmsModule.description}
+              </p>
+            </div>
+
+            <div className="relative hidden lg:block">
+              <div className="-rotate-2 rounded-xl border border-white/80 bg-card/90 p-2 shadow-xl shadow-brand-900/10 backdrop-blur dark:border-border">
+                <div className="mb-1 flex items-center justify-between border-b border-border pb-1">
+                  <div className="flex items-center gap-2">
+                    <img src="/empcloud-icon.png" alt="" width="20" height="20" className="h-5 w-5" />
+                    <span className="text-xs font-semibold text-foreground">EMP Cloud</span>
+                  </div>
+                  <span className="h-2 w-16 rounded-full bg-muted" />
+                </div>
+                <div className="space-y-1">
+                  {hrmsQuickLinkKeys.slice(0, 4).map((link) => (
+                    <div key={link.path} className="flex items-center gap-2 rounded-md bg-background/80 px-2 py-0.5">
+                      <span className={`flex h-4 w-4 items-center justify-center rounded ${link.color}`}>
+                        <link.icon aria-hidden="true" className="h-2.5 w-2.5" />
+                      </span>
+                      <span className="text-[10px] font-medium leading-4 text-foreground">{t(link.labelKey)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {[CalendarDays, FileText, Users].map((FloatingIcon, index) => (
+                <span
+                  key={index}
+                  aria-hidden="true"
+                  className={`absolute flex h-9 w-9 items-center justify-center rounded-lg border border-white/80 bg-card shadow-lg ${index === 0 ? "-start-5 top-5 text-brand-600" : index === 1 ? "-start-2 bottom-0 text-orange-500" : "-end-4 top-9 text-cyan-600"}`}
                 >
-                  <link.icon className="h-5 w-5 mx-auto mb-1.5 text-white/80 group-hover:text-white" />
-                  <span className="text-xs font-medium text-white/90">{t(link.labelKey)}</span>
-                </Link>
+                  <FloatingIcon className="h-4 w-4" />
+                </span>
               ))}
             </div>
+
+            <div className="relative hidden pt-3 text-center lg:block">
+              <p className="text-[9px] font-medium text-muted-foreground">{t("dashboard.trustedByModernTeams")}</p>
+              <p className="mt-0.5 text-sm font-bold leading-4 text-foreground">{t("dashboard.simplerHR")}</p>
+              <p className="mt-4 -rotate-6 text-balance text-sm font-semibold italic leading-5 text-brand-700/75 dark:text-brand-300/80">
+                {t("dashboard.heroTagline")}
+              </p>
+            </div>
           </div>
+
+          <nav aria-label={t("dashboard.coreHRMS")} className="relative mt-2 grid grid-cols-2 gap-2 border-t border-brand-200/70 pt-2 sm:grid-cols-3 xl:grid-cols-6 dark:border-brand-900/60">
+            {hrmsQuickLinkKeys.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className="group flex min-h-9 items-center gap-2 rounded-xl border border-white/80 bg-card/80 px-2.5 py-1 text-[11px] font-semibold text-foreground shadow-sm transition-[border-color,box-shadow,transform] hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:border-border"
+              >
+                <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${link.color}`}>
+                  <link.icon aria-hidden="true" className="h-4 w-4" />
+                </span>
+                <span className="min-w-0 flex-1 truncate">{t(link.labelKey)}</span>
+                <ChevronRight aria-hidden="true" className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5" />
+              </Link>
+            ))}
+          </nav>
         </div>
-      )}
+      </section>
 
       {/* Module Insights — live data from subscribed module APIs */}
       {activeSubscriptions.length > 0 && (
-        <div className="mb-8">
-          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-4">{t('dashboard.moduleInsights')}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <section aria-labelledby="module-insights-heading" className="mb-4">
+          <div className="mb-1 flex items-start justify-between gap-4">
+            <div>
+              <h2 id="module-insights-heading" className="text-base font-semibold text-foreground">{t("dashboard.moduleInsights")}</h2>
+              <p className="mt-0.5 text-xs text-muted-foreground">{t("dashboard.moduleInsightsDescription")}</p>
+            </div>
+            <span className="hidden items-center gap-2 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground shadow-sm sm:inline-flex">
+              <CalendarDays aria-hidden="true" className="h-4 w-4" />
+              {t("dashboard.last30Days")}
+            </span>
+          </div>
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
             {/* Recruit Widget */}
             {subscribedSlugs.has("emp-recruit") && (
               <WidgetCard
@@ -340,63 +434,76 @@ export default function DashboardPage() {
               </WidgetCard>
             )}
 
-            {/* LMS Widget */}
-            {subscribedSlugs.has("emp-lms") && (
-              <WidgetCard
-                title={t('widgets.lms.title')}
-                icon={GraduationCap}
-                color="cyan"
-                moduleUrl={moduleBaseUrls.get("emp-lms")}
-                isLoading={widgetsLoading}
-                isOffline={!widgetsLoading && widgets?.lms === null}
-              >
-                <Stat label={t('widgets.lms.activeCourses')} value={widgets?.lms?.activeCourses as number} />
-                <Stat label={t('widgets.lms.enrollments')} value={widgets?.lms?.totalEnrollments as number} />
-                <Stat label={t('widgets.lms.completionRate')} value={widgets?.lms?.completionRate != null ? `${widgets.lms.completionRate}%` : undefined} />
-              </WidgetCard>
-            )}
           </div>
-        </div>
+        </section>
       )}
 
       {/* Monitor Admin SSO -- visible only when the user holds every monitor:* permission. */}
       {isMonitorAdmin && moduleBaseUrls.get("emp-monitor") && (
-        <div className="mb-8 bg-gradient-to-r from-slate-900 to-slate-800 rounded-lg p-5 text-white flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0">
-              <MonitorPlay className="h-6 w-6 text-white" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold">EMP Monitor &mdash; Admin Access</p>
-              <p className="text-xs text-white/70 mt-0.5">
-                You have full Monitor permissions. Sign in as Admin via SSO.
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={() => launchModule(moduleBaseUrls.get("emp-monitor")!)}
-            className="flex items-center gap-1.5 bg-white text-slate-900 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-white/90 transition-colors flex-shrink-0"
+        <section aria-labelledby="monitor-admin-heading" className="relative mb-4 overflow-hidden rounded-xl bg-gradient-to-r from-[#07132f] via-[#102860] to-[#2161dc] p-3 text-white shadow-lg shadow-blue-950/10">
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 1200 96"
+            preserveAspectRatio="none"
+            className="pointer-events-none absolute inset-0 h-full w-full opacity-35"
           >
-            Login as Admin <ExternalLink className="h-3.5 w-3.5" />
-          </button>
-        </div>
+            <defs>
+              <linearGradient id="monitor-wave" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor="#60a5fa" stopOpacity="0" />
+                <stop offset="55%" stopColor="#60a5fa" stopOpacity="0.25" />
+                <stop offset="100%" stopColor="#93c5fd" stopOpacity="0.72" />
+              </linearGradient>
+            </defs>
+            <path d="M400 74C540 64 582 20 724 24C866 28 934 84 1200 47" fill="none" stroke="url(#monitor-wave)" strokeWidth="1.4" />
+            <path d="M458 88C601 69 645 36 757 38C911 41 979 78 1200 31" fill="none" stroke="url(#monitor-wave)" strokeWidth="1" />
+            <path d="M590 93C703 66 731 53 845 54C996 55 1062 65 1200 19" fill="none" stroke="url(#monitor-wave)" strokeWidth="0.8" />
+          </svg>
+          <div aria-hidden="true" className="absolute inset-y-0 end-0 w-1/3 bg-[radial-gradient(circle_at_center,rgba(96,165,250,0.2),transparent_68%)]" />
+          <div className="relative flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/15 bg-white/10 shadow-inner shadow-white/5">
+                <MonitorPlay aria-hidden="true" className="h-5 w-5 text-blue-200" />
+              </div>
+              <div>
+                <h2 id="monitor-admin-heading" className="text-xs font-semibold tracking-[0.01em]">{t("dashboard.monitorAdminTitle")}</h2>
+                <p className="mt-0.5 text-[10px] leading-4 text-blue-100/75">
+                  {t("dashboard.monitorAdminDescription")}
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => launchModule(moduleBaseUrls.get("emp-monitor")!)}
+              className="inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg bg-white px-3 text-xs font-semibold text-slate-900 shadow-sm transition-colors hover:bg-blue-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-blue-950"
+            >
+              {t("dashboard.loginAsAdmin")}
+              <ExternalLink aria-hidden="true" className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        </section>
       )}
 
       {/* Subscribed Modules */}
-      <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-4">{t('dashboard.yourModules')}</h2>
+      <section aria-labelledby="your-modules-heading">
+      <div className="mb-2">
+        <div>
+          <h2 id="your-modules-heading" className="text-xs font-bold uppercase tracking-[0.08em] text-foreground">{t("dashboard.yourModules")}</h2>
+          <p className="mt-0.5 text-[11px] leading-4 text-muted-foreground">{t("dashboard.yourModulesDescription")}</p>
+        </div>
+      </div>
       {activeSubscriptions.length === 0 ? (
-        <div className="bg-card rounded-lg border border-border p-12 text-center">
-          <Package className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
+        <div className="rounded-2xl border border-dashed border-border bg-card p-12 text-center">
+          <Package aria-hidden="true" className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
           <p className="text-muted-foreground">{t('dashboard.noModulesYet')}</p>
-          <Link to="/modules" className="text-brand-600 dark:text-brand-400 text-sm font-medium hover:text-brand-700 mt-2 inline-block">
+          <Link to="/modules" className="mt-2 inline-block text-sm font-medium text-brand-600 hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-brand-400">
             {t('dashboard.browseModules')}
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {activeSubscriptions.map((sub) => {
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {orderedActiveSubscriptions.map((sub) => {
             const mod = moduleMap.get(sub.module_id);
-            const isExpanded = expandedModule === sub.id;
+            const ModuleIcon = moduleIconMap[mod?.slug as keyof typeof moduleIconMap] || Package;
             const hasBaseUrl = !!mod?.base_url;
             // i18n lookup with DB fallback. t() returns the key itself when no translation exists.
             const nameKey = `modules.${mod?.slug}.name`;
@@ -414,25 +521,29 @@ export default function DashboardPage() {
             return (
               <div
                 key={sub.id}
-                className="bg-card rounded-lg border border-border p-4 hover:border-brand-400 transition-colors duration-150"
+                className="flex min-h-[142px] flex-col rounded-lg border border-border bg-card p-3 shadow-sm transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-md"
               >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-lg bg-brand-50 dark:bg-brand-950/40 flex items-center justify-center">
-                      <Package className="h-5 w-5 text-brand-600 dark:text-brand-400" />
+                <div className="mb-2 flex items-start justify-between gap-2">
+                  <div className="flex min-w-0 items-center gap-2.5">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600 dark:bg-brand-950/40 dark:text-brand-400">
+                      <ModuleIcon aria-hidden="true" className="h-[18px] w-[18px]" />
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       {hasBaseUrl ? (
-                        <button onClick={() => launchModule(mod!.base_url!)} className="font-semibold text-foreground hover:text-brand-600 dark:hover:text-brand-400 transition-colors text-left">
+                        <button
+                          type="button"
+                          onClick={() => launchModule(mod!.base_url!)}
+                          className="block max-w-full truncate text-start text-xs font-semibold text-foreground transition-colors hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:hover:text-brand-400"
+                        >
                           {displayName}
                         </button>
                       ) : (
-                        <h3 className="font-semibold text-foreground">{displayName}</h3>
+                        <h3 className="truncate text-xs font-semibold text-foreground">{displayName}</h3>
                       )}
-                      <p className="text-xs text-muted-foreground">{mod?.slug}</p>
+                      <p className="mt-0.5 truncate text-[10px] leading-3 text-muted-foreground">{mod?.slug}</p>
                     </div>
                   </div>
-                  <span className={`text-[11px] px-2 py-0.5 rounded-md font-medium ${
+                  <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
                     sub.status === "active"
                       ? "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300"
                       : "bg-yellow-50 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300"
@@ -441,46 +552,41 @@ export default function DashboardPage() {
                   </span>
                 </div>
 
-                {/* Description - truncated with expand */}
-                <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
-                  {isExpanded
-                    ? displayDesc
-                    : displayDesc.substring(0, 150) + (displayDesc.length > 150 ? "..." : "")
-                  }
+                <p className="mb-2 truncate text-[11px] leading-4 text-muted-foreground" title={displayDesc}>
+                  {displayDesc}
                 </p>
-                {displayDesc.length > 150 && (
-                  <button
-                    onClick={() => setExpandedModule(isExpanded ? null : sub.id)}
-                    className="text-xs text-brand-600 dark:text-brand-400 hover:text-brand-700 font-medium mb-3 flex items-center gap-0.5"
-                  >
-                    {isExpanded ? t('dashboard.showLess') : t('dashboard.readMore')}
-                    <ChevronRight className={`h-3 w-3 transition-transform ${isExpanded ? "rotate-90" : ""}`} />
-                  </button>
-                )}
 
-                <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
+                <div className="mt-auto mb-1.5 flex items-center justify-between gap-3 text-[10px] text-muted-foreground">
                   <span className="tabular-nums">{sub.used_seats}/{sub.total_seats} {t('dashboard.seatsUsed')}</span>
-                  <span className="capitalize text-[11px] bg-muted px-2 py-0.5 rounded-md">{displayPlan}</span>
+                  <span className="rounded-md bg-muted px-2 py-0.5 text-[10px] capitalize">{displayPlan}</span>
                 </div>
 
                 {/* Progress bar */}
-                <div className="w-full bg-muted rounded-full h-1.5 mb-4">
+                <div
+                  role="progressbar"
+                  aria-label={`${displayName}: ${sub.used_seats}/${sub.total_seats} ${t("dashboard.seatsUsed")}`}
+                  aria-valuemin={0}
+                  aria-valuemax={Math.max(sub.total_seats, sub.used_seats, 1)}
+                  aria-valuenow={sub.used_seats}
+                  className="mb-1.5 h-1 w-full overflow-hidden rounded-full bg-muted"
+                >
                   <div
-                    className="bg-brand-500 h-1.5 rounded-full transition-all"
+                    className="h-1 rounded-full bg-brand-500 transition-[width]"
                     style={{ width: `${sub.total_seats ? Math.min(100, (sub.used_seats / sub.total_seats) * 100) : 0}%` }}
                   />
                 </div>
 
                 {hasBaseUrl && (
                   <button
+                    type="button"
                     // ACCEPTED RISK: The JWT is intentionally passed as a query parameter for SSO.
                     // All EMP ecosystem modules use this pattern to establish a session on the target
                     // module. The token is short-lived, transmitted over HTTPS, and the target module
                     // exchanges it for a server-side session immediately on load.
                     onClick={() => launchModule(mod!.base_url!)}
-                    className="flex items-center gap-1.5 text-sm font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700"
+                    className="inline-flex min-h-7 items-center gap-1 self-start rounded-md px-0.5 text-[11px] font-semibold text-brand-600 hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-brand-400"
                   >
-                    {t('dashboard.launch')} <ExternalLink className="h-3.5 w-3.5" />
+                    {t('dashboard.launch')} <ExternalLink aria-hidden="true" className="h-3 w-3" />
                   </button>
                 )}
               </div>
@@ -488,6 +594,7 @@ export default function DashboardPage() {
           })}
         </div>
       )}
+      </section>
     </div>
   );
 }

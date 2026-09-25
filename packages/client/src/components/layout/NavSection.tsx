@@ -20,7 +20,7 @@ function CountBadge({ count }: { count: number }) {
   const { t } = useTranslation();
   if (count <= 0) return null;
   return (
-    <span className="ml-auto inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1.5 text-[11px] font-semibold text-white">
+    <span className="ml-auto inline-flex h-5 min-w-[20px] shrink-0 items-center justify-center rounded-full bg-red-500 px-1.5 text-[11px] font-semibold text-white">
       {count > 99 ? t("navSection.countBadge.overflow") : count}
     </span>
   );
@@ -69,7 +69,7 @@ export function NavSection({ label, items, location, t, activeClass = "bg-brand-
         return (
           <Fragment key={item.path}>
             {header && (
-              <div className="mx-3 mt-4 mb-1 border-t border-border pt-3 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              <div className="mx-3 mb-1 mt-4 break-words border-t border-border pt-3 text-[10px] font-semibold uppercase leading-4 tracking-wider text-muted-foreground">
                 {sectionLabel(header, t)}
               </div>
             )}
@@ -108,18 +108,19 @@ function NavLink({
     <Link
       to={item.path}
       data-active={isActive}
+      aria-current={isActive ? "page" : undefined}
       // #1816 — title attribute so the collapsed-sidebar icon-only state is
       // discoverable via hover tooltip. No-op when expanded: native browsers
       // suppress the tooltip if the link's visible text matches the title.
       title={label}
-      className={`flex items-center gap-3 ${indent ? "pl-9 pr-3" : "px-3"} py-2 rounded-lg text-sm font-medium transition-colors ${
+      className={`flex min-w-0 items-center gap-2 ${indent ? "pl-9 pr-3" : "px-3"} py-2 rounded-lg text-sm font-medium transition-colors ${
         isActive
           ? activeClass
           : "text-muted-foreground hover:bg-muted hover:text-foreground"
       }`}
     >
-      <Icon className={`${indent ? "h-4 w-4" : "h-5 w-5"} flex-shrink-0`} />
-      <span className="flex-1">{label}</span>
+      <Icon aria-hidden="true" className={`${indent ? "h-4 w-4" : "h-5 w-5"} flex-shrink-0`} />
+      <span className="min-w-0 flex-1 whitespace-normal leading-5">{label}</span>
       {item.badge && <AiBadge label={item.badge} />}
       <CountBadge count={unread} />
     </Link>
@@ -147,17 +148,19 @@ function NestedNavItem({
   return (
     <div>
       <button
+        type="button"
         onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
         title={label}
-        className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors w-full ${
+        className={`flex min-w-0 items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors w-full ${
           childActive
             ? activeClass
             : "text-muted-foreground hover:bg-muted hover:text-foreground"
         }`}
       >
-        <Icon className="h-5 w-5 flex-shrink-0" />
-        <span className="flex-1 text-left">{label}</span>
-        <ChevronDown className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} />
+        <Icon aria-hidden="true" className="h-5 w-5 flex-shrink-0" />
+        <span className="min-w-0 flex-1 whitespace-normal text-left leading-5">{label}</span>
+        <ChevronDown aria-hidden="true" className={`h-4 w-4 shrink-0 transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
       {open && item.children && (
         <div className="mt-0.5 space-y-0.5">
