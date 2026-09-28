@@ -306,6 +306,14 @@ router.get("/", authenticate, requirePermission("employees:view_all"), async (re
   } catch (err) { next(err); }
 });
 
+// GET /api/v1/employees/directory/stats
+router.get("/directory/stats", authenticate, requirePermission("employees:view_all"), async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = await profileService.getDirectoryStats(req.user!.org_id);
+    sendSuccess(res, data);
+  } catch (err) { next(err); }
+});
+
 // GET /api/v1/employees/directory
 router.get("/directory", authenticate, requirePermission("employees:view_all"), async (req: Request, res: Response, next: NextFunction) => {
   try {

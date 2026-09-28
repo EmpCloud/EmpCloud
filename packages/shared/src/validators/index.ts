@@ -664,7 +664,7 @@ export const employeeDirectoryQuerySchema = paginationSchema.extend({
   role: z
     .enum(["employee", "manager", "hr_admin", "org_admin", "super_admin"])
     .optional(),
-  status: z.coerce.number().int().optional(),
+  status: z.union([z.coerce.number().int(), z.literal("all")]).optional(),
 });
 
 // ---------------------------------------------------------------------------

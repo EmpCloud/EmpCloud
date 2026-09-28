@@ -2,7 +2,23 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router-dom";
-import { Search, Plus, ChevronLeft, ChevronRight, AlertTriangle, Pencil, Trash2, Loader2 } from "lucide-react";
+import {
+  Search,
+  Plus,
+  ChevronLeft,
+  ChevronRight,
+  AlertTriangle,
+  Pencil,
+  Trash2,
+  Loader2,
+  LayoutGrid,
+  List,
+  Building2,
+  Layers3,
+  ArrowUpDown,
+  ListFilter,
+  ChevronDown,
+} from "lucide-react";
 import api from "@/api/client";
 import { useDepartments } from "@/api/hooks";
 import { showToast } from "@/components/ui/Toast";
@@ -26,7 +42,8 @@ export default function PositionListPage() {
   const [status, setStatus] = useState<string>(initialStatus);
   const [criticalOnly, setCriticalOnly] = useState(false);
   const [employmentType, setEmploymentType] = useState<string>("");
-  const [showCreate, setShowCreate] = useState(false);
+  const [showCreate, setShowCreate] = useState(searchParams.get("create") === "1");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [deleteTarget, setDeleteTarget] = useState<{ id: number; title: string } | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
@@ -104,6 +121,30 @@ export default function PositionListPage() {
   const meta = data?.meta;
   const deptList = departments || [];
 
+  const positionTypeLabel = (value?: string) => {
+    const labels: Record<string, string> = {
+      full_time: tx("fullTime") as string,
+      part_time: tx("partTime") as string,
+      contract: tx("contract") as string,
+      intern: tx("intern") as string,
+    };
+    return labels[value || ""] || (value || "-").replace(/_/g, " ");
+  };
+
+  const positionStatusLabel = (value?: string) => {
+    if (!value) return "-";
+    return tx(`status${value.charAt(0).toUpperCase()}${value.slice(1)}`, {
+      defaultValue: value,
+    }) as string;
+  };
+
+  const statusClasses = (value?: string) => {
+    if (value === "active") return "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300";
+    if (value === "filled") return "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300";
+    if (value === "frozen") return "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300";
+    return "bg-muted text-muted-foreground";
+  };
+
   // Create form state
   const [form, setForm] = useState({
     title: "",
@@ -157,16 +198,16 @@ export default function PositionListPage() {
 
   return (
     <div>
-      <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
+      <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight text-foreground">{tx("title")}</h1>
+          <h1 className="text-xl font-bold tracking-tight text-foreground">{tx("title")}</h1>
           <p className="text-[13px] text-muted-foreground mt-0.5">{tx("subtitle")}</p>
         </div>
         <button
           onClick={() => setShowCreate(!showCreate)}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 text-white text-[13px] font-medium rounded-md hover:bg-brand-700 transition-colors shrink-0"
+          className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg bg-brand-600 px-4 text-[13px] font-semibold text-white shadow-sm transition-colors hover:bg-brand-700"
         >
-          <Plus className="h-4 w-4" />
+          <Plus aria-hidden="true" className="h-4 w-4" />
           {tx("createPosition")}
         </button>
       </div>
@@ -300,74 +341,102 @@ export default function PositionListPage() {
         </div>
       )}
 
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-2.5 mb-4 bg-card border border-border rounded-lg p-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="bg-card text-foreground w-full pl-10 pr-4 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-            placeholder={tx("searchPlaceholder") as string}
-          />
+      {/* Filter bar */}
+      <div className="mb-3 grid grid-cols-1 gap-2 rounded-xl border border-border bg-card p-2.5 shadow-sm sm:grid-cols-2 xl:grid-cols-[minmax(360px,1fr)_minmax(170px,200px)_minmax(145px,170px)_minmax(135px,160px)_130px]">
+        <div className="relative sm:col-span-2 xl:col-span-1">
+          <Search aria-hidden="true" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <input type="search" value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="h-10 w-full rounded-lg border border-border bg-background pl-10 pr-3 text-[13px] text-foreground outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-100" placeholder={tx("searchPlaceholder") as string} />
         </div>
-        <select
-          value={departmentId}
-          onChange={(e) => { setDepartmentId(e.target.value); setPage(1); }}
-          className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-        >
-          <option value="">{tx("allDepartments")}</option>
-          {deptList.map((d: any) => (
-            <option key={d.id} value={d.id}>{d.name}</option>
-          ))}
-        </select>
-        <select
-          value={status}
-          onChange={(e) => { setStatus(e.target.value); setPage(1); }}
-          className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-        >
-          <option value="">{tx("allStatuses")}</option>
-          <option value="active">{tx("statusActive")}</option>
-          <option value="filled">{tx("statusFilled")}</option>
-          <option value="frozen">{tx("statusFrozen")}</option>
-          <option value="closed">{tx("statusClosed")}</option>
-        </select>
-        <select
-          value={employmentType}
-          onChange={(e) => { setEmploymentType(e.target.value); setPage(1); }}
-          className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-        >
-          <option value="">{tx("allTypes")}</option>
-          <option value="full_time">{tx("fullTime")}</option>
-          <option value="part_time">{tx("partTime")}</option>
-          <option value="contract">{tx("contract")}</option>
-          <option value="intern">{tx("intern")}</option>
-        </select>
-        <label className="bg-card text-foreground flex items-center gap-2 px-3 py-2 border border-border rounded-md text-[13px] text-muted-foreground cursor-pointer whitespace-nowrap">
-          <input
-            type="checkbox"
-            checked={criticalOnly}
-            onChange={(e) => { setCriticalOnly(e.target.checked); setPage(1); }}
-            className="h-4 w-4 text-brand-600 dark:text-brand-400 border-border rounded focus:ring-brand-500"
-          />
+        <div className="relative">
+          <Building2 aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <select value={departmentId} onChange={(e) => { setDepartmentId(e.target.value); setPage(1); }} className="h-10 w-full appearance-none rounded-lg border border-border bg-background pl-9 pr-9 text-[13px] text-foreground outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-100">
+            <option value="">{tx("allDepartments")}</option>
+            {deptList.map((d: any) => <option key={d.id} value={d.id}>{d.name}</option>)}
+          </select>
+          <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        </div>
+        <div className="relative">
+          <ListFilter aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <select value={status} onChange={(e) => { setStatus(e.target.value); setPage(1); }} className="h-10 w-full appearance-none rounded-lg border border-border bg-background pl-9 pr-9 text-[13px] text-foreground outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-100">
+            <option value="">{tx("allStatuses")}</option>
+            <option value="active">{tx("statusActive")}</option>
+            <option value="filled">{tx("statusFilled")}</option>
+            <option value="frozen">{tx("statusFrozen")}</option>
+            <option value="closed">{tx("statusClosed")}</option>
+          </select>
+          <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        </div>
+        <div className="relative">
+          <Layers3 aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <select value={employmentType} onChange={(e) => { setEmploymentType(e.target.value); setPage(1); }} className="h-10 w-full appearance-none rounded-lg border border-border bg-background pl-9 pr-9 text-[13px] text-foreground outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-100">
+            <option value="">{tx("allTypes")}</option>
+            <option value="full_time">{tx("fullTime")}</option>
+            <option value="part_time">{tx("partTime")}</option>
+            <option value="contract">{tx("contract")}</option>
+            <option value="intern">{tx("intern")}</option>
+          </select>
+          <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        </div>
+        <label className="flex h-10 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-border bg-background px-3 text-[13px] font-medium text-muted-foreground transition hover:bg-muted/60">
+          <input type="checkbox" checked={criticalOnly} onChange={(e) => { setCriticalOnly(e.target.checked); setPage(1); }} className="h-4 w-4 rounded border-border text-brand-600 focus:ring-brand-500" />
           {tx("criticalOnly")}
         </label>
       </div>
 
-      {/* Table */}
-      <div className="bg-card rounded-lg border border-border overflow-x-auto -mx-4 lg:mx-0">
-        <table className="min-w-full">
-          <thead className="bg-muted/50 border-b border-border">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+        <div className="inline-flex rounded-lg border border-border bg-card p-0.5 shadow-sm" role="group" aria-label={tx("viewMode", { defaultValue: "View mode" }) as string}>
+          <button type="button" onClick={() => setViewMode("grid")} aria-pressed={viewMode === "grid"} className={`inline-flex min-h-8 items-center gap-2 rounded-md px-3 text-xs font-medium transition-colors ${viewMode === "grid" ? "bg-brand-50 text-brand-700 dark:bg-brand-950/40 dark:text-brand-300" : "text-muted-foreground hover:bg-muted"}`}>
+            <LayoutGrid aria-hidden="true" className="h-4 w-4" />{tx("gridView", { defaultValue: "Grid View" })}
+          </button>
+          <button type="button" onClick={() => setViewMode("list")} aria-pressed={viewMode === "list"} className={`inline-flex min-h-8 items-center gap-2 rounded-md px-3 text-xs font-medium transition-colors ${viewMode === "list" ? "bg-brand-50 text-brand-700 dark:bg-brand-950/40 dark:text-brand-300" : "text-muted-foreground hover:bg-muted"}`}>
+            <List aria-hidden="true" className="h-4 w-4" />{tx("listView", { defaultValue: "List View" })}
+          </button>
+        </div>
+        <p role="status" className="text-xs font-medium text-muted-foreground">{tx("positionsCount", { count: meta?.total ?? positions.length, defaultValue: (meta?.total ?? positions.length) === 1 ? "{{count}} position" : "{{count}} positions" })}</p>
+      </div>
+
+      {isLoading ? (
+        <div className="rounded-xl border border-border bg-card py-16 text-center text-[13px] text-muted-foreground">{t("common.loading")}</div>
+      ) : positions.length === 0 ? (
+        <div className="rounded-xl border border-border bg-card py-16 text-center text-[13px] text-muted-foreground">{tx("noPositions")}</div>
+      ) : viewMode === "grid" ? (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+          {positions.map((pos: any) => (
+            <article key={pos.id} className="flex min-h-[180px] flex-col rounded-xl border border-border bg-card p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-md">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">{tx("colCode")}</p>
+                  <p className="mt-0.5 font-mono text-[12px] font-semibold text-brand-600 dark:text-brand-400">{pos.code || "-"}</p>
+                </div>
+                <div className="flex gap-1.5">
+                  <Link to={`/positions/${pos.id}?edit=1`} aria-label={`${tx("editTooltip")} ${pos.title}`} className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted-foreground transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-600">
+                    <Pencil aria-hidden="true" className="h-3.5 w-3.5" />
+                  </Link>
+                  <button type="button" onClick={() => { setDeleteTarget({ id: pos.id, title: pos.title }); setDeleteError(null); }} aria-label={`${tx("deleteTooltip")} ${pos.title}`} className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted-foreground transition hover:border-red-200 hover:bg-red-50 hover:text-red-600">
+                    <Trash2 aria-hidden="true" className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </div>
+              <Link to={`/positions/${pos.id}`} className="mt-3 block text-base font-bold leading-snug text-foreground hover:text-brand-600">{pos.title}</Link>
+              <p className="mt-1.5 flex items-center gap-1.5 text-xs text-muted-foreground"><Building2 aria-hidden="true" className="h-4 w-4" />{pos.department_name || tx("unassigned", { defaultValue: "Unassigned" })}</p>
+              <div className="mt-auto grid grid-cols-[1.2fr_.95fr_.9fr_.75fr] gap-2 border-t border-border pt-3">
+                <div className="min-w-0"><p className="truncate text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">{tx("colType")}</p><span className="mt-1 inline-flex max-w-full truncate rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">{positionTypeLabel(pos.employment_type)}</span></div>
+                <div className="min-w-0"><p className="truncate text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">{tx("colHeadcount")}</p><p className="mt-1 text-xs font-bold tabular-nums text-orange-600">{pos.headcount_filled ?? 0}/{pos.headcount_budget ?? 0}</p></div>
+                <div className="min-w-0"><p className="truncate text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">{t("common.status")}</p><span className={`mt-1 inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold ${statusClasses(pos.status)}`}>{positionStatusLabel(pos.status)}</span></div>
+                <div className="min-w-0"><p className="truncate text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">{tx("colCritical")}</p><p className={`mt-1 text-[11px] font-semibold ${pos.is_critical ? "text-red-600" : "text-muted-foreground"}`}>{pos.is_critical ? tx("yes", { defaultValue: "Yes" }) : tx("no", { defaultValue: "No" })}</p></div>
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+      <div className="overflow-x-auto rounded-xl border border-border bg-card shadow-sm">
+        <table className="w-full min-w-[1040px] text-xs">
+          <thead className="border-b border-border bg-muted/45">
             <tr>
-              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{tx("colCode")}</th>
-              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{tx("colTitle")}</th>
-              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t("common.department")}</th>
-              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{tx("colType")}</th>
-              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{tx("colHeadcount")}</th>
-              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t("common.status")}</th>
-              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{tx("colCritical")}</th>
-              <th className="text-right text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t("common.actions")}</th>
+              {[tx("colCode"), tx("colTitle"), t("common.department"), tx("colType"), tx("colHeadcount"), t("common.status"), tx("colCritical")].map((label) => (
+                <th key={String(label)} scope="col" className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground"><span className="inline-flex items-center gap-1.5">{label}<ArrowUpDown aria-hidden="true" className="h-3.5 w-3.5 opacity-45" /></span></th>
+              ))}
+              <th scope="col" className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">{t("common.actions")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
@@ -381,19 +450,19 @@ export default function PositionListPage() {
               </tr>
             ) : (
               positions.map((pos: any) => (
-                <tr key={pos.id} className="hover:bg-muted/50 transition-colors">
-                  <td className="px-4 py-2.5 text-[13px] font-mono tabular-nums text-muted-foreground">{pos.code || "-"}</td>
+                <tr key={pos.id} className="h-12 transition-colors hover:bg-muted/35">
+                  <td className="px-4 py-2.5 font-mono text-xs font-semibold tabular-nums text-brand-600">{pos.code || "-"}</td>
                   <td className="px-4 py-2.5">
                     <Link
                       to={`/positions/${pos.id}`}
-                      className="text-[13px] font-medium text-foreground hover:text-brand-600"
+                      className="text-[13px] font-bold text-foreground transition-colors hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40"
                     >
                       {pos.title}
                     </Link>
                   </td>
-                  <td className="px-4 py-2.5 text-[13px] text-muted-foreground">{pos.department_name || "-"}</td>
+                  <td className="px-4 py-2.5 text-xs text-muted-foreground">{pos.department_name || "-"}</td>
                   <td className="px-4 py-2.5">
-                    <span className="text-[11px] px-2 py-0.5 rounded-md bg-muted text-muted-foreground capitalize">
+                    <span className="inline-flex rounded-md bg-muted px-2.5 py-1 text-[11px] font-medium text-muted-foreground capitalize">
                       {(() => {
                         // Map server enum → localized label; fall back to the
                         // raw word with underscores stripped.
@@ -408,14 +477,14 @@ export default function PositionListPage() {
                     </span>
                   </td>
                   <td className="px-4 py-2.5">
-                    <span className={`text-[13px] font-medium tabular-nums ${
+                    <span className={`text-[13px] font-bold tabular-nums ${
                       pos.headcount_filled >= pos.headcount_budget ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400"
                     }`}>
                       {pos.headcount_filled}/{pos.headcount_budget}
                     </span>
                   </td>
                   <td className="px-4 py-2.5">
-                    <span className={`text-[11px] px-2 py-0.5 rounded-md font-medium ${
+                    <span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold ${
                       pos.status === "active" ? "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300" :
                       pos.status === "filled" ? "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300" :
                       pos.status === "frozen" ? "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300" :
@@ -426,29 +495,30 @@ export default function PositionListPage() {
                   </td>
                   <td className="px-4 py-2.5">
                     {pos.is_critical ? (
-                      <AlertTriangle className="h-4 w-4 text-red-500" />
+                      <AlertTriangle aria-hidden="true" className="h-4 w-4 text-red-500" />
                     ) : (
-                      <span className="text-muted-foreground/50">-</span>
+                      <span className="text-xs text-muted-foreground/60">-</span>
                     )}
                   </td>
-                  <td className="px-4 py-2.5 text-right">
-                    <div className="flex items-center justify-end gap-1">
+                  <td className="px-4 py-2 text-right">
+                    <div className="flex items-center justify-end gap-1.5">
                       <Link
                         to={`/positions/${pos.id}?edit=1`}
-                        className="p-1.5 rounded-md text-muted-foreground hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:text-brand-600 transition-colors"
-                        title={tx("editTooltip") as string}
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-brand-50 hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40"
+                        aria-label={`${tx("editTooltip")} ${pos.title}`}
                       >
-                        <Pencil className="h-4 w-4" />
+                        <Pencil aria-hidden="true" className="h-4 w-4" />
                       </Link>
                       <button
                         onClick={() => {
                           setDeleteTarget({ id: pos.id, title: pos.title });
                           setDeleteError(null);
                         }}
-                        className="p-1.5 rounded-md text-muted-foreground hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-600 transition-colors"
-                        title={tx("deleteTooltip") as string}
+                        type="button"
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/40"
+                        aria-label={`${tx("deleteTooltip")} ${pos.title}`}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 aria-hidden="true" className="h-4 w-4" />
                       </button>
                     </div>
                   </td>
@@ -458,30 +528,18 @@ export default function PositionListPage() {
           </tbody>
         </table>
 
-        {meta && meta.total_pages > 1 && (
-          <div className="flex items-center justify-between px-4 py-2.5 border-t border-border">
-            <p className="text-[13px] tabular-nums text-muted-foreground">
-              {tx("pageOf", { page: meta.page, total_pages: meta.total_pages, total: meta.total })}
-            </p>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="flex items-center gap-1 px-3 py-1.5 text-[13px] border border-border rounded-md disabled:opacity-50 hover:bg-muted transition-colors"
-              >
-                <ChevronLeft className="h-4 w-4" /> {t("common.previous")}
-              </button>
-              <button
-                onClick={() => setPage((p) => p + 1)}
-                disabled={page >= meta.total_pages}
-                className="flex items-center gap-1 px-3 py-1.5 text-[13px] border border-border rounded-md disabled:opacity-50 hover:bg-muted transition-colors"
-              >
-                {t("common.next")} <ChevronRight className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
-        )}
       </div>
+      )}
+
+      {meta && meta.total_pages > 1 && (
+        <div className="mt-3 flex items-center justify-between rounded-lg border border-border bg-card px-4 py-2.5">
+          <p className="text-[12px] tabular-nums text-muted-foreground">{tx("pageOf", { page: meta.page, total_pages: meta.total_pages, total: meta.total })}</p>
+          <div className="flex gap-2">
+            <button type="button" onClick={() => setPage((current) => Math.max(1, current - 1))} disabled={page === 1} className="flex items-center gap-1 rounded-md border border-border px-3 py-1.5 text-[12px] transition hover:bg-muted disabled:opacity-50"><ChevronLeft aria-hidden="true" className="h-4 w-4" />{t("common.previous")}</button>
+            <button type="button" onClick={() => setPage((current) => current + 1)} disabled={page >= meta.total_pages} className="flex items-center gap-1 rounded-md border border-border px-3 py-1.5 text-[12px] transition hover:bg-muted disabled:opacity-50">{t("common.next")}<ChevronRight aria-hidden="true" className="h-4 w-4" /></button>
+          </div>
+        </div>
+      )}
 
       {/* Delete confirmation modal */}
       {deleteTarget && (

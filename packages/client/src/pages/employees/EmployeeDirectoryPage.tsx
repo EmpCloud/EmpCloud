@@ -1,8 +1,8 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { Search, ChevronLeft, ChevronRight, Download, Upload, X, CheckCircle2, AlertTriangle, Loader2, Pencil, Trash2, UserPlus, Mail, FileSpreadsheet, KeyRound, Eye, EyeOff, Copy, Send, Users } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, Download, Upload, X, CheckCircle2, AlertTriangle, Loader2, Pencil, Trash2, UserPlus, UserCheck, Mail, FileSpreadsheet, KeyRound, Eye, EyeOff, Copy, Send, Users, Building2, Briefcase, MapPin, IdCard, LayoutGrid, List, SlidersHorizontal, ArrowUpDown, MoreVertical } from "lucide-react";
 import api from "@/api/client";
 import { useDepartments, useInviteUser } from "@/api/hooks";
 import { useAuthStore } from "@/lib/auth-store";
@@ -118,6 +118,13 @@ export default function EmployeeDirectoryPage() {
   const [departmentId, setDepartmentId] = useState<string>("");
   const [locationId, setLocationId] = useState<string>("");
   const [roleFilter, setRoleFilter] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [viewMode, setViewMode] = useState<"table" | "grid">("grid");
+  const [sortOrder, setSortOrder] = useState<"name_asc" | "name_desc" | "newest">("name_asc");
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [openCardMenu, setOpenCardMenu] = useState<{ id: number; anchor: "header" | "footer" } | null>(null);
+  const [openTableMenuId, setOpenTableMenuId] = useState<number | null>(null);
+  const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<Set<number>>(() => new Set());
   const [showUpload, setShowUpload] = useState(false);
   const [uploadRows, setUploadRows] = useState<any[]>([]);
   const [uploadResult, setUploadResult] = useState<any>(null);
@@ -346,13 +353,6 @@ export default function EmployeeDirectoryPage() {
     },
   });
 
-  // Inline role update — only org_admin sees the dropdown editor.
-  const updateRoleMut = useMutation({
-    mutationFn: ({ userId, role }: { userId: number; role: string }) =>
-      api.put(`/users/${userId}`, { role }).then((r) => r.data.data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["employee-directory"] }),
-  });
-
   const fileRef = useRef<HTMLInputElement>(null);
 
   const { data: departments } = useDepartments();
@@ -373,6 +373,7 @@ export default function EmployeeDirectoryPage() {
         department_id: departmentId || undefined,
         location_id: locationId || undefined,
         role: roleFilter || undefined,
+        status: statusFilter,
       },
     ],
     queryFn: () =>
@@ -380,14 +381,20 @@ export default function EmployeeDirectoryPage() {
         .get("/employees/directory", {
           params: {
             page,
-            per_page: 20,
+            per_page: 12,
             ...(search ? { search } : {}),
             ...(departmentId ? { department_id: departmentId } : {}),
             ...(locationId ? { location_id: locationId } : {}),
             ...(roleFilter ? { role: roleFilter } : {}),
+            status: statusFilter,
           },
         })
         .then((r) => r.data),
+  });
+
+  const { data: directoryStats, isLoading: statsLoading } = useQuery({
+    queryKey: ["employee-directory-stats"],
+    queryFn: () => api.get("/employees/directory/stats").then((r) => r.data.data),
   });
 
   const exportQuery = useQuery({
@@ -493,85 +500,115 @@ export default function EmployeeDirectoryPage() {
     }
   };
 
-  const employees = data?.data || [];
+  const employees = useMemo(() => {
+    const rows = [...(data?.data || [])];
+    return rows.sort((first: any, second: any) => {
+      if (sortOrder === "newest") {
+        return new Date(second.date_of_joining || 0).getTime() - new Date(first.date_of_joining || 0).getTime();
+      }
+      const firstName = `${first.first_name || ""} ${first.last_name || ""}`.trim();
+      const secondName = `${second.first_name || ""} ${second.last_name || ""}`.trim();
+      return sortOrder === "name_desc"
+        ? secondName.localeCompare(firstName)
+        : firstName.localeCompare(secondName);
+    });
+  }, [data?.data, sortOrder]);
   const meta = data?.meta;
   const deptList = departments || [];
+  const locationById = new Map<string, string>(
+    (locations || []).map((location: any): [string, string] => [String(location.id), String(location.name)]),
+  );
+  const activeRate = directoryStats?.total_employees
+    ? Math.round((directoryStats.active_employees / directoryStats.total_employees) * 100)
+    : 0;
+  const visibleStart = meta?.total ? (meta.page - 1) * meta.per_page + 1 : 0;
+  const visibleEnd = meta?.total ? Math.min(meta.page * meta.per_page, meta.total) : 0;
+  const pageEmployeeIds = employees.map((employee: any) => Number(employee.id));
+  const allPageEmployeesSelected = pageEmployeeIds.length > 0 && pageEmployeeIds.every((id: number) => selectedEmployeeIds.has(id));
+  const somePageEmployeesSelected = pageEmployeeIds.some((id: number) => selectedEmployeeIds.has(id));
+  const roleLabel = (role: string) => {
+    const labels: Record<string, string> = {
+      employee: tx("roleEmployee") as string,
+      manager: tx("roleManager") as string,
+      hr_admin: tx("roleHrAdmin") as string,
+      org_admin: tx("roleOrgAdmin") as string,
+    };
+    return labels[role] || role.replace(/_/g, " ");
+  };
 
   return (
-    <div>
-      <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
+    <div className="mx-auto w-full max-w-[1600px] pb-4">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight text-foreground">{tx("title")}</h1>
-          <p className="text-[13px] text-muted-foreground mt-0.5">{tx("subtitle")}</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={handleDownload}
-            disabled={exportQuery.isFetching}
-            className="flex items-center gap-2 px-4 py-2 border border-border rounded-md text-[13px] font-medium text-muted-foreground hover:bg-muted disabled:opacity-50"
-          >
-            <Download className="h-4 w-4" />
-            {exportQuery.isFetching ? tx("exporting") : tx("exportExcel")}
-          </button>
-          {canEditAll && (
-            <label className="flex items-center gap-2 px-4 py-2 border border-border rounded-md text-[13px] font-medium text-muted-foreground hover:bg-muted cursor-pointer">
-              <Upload className="h-4 w-4" />
-              {tx("bulkUpdate")}
-              <input
-                ref={fileRef}
-                type="file"
-                accept=".csv,.xlsx,.xls"
-                onChange={handleFileUpload}
-                className="hidden"
-              />
-            </label>
-          )}
-          {canInvite && (
-            <button
-              onClick={() => setShowPendingInvitations(true)}
-              className={`relative flex items-center gap-2 px-4 py-2 border rounded-md text-[13px] font-medium transition-colors ${
-                invitations.length > 0
-                  ? "border-amber-300 bg-amber-50 dark:bg-amber-950/40 text-amber-800 hover:bg-amber-100 dark:hover:bg-amber-950/40"
-                  : "border-border text-muted-foreground hover:bg-muted"
-              }`}
-            >
-              <Mail className="h-4 w-4" />
-              {tx("pendingInvitations")}
-              {invitations.length > 0 && (
-                <span className="inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-full bg-amber-600 text-white text-xs font-semibold">
-                  {invitations.length}
-                </span>
-              )}
-            </button>
-          )}
-          {isOrgAdmin && (
-            <button
-              onClick={() => setShowCsvImport(true)}
-              className="flex items-center gap-2 px-4 py-2 border border-border rounded-md text-[13px] font-medium text-muted-foreground hover:bg-muted"
-            >
-              <FileSpreadsheet className="h-4 w-4" /> {tx("importEmployees")}
-            </button>
-          )}
-          {canInvite && (
-            <button
-              onClick={() => setShowBulkInviteConfirm(true)}
-              disabled={bulkInvite.isPending}
-              title={tx("inviteAllTooltip") as string}
-              className="flex items-center gap-2 px-4 py-2 border border-brand-300 dark:border-brand-800 bg-brand-50 dark:bg-brand-950/40 text-brand-800 dark:text-brand-200 rounded-md text-[13px] font-medium hover:bg-brand-100 dark:hover:bg-brand-900/50 disabled:opacity-50"
-            >
-              <Users className="h-4 w-4" /> {tx("inviteAll")}
-            </button>
-          )}
-          {canInvite && (
-            <button
-              onClick={() => setShowInvite((v) => !v)}
-              className="flex items-center gap-2 bg-brand-600 text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-brand-700 shadow-sm transition-all"
-            >
-              <UserPlus className="h-4 w-4" /> {tx("inviteEmployee")}
-            </button>
-          )}
+          <h1 className="text-xl font-bold tracking-tight text-foreground">{tx("title")}</h1>
+          <p className="mt-0.5 text-xs text-muted-foreground">{tx("subtitle")}</p>
         </div>
       </div>
+
+      <section aria-label={tx("workforceOverview") as string} className="mb-3 grid grid-cols-1 gap-2.5 sm:grid-cols-2 xl:grid-cols-[repeat(4,minmax(0,1fr))_220px]">
+        {statsLoading ? (
+          Array.from({ length: 4 }, (_, index) => (
+            <div key={index} className="h-[76px] animate-pulse rounded-xl border border-border bg-card p-3 shadow-sm">
+              <div className="h-4 w-24 rounded bg-muted" />
+              <div className="mt-2 h-5 w-14 rounded bg-muted" />
+            </div>
+          ))
+        ) : (
+          <>
+            <div className="flex min-h-[76px] items-center gap-3 rounded-xl border border-blue-100 bg-card p-3 shadow-sm dark:border-blue-900/40">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-300">
+                <Users aria-hidden="true" className="h-5 w-5" />
+              </span>
+              <div>
+                <p className="text-[11px] font-medium text-muted-foreground">{tx("totalEmployees")}</p>
+                <p className="mt-0.5 text-xl font-bold tabular-nums text-foreground">{directoryStats?.total_employees ?? 0}</p>
+              </div>
+            </div>
+            <div className="flex min-h-[76px] items-center gap-3 rounded-xl border border-emerald-100 bg-card p-3 shadow-sm dark:border-emerald-900/40">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-300">
+                <UserCheck aria-hidden="true" className="h-5 w-5" />
+              </span>
+              <div>
+                <p className="text-[11px] font-medium text-muted-foreground">{tx("activeEmployees")}</p>
+                <div className="mt-0.5 flex items-baseline gap-2">
+                  <p className="text-xl font-bold tabular-nums text-foreground">{directoryStats?.active_employees ?? 0}</p>
+                  <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">{activeRate}%</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex min-h-[76px] items-center gap-3 rounded-xl border border-violet-100 bg-card p-3 shadow-sm dark:border-violet-900/40">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-600 dark:bg-violet-950/40 dark:text-violet-300">
+                <Building2 aria-hidden="true" className="h-5 w-5" />
+              </span>
+              <div>
+                <p className="text-[11px] font-medium text-muted-foreground">{tx("departments")}</p>
+                <p className="mt-0.5 text-xl font-bold tabular-nums text-foreground">{deptList.length}</p>
+              </div>
+            </div>
+            <div className="flex min-h-[76px] items-center gap-3 rounded-xl border border-orange-100 bg-card p-3 shadow-sm dark:border-orange-900/40">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-600 dark:bg-orange-950/40 dark:text-orange-300">
+                <UserPlus aria-hidden="true" className="h-5 w-5" />
+              </span>
+              <div>
+                <p className="text-[11px] font-medium text-muted-foreground">{tx("newJoinersThisMonth")}</p>
+                <p className="mt-0.5 text-xl font-bold tabular-nums text-foreground">{directoryStats?.new_joiners_this_month ?? 0}</p>
+              </div>
+            </div>
+          </>
+        )}
+        {canInvite && (
+          <div className="flex min-h-[76px] items-start justify-end pt-1 sm:col-span-2 xl:col-span-1">
+            <button
+              type="button"
+              onClick={() => setShowInvite((value) => !value)}
+              className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-lg bg-brand-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+            >
+              <UserPlus aria-hidden="true" className="h-4 w-4" />
+              {tx("inviteEmployee")}
+            </button>
+          </div>
+        )}
+      </section>
 
       {/* Bulk-invite confirmation. Server enforces seat limits and skips
            anyone with a pending invite, but a friendly heads-up is still
@@ -979,64 +1016,194 @@ export default function EmployeeDirectoryPage() {
       )}
 
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-2 mb-4 bg-card border border-border rounded-lg p-2">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
+      <div className="mb-2 rounded-xl border border-border bg-card p-1.5 shadow-sm">
+        <div className="grid gap-1.5 sm:grid-cols-2 xl:grid-cols-[minmax(280px,1fr)_180px_180px_160px_auto]">
+          <label className="relative block">
+            <span className="sr-only">{tx("searchPlaceholder")}</span>
+            <Search aria-hidden="true" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              type="search"
+              value={search}
+              onChange={(event) => {
+                setSearch(event.target.value);
+                setPage(1);
+              }}
+              className="min-h-9 w-full rounded-lg border border-border bg-card py-1.5 pl-9 pr-3 text-xs text-foreground outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-500/20"
+              placeholder={tx("searchPlaceholder") as string}
+            />
+          </label>
+          <select
+            aria-label={tx("allDepartments") as string}
+            value={departmentId}
+            onChange={(event) => {
+              setDepartmentId(event.target.value);
               setPage(1);
             }}
-            className="bg-card text-foreground w-full pl-9 pr-4 py-2 border border-border rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-            placeholder={tx("searchPlaceholder") as string}
-          />
+            className="min-h-9 rounded-lg border border-border bg-card px-3 py-1.5 text-xs text-foreground outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-500/20"
+          >
+            <option value="">{tx("allDepartments")}</option>
+            {deptList.map((department: any) => (
+              <option key={department.id} value={department.id}>{department.name}</option>
+            ))}
+          </select>
+          <select
+            aria-label={tx("allLocations") as string}
+            value={locationId}
+            onChange={(event) => {
+              setLocationId(event.target.value);
+              setPage(1);
+            }}
+            className="min-h-9 rounded-lg border border-border bg-card px-3 py-1.5 text-xs text-foreground outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-500/20"
+          >
+            <option value="">{tx("allLocations")}</option>
+            {(locations || []).map((location: any) => (
+              <option key={location.id} value={location.id}>{location.name}</option>
+            ))}
+          </select>
+          <select
+            aria-label={tx("allStatuses") as string}
+            value={statusFilter}
+            onChange={(event) => {
+              setStatusFilter(event.target.value);
+              setPage(1);
+            }}
+            className="min-h-9 rounded-lg border border-border bg-card px-3 py-1.5 text-xs text-foreground outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-500/20"
+          >
+            <option value="all">{tx("allStatuses")}</option>
+            <option value="1">{tx("statusActive")}</option>
+            <option value="0">{tx("statusInactive")}</option>
+          </select>
+          <button
+            type="button"
+            aria-expanded={showAdvancedFilters}
+            onClick={() => setShowAdvancedFilters((value) => !value)}
+            className="inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium text-brand-600 transition-colors hover:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-brand-300 dark:hover:bg-brand-950/40"
+          >
+            <SlidersHorizontal aria-hidden="true" className="h-4 w-4" />
+            {tx("moreFilters")}
+          </button>
         </div>
-        <select
-          value={departmentId}
-          onChange={(e) => {
-            setDepartmentId(e.target.value);
-            setPage(1);
-          }}
-          className="bg-card text-foreground px-3 py-2 border border-border rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-        >
-          <option value="">{tx("allDepartments")}</option>
-          {deptList.map((d: any) => (
-            <option key={d.id} value={d.id}>
-              {d.name}
-            </option>
-          ))}
-        </select>
-        <select
-          value={locationId}
-          onChange={(e) => {
-            setLocationId(e.target.value);
-            setPage(1);
-          }}
-          className="bg-card text-foreground px-3 py-2 border border-border rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-        >
-          <option value="">{tx("allLocations")}</option>
-          {(locations || []).map((l: any) => (
-            <option key={l.id} value={l.id}>
-              {l.name}
-            </option>
-          ))}
-        </select>
-        <select
-          value={roleFilter}
-          onChange={(e) => {
-            setRoleFilter(e.target.value);
-            setPage(1);
-          }}
-          className="bg-card text-foreground px-3 py-2 border border-border rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-        >
-          <option value="">{tx("allRoles")}</option>
-          <option value="employee">{tx("roleEmployee")}</option>
-          <option value="manager">{tx("roleManager")}</option>
-          <option value="hr_admin">{tx("roleHrAdmin")}</option>
-          <option value="org_admin">{tx("roleOrgAdmin")}</option>
-        </select>
+        {showAdvancedFilters && (
+          <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-2">
+            <select
+              aria-label={tx("allRoles") as string}
+              value={roleFilter}
+              onChange={(event) => {
+                setRoleFilter(event.target.value);
+                setPage(1);
+              }}
+              className="min-h-10 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-500/20 sm:w-52"
+            >
+              <option value="">{tx("allRoles")}</option>
+              <option value="employee">{tx("roleEmployee")}</option>
+              <option value="manager">{tx("roleManager")}</option>
+              <option value="hr_admin">{tx("roleHrAdmin")}</option>
+              <option value="org_admin">{tx("roleOrgAdmin")}</option>
+            </select>
+            <div className="flex flex-wrap items-center gap-2" aria-label="Directory actions">
+              <button
+                type="button"
+                onClick={handleDownload}
+                disabled={exportQuery.isFetching}
+                className="inline-flex min-h-9 items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted disabled:opacity-50"
+              >
+                <Download aria-hidden="true" className="h-4 w-4" />
+                {exportQuery.isFetching ? tx("exporting") : tx("exportExcel")}
+              </button>
+              {canEditAll && (
+                <label className="inline-flex min-h-9 cursor-pointer items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted">
+                  <Upload aria-hidden="true" className="h-4 w-4" />
+                  {tx("bulkUpdate")}
+                  <input
+                    ref={fileRef}
+                    type="file"
+                    accept=".csv,.xlsx,.xls"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                  />
+                </label>
+              )}
+              {canInvite && (
+                <button
+                  type="button"
+                  onClick={() => setShowPendingInvitations(true)}
+                  className={`relative inline-flex min-h-9 items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition-colors ${
+                    invitations.length > 0
+                      ? "border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-950/40"
+                      : "border-border text-muted-foreground hover:bg-muted"
+                  }`}
+                >
+                  <Mail aria-hidden="true" className="h-4 w-4" />
+                  {tx("pendingInvitations")}
+                  {invitations.length > 0 && (
+                    <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-600 px-1.5 text-[10px] font-semibold text-white">
+                      {invitations.length}
+                    </span>
+                  )}
+                </button>
+              )}
+              {isOrgAdmin && (
+                <button
+                  type="button"
+                  onClick={() => setShowCsvImport(true)}
+                  className="inline-flex min-h-9 items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted"
+                >
+                  <FileSpreadsheet aria-hidden="true" className="h-4 w-4" /> {tx("importEmployees")}
+                </button>
+              )}
+              {canInvite && (
+                <button
+                  type="button"
+                  onClick={() => setShowBulkInviteConfirm(true)}
+                  disabled={bulkInvite.isPending}
+                  title={tx("inviteAllTooltip") as string}
+                  className="inline-flex min-h-9 items-center gap-2 rounded-lg border border-brand-200 bg-brand-50 px-3 py-2 text-xs font-medium text-brand-700 transition-colors hover:bg-brand-100 disabled:opacity-50 dark:border-brand-800 dark:bg-brand-950/40 dark:text-brand-200 dark:hover:bg-brand-900/50"
+                >
+                  <Users aria-hidden="true" className="h-4 w-4" /> {tx("inviteAll")}
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+        <div className="inline-flex rounded-lg border border-border bg-card p-0.5 shadow-sm" role="group" aria-label={tx("viewMode") as string}>
+          <button
+            type="button"
+            aria-pressed={viewMode === "table"}
+            onClick={() => setViewMode("table")}
+            className={`inline-flex min-h-8 items-center gap-2 rounded-md px-2.5 text-xs font-medium transition-colors ${viewMode === "table" ? "bg-brand-50 text-brand-700 dark:bg-brand-950/40 dark:text-brand-300" : "text-muted-foreground hover:bg-muted"}`}
+          >
+            <List aria-hidden="true" className="h-4 w-4" /> {tx("tableView")}
+          </button>
+          <button
+            type="button"
+            aria-pressed={viewMode === "grid"}
+            onClick={() => setViewMode("grid")}
+            className={`inline-flex min-h-8 items-center gap-2 rounded-md px-2.5 text-xs font-medium transition-colors ${viewMode === "grid" ? "bg-brand-50 text-brand-700 dark:bg-brand-950/40 dark:text-brand-300" : "text-muted-foreground hover:bg-muted"}`}
+          >
+            <LayoutGrid aria-hidden="true" className="h-4 w-4" /> {tx("gridView")}
+          </button>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <p role="status" className="text-[11px] text-muted-foreground">
+            {tx("showingEmployees", { shown: employees.length, from: visibleStart, to: visibleEnd, total: meta?.total ?? 0 })}
+          </p>
+          <label className="relative">
+            <span className="sr-only">{tx("sortBy")}</span>
+            <ArrowUpDown aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <select
+              value={sortOrder}
+              onChange={(event) => setSortOrder(event.target.value as typeof sortOrder)}
+              className="min-h-8 rounded-lg border border-border bg-card py-1 pl-9 pr-8 text-xs font-medium text-foreground outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-500/20"
+            >
+              <option value="name_asc">{tx("sortNameAsc")}</option>
+              <option value="name_desc">{tx("sortNameDesc")}</option>
+              <option value="newest">{tx("sortNewest")}</option>
+            </select>
+          </label>
+        </div>
       </div>
 
       {/* Table */}
@@ -1048,54 +1215,104 @@ export default function EmployeeDirectoryPage() {
           gray-50 page bg through during overscroll, which is the visual
           glitch the reporter screenshotted. Flatten left/right corners
           on mobile so there's nothing to leak through. */}
-      <div className="bg-card rounded-none lg:rounded-lg border-y border-border lg:border lg:border-border overflow-x-auto overscroll-x-contain -mx-4 lg:mx-0">
-        <table className="min-w-full text-[13px]">
-          <thead className="bg-muted/60 border-b border-border">
+      <div className={viewMode === "table" ? "-mx-4 overflow-x-auto overscroll-x-contain rounded-none border-y border-border bg-card lg:mx-0 lg:rounded-xl lg:border" : "min-w-0"}>
+        {viewMode === "table" ? (
+        <table className="w-full min-w-[1120px] table-fixed text-xs">
+          <thead className="border-b border-border bg-muted/50">
             <tr>
-              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wide px-4 py-2.5">{tx("colEmployee")}</th>
-              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wide px-4 py-2.5">{tx("colEmail")}</th>
-              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wide px-4 py-2.5">{t("common.department")}</th>
-              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wide px-4 py-2.5">{tx("colDesignation")}</th>
-              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wide px-4 py-2.5">{tx("colRole")}</th>
-              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wide px-4 py-2.5">{tx("colEmpCode")}</th>
-              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wide px-4 py-2.5">{t("common.status")}</th>
-              <th className="text-right text-[11px] font-semibold text-muted-foreground uppercase tracking-wide px-4 py-2.5">{t("common.actions")}</th>
+              <th className="w-10 px-3 py-2 text-center">
+                <input
+                  type="checkbox"
+                  checked={allPageEmployeesSelected}
+                  ref={(element) => {
+                    if (element) element.indeterminate = somePageEmployeesSelected && !allPageEmployeesSelected;
+                  }}
+                  aria-checked={allPageEmployeesSelected ? "true" : somePageEmployeesSelected ? "mixed" : "false"}
+                  aria-label={tx("selectAllEmployees") as string}
+                  onChange={() => setSelectedEmployeeIds((current) => {
+                    const next = new Set(current);
+                    if (allPageEmployeesSelected) pageEmployeeIds.forEach((id: number) => next.delete(id));
+                    else pageEmployeeIds.forEach((id: number) => next.add(id));
+                    return next;
+                  })}
+                  className="h-3.5 w-3.5 rounded border-border accent-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                />
+              </th>
+              {[
+                [tx("colEmployee"), "w-[180px]"],
+                [tx("colEmail"), "w-[210px]"],
+                [t("common.department"), "w-[150px]"],
+                [tx("colDesignation"), "w-[190px]"],
+                [tx("location"), "w-[140px]"],
+                [tx("employeeType"), "w-[120px]"],
+                [t("common.status"), "w-[110px]"],
+              ].map(([label, width]) => (
+                <th key={String(label)} className={`${width} px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-[0.04em] text-slate-600 dark:text-slate-300`}>
+                  <span className="inline-flex items-center gap-1">
+                    {label}
+                    <ArrowUpDown aria-hidden="true" className="h-2.5 w-2.5 opacity-60" />
+                  </span>
+                </th>
+              ))}
+              <th className="w-[120px] px-3 py-2 text-right text-[10px] font-semibold uppercase tracking-[0.04em] text-slate-600 dark:text-slate-300">
+                {t("common.actions")}
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
             {isLoading ? (
               <>
-                {[1, 2, 3, 4, 5].map((i) => (
+                {[1, 2, 3, 4, 5, 6].map((i) => (
                   <tr key={i} className="animate-pulse">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="h-8 w-8 rounded-full bg-muted" />
-                        <div className="h-4 w-28 bg-muted rounded" />
+                    <td className="px-3 py-2"><div className="h-3.5 w-3.5 rounded bg-muted" /></td>
+                    <td className="px-3 py-2">
+                      <div className="flex items-center gap-2">
+                        <div className="h-7 w-7 rounded-full bg-muted" />
+                        <div className="h-3 w-24 rounded bg-muted" />
                       </div>
                     </td>
-                    <td className="px-6 py-4"><div className="h-4 w-36 bg-muted rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-20 bg-muted rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-24 bg-muted rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-20 bg-muted rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-16 bg-muted rounded" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-14 bg-muted rounded-full" /></td>
-                    <td className="px-6 py-4"><div className="h-4 w-16 bg-muted rounded ml-auto" /></td>
+                    <td className="px-3 py-2"><div className="h-3 w-32 rounded bg-muted" /></td>
+                    <td className="px-3 py-2"><div className="h-3 w-20 rounded bg-muted" /></td>
+                    <td className="px-3 py-2"><div className="h-3 w-24 rounded bg-muted" /></td>
+                    <td className="px-3 py-2"><div className="h-5 w-16 rounded-full bg-muted" /></td>
+                    <td className="px-3 py-2"><div className="h-3 w-16 rounded bg-muted" /></td>
+                    <td className="px-3 py-2"><div className="h-5 w-14 rounded-full bg-muted" /></td>
+                    <td className="px-3 py-2"><div className="ml-auto h-6 w-20 rounded bg-muted" /></td>
                   </tr>
                 ))}
               </>
             ) : employees.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-4 py-8 text-center text-muted-foreground">
+                <td colSpan={9} className="px-4 py-8 text-center text-muted-foreground">
                   {tx("noEmployees")}
                 </td>
               </tr>
             ) : (
-              employees.map((emp: any) => (
-                <tr key={emp.id} className="hover:bg-muted/50 transition-colors">
-                  <td className="px-4 py-2.5">
+              employees.map((emp: any) => {
+                const employeeId = Number(emp.id);
+                const employeeName = `${emp.first_name || ""} ${emp.last_name || ""}`.trim();
+                const employeeLocation = locationById.get(String(emp.location_id)) || "-";
+                const isSelected = selectedEmployeeIds.has(employeeId);
+                return (
+                <tr key={emp.id} className={`transition-colors ${isSelected ? "bg-blue-50/80 dark:bg-blue-950/25" : "hover:bg-blue-50/50 dark:hover:bg-blue-950/15"}`}>
+                  <td className="px-3 py-1 text-center">
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      aria-label={tx("selectEmployee", { name: employeeName }) as string}
+                      onChange={() => setSelectedEmployeeIds((current) => {
+                        const next = new Set(current);
+                        if (next.has(employeeId)) next.delete(employeeId);
+                        else next.add(employeeId);
+                        return next;
+                      })}
+                      className="h-3.5 w-3.5 rounded border-border accent-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                    />
+                  </td>
+                  <td className="px-3 py-1">
                     <Link
                       to={`/employees/${emp.id}`}
-                      className="flex items-center gap-3 group"
+                      className="group flex min-w-0 items-center gap-2"
                     >
                       <EmployeeAvatar
                         userId={emp.id}
@@ -1103,96 +1320,52 @@ export default function EmployeeDirectoryPage() {
                         hasBiometricFace={!!emp.has_biometric_face}
                         firstName={emp.first_name}
                         lastName={emp.last_name}
-                        size="sm"
+                        size="xs"
+                        className="!h-[26px] !w-[26px]"
                       />
-                      <span className="text-[13px] font-medium text-foreground group-hover:text-brand-600">
-                        {emp.first_name} {emp.last_name}
+                      <span className="truncate text-[11px] font-semibold text-slate-800 group-hover:text-brand-600 dark:text-slate-100">
+                        {employeeName}
                       </span>
                     </Link>
                   </td>
-                  <td className="px-4 py-2.5 text-[13px] text-muted-foreground">{emp.email}</td>
-                  <td className="px-4 py-2.5 text-[13px] text-muted-foreground">
+                  <td className="truncate px-3 py-1 text-[11px] text-slate-600 dark:text-slate-300" title={emp.email || ""}>{emp.email || "-"}</td>
+                  <td className="truncate px-3 py-1 text-[11px] text-slate-600 dark:text-slate-300" title={emp.department_name || ""}>
                     {emp.department_name || "-"}
                   </td>
-                  <td className="px-4 py-2.5 text-[13px] text-muted-foreground">
+                  <td className="truncate px-3 py-1 text-[11px] text-slate-600 dark:text-slate-300" title={emp.designation || ""}>
                     {emp.designation || "-"}
                   </td>
-                  <td className="px-4 py-2.5">
-                    {(() => {
-                      // Map server enum → localized label, fall back to the
-                      // raw enum word with underscores stripped.
-                      const roleLabel = (role: string) => {
-                        const map: Record<string, string> = {
-                          employee: tx("roleEmployee") as string,
-                          manager: tx("roleManager") as string,
-                          hr_admin: tx("roleHrAdmin") as string,
-                          org_admin: tx("roleOrgAdmin") as string,
-                        };
-                        return map[role] || role.replace(/_/g, " ");
-                      };
-                      return isOrgAdmin && emp.id !== currentUser?.id ? (
-                        <select
-                          value={emp.role || "employee"}
-                          onChange={(e) =>
-                            updateRoleMut.mutate({ userId: emp.id, role: e.target.value })
-                          }
-                          disabled={updateRoleMut.isPending}
-                          className="text-xs border border-border rounded-full px-2 py-1 bg-muted text-muted-foreground cursor-pointer hover:bg-muted disabled:opacity-50"
-                        >
-                          <option value="employee">{tx("roleEmployee")}</option>
-                          <option value="manager">{tx("roleManager")}</option>
-                          <option value="hr_admin">{tx("roleHrAdmin")}</option>
-                          <option value="org_admin">{tx("roleOrgAdmin")}</option>
-                        </select>
-                      ) : (
-                        <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-full">
-                          {roleLabel(emp.role || "employee")}
-                        </span>
-                      );
-                    })()}
+                  <td className="px-3 py-1">
+                    <span className="inline-flex max-w-full items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-medium text-blue-600 dark:bg-blue-950/40 dark:text-blue-300" title={employeeLocation}>
+                      <MapPin aria-hidden="true" className="h-3 w-3 shrink-0" />
+                      <span className="truncate">{employeeLocation}</span>
+                    </span>
                   </td>
-                  <td className="px-4 py-2.5 text-[13px] text-muted-foreground tabular-nums">
+                  <td className="px-3 py-1 text-[11px] tabular-nums text-slate-600 dark:text-slate-300">
                     {emp.emp_code || "-"}
                   </td>
-                  <td className="px-4 py-2.5">
+                  <td className="px-3 py-1">
                     <span
-                      className={`text-xs px-2 py-1 rounded-full font-medium ${
+                      className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-medium ${
                         emp.status === 1
                           ? "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300"
                           : "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300"
                       }`}
                     >
+                      <span aria-hidden="true" className={`h-1.5 w-1.5 rounded-full ${emp.status === 1 ? "bg-emerald-500" : "bg-red-500"}`} />
                       {emp.status === 1 ? tx("statusActive") : tx("statusInactive")}
                     </span>
                   </td>
-                  <td className="px-4 py-2.5">
-                    <div className="flex items-center justify-end gap-2">
-                      {/* Per-row Invite — sends an invitation to this employee's
-                          email/role without opening the bulk invite modal.
-                          Hidden for the current user (no self-invites) and
-                          inactive accounts (status != 1) so HR doesn't bounce
-                          mail to disabled mailboxes; disabled while an invite
-                          for this row is in flight. */}
-                      {canInvite && emp.id !== currentUser?.id && emp.status === 1 && emp.email && (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (invitingId !== null) return;
-                            setInvitingId(emp.id);
-                            sendDirectInvite.mutate(emp.id);
-                          }}
-                          disabled={invitingId !== null}
-                          className="inline-flex items-center justify-center h-8 w-8 rounded-lg text-muted-foreground hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:text-blue-600 transition-colors disabled:opacity-50 disabled:cursor-wait"
-                          title={tx("sendInviteTooltip", { email: emp.email }) as string}
-                          aria-label={tx("sendInviteAria", { name: `${emp.first_name} ${emp.last_name}` }) as string}
-                        >
-                          {invitingId === emp.id ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <Send className="h-4 w-4" />
-                          )}
-                        </button>
-                      )}
+                  <td className="px-3 py-1">
+                    <div className="relative flex items-center justify-end gap-0.5">
+                      <Link
+                        to={`/employees/${emp.id}`}
+                        className="inline-flex h-7 w-7 items-center justify-center rounded-md text-slate-500 transition-colors hover:bg-brand-50 hover:text-brand-600 dark:text-slate-400 dark:hover:bg-brand-950/40"
+                        title={tx("viewProfile") as string}
+                        aria-label={tx("viewEmployeeAria", { name: employeeName }) as string}
+                      >
+                        <Eye aria-hidden="true" className="h-3.5 w-3.5" />
+                      </Link>
                       {canEditAll && (
                         <button
                           type="button"
@@ -1200,34 +1373,219 @@ export default function EmployeeDirectoryPage() {
                             setEditTargetId(emp.id);
                             setEditError(null);
                           }}
-                          className="inline-flex items-center justify-center h-8 w-8 rounded-lg text-muted-foreground hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:text-brand-600 transition-colors"
+                          className="inline-flex h-7 w-7 items-center justify-center rounded-md text-slate-500 transition-colors hover:bg-brand-50 hover:text-brand-600 dark:text-slate-400 dark:hover:bg-brand-950/40"
                           title={tx("editTooltip") as string}
                           aria-label={tx("editAria", { name: `${emp.first_name} ${emp.last_name}` }) as string}
                         >
-                          <Pencil className="h-4 w-4" />
+                          <Pencil aria-hidden="true" className="h-3.5 w-3.5" />
                         </button>
                       )}
-                      {canDelete && (
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setDeleteTarget({ id: emp.id, name: `${emp.first_name} ${emp.last_name}` })
-                          }
-                          disabled={emp.id === currentUser?.id}
-                          className="inline-flex items-center justify-center h-8 w-8 rounded-lg text-muted-foreground hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-600 transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-muted-foreground"
-                          title={(emp.id === currentUser?.id ? tx("deleteSelfTooltip") : tx("deleteTooltip")) as string}
-                          aria-label={tx("deleteAria", { name: `${emp.first_name} ${emp.last_name}` }) as string}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
+                      <button
+                        type="button"
+                        onClick={() => setOpenTableMenuId((current) => current === employeeId ? null : employeeId)}
+                        aria-haspopup="menu"
+                        aria-expanded={openTableMenuId === employeeId}
+                        aria-label={tx("moreActionsAria", { name: employeeName }) as string}
+                        className="inline-flex h-7 w-7 items-center justify-center rounded-md text-slate-500 transition-colors hover:bg-muted hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100"
+                      >
+                        <MoreVertical aria-hidden="true" className="h-3.5 w-3.5" />
+                      </button>
+                      {openTableMenuId === employeeId && (
+                        <div role="menu" className="absolute right-0 top-8 z-30 min-w-40 rounded-lg border border-border bg-card p-1 text-left shadow-lg">
+                          {canInvite && emp.id !== currentUser?.id && emp.status === 1 && emp.email && (
+                            <button
+                              type="button"
+                              role="menuitem"
+                              onClick={() => {
+                                if (invitingId !== null) return;
+                                setInvitingId(emp.id);
+                                setOpenTableMenuId(null);
+                                sendDirectInvite.mutate(emp.id);
+                              }}
+                              disabled={invitingId !== null}
+                              className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-xs text-foreground transition-colors hover:bg-muted disabled:cursor-wait disabled:opacity-50"
+                            >
+                              {invitingId === emp.id ? <Loader2 aria-hidden="true" className="h-3.5 w-3.5 animate-spin" /> : <Send aria-hidden="true" className="h-3.5 w-3.5" />}
+                              {tx("sendInvitation")}
+                            </button>
+                          )}
+                          {canDelete && (
+                            <button
+                              type="button"
+                              role="menuitem"
+                              onClick={() => {
+                                setOpenTableMenuId(null);
+                                setDeleteTarget({ id: emp.id, name: employeeName });
+                              }}
+                              disabled={emp.id === currentUser?.id}
+                              className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-xs text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-40 dark:hover:bg-red-950/40"
+                            >
+                              <Trash2 aria-hidden="true" className="h-3.5 w-3.5" />
+                              {tx("deleteEmployee")}
+                            </button>
+                          )}
+                        </div>
                       )}
                     </div>
                   </td>
                 </tr>
-              ))
+                );
+              })
             )}
           </tbody>
         </table>
+        ) : (
+          <div className="grid grid-cols-1 gap-2.5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" aria-busy={isLoading}>
+            {isLoading ? (
+              Array.from({ length: 8 }, (_, index) => (
+                <div key={index} className="h-[210px] animate-pulse rounded-xl border border-border bg-card p-3 shadow-sm">
+                  <div className="flex gap-2.5">
+                    <div className="h-10 w-10 rounded-full bg-muted" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 w-28 rounded bg-muted" />
+                      <div className="h-3 w-40 rounded bg-muted" />
+                    </div>
+                  </div>
+                  <div className="mt-4 space-y-2">
+                    {Array.from({ length: 5 }, (_, row) => <div key={row} className="h-3 rounded bg-muted" />)}
+                  </div>
+                </div>
+              ))
+            ) : employees.length === 0 ? (
+              <div className="col-span-full rounded-xl border border-dashed border-border bg-card px-4 py-14 text-center text-sm text-muted-foreground">
+                {tx("noEmployees")}
+              </div>
+            ) : (
+              employees.map((employee: any) => (
+                <article key={employee.id} className="group relative flex min-h-[210px] min-w-0 flex-col overflow-visible rounded-xl border border-border bg-card shadow-sm transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-md">
+                  <div className="flex items-start gap-2.5 p-3 pb-2">
+                    <EmployeeAvatar
+                      userId={employee.id}
+                      hasPhoto={!!employee.photo_path}
+                      hasBiometricFace={!!employee.has_biometric_face}
+                      firstName={employee.first_name}
+                      lastName={employee.last_name}
+                      size="md"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-start justify-between gap-2 pr-7">
+                        <Link to={`/employees/${employee.id}`} className="truncate text-xs font-bold text-slate-800 transition-colors hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-slate-100">
+                          {employee.first_name} {employee.last_name}
+                        </Link>
+                        <span className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-semibold ${employee.status === 1 ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300" : "bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300"}`}>
+                          <span aria-hidden="true" className={`h-1.5 w-1.5 rounded-full ${employee.status === 1 ? "bg-emerald-500" : "bg-rose-500"}`} />
+                          {employee.status === 1 ? tx("statusActive") : tx("statusInactive")}
+                        </span>
+                      </div>
+                      <p className="mt-0.5 truncate text-[10px] text-slate-500 dark:text-slate-400" title={employee.email}>{employee.email}</p>
+                    </div>
+                    {canDelete && (
+                      <button
+                        type="button"
+                        onClick={() => setOpenCardMenu((current) => current?.id === employee.id && current?.anchor === "header" ? null : { id: employee.id, anchor: "header" })}
+                        aria-haspopup="menu"
+                        aria-expanded={openCardMenu?.id === employee.id && openCardMenu?.anchor === "header"}
+                        aria-label={`More actions for ${employee.first_name} ${employee.last_name}`}
+                        className="absolute right-2 top-2.5 inline-flex h-7 w-7 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-muted hover:text-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-slate-400 dark:hover:text-slate-100"
+                      >
+                        <MoreVertical aria-hidden="true" className="h-3.5 w-3.5" />
+                      </button>
+                    )}
+                  </div>
+
+                  {canDelete && openCardMenu?.id === employee.id && (
+                    <div
+                      role="menu"
+                      className={`absolute right-3 z-20 min-w-36 rounded-lg border border-border bg-card p-1 shadow-lg ${openCardMenu?.anchor === "header" ? "top-11" : "bottom-10"}`}
+                    >
+                      <button
+                        type="button"
+                        role="menuitem"
+                        onClick={() => {
+                          setOpenCardMenu(null);
+                          setDeleteTarget({ id: employee.id, name: `${employee.first_name} ${employee.last_name}` });
+                        }}
+                        disabled={employee.id === currentUser?.id}
+                        className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-xs font-medium text-rose-600 transition-colors hover:bg-rose-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 disabled:cursor-not-allowed disabled:opacity-40 dark:hover:bg-rose-950/40"
+                      >
+                        <Trash2 aria-hidden="true" className="h-4 w-4" />
+                        {employee.id === currentUser?.id ? tx("deleteSelfTooltip") : tx("deleteTooltip")}
+                      </button>
+                    </div>
+                  )}
+
+                  <dl className="flex-1 space-y-1 px-3 pb-2.5 text-[11px] leading-4">
+                    <div className="grid grid-cols-[96px_minmax(0,1fr)] items-center gap-2">
+                      <dt className="flex items-center gap-2 text-slate-500 dark:text-slate-400"><Building2 aria-hidden="true" className="h-3 w-3" />{t("common.department")}</dt>
+                      <dd className="truncate font-medium text-slate-800 dark:text-slate-100" title={employee.department_name || "-"}>{employee.department_name || "-"}</dd>
+                    </div>
+                    <div className="grid grid-cols-[96px_minmax(0,1fr)] items-center gap-2">
+                      <dt className="flex items-center gap-2 text-slate-500 dark:text-slate-400"><Briefcase aria-hidden="true" className="h-3 w-3" />{tx("colDesignation")}</dt>
+                      <dd className="truncate font-medium text-slate-800 dark:text-slate-100" title={employee.designation || "-"}>{employee.designation || "-"}</dd>
+                    </div>
+                    <div className="grid grid-cols-[96px_minmax(0,1fr)] items-center gap-2">
+                      <dt className="flex items-center gap-2 text-slate-500 dark:text-slate-400"><MapPin aria-hidden="true" className="h-3 w-3" />{tx("location")}</dt>
+                      <dd className="truncate font-medium text-slate-800 dark:text-slate-100">{locationById.get(String(employee.location_id)) || "-"}</dd>
+                    </div>
+                    <div className="grid grid-cols-[96px_minmax(0,1fr)] items-center gap-2">
+                      <dt className="flex items-center gap-2 text-slate-500 dark:text-slate-400"><IdCard aria-hidden="true" className="h-3 w-3" />{tx("employeeId")}</dt>
+                      <dd className="truncate font-medium tabular-nums text-slate-800 dark:text-slate-100">{employee.emp_code || "-"}</dd>
+                    </div>
+                    <div className="grid grid-cols-[96px_minmax(0,1fr)] items-center gap-2">
+                      <dt className="flex items-center gap-2 text-slate-500 dark:text-slate-400"><Users aria-hidden="true" className="h-3 w-3" />{tx("colRole")}</dt>
+                      <dd className="truncate font-medium capitalize text-slate-800 dark:text-slate-100">{roleLabel(employee.role || "employee")}</dd>
+                    </div>
+                  </dl>
+
+                  <div className="relative flex min-h-9 items-center justify-end gap-1 border-t border-border px-3">
+                    {canInvite && employee.id !== currentUser?.id && employee.status === 1 && employee.email && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (invitingId !== null) return;
+                          setInvitingId(employee.id);
+                          sendDirectInvite.mutate(employee.id);
+                        }}
+                        disabled={invitingId !== null}
+                        className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-blue-50 hover:text-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:opacity-50 dark:text-slate-400 dark:hover:bg-blue-950/40"
+                        title={tx("sendInviteTooltip", { email: employee.email }) as string}
+                        aria-label={tx("sendInviteAria", { name: `${employee.first_name} ${employee.last_name}` }) as string}
+                      >
+                        {invitingId === employee.id ? <Loader2 aria-hidden="true" className="h-3.5 w-3.5 animate-spin" /> : <Send aria-hidden="true" className="h-3.5 w-3.5" />}
+                      </button>
+                    )}
+                    {canEditAll && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditTargetId(employee.id);
+                          setEditError(null);
+                        }}
+                        className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-brand-50 hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-slate-400 dark:hover:bg-brand-950/40"
+                        title={tx("editTooltip") as string}
+                        aria-label={tx("editAria", { name: `${employee.first_name} ${employee.last_name}` }) as string}
+                      >
+                        <Pencil aria-hidden="true" className="h-3.5 w-3.5" />
+                      </button>
+                    )}
+                    {canDelete && (
+                      <button
+                        type="button"
+                        onClick={() => setOpenCardMenu((current) => current?.id === employee.id && current?.anchor === "footer" ? null : { id: employee.id, anchor: "footer" })}
+                        aria-haspopup="menu"
+                        aria-expanded={openCardMenu?.id === employee.id && openCardMenu?.anchor === "footer"}
+                        className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-muted hover:text-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-slate-400 dark:hover:text-slate-100"
+                        aria-label={`More actions for ${employee.first_name} ${employee.last_name}`}
+                      >
+                        <MoreVertical aria-hidden="true" className="h-3.5 w-3.5" />
+                      </button>
+                    )}
+                  </div>
+                </article>
+              ))
+            )}
+          </div>
+        )}
 
         {/* Edit Employee Modal */}
         {editTargetId !== null && (
