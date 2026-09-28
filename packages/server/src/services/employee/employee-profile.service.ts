@@ -340,7 +340,7 @@ export async function getDirectory(
     department_id?: number;
     location_id?: number;
     role?: string;
-    status?: number;
+    status?: number | "all";
   }
 ) {
   const db = getDB();
@@ -358,7 +358,10 @@ export async function getDirectory(
     .where({ "users.organization_id": orgId });
 
   // Default to active employees only (status=1) to match dashboard count
-  if (params.status !== undefined) {
+  if (params.status === "all") {
+    // Explicitly include active and inactive employees. The default remains
+    // active-only for backwards compatibility with existing directory users.
+  } else if (params.status !== undefined) {
     query = query.where("users.status", params.status);
   } else {
     query = query.where("users.status", 1);
@@ -419,6 +422,34 @@ export async function getDirectory(
   }));
 
   return { users, total: Number(count) };
+}
+
+export async function getDirectoryStats(orgId: number) {
+  const db = getDB();
+  const monthStart = new Date();
+  monthStart.setDate(1);
+  monthStart.setHours(0, 0, 0, 0);
+
+  const base = db("users")
+    .where({ organization_id: orgId })
+    .whereNot("role", "super_admin");
+
+  const [totalRow, activeRow, newJoinersRow] = await Promise.all([
+    base.clone().count("id as count").first(),
+    base.clone().where("status", 1).count("id as count").first(),
+    base
+      .clone()
+      .where("status", 1)
+      .where("date_of_joining", ">=", monthStart)
+      .count("id as count")
+      .first(),
+  ]);
+
+  return {
+    total_employees: Number(totalRow?.count ?? 0),
+    active_employees: Number(activeRow?.count ?? 0),
+    new_joiners_this_month: Number(newJoinersRow?.count ?? 0),
+  };
 }
 
 // ---------------------------------------------------------------------------
