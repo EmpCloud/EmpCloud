@@ -17,10 +17,10 @@ import { useMemo, useState } from "react";
 import { useTranslation, Trans } from "react-i18next";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  CircleCheck,
   Fingerprint,
   Loader2,
   MapPin,
+  MapPinned,
   Monitor,
   Pencil,
   Plus,
@@ -197,11 +197,11 @@ export default function AttendanceSettingsPage() {
     <div className="space-y-4">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex items-start gap-3">
-          <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-brand-600 dark:bg-brand-950/40 dark:text-brand-300">
-            <SettingsIcon aria-hidden="true" className="h-6 w-6" />
+          <span className="inline-flex h-14 w-14 items-center justify-center rounded-xl bg-blue-50 text-brand-600 dark:bg-brand-950/40 dark:text-brand-300">
+            <SettingsIcon aria-hidden="true" className="h-8 w-8" />
           </span>
           <div>
-            <h1 className="text-[22px] font-bold leading-tight tracking-tight text-foreground">{t("attendanceSettings.title")}</h1>
+            <h1 className="text-[26px] font-bold leading-tight tracking-tight text-foreground">{t("attendanceSettings.title")}</h1>
             <p className="mt-0.5 text-[13px] text-muted-foreground">{t("attendanceSettings.subtitle")}</p>
           </div>
         </div>
@@ -219,7 +219,7 @@ export default function AttendanceSettingsPage() {
       {/* Org-level settings */}
       <section className="rounded-xl border border-border bg-card p-5 shadow-sm">
         <div className="mb-4 flex items-start gap-3">
-          <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-brand-600 dark:bg-brand-950/40 dark:text-brand-300">
+          <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-blue-50 text-brand-600 dark:bg-brand-950/40 dark:text-brand-300">
             <Monitor aria-hidden="true" className="h-5 w-5" />
           </span>
           <div className="min-w-0">
@@ -247,13 +247,13 @@ export default function AttendanceSettingsPage() {
                   className={`relative min-h-[126px] overflow-hidden rounded-xl border p-4 transition-colors ${enabled ? meta.card : "border-border bg-card"}`}
                 >
                   <span aria-hidden="true" className={`absolute -bottom-9 -right-5 h-20 w-32 -rotate-12 rounded-[50%] ${enabled ? meta.blob : "bg-slate-100/60 dark:bg-slate-800/40"}`} />
-                  <div className="relative z-10 flex items-start gap-3">
-                    <span className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${meta.iconBox}`}>
-                      <ChannelIcon aria-hidden="true" className="h-6 w-6" />
+                  <div className="relative z-10 flex items-start gap-5">
+                    <span className={`inline-flex h-[60px] w-[60px] shrink-0 items-center justify-center rounded-xl ${meta.iconBox}`}>
+                      <ChannelIcon aria-hidden="true" className="h-8 w-8" />
                     </span>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-start justify-between gap-2">
-                        <h3 className="text-[14px] font-semibold text-foreground">
+                        <h3 className="text-base font-semibold text-foreground">
                           {t(`attendanceSettings.channel.${channel}`, { defaultValue: CHANNEL_LABEL[channel] })}
                         </h3>
                         <SettingsToggle
@@ -263,9 +263,8 @@ export default function AttendanceSettingsPage() {
                           disabled={updateSettings.isPending}
                         />
                       </div>
-                      <p className="mt-0.5 text-[12px] leading-5 text-muted-foreground">{t(`attendanceSettings.channelDesc.${channel}`)}</p>
-                      <span className={`mt-2 inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold ${enabled ? "bg-emerald-100/80 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"}`}>
-                        {enabled && <CircleCheck aria-hidden="true" className="mr-1 h-3 w-3" />}
+                      <p className="mt-0.5 text-[13px] leading-5 text-muted-foreground">{t(`attendanceSettings.channelDesc.${channel}`)}</p>
+                      <span className={`mt-2 inline-flex rounded-full px-3.5 py-1.5 text-xs font-semibold ${enabled ? "bg-emerald-100/80 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"}`}>
                         {enabled
                           ? t("attendanceSettings.enabled", { defaultValue: "Enabled" })
                           : t("attendanceSettings.disabled", { defaultValue: "Disabled" })}
@@ -281,7 +280,7 @@ export default function AttendanceSettingsPage() {
         <div className="relative mt-4 overflow-hidden rounded-xl border border-amber-200 bg-amber-50/40 p-4 dark:border-amber-900/60 dark:bg-amber-950/20">
           <span aria-hidden="true" className="absolute -bottom-12 left-1/2 h-20 w-56 -translate-x-1/2 rounded-[50%] bg-amber-100/60 dark:bg-amber-900/20" />
           <div className="relative z-10 flex flex-wrap items-center gap-3">
-            <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-amber-100 text-amber-600 dark:bg-amber-900/50 dark:text-amber-300">
+            <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100 text-amber-600 dark:bg-amber-900/50 dark:text-amber-300">
               <MapPin aria-hidden="true" className="h-6 w-6" />
             </span>
             <div className="min-w-[220px] flex-1">
@@ -410,8 +409,8 @@ function TelegramReportSection({
     <section className="rounded-xl border border-border bg-card p-5 shadow-sm">
       <div className="mb-4 flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-start gap-3">
-          <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-brand-600 dark:bg-brand-950/40 dark:text-brand-300">
-            <Send aria-hidden="true" className="h-5 w-5" />
+          <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-brand-600 dark:bg-brand-950/40 dark:text-brand-300">
+            <Send aria-hidden="true" className="h-6 w-6" />
           </span>
           <div className="min-w-0">
             <div className="flex items-center gap-2">
@@ -426,7 +425,7 @@ function TelegramReportSection({
         />
             </div>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              {t("attendanceSettings.telegramDescShort", { defaultValue: "Send daily attendance summaries to selected Telegram chats." })}
+              {t("attendanceSettings.telegramDescShort", { defaultValue: "Send daily attendance summary to selected Telegram chats." })}
             </p>
           </div>
         </div>
@@ -456,14 +455,8 @@ function TelegramReportSection({
           </span>
         </div>
 
-        {chatIds.length === 0 ? (
-          <p className="text-xs text-muted-foreground italic mb-3">
-            {t("attendanceSettings.telegramNoRecipients", {
-              defaultValue: "No chat IDs yet — the report has nowhere to go.",
-            })}
-          </p>
-        ) : (
-          <ul className="space-y-2 mb-3">
+        {chatIds.length > 0 && (
+          <ul className="mb-3 space-y-2">
             {chatIds.map((id) => (
               <li
                 key={id}
@@ -545,7 +538,7 @@ function TelegramReportSection({
         />
         {chatIds.length === 0 && (
           <span className="text-xs text-muted-foreground">
-            {t("attendanceSettings.telegramNeedChatId", { defaultValue: "Add a chat ID first" })}
+            {t("attendanceSettings.telegramNeedChatId", { defaultValue: "Add a chat ID first, then send a test report." })}
           </span>
         )}
       </div>
@@ -578,8 +571,8 @@ function GeofencesSection({ geofences, isLoading }: { geofences: Geofence[]; isL
     <section id="attendance-geofences" className="scroll-mt-24 rounded-xl border border-border bg-card p-5 shadow-sm">
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-start gap-3">
-          <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-300">
-            <MapPin aria-hidden="true" className="h-5 w-5" />
+          <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-300">
+            <MapPin aria-hidden="true" className="h-6 w-6" />
           </span>
           <div>
             <div className="flex items-center gap-2">
@@ -614,11 +607,15 @@ function GeofencesSection({ geofences, isLoading }: { geofences: Geofence[]; isL
           <Loader2 className="h-4 w-4 animate-spin" /> {t("attendanceSettings.loading")}
         </div>
       ) : geofences.length === 0 ? (
-        <div className="flex min-h-[184px] flex-col items-center justify-center rounded-xl border border-dashed border-border px-6 py-8 text-center text-sm text-muted-foreground">
-          <span className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-brand-500 dark:bg-brand-950/40">
-            <MapPin aria-hidden="true" className="h-6 w-6" />
+        <div className="flex min-h-[184px] flex-col items-center justify-center rounded-xl border border-dashed border-border px-6 py-6 text-center text-sm text-muted-foreground">
+          <span className="mb-3 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-blue-50 text-brand-500 dark:bg-brand-950/40">
+            <MapPinned aria-hidden="true" className="h-8 w-8" />
           </span>
-          <Trans i18nKey="attendanceSettings.noGeofences" components={{ strong: <strong /> }} />
+          <p className="font-semibold text-foreground">{t("attendanceSettings.noGeofences")}</p>
+          <p className="mt-1 text-xs leading-5">
+            <span className="block">{t("attendanceSettings.noGeofencesHintLine1")}</span>
+            <span className="block">{t("attendanceSettings.noGeofencesHintLine2")}</span>
+          </p>
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 gap-3">
@@ -1030,8 +1027,8 @@ function OverridesSection({ geofences }: { geofences: Geofence[] }) {
     <section className="rounded-xl border border-border bg-card p-5 shadow-sm">
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-3">
-          <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-brand-600 dark:bg-brand-950/40 dark:text-brand-300">
-            <Users aria-hidden="true" className="h-5 w-5" />
+          <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-brand-600 dark:bg-brand-950/40 dark:text-brand-300">
+            <Users aria-hidden="true" className="h-6 w-6" />
           </span>
           <div>
             <div className="flex items-center gap-2">
@@ -1069,10 +1066,10 @@ function OverridesSection({ geofences }: { geofences: Geofence[] }) {
           <Loader2 className="h-4 w-4 animate-spin" /> {t("attendanceSettings.loadingOverrides")}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="flex min-h-[96px] flex-col items-center justify-center rounded-xl border border-dashed border-border px-6 py-6 text-center text-sm text-muted-foreground">
+        <div className="flex min-h-[96px] flex-col items-center justify-center rounded-xl border border-dashed border-border px-6 py-3 text-center text-sm text-muted-foreground">
           <Users aria-hidden="true" className="mb-2 h-6 w-6 text-brand-500" />
           <span className="font-medium text-foreground">{search ? t("attendanceSettings.noOverridesMatch") : t("attendanceSettings.noOverrides")}</span>
-          {!search && <span className="mt-1 text-xs">{t("attendanceSettings.noOverridesHint", { defaultValue: "Create a new override to customize attendance settings for an employee." })}</span>}
+          {!search && <span className="mt-1 text-xs">{t("attendanceSettings.noOverridesHint", { defaultValue: "Click “New override” to set custom attendance settings for an employee." })}</span>}
         </div>
       ) : (
         <div className="overflow-x-auto">
