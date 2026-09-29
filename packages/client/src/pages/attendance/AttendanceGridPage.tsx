@@ -455,8 +455,8 @@ export default function AttendanceGridPage() {
   ];
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-start gap-3">
+    <div className="space-y-4 pb-4">
+      <div className="flex items-start gap-4">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-300">
           <CalendarDays aria-hidden="true" className="h-5 w-5" />
         </div>
@@ -562,8 +562,8 @@ export default function AttendanceGridPage() {
             </select>
             <span>Entries</span>
           </label>
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="hidden flex-wrap items-center gap-1.5 xl:flex" aria-label="Attendance legend">
+          <div className="flex min-w-0 flex-1 flex-wrap items-center justify-end gap-3">
+            <div className="hidden flex-wrap items-center justify-end gap-x-2.5 gap-y-1 xl:flex" aria-label="Attendance legend">
               <LegendDot label="P" cls={codeStyle("P")} desc={t("attendance.grid.legend.present")} />
               <LegendDot label="A" cls={codeStyle("A")} desc={t("attendance.grid.legend.absent")} />
               <LegendDot label="H" cls={codeStyle("H")} desc={t("attendance.grid.legend.halfDay")} />
@@ -571,7 +571,7 @@ export default function AttendanceGridPage() {
               <LegendDot label="WO" cls={codeStyle("WO")} desc={t("attendance.grid.legend.weekOff")} />
               <LegendDot label="HO" cls={codeStyle("HO")} desc={t("attendance.grid.legend.holiday")} />
             </div>
-            <div className="relative min-w-[240px] flex-1 sm:flex-none">
+            <div className="relative w-full min-w-[240px] sm:w-[264px] sm:flex-none">
               <Search aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
               <input
                 type="search"
@@ -596,31 +596,35 @@ export default function AttendanceGridPage() {
             </div>
           </div>
         </div>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto" tabIndex={0} aria-label="Scrollable monthly attendance grid">
         {isLoading ? (
           <div className="flex h-64 items-center justify-center">
             <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
           </div>
         ) : (
-          <table className="min-w-full text-xs">
+          <table className="min-w-full border-separate border-spacing-0 text-xs">
+            <caption className="sr-only">
+              {monthLabel(month, year)} {year} attendance by employee and day
+            </caption>
             <thead className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-800">
               <tr>
-                <th className="sticky left-0 z-20 min-w-[190px] border-b border-r border-gray-200 bg-gray-50 px-3 py-2.5 text-left font-semibold uppercase tracking-wide text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
+                <th scope="col" className="sticky left-0 z-30 w-[208px] min-w-[208px] border-b border-r border-gray-200 bg-gray-50 px-3 py-2.5 text-left font-semibold uppercase tracking-wide text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
                   Employee Name
                 </th>
-                <th className="min-w-[140px] border-b border-r border-gray-200 bg-gray-50 px-3 py-2.5 text-left font-semibold uppercase tracking-wide text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
+                <th scope="col" className="sticky left-[208px] z-30 w-[155px] min-w-[155px] border-b border-r border-gray-200 bg-gray-50 px-3 py-2.5 text-left font-semibold uppercase tracking-wide text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
                   Location
                 </th>
-                <th className="min-w-[150px] border-b border-r border-gray-200 bg-gray-50 px-3 py-2.5 text-left font-semibold uppercase tracking-wide text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
+                <th scope="col" className="sticky left-[363px] z-30 w-[165px] min-w-[165px] border-b border-r border-gray-200 bg-gray-50 px-3 py-2.5 text-left font-semibold uppercase tracking-wide text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
                   Department
                 </th>
-                <th className="min-w-[125px] border-b border-r border-gray-200 bg-gray-50 px-3 py-2.5 text-left font-semibold uppercase tracking-wide text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
+                <th scope="col" className="sticky left-[528px] z-30 w-[137px] min-w-[137px] border-b border-r border-gray-200 bg-gray-50 px-3 py-2.5 text-left font-semibold uppercase tracking-wide text-gray-600 shadow-[4px_0_8px_-6px_rgba(15,23,42,0.45)] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
                   Employee Code
                 </th>
                 {data.days.map((d) => (
                   <th
                     key={d.date}
-                    className="min-w-[48px] border-b border-r border-gray-200 px-1 py-2 text-center font-semibold text-gray-600 dark:border-gray-700 dark:text-gray-300"
+                    scope="col"
+                    className="w-[52px] min-w-[52px] border-b border-r border-gray-200 px-1 py-2 text-center font-semibold text-gray-600 dark:border-gray-700 dark:text-gray-300"
                     title={d.date}
                   >
                     <span className="block text-[11px] font-bold text-gray-800 dark:text-gray-100">{d.day}</span>
@@ -677,25 +681,25 @@ export default function AttendanceGridPage() {
                 pagedEmployees.map((emp) => {
                   const summary = summaryFor(emp);
                   return (
-                    <tr key={emp.user_id} className="hover:bg-gray-50 dark:hover:bg-gray-800/40">
-                      <td className="sticky left-0 z-10 border-b border-r border-gray-200 bg-white px-3 py-2.5 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
+                    <tr key={emp.user_id} className="group hover:bg-gray-50 dark:hover:bg-gray-800/40">
+                      <th scope="row" className="sticky left-0 z-20 w-[208px] min-w-[208px] border-b border-r border-gray-200 bg-white px-3 py-2.5 text-left text-gray-900 group-hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:group-hover:bg-gray-800">
                         <div className="font-semibold">
                           {emp.first_name} {emp.last_name}
                         </div>
-                      </td>
-                      <td className="border-b border-r border-gray-200 px-3 py-2.5 text-gray-600 dark:border-gray-700 dark:text-gray-300">
+                      </th>
+                      <td className="sticky left-[208px] z-20 w-[155px] min-w-[155px] border-b border-r border-gray-200 bg-white px-3 py-2.5 text-gray-600 group-hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:group-hover:bg-gray-800">
                         <span className="inline-flex items-center gap-1.5">
                           <MapPin aria-hidden="true" className="h-3.5 w-3.5 text-blue-500" />
                           {emp.location || "—"}
                         </span>
                       </td>
-                      <td className="border-b border-r border-gray-200 px-3 py-2.5 text-gray-600 dark:border-gray-700 dark:text-gray-300">
+                      <td className="sticky left-[363px] z-20 w-[165px] min-w-[165px] border-b border-r border-gray-200 bg-white px-3 py-2.5 text-gray-600 group-hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:group-hover:bg-gray-800">
                         <span className="inline-flex items-center gap-1.5">
                           <Building2 aria-hidden="true" className="h-3.5 w-3.5 text-blue-500" />
                           {emp.department || "—"}
                         </span>
                       </td>
-                      <td className="border-b border-r border-gray-200 px-3 py-2.5 font-medium tabular-nums text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                      <td className="sticky left-[528px] z-20 w-[137px] min-w-[137px] border-b border-r border-gray-200 bg-white px-3 py-2.5 font-medium tabular-nums text-gray-700 shadow-[4px_0_8px_-6px_rgba(15,23,42,0.45)] group-hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:group-hover:bg-gray-800">
                         {emp.emp_code || "—"}
                       </td>
                       {data.days.map((d) => {
@@ -750,7 +754,7 @@ export default function AttendanceGridPage() {
                                 }}
                               />
                             ) : null}
-                            <div className="relative mx-auto h-7 w-7">
+                            <div className="relative mx-auto h-8 w-8">
                               <button
                                 type="button"
                                 onDoubleClick={() => setEditing({ uid: emp.user_id, date: d.date })}
@@ -827,7 +831,7 @@ export default function AttendanceGridPage() {
                   <tr key={row.code} className="border-t border-gray-200 dark:border-gray-700">
                     <td
                       colSpan={4}
-                      className={`border-r border-gray-200 bg-gray-50 px-3 py-1.5 text-left text-[11px] font-semibold dark:border-gray-700 dark:bg-gray-800/60 ${row.cls}`}
+                      className={`sticky left-0 z-20 min-w-[665px] border-r border-gray-200 bg-gray-50 px-3 py-1.5 text-left text-[11px] font-semibold shadow-[4px_0_8px_-6px_rgba(15,23,42,0.45)] dark:border-gray-700 dark:bg-gray-800 ${row.cls}`}
                     >
                       {t("attendance.grid.totalRow", { code: row.code, label: row.label })}
                     </td>
