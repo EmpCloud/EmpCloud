@@ -28,6 +28,8 @@ import {
   checkOutSchema,
   createRegularizationSchema,
   approveRegularizationSchema,
+  regularizationListFiltersSchema,
+  regularizationSortQuerySchema,
   attendanceQuerySchema,
   paginationSchema,
   updateAttendanceSettingsSchema,
@@ -1233,14 +1235,8 @@ router.get("/regularizations", authenticate, requirePermission("attendance:view_
     const status = req.query.status as string | undefined;
     const rawLocation = req.query.location_id;
     const locationId = rawLocation && Number(rawLocation) > 0 ? Number(rawLocation) : undefined;
-    const rawDepartment = req.query.department_id;
-    const departmentId = rawDepartment && Number(rawDepartment) > 0 ? Number(rawDepartment) : undefined;
-    const dateFrom = typeof req.query.date_from === "string" && /^\d{4}-\d{2}-\d{2}$/.test(req.query.date_from)
-      ? req.query.date_from
-      : undefined;
-    const dateTo = typeof req.query.date_to === "string" && /^\d{4}-\d{2}-\d{2}$/.test(req.query.date_to)
-      ? req.query.date_to
-      : undefined;
+    const { department_id: departmentId, date_from: dateFrom, date_to: dateTo, sort_order: sortOrder } =
+      regularizationListFiltersSchema.parse(req.query);
     const rawSearch = typeof req.query.search === "string" ? req.query.search.trim().slice(0, 120) : "";
     const search = rawSearch.length > 0 ? rawSearch : undefined;
     // Scope: callers with _all (or view_all / manage / HR) see every
@@ -1271,6 +1267,7 @@ router.get("/regularizations", authenticate, requirePermission("attendance:view_
       departmentId,
       dateFrom,
       dateTo,
+      sortOrder,
       search,
     });
     sendPaginated(res, result.records, result.total, page, per_page);
@@ -1281,7 +1278,8 @@ router.get("/regularizations", authenticate, requirePermission("attendance:view_
 router.get("/regularizations/me", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { page, per_page } = paginationSchema.parse(req.query);
-    const result = await regularizationService.getMyRegularizations(req.user!.org_id, req.user!.sub, { page, perPage: per_page });
+    const { sort_order: sortOrder } = regularizationSortQuerySchema.parse(req.query);
+    const result = await regularizationService.getMyRegularizations(req.user!.org_id, req.user!.sub, { page, perPage: per_page, sortOrder });
     sendPaginated(res, result.records, result.total, page, per_page);
   } catch (err) { next(err); }
 });

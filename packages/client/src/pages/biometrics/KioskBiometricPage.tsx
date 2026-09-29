@@ -21,7 +21,6 @@ import {
   Link2,
   Loader2,
   LockKeyhole,
-  MoreVertical,
   PlayCircle,
   Plus,
   RotateCw,
@@ -57,13 +56,6 @@ type Mode = "enable" | "change" | "disable";
 function isSixDigits(s: string): boolean {
   return /^\d{6}$/.test(s);
 }
-
-const RECENT_ACCESS_ACTIVITY = [
-  { initials: "PP", name: "Priya Patel", location: "Kiosk Lobby - HQ", time: "Today, 10:24 AM", success: true, tone: "bg-sky-50 text-sky-600" },
-  { initials: "AG", name: "Aman Gupta", location: "Factory Gate", time: "Today, 09:18 AM", success: true, tone: "bg-violet-50 text-violet-600" },
-  { initials: "RS", name: "Rahul Sharma", location: "Warehouse", time: "Yesterday, 06:42 PM", success: false, tone: "bg-indigo-50 text-indigo-600" },
-  { initials: "JS", name: "Jane Smith", location: "Office Floor 2", time: "Yesterday, 05:11 PM", success: true, tone: "bg-blue-50 text-blue-600" },
-];
 
 export default function KioskBiometricPage() {
   const { t } = useTranslation();
@@ -249,33 +241,10 @@ export default function KioskBiometricPage() {
                 </span>
                 {t("kioskPin.recentActivity", { defaultValue: "Recent Access Activity" })}
               </h2>
-              <button type="button" className="h-9 rounded-lg border border-border px-4 text-[11px] font-semibold text-slate-700 transition hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30 dark:text-slate-200">
-                {t("kioskPin.viewAll", { defaultValue: "View All" })}
-              </button>
             </div>
-            <ul className="divide-y divide-border px-5">
-              {RECENT_ACCESS_ACTIVITY.map((activity) => (
-                <li key={`${activity.name}-${activity.time}`} className="grid min-h-[51px] grid-cols-[minmax(0,1fr)_145px_90px_24px] items-center gap-3 py-2">
-                  <div className="flex min-w-0 items-center gap-3">
-                    <span className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ${activity.tone}`}>{activity.initials}</span>
-                    <div className="min-w-0">
-                      <p className="truncate text-[12px] font-semibold text-slate-900 dark:text-slate-100">{activity.name}</p>
-                      <p className="truncate text-[11px] text-slate-500">{activity.location}</p>
-                    </div>
-                  </div>
-                  <time className="text-[11px] text-slate-500">{activity.time}</time>
-                  <span className={activity.success
-                    ? "inline-flex justify-center rounded-full bg-emerald-50 px-3 py-1 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
-                    : "inline-flex justify-center rounded-full bg-rose-50 px-3 py-1 text-[10px] font-semibold text-rose-600 dark:bg-rose-950/40 dark:text-rose-300"}
-                  >
-                    {activity.success ? "Success" : "Failed"}
-                  </span>
-                  <button type="button" aria-label={`More options for ${activity.name}`} className="inline-flex h-7 w-7 items-center justify-center rounded-md text-slate-500 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30">
-                    <MoreVertical aria-hidden="true" className="h-4 w-4" />
-                  </button>
-                </li>
-              ))}
-            </ul>
+            <p className="px-5 py-6 text-sm text-muted-foreground" role="status">
+              {t("kioskPin.activityUnavailable", { defaultValue: "Access history is not available here." })}
+            </p>
           </section>
         </div>
 

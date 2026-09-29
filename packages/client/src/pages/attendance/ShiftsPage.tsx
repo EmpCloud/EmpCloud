@@ -78,8 +78,7 @@ export default function ShiftsPage() {
   const [form, setForm] = useState<ShiftForm>(emptyForm);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<"all" | "day" | "night">("all");
-  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive">("all");
-  const [appliedFilters, setAppliedFilters] = useState({ search: "", type: "all", status: "all" });
+  const [appliedFilters, setAppliedFilters] = useState({ search: "", type: "all" });
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   // Confirm-delete dialog state (replaces window.confirm for deactivating a shift).
@@ -225,8 +224,6 @@ export default function ShiftsPage() {
       if (query && !String(shift.name ?? "").toLowerCase().includes(query)) return false;
       if (appliedFilters.type === "day" && shift.is_night_shift) return false;
       if (appliedFilters.type === "night" && !shift.is_night_shift) return false;
-      if (appliedFilters.status === "active" && shift.is_active === false) return false;
-      if (appliedFilters.status === "inactive" && shift.is_active !== false) return false;
       return true;
     });
   }, [managedShifts, appliedFilters]);
@@ -237,15 +234,14 @@ export default function ShiftsPage() {
   const pagedShifts = filteredShifts.slice(startIndex, startIndex + pageSize);
 
   const applyFilters = () => {
-    setAppliedFilters({ search: search.trim(), type: typeFilter, status: statusFilter });
+    setAppliedFilters({ search: search.trim(), type: typeFilter });
     setPage(1);
   };
 
   const resetFilters = () => {
     setSearch("");
     setTypeFilter("all");
-    setStatusFilter("all");
-    setAppliedFilters({ search: "", type: "all", status: "all" });
+    setAppliedFilters({ search: "", type: "all" });
     setPage(1);
   };
 
@@ -347,7 +343,7 @@ export default function ShiftsPage() {
         ))}
       </div>
 
-      <section className="grid grid-cols-1 items-end gap-3 lg:grid-cols-[minmax(320px,2fr)_minmax(170px,.65fr)_minmax(170px,.65fr)_116px_162px]">
+      <section className="grid grid-cols-1 items-end gap-3 lg:grid-cols-[minmax(320px,2fr)_minmax(170px,.65fr)_116px_162px]">
         <label className="relative block">
           <span className="sr-only">Search by shift name</span>
           <Search aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
@@ -366,14 +362,6 @@ export default function ShiftsPage() {
             <option value="all">All Types</option>
             <option value="day">Day Shift</option>
             <option value="night">Night Shift</option>
-          </select>
-        </label>
-        <label className="relative block min-w-0">
-          <span className="absolute -top-2 left-3 z-10 bg-background px-1 text-[11px] font-medium text-muted-foreground">Status</span>
-          <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value as typeof statusFilter)} className="h-11 w-full rounded-lg border border-border bg-card px-3 text-[14px] text-foreground outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20">
-            <option value="all">All Statuses</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
           </select>
         </label>
         <button type="button" onClick={resetFilters} className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-brand-500 bg-card px-4 text-[13px] font-semibold text-brand-600 transition-colors hover:bg-blue-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30 dark:hover:bg-brand-950/40">

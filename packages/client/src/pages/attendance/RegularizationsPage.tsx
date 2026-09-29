@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ArrowUpDown,
@@ -200,7 +200,7 @@ export default function RegularizationsPage() {
   const [rejectReason, setRejectReason] = useState("");
 
   const { data: pendingData, isLoading: pendingLoading } = useQuery({
-    queryKey: ["regularizations", "pending", page, locationId, departmentId, dateFrom, dateTo, appliedSearch],
+    queryKey: ["regularizations", "pending", page, locationId, departmentId, dateFrom, dateTo, appliedSearch, sortOrder],
     queryFn: () =>
       api
         .get("/attendance/regularizations", {
@@ -212,6 +212,7 @@ export default function RegularizationsPage() {
             date_from: dateFrom || undefined,
             date_to: dateTo || undefined,
             search: appliedSearch || undefined,
+            sort_order: sortOrder === "oldest" ? "asc" : "desc",
           },
         })
         .then((r) => r.data),
@@ -219,7 +220,7 @@ export default function RegularizationsPage() {
   });
 
   const { data: allData, isLoading: allLoading } = useQuery({
-    queryKey: ["regularizations", "all", page, locationId, departmentId, dateFrom, dateTo, appliedSearch],
+    queryKey: ["regularizations", "all", page, locationId, departmentId, dateFrom, dateTo, appliedSearch, sortOrder],
     queryFn: () =>
       api
         .get("/attendance/regularizations", {
@@ -230,6 +231,7 @@ export default function RegularizationsPage() {
             date_from: dateFrom || undefined,
             date_to: dateTo || undefined,
             search: appliedSearch || undefined,
+            sort_order: sortOrder === "oldest" ? "asc" : "desc",
           },
         })
         .then((r) => r.data),
@@ -237,8 +239,8 @@ export default function RegularizationsPage() {
   });
 
   const { data: myData, isLoading: myLoading } = useQuery({
-    queryKey: ["regularizations", "my", page],
-    queryFn: () => api.get("/attendance/regularizations/me", { params: { page } }).then((r) => r.data),
+    queryKey: ["regularizations", "my", page, sortOrder],
+    queryFn: () => api.get("/attendance/regularizations/me", { params: { page, sort_order: sortOrder === "oldest" ? "asc" : "desc" } }).then((r) => r.data),
     enabled: tab === "my",
   });
 
@@ -326,13 +328,7 @@ export default function RegularizationsPage() {
   const isLoading = tab === "pending" ? pendingLoading : tab === "all" ? allLoading : myLoading;
   const records = currentData?.data || [];
   const meta = currentData?.meta;
-  const displayRecords = useMemo(() => {
-    const rows = [...records] as RegRow[];
-    return rows.sort((a, b) => {
-      const comparison = new Date(a.date).getTime() - new Date(b.date).getTime();
-      return sortOrder === "newest" ? -comparison : comparison;
-    });
-  }, [records, sortOrder]);
+  const displayRecords = records as RegRow[];
   const allVisibleSelected = displayRecords.length > 0 && displayRecords.every((row) => selectedIds.has(row.id));
   const toggleAllVisible = () => {
     setSelectedIds((current) => {
@@ -645,7 +641,7 @@ export default function RegularizationsPage() {
           <select
             id="regularization-sort"
             value={sortOrder}
-            onChange={(e) => setSortOrder(e.target.value as "newest" | "oldest")}
+            onChange={(e) => { setSortOrder(e.target.value as "newest" | "oldest"); setPage(1); }}
             className="h-9 rounded-lg border border-border bg-card px-3 text-[13px] font-medium text-foreground outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
           >
             <option value="newest">{t("attendance.regularizations.dateNewest", { defaultValue: "Date (Newest)" })}</option>
@@ -791,16 +787,6 @@ export default function RegularizationsPage() {
             )}
           </tbody>
         </table>
-
-        {meta && meta.total_pages > 1 && (
-          <div className="flex items-center justify-between px-4 py-2.5 border-t border-border">
-            <p className="text-[13px] tabular-nums text-muted-foreground">{t('attendance.pagination', { page: meta.page, totalPages: meta.total_pages, total: meta.total })}</p>
-            <div className="flex gap-2">
-              <button type="button" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="bg-card text-foreground px-3 py-1.5 text-[13px] border border-border rounded-md disabled:opacity-50 hover:bg-muted transition-colors">{t('attendance.previous')}</button>
-              <button type="button" onClick={() => setPage((p) => p + 1)} disabled={page >= meta.total_pages} className="bg-card text-foreground px-3 py-1.5 text-[13px] border border-border rounded-md disabled:opacity-50 hover:bg-muted transition-colors">{t('attendance.next')}</button>
-            </div>
-          </div>
-        )}
       </div> : (
         <div className="!mt-2 grid grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-3">
           {isLoading ? (
@@ -853,6 +839,16 @@ export default function RegularizationsPage() {
               )}
             </article>
           ))}
+        </div>
+      )}
+
+      {meta && meta.total_pages > 1 && (
+        <div className="flex items-center justify-between px-4 py-2.5 border-t border-border">
+          <p className="text-[13px] tabular-nums text-muted-foreground">{t('attendance.pagination', { page: meta.page, totalPages: meta.total_pages, total: meta.total })}</p>
+          <div className="flex gap-2">
+            <button type="button" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="bg-card text-foreground px-3 py-1.5 text-[13px] border border-border rounded-md disabled:opacity-50 hover:bg-muted transition-colors">{t('attendance.previous')}</button>
+            <button type="button" onClick={() => setPage((p) => p + 1)} disabled={page >= meta.total_pages} className="bg-card text-foreground px-3 py-1.5 text-[13px] border border-border rounded-md disabled:opacity-50 hover:bg-muted transition-colors">{t('attendance.next')}</button>
+          </div>
         </div>
       )}
 

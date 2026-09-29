@@ -33,19 +33,6 @@ interface PlanSort {
   direction: "asc" | "desc";
 }
 
-const DEMO_HEADCOUNT_PLANS = [
-  { id: -1, title: "dfghdfgh", fiscal_year: "2026-27", quarter: "", department_name: "Org-wide", planned_headcount: 0, approved_headcount: 0, current_headcount: 0, status: "approved", created_at: "2026-09-25T09:00:00Z", __demo: true },
-  { id: -2, title: "15555555", fiscal_year: "1623333", quarter: "", department_name: "IT", planned_headcount: 2, approved_headcount: 2, current_headcount: 0, status: "approved", created_at: "2026-09-24T09:00:00Z", __demo: true },
-  { id: -3, title: "testing", fiscal_year: "2025-29", quarter: "Q1", department_name: "Marketing", planned_headcount: 14, approved_headcount: 14, current_headcount: 19, status: "approved", created_at: "2026-09-23T09:00:00Z", __demo: true },
-  { id: -4, title: "rtertert", fiscal_year: "54252346", quarter: "", department_name: "Org-wide", planned_headcount: 0, approved_headcount: 0, current_headcount: 0, status: "approved", created_at: "2025-09-22T09:00:00Z", __demo: true },
-  { id: -5, title: "dfgdfd", fiscal_year: "52443534", quarter: "", department_name: "Org-wide", planned_headcount: 11, approved_headcount: 0, current_headcount: 11, status: "rejected", created_at: "2025-09-21T09:00:00Z", __demo: true },
-  { id: -6, title: "Test Eng", fiscal_year: "2026", quarter: "annual", department_name: "Tester", planned_headcount: 0, approved_headcount: 0, current_headcount: 0, status: "approved", created_at: "2025-09-20T09:00:00Z", __demo: true },
-  { id: -7, title: "QA Reject Plan 1774875581337", fiscal_year: "2026-2027", quarter: "annual", department_name: "Production", planned_headcount: 0, approved_headcount: 0, current_headcount: 0, status: "rejected", created_at: "2025-09-19T09:00:00Z", __demo: true },
-  { id: -8, title: "QA Draft Plan 1774875579612", fiscal_year: "2026-2027", quarter: "Q4", department_name: "Production", planned_headcount: 0, approved_headcount: 0, current_headcount: 0, status: "approved", created_at: "2025-09-18T09:00:00Z", __demo: true },
-  { id: -9, title: "QA Notes Plan 1774875578981", fiscal_year: "2026-2027", quarter: "Q3", department_name: "Production", planned_headcount: 0, approved_headcount: 0, current_headcount: 0, status: "approved", created_at: "2025-09-17T09:00:00Z", __demo: true },
-  { id: -10, title: "QA Budget Plan 1774875578451", fiscal_year: "2026-2027", quarter: "Q2", department_name: "Production", planned_headcount: 0, approved_headcount: 0, current_headcount: 0, status: "approved", created_at: "2025-09-16T09:00:00Z", __demo: true },
-];
-
 export default function HeadcountPlanPage() {
   const { t } = useTranslation();
   const tx = (k: string, opts?: Record<string, unknown>) =>
@@ -94,50 +81,19 @@ export default function HeadcountPlanPage() {
         .then((r) => r.data),
   });
 
-  const apiPlans = useMemo<any[]>(() => data?.data || [], [data?.data]);
+  const plans = useMemo<any[]>(() => data?.data || [], [data?.data]);
   const meta = data?.meta;
 
-  const { data: summaryData, isLoading: isSummaryLoading } = useQuery({
+  const { data: summaryData } = useQuery({
     queryKey: ["headcount-plans-summary"],
-    queryFn: () => api.get("/positions/headcount-plans", { params: { page: 1, per_page: 500 } }).then((response) => response.data),
+    queryFn: async () => {
+      const response = await api.get("/positions/headcount-plans", { params: { page: 1, per_page: 500 } });
+      return response.data;
+    },
   });
 
-  const serverSummaryPlans = useMemo<any[]>(() => summaryData?.data || [], [summaryData?.data]);
-  const usingDemoPlans = !isLoading
-    && !isSummaryLoading
-    && apiPlans.length === 0
-    && serverSummaryPlans.length === 0
-    && Number(summaryData?.meta?.total ?? 0) === 0;
-  const selectedDepartmentName = deptList.find((department: any) => String(department.id) === departmentFilter)?.name;
-  const plans = useMemo(() => {
-    if (!usingDemoPlans) return apiPlans;
-
-    const searchTerm = search.trim().toLowerCase();
-    return DEMO_HEADCOUNT_PLANS.filter((plan) => {
-      const matchesSearch = !searchTerm || [plan.title, plan.fiscal_year, plan.department_name]
-        .some((value) => value.toLowerCase().includes(searchTerm));
-      const matchesStatus = !statusFilter || plan.status === statusFilter;
-      const matchesDepartment = !departmentFilter
-        || plan.department_name.toLowerCase() === String(selectedDepartmentName || departmentFilter).toLowerCase();
-      const matchesYear = !fiscalYearFilter || plan.fiscal_year === fiscalYearFilter;
-      return matchesSearch && matchesStatus && matchesDepartment && matchesYear;
-    });
-  }, [apiPlans, departmentFilter, fiscalYearFilter, search, selectedDepartmentName, statusFilter, usingDemoPlans]);
-  const summaryPlans = usingDemoPlans ? DEMO_HEADCOUNT_PLANS : serverSummaryPlans;
+  const summaryPlans = useMemo<any[]>(() => summaryData?.data || [], [summaryData?.data]);
   const planStats = useMemo(() => {
-    if (usingDemoPlans) {
-      return {
-        total: 10,
-        approved: 7,
-        rejected: 2,
-        draft: 1,
-        createdThisYear: 2,
-        approvedPercentage: 70,
-        rejectedPercentage: 20,
-        draftPercentage: 10,
-      };
-    }
-
     const total = Number(summaryData?.meta?.total ?? summaryPlans.length);
     const approved = summaryPlans.filter((plan) => plan.status === "approved").length;
     const rejected = summaryPlans.filter((plan) => plan.status === "rejected").length;
@@ -158,7 +114,7 @@ export default function HeadcountPlanPage() {
       rejectedPercentage: percentage(rejected),
       draftPercentage: percentage(draft),
     };
-  }, [summaryData?.meta?.total, summaryPlans, usingDemoPlans]);
+  }, [summaryData?.meta?.total, summaryPlans]);
 
   const sortedPlans = useMemo(() => {
     if (!sort) return plans;
@@ -218,10 +174,7 @@ export default function HeadcountPlanPage() {
     const start = currentYear - 2 + i;
     return `${start}-${String(start + 1).slice(-2)}`;
   });
-  const fiscalYearOptions = Array.from(new Set([
-    ...generatedFiscalYears,
-    ...(usingDemoPlans ? DEMO_HEADCOUNT_PLANS.map((plan) => plan.fiscal_year) : []),
-  ]));
+  const fiscalYearOptions = generatedFiscalYears;
 
   const [form, setForm] = useState({
     title: "",
@@ -671,7 +624,7 @@ export default function HeadcountPlanPage() {
 
       {viewMode === "grid" ? (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          {(isLoading || isSummaryLoading) && plans.length === 0 ? (
+          {isLoading && plans.length === 0 ? (
             <div className="col-span-full rounded-2xl border border-border bg-card px-6 py-12 text-center text-sm text-muted-foreground shadow-sm">
               {tx("loading")}
             </div>
@@ -760,7 +713,7 @@ export default function HeadcountPlanPage() {
                         >
                           {tx("viewDetails", { defaultValue: "View details" })}
                         </button>
-                        {!plan.__demo && plan.status === "draft" && (
+                        {plan.status === "draft" && (
                           <button
                             type="button"
                             role="menuitem"
@@ -771,7 +724,7 @@ export default function HeadcountPlanPage() {
                             {tx("actionSubmit")}
                           </button>
                         )}
-                        {!plan.__demo && (plan.status === "submitted" || plan.status === "draft") && (
+                        {(plan.status === "submitted" || plan.status === "draft") && (
                           <>
                             <button
                               type="button"
@@ -1057,7 +1010,7 @@ export default function HeadcountPlanPage() {
           </div>
         )}
 
-        {viewMode === "table" && meta && meta.total_pages > 1 && !usingDemoPlans && (
+        {meta && meta.total_pages > 1 && (
           <div className="mt-3 flex items-center justify-between rounded-xl border border-border bg-card px-6 py-3 shadow-sm">
             <p className="text-sm text-muted-foreground">
               {tx("pageOf", { page: meta.page, total_pages: meta.total_pages, total: meta.total })}

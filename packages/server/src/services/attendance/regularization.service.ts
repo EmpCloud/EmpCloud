@@ -136,6 +136,7 @@ export async function listRegularizations(
     departmentId?: number;
     dateFrom?: string;
     dateTo?: string;
+    sortOrder?: "asc" | "desc";
     search?: string;
   }
 ) {
@@ -196,7 +197,8 @@ export async function listRegularizations(
       "loc.timezone as location_timezone",
       "org.timezone as organization_timezone",
     )
-    .orderBy("ar.created_at", "desc")
+    .orderBy("ar.date", params?.sortOrder ?? "desc")
+    .orderBy("ar.id", params?.sortOrder ?? "desc")
     .limit(perPage)
     .offset((page - 1) * perPage);
 
@@ -378,7 +380,7 @@ export async function deleteRegularization(
 export async function getMyRegularizations(
   orgId: number,
   userId: number,
-  params?: { page?: number; perPage?: number }
+  params?: { page?: number; perPage?: number; sortOrder?: "asc" | "desc" }
 ) {
   const db = getDB();
   const page = params?.page || 1;
@@ -398,7 +400,8 @@ export async function getMyRegularizations(
       "loc.timezone as location_timezone",
       "org.timezone as organization_timezone",
     )
-    .orderBy("ar.created_at", "desc")
+    .orderBy("ar.date", params?.sortOrder ?? "desc")
+    .orderBy("ar.id", params?.sortOrder ?? "desc")
     .limit(perPage)
     .offset((page - 1) * perPage);
 
