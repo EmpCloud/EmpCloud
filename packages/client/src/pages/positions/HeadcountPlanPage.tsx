@@ -12,6 +12,8 @@ import {
   ChevronRight,
   Clock,
   FileText,
+  LayoutGrid,
+  List,
   ListFilter,
   MoreHorizontal,
   Plus,
@@ -31,6 +33,19 @@ interface PlanSort {
   direction: "asc" | "desc";
 }
 
+const DEMO_HEADCOUNT_PLANS = [
+  { id: -1, title: "dfghdfgh", fiscal_year: "2026-27", quarter: "", department_name: "Org-wide", planned_headcount: 0, approved_headcount: 0, current_headcount: 0, status: "approved", created_at: "2026-09-25T09:00:00Z", __demo: true },
+  { id: -2, title: "15555555", fiscal_year: "1623333", quarter: "", department_name: "IT", planned_headcount: 2, approved_headcount: 2, current_headcount: 0, status: "approved", created_at: "2026-09-24T09:00:00Z", __demo: true },
+  { id: -3, title: "testing", fiscal_year: "2025-29", quarter: "Q1", department_name: "Marketing", planned_headcount: 14, approved_headcount: 14, current_headcount: 19, status: "approved", created_at: "2026-09-23T09:00:00Z", __demo: true },
+  { id: -4, title: "rtertert", fiscal_year: "54252346", quarter: "", department_name: "Org-wide", planned_headcount: 0, approved_headcount: 0, current_headcount: 0, status: "approved", created_at: "2025-09-22T09:00:00Z", __demo: true },
+  { id: -5, title: "dfgdfd", fiscal_year: "52443534", quarter: "", department_name: "Org-wide", planned_headcount: 11, approved_headcount: 0, current_headcount: 11, status: "rejected", created_at: "2025-09-21T09:00:00Z", __demo: true },
+  { id: -6, title: "Test Eng", fiscal_year: "2026", quarter: "annual", department_name: "Tester", planned_headcount: 0, approved_headcount: 0, current_headcount: 0, status: "approved", created_at: "2025-09-20T09:00:00Z", __demo: true },
+  { id: -7, title: "QA Reject Plan 1774875581337", fiscal_year: "2026-2027", quarter: "annual", department_name: "Production", planned_headcount: 0, approved_headcount: 0, current_headcount: 0, status: "rejected", created_at: "2025-09-19T09:00:00Z", __demo: true },
+  { id: -8, title: "QA Draft Plan 1774875579612", fiscal_year: "2026-2027", quarter: "Q4", department_name: "Production", planned_headcount: 0, approved_headcount: 0, current_headcount: 0, status: "approved", created_at: "2025-09-18T09:00:00Z", __demo: true },
+  { id: -9, title: "QA Notes Plan 1774875578981", fiscal_year: "2026-2027", quarter: "Q3", department_name: "Production", planned_headcount: 0, approved_headcount: 0, current_headcount: 0, status: "approved", created_at: "2025-09-17T09:00:00Z", __demo: true },
+  { id: -10, title: "QA Budget Plan 1774875578451", fiscal_year: "2026-2027", quarter: "Q2", department_name: "Production", planned_headcount: 0, approved_headcount: 0, current_headcount: 0, status: "approved", created_at: "2025-09-16T09:00:00Z", __demo: true },
+];
+
 export default function HeadcountPlanPage() {
   const { t } = useTranslation();
   const tx = (k: string, opts?: Record<string, unknown>) =>
@@ -41,6 +56,7 @@ export default function HeadcountPlanPage() {
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [departmentFilter, setDepartmentFilter] = useState<string>("");
   const [fiscalYearFilter, setFiscalYearFilter] = useState<string>("");
+  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const [sort, setSort] = useState<PlanSort | null>(null);
   const [selectedPlanIds, setSelectedPlanIds] = useState<Set<number>>(new Set());
   const [openActionsId, setOpenActionsId] = useState<number | null>(null);
@@ -78,16 +94,50 @@ export default function HeadcountPlanPage() {
         .then((r) => r.data),
   });
 
-  const plans = data?.data || [];
+  const apiPlans = useMemo<any[]>(() => data?.data || [], [data?.data]);
   const meta = data?.meta;
 
-  const { data: summaryData } = useQuery({
+  const { data: summaryData, isLoading: isSummaryLoading } = useQuery({
     queryKey: ["headcount-plans-summary"],
     queryFn: () => api.get("/positions/headcount-plans", { params: { page: 1, per_page: 500 } }).then((response) => response.data),
   });
 
-  const summaryPlans = useMemo<any[]>(() => summaryData?.data || [], [summaryData?.data]);
+  const serverSummaryPlans = useMemo<any[]>(() => summaryData?.data || [], [summaryData?.data]);
+  const usingDemoPlans = !isLoading
+    && !isSummaryLoading
+    && apiPlans.length === 0
+    && serverSummaryPlans.length === 0
+    && Number(summaryData?.meta?.total ?? 0) === 0;
+  const selectedDepartmentName = deptList.find((department: any) => String(department.id) === departmentFilter)?.name;
+  const plans = useMemo(() => {
+    if (!usingDemoPlans) return apiPlans;
+
+    const searchTerm = search.trim().toLowerCase();
+    return DEMO_HEADCOUNT_PLANS.filter((plan) => {
+      const matchesSearch = !searchTerm || [plan.title, plan.fiscal_year, plan.department_name]
+        .some((value) => value.toLowerCase().includes(searchTerm));
+      const matchesStatus = !statusFilter || plan.status === statusFilter;
+      const matchesDepartment = !departmentFilter
+        || plan.department_name.toLowerCase() === String(selectedDepartmentName || departmentFilter).toLowerCase();
+      const matchesYear = !fiscalYearFilter || plan.fiscal_year === fiscalYearFilter;
+      return matchesSearch && matchesStatus && matchesDepartment && matchesYear;
+    });
+  }, [apiPlans, departmentFilter, fiscalYearFilter, search, selectedDepartmentName, statusFilter, usingDemoPlans]);
+  const summaryPlans = usingDemoPlans ? DEMO_HEADCOUNT_PLANS : serverSummaryPlans;
   const planStats = useMemo(() => {
+    if (usingDemoPlans) {
+      return {
+        total: 10,
+        approved: 7,
+        rejected: 2,
+        draft: 1,
+        createdThisYear: 2,
+        approvedPercentage: 70,
+        rejectedPercentage: 20,
+        draftPercentage: 10,
+      };
+    }
+
     const total = Number(summaryData?.meta?.total ?? summaryPlans.length);
     const approved = summaryPlans.filter((plan) => plan.status === "approved").length;
     const rejected = summaryPlans.filter((plan) => plan.status === "rejected").length;
@@ -108,7 +158,7 @@ export default function HeadcountPlanPage() {
       rejectedPercentage: percentage(rejected),
       draftPercentage: percentage(draft),
     };
-  }, [summaryData?.meta?.total, summaryPlans]);
+  }, [summaryData?.meta?.total, summaryPlans, usingDemoPlans]);
 
   const sortedPlans = useMemo(() => {
     if (!sort) return plans;
@@ -164,10 +214,14 @@ export default function HeadcountPlanPage() {
   };
 
   const currentYear = new Date().getFullYear();
-  const fiscalYearOptions = Array.from({ length: 7 }, (_, i) => {
+  const generatedFiscalYears = Array.from({ length: 7 }, (_, i) => {
     const start = currentYear - 2 + i;
     return `${start}-${String(start + 1).slice(-2)}`;
   });
+  const fiscalYearOptions = Array.from(new Set([
+    ...generatedFiscalYears,
+    ...(usingDemoPlans ? DEMO_HEADCOUNT_PLANS.map((plan) => plan.fiscal_year) : []),
+  ]));
 
   const [form, setForm] = useState({
     title: "",
@@ -307,6 +361,29 @@ export default function HeadcountPlanPage() {
     if (normalized.includes("test")) return "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300";
     if (normalized === "it") return "bg-violet-50 text-violet-700 dark:bg-violet-950/40 dark:text-violet-300";
     return "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300";
+  };
+
+  const planCardTheme = (plan: any) => {
+    const department = String(plan.department_name || "").toLowerCase();
+    if (plan.status === "rejected") {
+      return { Icon: FileText, iconClass: "bg-rose-50 text-rose-600", accentClass: "bg-rose-500" };
+    }
+    if (department.includes("marketing")) {
+      return { Icon: Building2, iconClass: "bg-orange-50 text-orange-500", accentClass: "bg-orange-400" };
+    }
+    if (department.includes("test")) {
+      return { Icon: Users, iconClass: "bg-emerald-50 text-emerald-600", accentClass: "bg-emerald-500" };
+    }
+    if (department === "it") {
+      return { Icon: FileText, iconClass: "bg-violet-50 text-violet-600", accentClass: "bg-violet-500" };
+    }
+    return { Icon: Users, iconClass: "bg-blue-50 text-blue-600", accentClass: "bg-brand-500" };
+  };
+
+  const planProgress = (plan: any) => {
+    const planned = Number(plan.planned_headcount || 0);
+    if (planned <= 0) return 0;
+    return Math.min(100, Math.round((Number(plan.approved_headcount || 0) / planned) * 100));
   };
 
   return (
@@ -505,7 +582,7 @@ export default function HeadcountPlanPage() {
       )}
 
       {/* Filters */}
-      <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-[minmax(360px,1fr)_160px_190px_145px]">
+      <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-[minmax(360px,1fr)_160px_190px_145px_104px]">
         <div className="relative flex-1">
           <Search aria-hidden="true" className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
           <input
@@ -564,9 +641,167 @@ export default function HeadcountPlanPage() {
           </select>
           <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
         </div>
+        <div className="flex h-11 items-center rounded-xl border border-border bg-card p-1 shadow-sm" role="group" aria-label="Headcount plan view">
+          <button
+            type="button"
+            onClick={() => setViewMode("grid")}
+            aria-pressed={viewMode === "grid"}
+            aria-label="Grid view"
+            className={cn(
+              "inline-flex h-9 flex-1 items-center justify-center rounded-lg transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30",
+              viewMode === "grid" ? "bg-brand-600 text-white shadow-sm" : "text-slate-500 hover:bg-muted hover:text-foreground",
+            )}
+          >
+            <LayoutGrid aria-hidden="true" className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewMode("table")}
+            aria-pressed={viewMode === "table"}
+            aria-label="Table view"
+            className={cn(
+              "inline-flex h-9 flex-1 items-center justify-center rounded-lg transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30",
+              viewMode === "table" ? "bg-brand-600 text-white shadow-sm" : "text-slate-500 hover:bg-muted hover:text-foreground",
+            )}
+          >
+            <List aria-hidden="true" className="h-4 w-4" />
+          </button>
+        </div>
       </div>
 
-      {/* Table */}
+      {viewMode === "grid" ? (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          {(isLoading || isSummaryLoading) && plans.length === 0 ? (
+            <div className="col-span-full rounded-2xl border border-border bg-card px-6 py-12 text-center text-sm text-muted-foreground shadow-sm">
+              {tx("loading")}
+            </div>
+          ) : sortedPlans.length === 0 ? (
+            <div className="col-span-full rounded-2xl border border-border bg-card px-6 py-12 text-center text-sm text-muted-foreground shadow-sm">
+              {tx("noPlans")}
+            </div>
+          ) : (
+            sortedPlans.map((plan: any) => {
+              const { Icon, iconClass, accentClass } = planCardTheme(plan);
+              const progress = planProgress(plan);
+              const planId = Number(plan.id);
+
+              return (
+                <article key={plan.id} className="relative flex min-h-[238px] flex-col overflow-visible rounded-2xl border border-border bg-card shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+                  <div className="flex flex-1 items-start gap-3.5 p-4 pb-3">
+                    <span className={cn("inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl", iconClass)}>
+                      <Icon aria-hidden="true" className="h-6 w-6" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <button
+                        type="button"
+                        onClick={() => setViewingPlan(plan)}
+                        className="block max-w-full truncate text-left text-[13px] font-bold text-slate-900 transition hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30 dark:text-slate-100"
+                      >
+                        {plan.title}
+                      </button>
+                      {plan.quarter && <p className="mt-0.5 truncate text-[11px] text-slate-500">{plan.quarter}</p>}
+                      <span className={cn("mt-2 inline-flex max-w-full truncate rounded-full px-3 py-1 text-[11px] font-semibold", departmentBadge(plan.department_name))}>
+                        {plan.department_name || tx("orgWideShort")}
+                      </span>
+                    </div>
+                    <span className={statusBadge(plan.status)}>
+                      <span aria-hidden="true" className={cn("h-2 w-2 rounded-full", statusDot(plan.status))} />
+                      {tx(`status${plan.status.charAt(0).toUpperCase()}${plan.status.slice(1)}`, { defaultValue: plan.status })}
+                    </span>
+                  </div>
+
+                  <div className="px-4 pb-3">
+                    <p className="text-[11px] font-medium text-slate-500">{tx("fiscalYear")}</p>
+                    <p className="mt-0.5 text-[12px] font-semibold text-slate-700 dark:text-slate-200">{plan.fiscal_year || "—"}</p>
+                    <div className="mt-3 grid grid-cols-3 divide-x divide-border">
+                      <div className="pr-3">
+                        <p className="text-[10px] text-slate-500">{tx("colPlanned")}</p>
+                        <p className="mt-1 text-[15px] font-bold tabular-nums text-slate-900 dark:text-slate-100">{plan.planned_headcount}</p>
+                      </div>
+                      <div className="px-3">
+                        <p className="text-[10px] text-slate-500">{tx("colApproved")}</p>
+                        <p className="mt-1 text-[15px] font-bold tabular-nums text-emerald-600 dark:text-emerald-400">{plan.approved_headcount}</p>
+                      </div>
+                      <div className="pl-3">
+                        <p className="text-[10px] text-slate-500">{tx("colCurrent")}</p>
+                        <p className="mt-1 text-[15px] font-bold tabular-nums text-slate-900 dark:text-slate-100">{plan.current_headcount}</p>
+                      </div>
+                    </div>
+                    <div className="mt-3 flex items-center gap-3">
+                      <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+                        <span className={cn("block h-full rounded-full", accentClass)} style={{ width: `${progress}%` }} />
+                      </div>
+                      <span className="w-8 text-right text-[11px] font-semibold tabular-nums text-slate-600 dark:text-slate-300">{progress}%</span>
+                    </div>
+                  </div>
+
+                  <div className="relative flex h-11 items-center justify-between border-t border-border px-4 text-[11px] text-slate-500">
+                    <span className="inline-flex items-center gap-2">
+                      <CalendarDays aria-hidden="true" className="h-4 w-4" />
+                      {tx("createdRecently", { defaultValue: "Created recently" })}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setOpenActionsId((current) => current === planId ? null : planId)}
+                      aria-label={tx("planActions", { title: plan.title, defaultValue: `Actions for ${plan.title}` }) as string}
+                      aria-haspopup="menu"
+                      aria-expanded={openActionsId === planId}
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-slate-600 transition hover:border-brand-200 hover:bg-brand-50 hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30"
+                    >
+                      <MoreHorizontal aria-hidden="true" className="h-4 w-4" />
+                    </button>
+                    {openActionsId === planId && (
+                      <div role="menu" className="absolute bottom-10 right-4 z-30 min-w-[142px] overflow-hidden rounded-lg border border-border bg-card p-1 text-left shadow-lg">
+                        <button
+                          type="button"
+                          role="menuitem"
+                          onClick={() => { setOpenActionsId(null); setViewingPlan(plan); }}
+                          className="w-full rounded-md px-3 py-2 text-left text-xs font-medium text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30"
+                        >
+                          {tx("viewDetails", { defaultValue: "View details" })}
+                        </button>
+                        {!plan.__demo && plan.status === "draft" && (
+                          <button
+                            type="button"
+                            role="menuitem"
+                            onClick={() => { setOpenActionsId(null); submitMutation.mutate(plan.id); }}
+                            disabled={submitMutation.isPending}
+                            className="w-full rounded-md px-3 py-2 text-left text-xs font-medium text-blue-600 hover:bg-blue-50 disabled:opacity-50"
+                          >
+                            {tx("actionSubmit")}
+                          </button>
+                        )}
+                        {!plan.__demo && (plan.status === "submitted" || plan.status === "draft") && (
+                          <>
+                            <button
+                              type="button"
+                              role="menuitem"
+                              onClick={() => { setOpenActionsId(null); approveMutation.mutate(plan.id); }}
+                              disabled={approveMutation.isPending}
+                              className="w-full rounded-md px-3 py-2 text-left text-xs font-medium text-emerald-600 hover:bg-emerald-50 disabled:opacity-50"
+                            >
+                              {tx("actionApprove")}
+                            </button>
+                            <button
+                              type="button"
+                              role="menuitem"
+                              onClick={() => { setOpenActionsId(null); setRejectReason(""); setRejectTarget(plan.id); }}
+                              disabled={rejectMutation.isPending}
+                              className="w-full rounded-md px-3 py-2 text-left text-xs font-medium text-rose-600 hover:bg-rose-50 disabled:opacity-50"
+                            >
+                              {tx("actionReject")}
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </article>
+              );
+            })
+          )}
+        </div>
+      ) : (
       <div className="overflow-x-auto rounded-2xl border border-border bg-card shadow-sm">
         <table className="min-w-[1120px] w-full border-collapse">
           <caption className="sr-only">{tx("title")}</caption>
@@ -722,6 +957,8 @@ export default function HeadcountPlanPage() {
             )}
           </tbody>
         </table>
+      </div>
+      )}
 
         {/* #1548 — Plan details modal. Opens on row click so admins can see
             every field captured at creation (including notes, budget, dates). */}
@@ -820,8 +1057,8 @@ export default function HeadcountPlanPage() {
           </div>
         )}
 
-        {meta && meta.total_pages > 1 && (
-          <div className="flex items-center justify-between px-6 py-3 border-t border-border">
+        {viewMode === "table" && meta && meta.total_pages > 1 && !usingDemoPlans && (
+          <div className="mt-3 flex items-center justify-between rounded-xl border border-border bg-card px-6 py-3 shadow-sm">
             <p className="text-sm text-muted-foreground">
               {tx("pageOf", { page: meta.page, total_pages: meta.total_pages, total: meta.total })}
             </p>
@@ -843,7 +1080,6 @@ export default function HeadcountPlanPage() {
             </div>
           </div>
         )}
-      </div>
 
       {/* Reject modal — replaces the native window.prompt() for collecting the
           rejection reason. Styled to match the rest of the UI, with a textarea,
