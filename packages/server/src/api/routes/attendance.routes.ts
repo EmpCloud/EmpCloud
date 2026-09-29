@@ -1233,6 +1233,14 @@ router.get("/regularizations", authenticate, requirePermission("attendance:view_
     const status = req.query.status as string | undefined;
     const rawLocation = req.query.location_id;
     const locationId = rawLocation && Number(rawLocation) > 0 ? Number(rawLocation) : undefined;
+    const rawDepartment = req.query.department_id;
+    const departmentId = rawDepartment && Number(rawDepartment) > 0 ? Number(rawDepartment) : undefined;
+    const dateFrom = typeof req.query.date_from === "string" && /^\d{4}-\d{2}-\d{2}$/.test(req.query.date_from)
+      ? req.query.date_from
+      : undefined;
+    const dateTo = typeof req.query.date_to === "string" && /^\d{4}-\d{2}-\d{2}$/.test(req.query.date_to)
+      ? req.query.date_to
+      : undefined;
     const rawSearch = typeof req.query.search === "string" ? req.query.search.trim().slice(0, 120) : "";
     const search = rawSearch.length > 0 ? rawSearch : undefined;
     // Scope: callers with _all (or view_all / manage / HR) see every
@@ -1254,7 +1262,17 @@ router.get("/regularizations", authenticate, requirePermission("attendance:view_
       );
       userIds = await resolveTeamMemberIds(req.user!.org_id, req.user!.sub);
     }
-    const result = await regularizationService.listRegularizations(req.user!.org_id, { page, perPage: per_page, status, userIds, locationId, search });
+    const result = await regularizationService.listRegularizations(req.user!.org_id, {
+      page,
+      perPage: per_page,
+      status,
+      userIds,
+      locationId,
+      departmentId,
+      dateFrom,
+      dateTo,
+      search,
+    });
     sendPaginated(res, result.records, result.total, page, per_page);
   } catch (err) { next(err); }
 });
