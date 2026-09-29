@@ -1,10 +1,35 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { Plus, ChevronLeft, ChevronRight, CheckCircle, Clock, FileText, X, Search } from "lucide-react";
+import {
+  ArrowUp,
+  ArrowUpDown,
+  Building2,
+  CalendarDays,
+  CheckCircle,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  FileText,
+  ListFilter,
+  MoreHorizontal,
+  Plus,
+  Search,
+  Users,
+  X,
+} from "lucide-react";
 import api from "@/api/client";
 import { useDepartments } from "@/api/hooks";
 import { showToast } from "@/components/ui/Toast";
+import { cn } from "@/lib/utils";
+
+type PlanSortKey = "title" | "fiscal_year" | "department" | "planned" | "approved" | "current" | "status";
+
+interface PlanSort {
+  key: PlanSortKey;
+  direction: "asc" | "desc";
+}
 
 export default function HeadcountPlanPage() {
   const { t } = useTranslation();
@@ -16,6 +41,9 @@ export default function HeadcountPlanPage() {
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [departmentFilter, setDepartmentFilter] = useState<string>("");
   const [fiscalYearFilter, setFiscalYearFilter] = useState<string>("");
+  const [sort, setSort] = useState<PlanSort | null>(null);
+  const [selectedPlanIds, setSelectedPlanIds] = useState<Set<number>>(new Set());
+  const [openActionsId, setOpenActionsId] = useState<number | null>(null);
   const [showCreate, setShowCreate] = useState(false);
   // #1548 — Detail modal: plans are clickable and open this full-detail view
   // so the notes, budget and all other fields captured at creation time are
@@ -53,6 +81,88 @@ export default function HeadcountPlanPage() {
   const plans = data?.data || [];
   const meta = data?.meta;
 
+  const { data: summaryData } = useQuery({
+    queryKey: ["headcount-plans-summary"],
+    queryFn: () => api.get("/positions/headcount-plans", { params: { page: 1, per_page: 500 } }).then((response) => response.data),
+  });
+
+  const summaryPlans = useMemo<any[]>(() => summaryData?.data || [], [summaryData?.data]);
+  const planStats = useMemo(() => {
+    const total = Number(summaryData?.meta?.total ?? summaryPlans.length);
+    const approved = summaryPlans.filter((plan) => plan.status === "approved").length;
+    const rejected = summaryPlans.filter((plan) => plan.status === "rejected").length;
+    const draft = summaryPlans.filter((plan) => plan.status === "draft" || plan.status === "submitted").length;
+    const createdThisYear = summaryPlans.filter((plan) => {
+      if (!plan.created_at) return false;
+      return new Date(plan.created_at).getFullYear() === new Date().getFullYear();
+    }).length;
+    const percentage = (value: number) => total > 0 ? Math.round((value / total) * 100) : 0;
+
+    return {
+      total,
+      approved,
+      rejected,
+      draft,
+      createdThisYear,
+      approvedPercentage: percentage(approved),
+      rejectedPercentage: percentage(rejected),
+      draftPercentage: percentage(draft),
+    };
+  }, [summaryData?.meta?.total, summaryPlans]);
+
+  const sortedPlans = useMemo(() => {
+    if (!sort) return plans;
+
+    const valueFor = (plan: any): string | number => {
+      switch (sort.key) {
+        case "title": return plan.title || "";
+        case "fiscal_year": return plan.fiscal_year || "";
+        case "department": return plan.department_name || "";
+        case "planned": return Number(plan.planned_headcount || 0);
+        case "approved": return Number(plan.approved_headcount || 0);
+        case "current": return Number(plan.current_headcount || 0);
+        case "status": return plan.status || "";
+      }
+    };
+
+    return [...plans].sort((first: any, second: any) => {
+      const firstValue = valueFor(first);
+      const secondValue = valueFor(second);
+      const comparison = typeof firstValue === "number" && typeof secondValue === "number"
+        ? firstValue - secondValue
+        : String(firstValue).localeCompare(String(secondValue), undefined, { sensitivity: "base" });
+      return sort.direction === "asc" ? comparison : -comparison;
+    });
+  }, [plans, sort]);
+
+  const visiblePlanIds = sortedPlans.map((plan: any) => Number(plan.id));
+  const allVisibleSelected = visiblePlanIds.length > 0 && visiblePlanIds.every((id: number) => selectedPlanIds.has(id));
+
+  const changeSort = (key: PlanSortKey) => {
+    setSort((current) => ({
+      key,
+      direction: current?.key === key && current.direction === "asc" ? "desc" : "asc",
+    }));
+  };
+
+  const togglePlanSelection = (planId: number) => {
+    setSelectedPlanIds((current) => {
+      const next = new Set(current);
+      if (next.has(planId)) next.delete(planId);
+      else next.add(planId);
+      return next;
+    });
+  };
+
+  const toggleVisibleSelection = () => {
+    setSelectedPlanIds((current) => {
+      const next = new Set(current);
+      if (allVisibleSelected) visiblePlanIds.forEach((id: number) => next.delete(id));
+      else visiblePlanIds.forEach((id: number) => next.add(id));
+      return next;
+    });
+  };
+
   const currentYear = new Date().getFullYear();
   const fiscalYearOptions = Array.from({ length: 7 }, (_, i) => {
     const start = currentYear - 2 + i;
@@ -75,6 +185,7 @@ export default function HeadcountPlanPage() {
     mutationFn: (data: object) => api.post("/positions/headcount-plans", data).then((r) => r.data.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["headcount-plans"] });
+      queryClient.invalidateQueries({ queryKey: ["headcount-plans-summary"] });
       setShowCreate(false);
       setForm({
         title: "",
@@ -94,6 +205,7 @@ export default function HeadcountPlanPage() {
     mutationFn: (planId: number) => api.post(`/positions/headcount-plans/${planId}/approve`).then((r) => r.data.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["headcount-plans"] });
+      queryClient.invalidateQueries({ queryKey: ["headcount-plans-summary"] });
     },
     onError: (err: any) => {
       showToast("error", err?.response?.data?.error?.message || (tx("failedApprove") as string));
@@ -105,6 +217,7 @@ export default function HeadcountPlanPage() {
       api.post(`/positions/headcount-plans/${planId}/reject`, { reason }).then((r) => r.data.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["headcount-plans"] });
+      queryClient.invalidateQueries({ queryKey: ["headcount-plans-summary"] });
       setRejectTarget(null);
       setRejectReason("");
     },
@@ -123,6 +236,7 @@ export default function HeadcountPlanPage() {
       api.put(`/positions/headcount-plans/${planId}`, { status: "submitted" }).then((r) => r.data.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["headcount-plans"] });
+      queryClient.invalidateQueries({ queryKey: ["headcount-plans-summary"] });
     },
     onError: (err: any) => {
       showToast("error", err?.response?.data?.error?.message || (tx("failedSubmit") as string));
@@ -158,37 +272,118 @@ export default function HeadcountPlanPage() {
 
   const statusIcon = (status: string) => {
     switch (status) {
-      case "approved": return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case "submitted": return <Clock className="h-4 w-4 text-blue-500" />;
-      case "rejected": return <FileText className="h-4 w-4 text-red-500" />;
-      default: return <FileText className="h-4 w-4 text-muted-foreground" />;
+      case "approved": return <CheckCircle aria-hidden="true" className="h-4 w-4 text-emerald-500" />;
+      case "submitted": return <Clock aria-hidden="true" className="h-4 w-4 text-blue-500" />;
+      case "rejected": return <FileText aria-hidden="true" className="h-4 w-4 text-rose-500" />;
+      default: return <FileText aria-hidden="true" className="h-4 w-4 text-slate-500" />;
     }
   };
 
   const statusBadge = (status: string) => {
     const classes: Record<string, string> = {
-      draft: "bg-muted text-muted-foreground",
-      submitted: "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300",
-      approved: "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300",
-      rejected: "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300",
+      draft: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200",
+      submitted: "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300",
+      approved: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300",
+      rejected: "bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300",
     };
-    return `text-xs px-2 py-1 rounded-full font-medium ${classes[status] || classes.draft}`;
+    return `inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold ${classes[status] || classes.draft}`;
+  };
+
+  const statusDot = (status: string) => {
+    const classes: Record<string, string> = {
+      draft: "bg-slate-500",
+      submitted: "bg-blue-500",
+      approved: "bg-emerald-500",
+      rejected: "bg-rose-500",
+    };
+    return classes[status] || classes.draft;
+  };
+
+  const departmentBadge = (department?: string) => {
+    const name = department || (tx("orgWideShort") as string);
+    const normalized = name.toLowerCase();
+    if (normalized.includes("production")) return "bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300";
+    if (normalized.includes("marketing")) return "bg-orange-50 text-orange-700 dark:bg-orange-950/40 dark:text-orange-300";
+    if (normalized.includes("test")) return "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300";
+    if (normalized === "it") return "bg-violet-50 text-violet-700 dark:bg-violet-950/40 dark:text-violet-300";
+    return "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300";
   };
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{tx("title")}</h1>
-          <p className="text-muted-foreground mt-1">{tx("subtitle")}</p>
+          <h1 className="text-[22px] font-bold leading-tight tracking-tight text-foreground">{tx("title")}</h1>
+          <p className="mt-0.5 text-[13px] text-muted-foreground">{tx("subtitle")}</p>
         </div>
         <button
+          type="button"
           onClick={() => setShowCreate(!showCreate)}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 transition-colors"
+          aria-expanded={showCreate}
+          className="inline-flex h-11 items-center gap-2 rounded-lg bg-brand-600 px-5 text-[13px] font-semibold text-white shadow-sm transition-colors hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 focus-visible:ring-offset-2"
         >
-          <Plus className="h-4 w-4" />
+          <Plus aria-hidden="true" className="h-4 w-4" />
           {tx("newPlan")}
         </button>
+      </div>
+
+      <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {[
+          {
+            label: tx("totalPlans", { defaultValue: "Total Plans" }),
+            value: planStats.total,
+            detail: tx("plansThisYear", { count: planStats.createdThisYear, defaultValue: `↑ ${planStats.createdThisYear} this year` }),
+            icon: Users,
+            iconClass: "bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-300",
+            borderClass: "border-blue-100 dark:border-blue-900/50",
+            detailClass: "text-emerald-600 dark:text-emerald-400",
+            blobClass: "bg-blue-100/70 dark:bg-blue-900/20",
+          },
+          {
+            label: tx("approvedPlans", { defaultValue: "Approved Plans" }),
+            value: planStats.approved,
+            detail: tx("percentageOfTotal", { percentage: planStats.approvedPercentage, defaultValue: `${planStats.approvedPercentage}% of total` }),
+            icon: CheckCircle,
+            iconClass: "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-300",
+            borderClass: "border-emerald-100 dark:border-emerald-900/50",
+            detailClass: "text-muted-foreground",
+            blobClass: "bg-emerald-100/70 dark:bg-emerald-900/20",
+          },
+          {
+            label: tx("rejectedPlans", { defaultValue: "Rejected Plans" }),
+            value: planStats.rejected,
+            detail: tx("percentageOfTotal", { percentage: planStats.rejectedPercentage, defaultValue: `${planStats.rejectedPercentage}% of total` }),
+            icon: FileText,
+            iconClass: "bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-300",
+            borderClass: "border-rose-100 dark:border-rose-900/50",
+            detailClass: "text-rose-600 dark:text-rose-400",
+            blobClass: "bg-rose-100/70 dark:bg-rose-900/20",
+          },
+          {
+            label: tx("draftInProgress", { defaultValue: "Draft / In Progress" }),
+            value: planStats.draft,
+            detail: tx("percentageOfTotal", { percentage: planStats.draftPercentage, defaultValue: `${planStats.draftPercentage}% of total` }),
+            icon: Clock,
+            iconClass: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200",
+            borderClass: "border-slate-200 dark:border-slate-700",
+            detailClass: "text-muted-foreground",
+            blobClass: "bg-slate-100/80 dark:bg-slate-800/40",
+          },
+        ].map(({ label, value, detail, icon: Icon, iconClass, borderClass, detailClass, blobClass }) => (
+          <section key={String(label)} className={cn("relative min-h-[102px] overflow-hidden rounded-xl border bg-card p-4 shadow-sm", borderClass)}>
+            <span aria-hidden="true" className={cn("absolute -bottom-12 -right-5 h-24 w-36 rotate-[-12deg] rounded-[50%]", blobClass)} />
+            <div className="relative z-10 flex items-start gap-3.5">
+              <span className={cn("inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl", iconClass)}>
+                <Icon aria-hidden="true" className="h-5 w-5" />
+              </span>
+              <div className="min-w-0">
+                <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">{label}</p>
+                <p className="mt-1 text-[26px] font-bold leading-none tabular-nums text-foreground">{value}</p>
+                <p className={cn("mt-1.5 text-[11px] font-medium", detailClass)}>{detail}</p>
+              </div>
+            </div>
+          </section>
+        ))}
       </div>
 
       {/* Create Form */}
@@ -310,135 +505,217 @@ export default function HeadcountPlanPage() {
       )}
 
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+      <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-[minmax(360px,1fr)_160px_190px_145px]">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search aria-hidden="true" className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
           <input
-            type="text"
+            type="search"
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="bg-card text-foreground w-full pl-10 pr-4 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            aria-label={tx("searchPlaceholder") as string}
+            autoComplete="off"
+            className="h-11 w-full rounded-xl border border-border bg-card pl-11 pr-4 text-[13px] text-foreground shadow-sm outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-500/20"
             placeholder={tx("searchPlaceholder") as string}
           />
         </div>
-        <select
-          value={statusFilter}
-          onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-          className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-        >
-          <option value="">{tx("allStatuses")}</option>
-          <option value="draft">{tx("statusDraft")}</option>
-          <option value="submitted">{tx("statusSubmitted")}</option>
-          <option value="approved">{tx("statusApproved")}</option>
-          <option value="rejected">{tx("statusRejected")}</option>
-        </select>
-        <select
-          value={departmentFilter}
-          onChange={(e) => { setDepartmentFilter(e.target.value); setPage(1); }}
-          className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-        >
-          <option value="">{tx("allDepartments")}</option>
-          {deptList.map((d: any) => (
-            <option key={d.id} value={d.id}>{d.name}</option>
-          ))}
-        </select>
-        <select
-          value={fiscalYearFilter}
-          onChange={(e) => { setFiscalYearFilter(e.target.value); setPage(1); }}
-          className="bg-card text-foreground px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-        >
-          <option value="">{tx("allYears")}</option>
-          {fiscalYearOptions.map((y) => (
-            <option key={y} value={y}>{y}</option>
-          ))}
-        </select>
+        <div className="relative">
+          <ListFilter aria-hidden="true" className="absolute left-3.5 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-slate-600" />
+          <select
+            value={statusFilter}
+            onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
+            aria-label={tx("allStatuses") as string}
+            className="h-11 w-full appearance-none rounded-xl border border-border bg-card pl-10 pr-9 text-[13px] font-medium text-foreground shadow-sm outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-500/20"
+          >
+            <option value="">{tx("allStatuses")}</option>
+            <option value="draft">{tx("statusDraft")}</option>
+            <option value="submitted">{tx("statusSubmitted")}</option>
+            <option value="approved">{tx("statusApproved")}</option>
+            <option value="rejected">{tx("statusRejected")}</option>
+          </select>
+          <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+        </div>
+        <div className="relative">
+          <Building2 aria-hidden="true" className="absolute left-3.5 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-slate-600" />
+          <select
+            value={departmentFilter}
+            onChange={(e) => { setDepartmentFilter(e.target.value); setPage(1); }}
+            aria-label={tx("allDepartments") as string}
+            className="h-11 w-full appearance-none rounded-xl border border-border bg-card pl-10 pr-9 text-[13px] font-medium text-foreground shadow-sm outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-500/20"
+          >
+            <option value="">{tx("allDepartments")}</option>
+            {deptList.map((d: any) => (
+              <option key={d.id} value={d.id}>{d.name}</option>
+            ))}
+          </select>
+          <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+        </div>
+        <div className="relative">
+          <CalendarDays aria-hidden="true" className="absolute left-3.5 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-slate-600" />
+          <select
+            value={fiscalYearFilter}
+            onChange={(e) => { setFiscalYearFilter(e.target.value); setPage(1); }}
+            aria-label={tx("allYears") as string}
+            className="h-11 w-full appearance-none rounded-xl border border-border bg-card pl-10 pr-9 text-[13px] font-medium text-foreground shadow-sm outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-500/20"
+          >
+            <option value="">{tx("allYears")}</option>
+            {fiscalYearOptions.map((y) => (
+              <option key={y} value={y}>{y}</option>
+            ))}
+          </select>
+          <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+        </div>
       </div>
 
       {/* Table */}
-      <div className="bg-card rounded-xl border border-border overflow-x-auto -mx-4 lg:mx-0">
-        <table className="min-w-full">
-          <thead className="bg-muted border-b border-border">
+      <div className="overflow-x-auto rounded-2xl border border-border bg-card shadow-sm">
+        <table className="min-w-[1120px] w-full border-collapse">
+          <caption className="sr-only">{tx("title")}</caption>
+          <thead className="border-b border-border bg-slate-50/80 dark:bg-slate-900/50">
             <tr>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("colPlan")}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("fiscalYear")}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("department")}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("colPlanned")}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("colApproved")}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("colCurrent")}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("colStatus")}</th>
-              <th className="text-left text-xs font-medium text-muted-foreground uppercase px-6 py-3">{tx("colActions")}</th>
+              <th scope="col" className="w-14 px-4 py-3 text-left">
+                <input
+                  type="checkbox"
+                  checked={allVisibleSelected}
+                  onChange={toggleVisibleSelection}
+                  aria-label={tx("selectAllPlans", { defaultValue: "Select all visible plans" }) as string}
+                  className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500/30"
+                />
+              </th>
+              {([
+                ["title", tx("colPlan")],
+                ["fiscal_year", tx("fiscalYear")],
+                ["department", tx("department")],
+                ["planned", tx("colPlanned")],
+                ["approved", tx("colApproved")],
+                ["current", tx("colCurrent")],
+                ["status", tx("colStatus")],
+              ] as [PlanSortKey, string][]).map(([key, label]) => (
+                <th
+                  key={key}
+                  scope="col"
+                  aria-sort={sort?.key === key ? (sort.direction === "asc" ? "ascending" : "descending") : "none"}
+                  className={cn("px-4 py-3 text-left", key === "title" && "min-w-[260px]", key === "status" && "min-w-[140px]")}
+                >
+                  <button
+                    type="button"
+                    onClick={() => changeSort(key)}
+                    className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-[0.03em] text-slate-600 transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30"
+                  >
+                    {label}
+                    {sort?.key === key ? (
+                      <ArrowUp aria-hidden="true" className={cn("h-3 w-3 transition-transform", sort.direction === "desc" && "rotate-180")} />
+                    ) : (
+                      <ArrowUpDown aria-hidden="true" className="h-3 w-3 text-slate-400" />
+                    )}
+                  </button>
+                </th>
+              ))}
+              <th scope="col" className="w-24 px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-[0.03em] text-slate-600">{tx("colActions")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
             {isLoading ? (
-              <tr><td colSpan={8} className="px-6 py-8 text-center text-muted-foreground">{tx("loading")}</td></tr>
+              <tr><td colSpan={9} className="px-6 py-12 text-center text-sm text-muted-foreground">{tx("loading")}</td></tr>
             ) : plans.length === 0 ? (
-              <tr><td colSpan={8} className="px-6 py-8 text-center text-muted-foreground">{tx("noPlans")}</td></tr>
+              <tr><td colSpan={9} className="px-6 py-12 text-center text-sm text-muted-foreground">{tx("noPlans")}</td></tr>
             ) : (
-              plans.map((plan: any) => (
-                // #1548 — Row is clickable and opens the details modal. Action
-                // buttons stopPropagation so clicking Submit/Approve/Reject
-                // doesn't also open the modal.
-                <tr
-                  key={plan.id}
-                  onClick={() => setViewingPlan(plan)}
-                  className="hover:bg-muted cursor-pointer"
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      setViewingPlan(plan);
-                    }
-                  }}
-                >
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      {statusIcon(plan.status)}
-                      <span className="text-sm font-medium text-foreground">{plan.title}</span>
-                    </div>
-                    {plan.quarter && <span className="text-xs text-muted-foreground ml-6">{plan.quarter}</span>}
+              sortedPlans.map((plan: any) => (
+                <tr key={plan.id} className="h-[54px] transition-colors hover:bg-slate-50/70 dark:hover:bg-slate-900/30">
+                  <td className="px-4 py-2.5">
+                    <input
+                      type="checkbox"
+                      checked={selectedPlanIds.has(Number(plan.id))}
+                      onChange={() => togglePlanSelection(Number(plan.id))}
+                      aria-label={tx("selectPlan", { title: plan.title, defaultValue: `Select ${plan.title}` }) as string}
+                      className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500/30"
+                    />
                   </td>
-                  <td className="px-6 py-4 text-sm text-muted-foreground">{plan.fiscal_year}</td>
-                  <td className="px-6 py-4 text-sm text-muted-foreground">{plan.department_name || tx("orgWideShort")}</td>
-                  <td className="px-6 py-4 text-sm font-medium text-foreground">{plan.planned_headcount}</td>
-                  <td className="px-6 py-4 text-sm font-medium text-green-600 dark:text-green-400">{plan.approved_headcount}</td>
-                  <td className="px-6 py-4 text-sm text-muted-foreground">{plan.current_headcount}</td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-2.5">
+                    <div className="flex items-start gap-3">
+                      <span className="mt-0.5 shrink-0">{statusIcon(plan.status)}</span>
+                      <div className="min-w-0">
+                        <button
+                          type="button"
+                          onClick={() => setViewingPlan(plan)}
+                          className="max-w-[230px] truncate text-left text-[13px] font-semibold text-slate-900 hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30 dark:text-slate-100"
+                        >
+                          {plan.title}
+                        </button>
+                        {plan.quarter && <span className="block text-[11px] text-slate-500">{plan.quarter}</span>}
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-4 py-2.5 text-[12px] font-medium text-slate-600 dark:text-slate-300">{plan.fiscal_year}</td>
+                  <td className="px-4 py-2.5">
+                    <span className={cn("inline-flex rounded-full px-3 py-1 text-[11px] font-semibold", departmentBadge(plan.department_name))}>
+                      {plan.department_name || tx("orgWideShort")}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2.5 text-[13px] font-semibold tabular-nums text-slate-900 dark:text-slate-100">{plan.planned_headcount}</td>
+                  <td className="px-4 py-2.5 text-[13px] font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">{plan.approved_headcount}</td>
+                  <td className="px-4 py-2.5 text-[13px] font-medium tabular-nums text-slate-600 dark:text-slate-300">{plan.current_headcount}</td>
+                  <td className="px-4 py-2.5">
                     <span className={statusBadge(plan.status)}>
+                      <span aria-hidden="true" className={cn("h-2 w-2 rounded-full", statusDot(plan.status))} />
                       {tx(`status${plan.status.charAt(0).toUpperCase()}${plan.status.slice(1)}`, { defaultValue: plan.status })}
                     </span>
                   </td>
-                  <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
-                    <div className="flex gap-2">
-                      {plan.status === "draft" && (
+                  <td className="relative px-4 py-2.5 text-center">
+                    <button
+                      type="button"
+                      onClick={() => setOpenActionsId((current) => current === Number(plan.id) ? null : Number(plan.id))}
+                      aria-label={tx("planActions", { title: plan.title, defaultValue: `Actions for ${plan.title}` }) as string}
+                      aria-haspopup="menu"
+                      aria-expanded={openActionsId === Number(plan.id)}
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-slate-600 transition hover:border-brand-200 hover:bg-brand-50 hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30 dark:hover:bg-brand-950/30"
+                    >
+                      <MoreHorizontal aria-hidden="true" className="h-4 w-4" />
+                    </button>
+                    {openActionsId === Number(plan.id) && (
+                      <div role="menu" className="absolute right-4 top-10 z-30 min-w-[142px] overflow-hidden rounded-lg border border-border bg-card p-1 text-left shadow-lg">
                         <button
-                          onClick={() => submitMutation.mutate(plan.id)}
-                          disabled={submitMutation.isPending}
-                          className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                          type="button"
+                          role="menuitem"
+                          onClick={() => { setOpenActionsId(null); setViewingPlan(plan); }}
+                          className="w-full rounded-md px-3 py-2 text-left text-xs font-medium text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30"
                         >
-                          {tx("actionSubmit")}
+                          {tx("viewDetails", { defaultValue: "View details" })}
                         </button>
-                      )}
-                      {(plan.status === "submitted" || plan.status === "draft") && (
-                        <>
+                        {plan.status === "draft" && (
                           <button
-                            onClick={() => approveMutation.mutate(plan.id)}
-                            disabled={approveMutation.isPending}
-                            className="text-xs text-green-600 dark:text-green-400 hover:underline"
+                            type="button"
+                            role="menuitem"
+                            onClick={() => { setOpenActionsId(null); submitMutation.mutate(plan.id); }}
+                            disabled={submitMutation.isPending}
+                            className="w-full rounded-md px-3 py-2 text-left text-xs font-medium text-blue-600 hover:bg-blue-50 disabled:opacity-50 dark:text-blue-400 dark:hover:bg-blue-950/30"
                           >
-                            {tx("actionApprove")}
+                            {tx("actionSubmit")}
                           </button>
-                          <button
-                            onClick={() => { setRejectReason(""); setRejectTarget(plan.id); }}
-                            disabled={rejectMutation.isPending}
-                            className="text-xs text-red-600 dark:text-red-400 hover:underline"
-                          >
-                            {tx("actionReject")}
-                          </button>
-                        </>
-                      )}
-                    </div>
+                        )}
+                        {(plan.status === "submitted" || plan.status === "draft") && (
+                          <>
+                            <button
+                              type="button"
+                              role="menuitem"
+                              onClick={() => { setOpenActionsId(null); approveMutation.mutate(plan.id); }}
+                              disabled={approveMutation.isPending}
+                              className="w-full rounded-md px-3 py-2 text-left text-xs font-medium text-emerald-600 hover:bg-emerald-50 disabled:opacity-50 dark:text-emerald-400 dark:hover:bg-emerald-950/30"
+                            >
+                              {tx("actionApprove")}
+                            </button>
+                            <button
+                              type="button"
+                              role="menuitem"
+                              onClick={() => { setOpenActionsId(null); setRejectReason(""); setRejectTarget(plan.id); }}
+                              disabled={rejectMutation.isPending}
+                              className="w-full rounded-md px-3 py-2 text-left text-xs font-medium text-rose-600 hover:bg-rose-50 disabled:opacity-50 dark:text-rose-400 dark:hover:bg-rose-950/30"
+                            >
+                              {tx("actionReject")}
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))
