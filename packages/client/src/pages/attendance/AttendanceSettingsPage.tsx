@@ -130,7 +130,7 @@ function SettingsToggle({
       aria-label={label}
       disabled={disabled}
       onClick={() => onChange(!checked)}
-      className={`relative inline-flex h-7 w-12 shrink-0 items-center rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 disabled:cursor-not-allowed disabled:opacity-60 ${
+      className={`relative inline-flex h-7 w-12 shrink-0 items-center rounded-full border transition-colors after:absolute after:-inset-x-1 after:-inset-y-2 after:content-[''] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${
         checked
           ? "border-brand-600 bg-brand-600"
           : "border-slate-300 bg-slate-200 dark:border-slate-600 dark:bg-slate-700"
@@ -196,20 +196,20 @@ export default function AttendanceSettingsPage() {
   return (
     <div className="space-y-4">
       <header className="flex flex-wrap items-start justify-between gap-4">
-        <div className="flex items-start gap-3">
-          <span className="inline-flex h-14 w-14 items-center justify-center rounded-xl bg-blue-50 text-brand-600 dark:bg-brand-950/40 dark:text-brand-300">
-            <SettingsIcon aria-hidden="true" className="h-8 w-8" />
+        <div className="flex items-start gap-5">
+          <span className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-brand-600 dark:bg-brand-950/40 dark:text-brand-300">
+            <SettingsIcon aria-hidden="true" className="h-9 w-9" />
           </span>
           <div>
-            <h1 className="text-[26px] font-bold leading-tight tracking-tight text-foreground">{t("attendanceSettings.title")}</h1>
-            <p className="mt-0.5 text-[13px] text-muted-foreground">{t("attendanceSettings.subtitle")}</p>
+            <h1 className="text-[28px] font-bold leading-tight tracking-tight text-foreground">{t("attendanceSettings.title")}</h1>
+            <p className="mt-1 text-[14px] text-muted-foreground">{t("attendanceSettings.subtitle")}</p>
           </div>
         </div>
         <button
           type="button"
           onClick={() => updateSettings.mutate({ allowed_channels: ALL_CHANNELS, geofence_advisory: false, telegram_enabled: false })}
           disabled={settingsQ.isLoading || updateSettings.isPending}
-          className="inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-card px-4 text-[13px] font-semibold text-slate-700 shadow-sm transition-colors hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30 disabled:opacity-50 dark:text-slate-200 dark:hover:bg-brand-950/30"
+          className="inline-flex h-11 items-center gap-2 rounded-xl border border-border bg-card px-5 text-[13px] font-semibold text-slate-700 shadow-sm transition-colors hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30 focus-visible:ring-offset-2 disabled:opacity-50 dark:text-slate-200 dark:hover:bg-brand-950/30"
         >
           <RotateCcw aria-hidden="true" className="h-4 w-4" />
           {t("attendanceSettings.resetDefault", { defaultValue: "Reset to Default" })}
@@ -217,17 +217,17 @@ export default function AttendanceSettingsPage() {
       </header>
 
       {/* Org-level settings */}
-      <section className="rounded-xl border border-border bg-card p-5 shadow-sm">
+      <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
         <div className="mb-4 flex items-start gap-3">
           <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-blue-50 text-brand-600 dark:bg-brand-950/40 dark:text-brand-300">
             <Monitor aria-hidden="true" className="h-5 w-5" />
           </span>
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <h2 className="text-[15px] font-semibold text-foreground">{t("attendanceSettings.allowedChannels")}</h2>
+              <h2 className="text-base font-semibold text-foreground">{t("attendanceSettings.allowedChannels")}</h2>
               <Tooltip content={t("attendanceSettings.allowedChannelsDesc")} />
             </div>
-            <p className="mt-0.5 text-xs text-muted-foreground">{t("attendanceSettings.allowedChannelsDesc")}</p>
+            <p className="mt-0.5 text-[13px] text-muted-foreground">{t("attendanceSettings.allowedChannelsDesc")}</p>
           </div>
         </div>
 
@@ -236,7 +236,7 @@ export default function AttendanceSettingsPage() {
             <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" /> {t("attendanceSettings.loading")}
           </div>
         ) : (
-          <div className="grid gap-3 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-3">
             {ALL_CHANNELS.map((channel) => {
               const enabled = settingsQ.data?.allowed_channels.includes(channel) ?? false;
               const meta = CHANNEL_META[channel];
@@ -244,7 +244,7 @@ export default function AttendanceSettingsPage() {
               return (
                 <article
                   key={channel}
-                  className={`relative min-h-[126px] overflow-hidden rounded-xl border p-4 transition-colors ${enabled ? meta.card : "border-border bg-card"}`}
+                  className={`relative min-h-[128px] overflow-hidden rounded-xl border p-4 transition-colors ${enabled ? meta.card : "border-border bg-card"}`}
                 >
                   <span aria-hidden="true" className={`absolute -bottom-9 -right-5 h-20 w-32 -rotate-12 rounded-[50%] ${enabled ? meta.blob : "bg-slate-100/60 dark:bg-slate-800/40"}`} />
                   <div className="relative z-10 flex items-start gap-5">
@@ -285,7 +285,7 @@ export default function AttendanceSettingsPage() {
             </span>
             <div className="min-w-[220px] flex-1">
               <div className="flex items-center gap-2">
-                <h3 className="text-[14px] font-semibold text-foreground">{t("attendanceSettings.enableGeofencing")}</h3>
+                <h3 className="text-[15px] font-semibold text-foreground">{t("attendanceSettings.enableGeofencing")}</h3>
                 <Tooltip content={t("attendanceSettings.enableGeofencingDesc")} />
               </div>
               <p className="mt-0.5 text-[12px] text-muted-foreground">{t("attendanceSettings.enableGeofencingDesc")}</p>
@@ -406,7 +406,7 @@ function TelegramReportSection({
   };
 
   return (
-    <section className="rounded-xl border border-border bg-card p-5 shadow-sm">
+    <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
       <div className="mb-4 flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-start gap-3">
           <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-brand-600 dark:bg-brand-950/40 dark:text-brand-300">
@@ -414,7 +414,7 @@ function TelegramReportSection({
           </span>
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-        <h2 className="text-base font-semibold text-foreground">
+        <h2 className="text-[17px] font-semibold text-foreground">
           {t("attendanceSettings.telegramTitle", { defaultValue: "Daily Attendance Report (Telegram)" })}
         </h2>
         <Tooltip
@@ -506,7 +506,7 @@ function TelegramReportSection({
             type="button"
             onClick={addChatId}
             disabled={isSaving || !newChatId.trim()}
-            className="inline-flex h-10 items-center gap-1 rounded-lg bg-brand-600 px-3 text-[13px] font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30 disabled:opacity-50"
+            className="inline-flex h-10 items-center gap-2 rounded-lg bg-brand-600 px-5 text-[13px] font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30 disabled:opacity-50"
           >
             <Plus className="h-4 w-4" />
             {t("common.add", { defaultValue: "Add" })}
@@ -521,7 +521,7 @@ function TelegramReportSection({
           type="button"
           onClick={() => sendTest.mutate()}
           disabled={sendTest.isPending || isSaving || chatIds.length === 0}
-          className="inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm font-medium text-foreground hover:bg-muted disabled:opacity-50"
+          className="inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-card px-4 text-[13px] font-semibold text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30 disabled:opacity-50"
         >
           {sendTest.isPending ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -568,7 +568,7 @@ function GeofencesSection({ geofences, isLoading }: { geofences: Geofence[]; isL
   });
 
   return (
-    <section id="attendance-geofences" className="scroll-mt-24 rounded-xl border border-border bg-card p-5 shadow-sm">
+    <section id="attendance-geofences" className="scroll-mt-24 rounded-2xl border border-border bg-card p-5 shadow-sm">
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-start gap-3">
           <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-300">
@@ -576,7 +576,7 @@ function GeofencesSection({ geofences, isLoading }: { geofences: Geofence[]; isL
           </span>
           <div>
             <div className="flex items-center gap-2">
-          <h2 className="text-[15px] font-semibold text-foreground">{t("attendanceSettings.geofences")}</h2>
+          <h2 className="text-[16px] font-semibold text-foreground">{t("attendanceSettings.geofences")}</h2>
           <Tooltip
             content={
               <Trans
@@ -596,7 +596,7 @@ function GeofencesSection({ geofences, isLoading }: { geofences: Geofence[]; isL
         <button
           type="button"
           onClick={() => setCreating(true)}
-          className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg bg-brand-600 px-4 text-[13px] font-semibold text-white transition-colors hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30"
+          className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg bg-brand-600 px-5 text-[13px] font-semibold text-white transition-colors hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30"
         >
           <Plus aria-hidden="true" className="h-4 w-4" /> {t("attendanceSettings.addGeofence")}
         </button>
@@ -1024,7 +1024,7 @@ function OverridesSection({ geofences }: { geofences: Geofence[] }) {
   }, [overridesQ.data, search]);
 
   return (
-    <section className="rounded-xl border border-border bg-card p-5 shadow-sm">
+    <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-3">
           <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-brand-600 dark:bg-brand-950/40 dark:text-brand-300">
@@ -1032,7 +1032,7 @@ function OverridesSection({ geofences }: { geofences: Geofence[] }) {
           </span>
           <div>
             <div className="flex items-center gap-2">
-          <h2 className="text-[15px] font-semibold text-foreground">{t("attendanceSettings.overrides")}</h2>
+          <h2 className="text-[16px] font-semibold text-foreground">{t("attendanceSettings.overrides")}</h2>
           <Tooltip content={t("attendanceSettings.overridesDesc")} />
             </div>
             <p className="mt-0.5 text-xs text-muted-foreground">{t("attendanceSettings.overridesDesc")}</p>
@@ -1041,7 +1041,7 @@ function OverridesSection({ geofences }: { geofences: Geofence[] }) {
         <button
           type="button"
           onClick={() => setCreating(true)}
-          className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg bg-brand-600 px-4 text-[13px] font-semibold text-white transition-colors hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30"
+          className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg bg-brand-600 px-5 text-[13px] font-semibold text-white transition-colors hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30"
         >
           <Plus aria-hidden="true" className="h-4 w-4" /> {t("attendanceSettings.newOverride")}
         </button>
