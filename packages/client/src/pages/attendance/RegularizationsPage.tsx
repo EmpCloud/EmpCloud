@@ -4,11 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ArrowUpDown,
+  CalendarDays,
   CalendarClock,
   Check,
   CheckCircle2,
   Clock,
   FileText,
+  Filter,
   Hourglass,
   LayoutGrid,
   List,
@@ -17,13 +19,13 @@ import {
   Plus,
   RotateCcw,
   Search,
-  SlidersHorizontal,
   X,
 } from "lucide-react";
 import { useStickyLocationFilter } from "@/lib/use-sticky-location";
 import { showToast } from "@/components/ui/Toast";
 import { useDepartments } from "@/api/hooks";
 import { cn } from "@/lib/utils";
+import { DateRangePicker } from "@/components/DateRangePicker";
 
 type RegRow = {
   id: number;
@@ -84,6 +86,59 @@ function fmtDateTimeAtTZ(iso: string | null | undefined, tz?: string | null): st
   } catch {
     return new Date(iso).toLocaleString();
   }
+}
+
+function fmtCompactTimeAtTZ(iso: string | null | undefined, tz?: string | null): string {
+  if (!iso) return "-";
+  try {
+    return new Intl.DateTimeFormat(undefined, {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: tz || undefined,
+    }).format(new Date(iso));
+  } catch {
+    return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
+}
+
+function fmtCompactRange(
+  checkIn: string | null | undefined,
+  checkOut: string | null | undefined,
+  tz?: string | null,
+): string {
+  if (!checkIn && !checkOut) return "-";
+  return `${fmtCompactTimeAtTZ(checkIn, tz)} - ${fmtCompactTimeAtTZ(checkOut, tz)}`;
+}
+
+function requestDate(value: string): Date {
+  const dateOnly = value.slice(0, 10);
+  return new Date(`${dateOnly}T00:00:00`);
+}
+
+function fmtRequestDate(value: string): string {
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(requestDate(value));
+}
+
+function fmtRequestWeekday(value: string): string {
+  return new Intl.DateTimeFormat(undefined, { weekday: "short" }).format(requestDate(value));
+}
+
+function initialsFor(row: RegRow): string {
+  return `${row.first_name?.[0] ?? "R"}${row.last_name?.[0] ?? ""}`.toUpperCase();
+}
+
+function TableHeading({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      {children}
+      <ArrowUpDown aria-hidden="true" className="h-3 w-3 text-slate-400" />
+    </span>
+  );
 }
 
 // `requested_check_in/out` are now stored server-side as real UTC instants
@@ -348,28 +403,28 @@ export default function RegularizationsPage() {
   ];
 
   return (
-    <div>
-      <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
+    <div className="space-y-4 px-2">
+      <div className="flex -translate-y-2 flex-wrap items-start justify-between gap-4">
         <div className="flex items-start gap-3">
-          <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-brand-600 dark:bg-brand-950/40 dark:text-brand-300">
-            <CalendarClock aria-hidden="true" className="h-6 w-6" />
+          <span className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-brand-600 dark:bg-brand-950/40 dark:text-brand-300">
+            <CalendarClock aria-hidden="true" className="h-9 w-9" />
           </span>
           <div>
-            <h1 className="text-[22px] font-bold leading-tight tracking-tight text-foreground">{t('attendance.regularizations.title')}</h1>
-            <p className="mt-0.5 text-[13px] text-muted-foreground">{t('attendance.regularizations.subtitle')}</p>
+            <h1 className="text-[26px] font-bold leading-tight tracking-tight text-foreground">{t('attendance.regularizations.title')}</h1>
+            <p className="mt-1 text-[14px] text-muted-foreground">{t('attendance.regularizations.subtitle')}</p>
           </div>
         </div>
         <button
           type="button"
           onClick={() => setShowForm(!showForm)}
           aria-expanded={showForm}
-          className="inline-flex h-11 items-center gap-2 rounded-lg bg-brand-600 px-5 text-[13px] font-semibold text-white shadow-sm transition-colors hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30"
+          className="inline-flex h-12 items-center gap-2 rounded-lg bg-brand-600 px-6 text-[14px] font-semibold text-white shadow-sm transition-colors hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30"
         >
           <Plus aria-hidden="true" className="h-4 w-4" /> {t('attendance.regularizations.newRequest')}
         </button>
       </div>
 
-      <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="!mt-1.5 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {[
           {
             label: t("attendance.regularizations.pendingRequests", { defaultValue: "Pending Requests" }),
@@ -412,16 +467,16 @@ export default function RegularizationsPage() {
             detailClass: "text-muted-foreground",
           },
         ].map(({ label, value, detail, icon: Icon, card, iconBox, blob, detailClass }) => (
-          <section key={String(label)} className={cn("relative min-h-[102px] overflow-hidden rounded-xl border bg-card p-4 shadow-sm", card)}>
+          <section key={String(label)} className={cn("relative h-[102px] overflow-hidden rounded-xl border bg-card p-5 shadow-sm", card)}>
             <span aria-hidden="true" className={cn("absolute -bottom-12 -right-5 h-24 w-36 -rotate-12 rounded-[50%]", blob)} />
-            <div className="relative z-10 flex items-start gap-3.5">
-              <span className={cn("inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl", iconBox)}>
-                <Icon aria-hidden="true" className="h-5 w-5" />
+            <div className="relative z-10 flex items-center gap-5">
+              <span className={cn("inline-flex h-[60px] w-[60px] shrink-0 items-center justify-center rounded-2xl", iconBox)}>
+                <Icon aria-hidden="true" className="h-8 w-8" />
               </span>
               <div>
-                <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">{label}</p>
-                <p className="mt-1 text-[26px] font-bold leading-none tabular-nums text-foreground">{value}</p>
-                <p className={cn("mt-1.5 text-[11px] font-medium", detailClass)}>{detail}</p>
+                <p className="text-[13px] font-semibold text-slate-700 dark:text-slate-200">{label}</p>
+                <p className="mt-1 text-[28px] font-bold leading-none tabular-nums text-foreground">{value}</p>
+                <p className={cn("mt-1.5 text-[12px] font-medium", detailClass)}>{detail}</p>
               </div>
             </div>
           </section>
@@ -430,7 +485,7 @@ export default function RegularizationsPage() {
 
       {/* Submit Form */}
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-card rounded-lg border border-border p-4 mb-4">
+        <form onSubmit={handleSubmit} className="rounded-xl border border-border bg-card p-4 shadow-sm">
           <h3 className="text-base font-semibold text-foreground mb-3">{t('attendance.regularizations.submitTitle')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -471,8 +526,9 @@ export default function RegularizationsPage() {
         </form>
       )}
 
-      {/* Tabs */}
-      <div role="tablist" aria-label={t('attendance.regularizations.title')} className="mb-3 flex gap-2 overflow-x-auto rounded-xl border border-border bg-card px-4 shadow-sm">
+      {/* Tabs and filters */}
+      <section className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+      <div role="tablist" aria-label={t('attendance.regularizations.title')} className="flex gap-2 overflow-x-auto border-b border-border px-4">
         {tabs.map((tabItem) => (
           <button
             key={tabItem.key}
@@ -480,12 +536,12 @@ export default function RegularizationsPage() {
             role="tab"
             aria-selected={tab === tabItem.key}
             onClick={() => { setTab(tabItem.key); setPage(1); }}
-            className={`inline-flex h-12 items-center gap-2 whitespace-nowrap border-b-2 px-3 text-[13px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30 ${
+            className={`inline-flex h-14 items-center gap-2 whitespace-nowrap border-b-2 px-3 text-[15px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30 ${
               tab === tabItem.key ? "border-brand-600 text-brand-600" : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
             {t(tabItem.labelKey)}
-            <span className={cn("rounded-full px-2 py-0.5 text-[11px] tabular-nums", tab === tabItem.key ? "bg-brand-600 text-white" : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300")}>
+            <span className={cn("rounded-full px-2.5 py-0.5 text-[12px] tabular-nums", tab === tabItem.key ? "bg-brand-600 text-white" : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300")}>
               {tabItem.key === "pending" ? summary?.pending ?? 0 : tabItem.key === "all" ? summary?.total ?? 0 : summary?.mine ?? 0}
             </span>
           </button>
@@ -493,7 +549,7 @@ export default function RegularizationsPage() {
       </div>
 
       {filtersActive && (
-        <div className="mb-4 grid grid-cols-1 items-end gap-3 rounded-xl border border-border bg-card p-3 shadow-sm md:grid-cols-2 xl:grid-cols-[minmax(280px,1.6fr)_180px_180px_minmax(250px,1fr)_auto_auto]">
+        <div className="grid grid-cols-1 items-end gap-4 px-4 pb-2 pt-3 md:grid-cols-2 xl:grid-cols-[minmax(300px,2fr)_minmax(160px,.9fr)_minmax(160px,.9fr)_minmax(220px,1fr)_130px_168px]">
           <div className="relative">
             <Search aria-hidden="true" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
             <input
@@ -504,56 +560,54 @@ export default function RegularizationsPage() {
               onChange={(e) => setSearch(e.target.value)}
               aria-label={t("attendance.regularizations.searchEmployee", { defaultValue: "Search employee" })}
               placeholder={t("attendance.regularizations.searchPlaceholder", { defaultValue: "Search by employee name, email or code…" })}
-              className="h-11 w-full rounded-lg border border-border bg-card pl-10 pr-3 text-[13px] text-foreground outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+              className="h-11 w-full rounded-lg border border-border bg-card pl-10 pr-3 text-[14px] text-foreground outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
             />
           </div>
-          <div className="relative">
-            <MapPin aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+          <label className="block min-w-0">
+            <span className="mb-1 block text-[12px] font-medium text-muted-foreground">{t("attendance.regularizations.location", { defaultValue: "Location" })}</span>
             <select
               value={locationId ?? ""}
               onChange={(e) => { setLocationId(e.target.value ? Number(e.target.value) : undefined); setPage(1); }}
               aria-label={t("attendance.regularizations.location", { defaultValue: "Location" })}
-              className="h-11 w-full appearance-none rounded-lg border border-border bg-card pl-9 pr-8 text-[13px] text-foreground outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+              className="h-11 w-full rounded-lg border border-border bg-card px-3 text-[14px] text-foreground outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
             >
               <option value="">{t("attendance.regularizations.allLocations", { defaultValue: "All locations" })}</option>
               {locations.map((l: any) => (
                 <option key={l.id} value={l.id}>{l.name}</option>
               ))}
             </select>
-          </div>
-          <div className="relative">
+          </label>
+          <label className="block min-w-0">
+            <span className="mb-1 block text-[12px] font-medium text-muted-foreground">{t("attendance.regularizations.department", { defaultValue: "Department" })}</span>
             <select
               value={departmentId}
               onChange={(e) => { setDepartmentId(e.target.value); setPage(1); }}
               aria-label={t("attendance.regularizations.department", { defaultValue: "Department" })}
-              className="h-11 w-full appearance-none rounded-lg border border-border bg-card px-3 pr-8 text-[13px] text-foreground outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+              className="h-11 w-full rounded-lg border border-border bg-card px-3 text-[14px] text-foreground outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
             >
               <option value="">{t("attendance.regularizations.allDepartments", { defaultValue: "All departments" })}</option>
               {departments.map((department: any) => (
                 <option key={department.id} value={department.id}>{department.name}</option>
               ))}
             </select>
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <input
-              type="date"
-              name="regularization_date_from"
-              value={dateFrom}
-              max={dateTo || undefined}
-              onChange={(e) => { setDateFrom(e.target.value); setPage(1); }}
-              aria-label={t("attendance.regularizations.dateFrom", { defaultValue: "Date from" })}
-              className="h-11 min-w-0 rounded-lg border border-border bg-card px-2 text-[12px] text-foreground outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
-            />
-            <input
-              type="date"
-              name="regularization_date_to"
-              value={dateTo}
-              min={dateFrom || undefined}
-              onChange={(e) => { setDateTo(e.target.value); setPage(1); }}
-              aria-label={t("attendance.regularizations.dateTo", { defaultValue: "Date to" })}
-              className="h-11 min-w-0 rounded-lg border border-border bg-card px-2 text-[12px] text-foreground outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
-            />
-          </div>
+          </label>
+          <DateRangePicker
+            from={dateFrom}
+            to={dateTo}
+            label={t("attendance.regularizations.dateRange", { defaultValue: "Date Range" })}
+            allowEmpty
+            onApply={(from, to) => {
+              setDateFrom(from);
+              setDateTo(to);
+              setPage(1);
+            }}
+            onClear={() => {
+              setDateFrom("");
+              setDateTo("");
+              setPage(1);
+            }}
+            className="block w-full [&>button]:h-11 [&>button]:w-full [&>button]:justify-between [&>button]:text-[14px]"
+          />
           <button
             type="button"
             onClick={resetFilters}
@@ -567,16 +621,17 @@ export default function RegularizationsPage() {
             onClick={() => { setAppliedSearch(search.trim()); setPage(1); }}
             className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-brand-600 px-4 text-[13px] font-semibold text-white shadow-sm transition-colors hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30"
           >
-            <SlidersHorizontal aria-hidden="true" className="h-4 w-4" />
+            <Filter aria-hidden="true" className="h-4 w-4" />
             {t("attendance.regularizations.applyFilters", { defaultValue: "Apply Filters" })}
           </button>
         </div>
       )}
+      </section>
 
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+      <div className={cn("flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card px-5 py-1.5 shadow-sm", viewMode === "table" && "rounded-b-none")}>
         <div className="flex items-center gap-2">
           <Clock aria-hidden="true" className="h-5 w-5 text-brand-600" />
-          <h2 className="text-[16px] font-semibold text-foreground">
+          <h2 className="text-[18px] font-semibold text-foreground">
             {tab === "pending"
               ? t("attendance.regularizations.pendingRequests", { defaultValue: "Pending Requests" })
               : tab === "all"
@@ -586,12 +641,12 @@ export default function RegularizationsPage() {
           </h2>
         </div>
         <div className="flex items-center gap-2">
-          <label className="text-xs text-muted-foreground" htmlFor="regularization-sort">{t("attendance.regularizations.sortBy", { defaultValue: "Sort by" })}</label>
+          <label className="text-[13px] text-muted-foreground" htmlFor="regularization-sort">{t("attendance.regularizations.sortBy", { defaultValue: "Sort by" })}</label>
           <select
             id="regularization-sort"
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value as "newest" | "oldest")}
-            className="h-9 rounded-lg border border-border bg-card px-3 text-[12px] font-medium text-foreground outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+            className="h-9 rounded-lg border border-border bg-card px-3 text-[13px] font-medium text-foreground outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
           >
             <option value="newest">{t("attendance.regularizations.dateNewest", { defaultValue: "Date (Newest)" })}</option>
             <option value="oldest">{t("attendance.regularizations.dateOldest", { defaultValue: "Date (Oldest)" })}</option>
@@ -620,12 +675,12 @@ export default function RegularizationsPage() {
       </div>
 
       {/* Table */}
-      {viewMode === "table" ? <div className="overflow-x-auto rounded-xl border border-border bg-card shadow-sm">
+      {viewMode === "table" ? <div className="!mt-0 overflow-x-auto rounded-b-xl border border-t-0 border-border bg-card shadow-sm">
         <table className="min-w-[1120px] w-full">
           <caption className="sr-only">{t('attendance.regularizations.title')}</caption>
           <thead className="border-b border-border bg-slate-50/80 dark:bg-slate-900/50">
             <tr>
-              <th scope="col" className="w-12 px-4 py-3 text-left">
+              <th scope="col" className="w-12 px-4 py-1.5 text-left">
                 <input
                   type="checkbox"
                   checked={allVisibleSelected}
@@ -634,13 +689,13 @@ export default function RegularizationsPage() {
                   className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500/30"
                 />
               </th>
-              {tab !== "my" && <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t('attendance.regularizations.table.employee')}</th>}
-              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5"><span className="inline-flex items-center gap-1">{t('attendance.regularizations.table.date')} <ArrowUpDown aria-hidden="true" className="h-3 w-3 text-slate-400" /></span></th>
-              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t('attendance.regularizations.table.originalInOut')}</th>
-              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t('attendance.regularizations.table.requestedInOut')}</th>
-              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t('attendance.regularizations.table.reason')}</th>
-              <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t('attendance.regularizations.table.status')}</th>
-              {tab === "pending" && <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t('attendance.regularizations.table.actions')}</th>}
+              {tab !== "my" && <th scope="col" className="px-4 py-1.5 text-left text-[12px] font-semibold uppercase tracking-wider text-muted-foreground"><TableHeading>{t('attendance.regularizations.table.employee')}</TableHeading></th>}
+              <th scope="col" className="px-4 py-1.5 text-left text-[12px] font-semibold uppercase tracking-wider text-muted-foreground"><TableHeading>{t('attendance.regularizations.table.date')}</TableHeading></th>
+              <th scope="col" className="px-4 py-1.5 text-left text-[12px] font-semibold uppercase tracking-wider text-muted-foreground"><TableHeading>{t('attendance.regularizations.table.originalInOut')}</TableHeading></th>
+              <th scope="col" className="px-4 py-1.5 text-left text-[12px] font-semibold uppercase tracking-wider text-muted-foreground"><TableHeading>{t('attendance.regularizations.table.requestedInOut')}</TableHeading></th>
+              <th scope="col" className="px-4 py-1.5 text-left text-[12px] font-semibold uppercase tracking-wider text-muted-foreground"><TableHeading>{t('attendance.regularizations.table.reason')}</TableHeading></th>
+              <th scope="col" className="px-4 py-1.5 text-left text-[12px] font-semibold uppercase tracking-wider text-muted-foreground"><TableHeading>{t('attendance.regularizations.table.status')}</TableHeading></th>
+              {tab === "pending" && <th scope="col" className="px-4 py-1.5 text-left text-[12px] font-semibold uppercase tracking-wider text-muted-foreground"><TableHeading>{t('attendance.regularizations.table.actions')}</TableHeading></th>}
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
@@ -650,7 +705,7 @@ export default function RegularizationsPage() {
               <tr><td colSpan={8} className="px-4 py-12 text-center text-[13px] text-muted-foreground">{t('attendance.regularizations.noRecords')}</td></tr>
             ) : (
               displayRecords.map((r: RegRow) => (
-                <tr key={r.id} className="h-[56px] transition-colors hover:bg-slate-50/70 dark:hover:bg-slate-900/30">
+                <tr key={r.id} className="h-[58px] transition-colors hover:bg-slate-50/70 dark:hover:bg-slate-900/30">
                   <td className="px-4 py-2.5">
                     <input
                       type="checkbox"
@@ -665,30 +720,33 @@ export default function RegularizationsPage() {
                     />
                   </td>
                   {tab !== "my" && (
-                    <td className="px-4 py-2.5">
-                      <div>
-                        <button type="button" onClick={() => setSelectedRow(r)} className="text-left text-[13px] font-semibold text-foreground hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30">{r.first_name} {r.last_name}</button>
-                        <p className="text-[11px] text-muted-foreground">{r.emp_code || r.email}</p>
+                    <td className="px-4 py-2">
+                      <div className="flex items-center gap-3">
+                        <span aria-hidden="true" className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-[13px] font-bold text-brand-600 dark:bg-brand-950/50 dark:text-brand-300">
+                          {initialsFor(r)}
+                        </span>
+                        <div className="min-w-0">
+                        <button type="button" onClick={() => setSelectedRow(r)} className="block max-w-[190px] truncate text-left text-[14px] font-semibold text-foreground hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30">{r.first_name} {r.last_name}</button>
+                        <p className="max-w-[210px] truncate text-[12px] text-muted-foreground">{r.emp_code || r.email}{r.department_name ? ` · ${r.department_name}` : ""}</p>
+                        </div>
                       </div>
                     </td>
                   )}
-                  <td className="px-4 py-2.5 text-[13px] tabular-nums text-foreground">
-                    {new Date(r.date).toLocaleDateString()}
-                    {r.location_name && (
-                      <div className="text-[10px] text-muted-foreground mt-0.5">{r.location_name}{r.location_timezone ? ` · ${r.location_timezone}` : ""}</div>
-                    )}
+                  <td className="px-4 py-2 text-[13px] tabular-nums text-foreground">
+                    <div className="font-medium">{fmtRequestDate(r.date)}</div>
+                    <div className="mt-0.5 text-[11px] text-muted-foreground">{fmtRequestWeekday(r.date)}</div>
                   </td>
-                  <td className="px-4 py-2.5 text-[11px] tabular-nums text-muted-foreground">
+                  <td className="px-4 py-2 text-[12px] tabular-nums text-slate-600 dark:text-slate-300">
                     <div>{fmtTimeAtTZ(r.original_check_in, rowTZ(r))}</div>
                     <div>{fmtTimeAtTZ(r.original_check_out, rowTZ(r))}</div>
                   </td>
-                  <td className="px-4 py-2.5 text-[11px] tabular-nums text-muted-foreground">
+                  <td className="px-4 py-2 text-[12px] tabular-nums text-slate-600 dark:text-slate-300">
                     <div>{fmtTimeAtTZ(r.requested_check_in, rowTZ(r))}</div>
                     <div>{fmtTimeAtTZ(r.requested_check_out, rowTZ(r))}</div>
                   </td>
-                  <td className="px-4 py-2.5 text-[13px] text-muted-foreground max-w-[200px] truncate">{r.reason}</td>
+                  <td className="max-w-[220px] truncate px-4 py-2 text-[13px] text-slate-600 dark:text-slate-300">{r.reason}</td>
                   <td className="px-4 py-2.5">
-                    <span className={`inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-md font-medium ${
+                    <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-semibold ${
                       r.status === "pending" ? "bg-yellow-50 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300"
                         : r.status === "approved" ? "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300"
                         : "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300"
@@ -705,7 +763,7 @@ export default function RegularizationsPage() {
                           type="button"
                           onClick={() => handleApprove(r.id)}
                           disabled={processReg.isPending}
-                          className="flex items-center gap-1 text-[11px] bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300 px-3 py-1.5 rounded-md hover:bg-green-100 dark:hover:bg-green-950/40 disabled:opacity-50 transition-colors"
+                          className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-green-50 px-4 text-[12px] font-semibold text-green-700 transition-colors hover:bg-green-100 disabled:opacity-50 dark:bg-green-950/40 dark:text-green-300 dark:hover:bg-green-950/40"
                         >
                           <Check aria-hidden="true" className="h-3 w-3" /> {t('attendance.regularizations.approve')}
                         </button>
@@ -713,7 +771,7 @@ export default function RegularizationsPage() {
                           type="button"
                           onClick={() => handleReject(r.id)}
                           disabled={processReg.isPending}
-                          className="flex items-center gap-1 text-[11px] bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 px-3 py-1.5 rounded-md hover:bg-red-100 dark:hover:bg-red-950/40 disabled:opacity-50 transition-colors"
+                          className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-red-50 px-4 text-[12px] font-semibold text-red-700 transition-colors hover:bg-red-100 disabled:opacity-50 dark:bg-red-950/40 dark:text-red-300 dark:hover:bg-red-950/40"
                         >
                           <X aria-hidden="true" className="h-3 w-3" /> {t('attendance.regularizations.reject')}
                         </button>
@@ -744,55 +802,53 @@ export default function RegularizationsPage() {
           </div>
         )}
       </div> : (
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
+        <div className="!mt-2 grid grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-3">
           {isLoading ? (
             <div className="col-span-full rounded-xl border border-border bg-card px-6 py-12 text-center text-[13px] text-muted-foreground">{t('common.loading')}</div>
           ) : displayRecords.length === 0 ? (
             <div className="col-span-full rounded-xl border border-border bg-card px-6 py-12 text-center text-[13px] text-muted-foreground">{t('attendance.regularizations.noRecords')}</div>
           ) : displayRecords.map((r) => (
             <article key={r.id} className="overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md">
-              <div className="p-4">
-                <div className="flex items-start gap-3">
+              <div className="px-4 pt-3">
+                <div className="flex items-center gap-3">
                   <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue-50 text-[13px] font-bold text-brand-600 dark:bg-brand-950/40 dark:text-brand-300">
-                    {(r.first_name?.[0] || "R").toUpperCase()}{(r.last_name?.[0] || "").toUpperCase()}
+                    {initialsFor(r)}
                   </span>
                   <div className="min-w-0 flex-1">
                     <button type="button" onClick={() => setSelectedRow(r)} className="max-w-full truncate text-left text-[14px] font-semibold text-foreground hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30">
                       {r.first_name || r.last_name ? `${r.first_name || ""} ${r.last_name || ""}`.trim() : t("attendance.regularizations.request", { defaultValue: "Regularization request" })}
                     </button>
-                    <p className="text-[11px] text-muted-foreground">{r.emp_code || r.email || `#${r.id}`}</p>
+                    <p className="text-[12px] text-muted-foreground">{r.emp_code || r.email || `#${r.id}`}</p>
                   </div>
-                  <span className={cn("inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold", r.status === "pending" ? "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300" : r.status === "approved" ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300" : "bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300")}>
+                  {r.location_name && <p className="flex shrink-0 items-center gap-1 text-[11px] text-muted-foreground"><MapPin aria-hidden="true" className="h-3.5 w-3.5" />{r.location_name}</p>}
+                  <span className={cn("inline-flex shrink-0 items-center gap-1 rounded-full px-3 py-1.5 text-[12px] font-semibold", r.status === "pending" ? "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300" : r.status === "approved" ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300" : "bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300")}>
                     {r.status === "pending" ? <Clock aria-hidden="true" className="h-3 w-3" /> : r.status === "approved" ? <Check aria-hidden="true" className="h-3 w-3" /> : <X aria-hidden="true" className="h-3 w-3" />}
                     {r.status === "pending" ? t('attendance.regularizations.statusPending') : r.status === "approved" ? t('attendance.regularizations.statusApproved') : t('attendance.regularizations.statusRejected')}
                   </span>
                 </div>
-                {r.location_name && <p className="mt-2 flex items-center gap-1 text-[11px] text-muted-foreground"><MapPin aria-hidden="true" className="h-3.5 w-3.5" />{r.location_name}</p>}
-                <div className="mt-3 grid grid-cols-3 divide-x divide-border border-y border-border py-3">
+                <div className="mt-2 grid grid-cols-3 divide-x divide-border border-y border-border py-2">
                   <div className="pr-2">
-                    <p className="text-[10px] text-muted-foreground">{t('attendance.regularizations.table.date')}</p>
-                    <p className="mt-1 text-[12px] font-semibold tabular-nums text-foreground">{new Intl.DateTimeFormat(undefined, { day: "2-digit", month: "2-digit", year: "numeric" }).format(new Date(r.date))}</p>
+                    <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground"><CalendarDays aria-hidden="true" className="h-4 w-4" />{t('attendance.regularizations.requestDate', { defaultValue: 'Request Date' })}</p>
+                    <p className="mt-1 text-[12px] font-semibold tabular-nums text-foreground">{fmtRequestDate(r.date)}</p>
                   </div>
                   <div className="px-2">
-                    <p className="text-[10px] text-muted-foreground">{t('attendance.regularizations.table.originalInOut')}</p>
-                    <p className="mt-1 text-[11px] tabular-nums text-foreground">{fmtTimeAtTZ(r.original_check_in, rowTZ(r))}</p>
-                    <p className="text-[11px] tabular-nums text-foreground">{fmtTimeAtTZ(r.original_check_out, rowTZ(r))}</p>
+                    <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground"><Clock aria-hidden="true" className="h-4 w-4" />{t('attendance.regularizations.table.originalInOut')}</p>
+                    <p className="mt-1 whitespace-nowrap text-[11px] tabular-nums text-foreground">{fmtCompactRange(r.original_check_in, r.original_check_out, rowTZ(r))}</p>
                   </div>
                   <div className="pl-2">
-                    <p className="text-[10px] text-muted-foreground">{t('attendance.regularizations.table.requestedInOut')}</p>
-                    <p className="mt-1 text-[11px] tabular-nums text-foreground">{fmtTimeAtTZ(r.requested_check_in, rowTZ(r))}</p>
-                    <p className="text-[11px] tabular-nums text-foreground">{fmtTimeAtTZ(r.requested_check_out, rowTZ(r))}</p>
+                    <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground"><Clock aria-hidden="true" className="h-4 w-4" />{t('attendance.regularizations.table.requestedInOut')}</p>
+                    <p className="mt-1 whitespace-nowrap text-[11px] tabular-nums text-foreground">{fmtCompactRange(r.requested_check_in, r.requested_check_out, rowTZ(r))}</p>
                   </div>
                 </div>
-                <p className="mt-3 flex min-h-5 items-center gap-2 truncate text-[12px] text-muted-foreground" title={r.reason}>
+                <p className="mt-2 flex min-h-5 items-center gap-2 truncate pb-2 text-[12px] text-muted-foreground" title={r.reason}>
                   <FileText aria-hidden="true" className="h-4 w-4 shrink-0" />{r.reason || "—"}
                 </p>
               </div>
               {tab === "pending" && (
-                <div className="grid grid-cols-[1fr_1fr_auto] gap-2 border-t border-border p-3">
-                  <button type="button" onClick={() => handleApprove(r.id)} disabled={processReg.isPending} className="inline-flex h-9 items-center justify-center gap-1 rounded-lg bg-emerald-50 text-[12px] font-semibold text-emerald-700 hover:bg-emerald-100 disabled:opacity-50 dark:bg-emerald-950/40 dark:text-emerald-300"><Check aria-hidden="true" className="h-3.5 w-3.5" />{t('attendance.regularizations.approve')}</button>
-                  <button type="button" onClick={() => handleReject(r.id)} disabled={processReg.isPending} className="inline-flex h-9 items-center justify-center gap-1 rounded-lg bg-rose-50 text-[12px] font-semibold text-rose-700 hover:bg-rose-100 disabled:opacity-50 dark:bg-rose-950/40 dark:text-rose-300"><X aria-hidden="true" className="h-3.5 w-3.5" />{t('attendance.regularizations.reject')}</button>
-                  <button type="button" onClick={() => setSelectedRow(r)} aria-label={t('attendance.regularizations.viewDetails')} className="inline-flex h-9 w-10 items-center justify-center rounded-lg border border-border text-muted-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30"><MoreHorizontal aria-hidden="true" className="h-4 w-4" /></button>
+                <div className="grid grid-cols-[1fr_1fr_auto] gap-2 border-t border-border p-1.5">
+                  <button type="button" onClick={() => handleApprove(r.id)} disabled={processReg.isPending} className="inline-flex h-8 items-center justify-center gap-1 rounded-lg bg-emerald-50 text-[12px] font-semibold text-emerald-700 hover:bg-emerald-100 disabled:opacity-50 dark:bg-emerald-950/40 dark:text-emerald-300"><Check aria-hidden="true" className="h-3.5 w-3.5" />{t('attendance.regularizations.approve')}</button>
+                  <button type="button" onClick={() => handleReject(r.id)} disabled={processReg.isPending} className="inline-flex h-8 items-center justify-center gap-1 rounded-lg bg-rose-50 text-[12px] font-semibold text-rose-700 hover:bg-rose-100 disabled:opacity-50 dark:bg-rose-950/40 dark:text-rose-300"><X aria-hidden="true" className="h-3.5 w-3.5" />{t('attendance.regularizations.reject')}</button>
+                  <button type="button" onClick={() => setSelectedRow(r)} aria-label={t('attendance.regularizations.viewDetails')} className="inline-flex h-8 w-10 items-center justify-center rounded-lg border border-border text-muted-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30"><MoreHorizontal aria-hidden="true" className="h-4 w-4" /></button>
                 </div>
               )}
             </article>
