@@ -13,6 +13,7 @@ const ROLE_OPTIONS: { value: string; label: string }[] = [
 ];
 import {
   Calendar,
+  CalendarRange,
   Users,
   ArrowLeftRight,
   Check,
@@ -23,6 +24,7 @@ import {
   Pencil,
   Trash2,
   Search,
+  RotateCcw,
 } from "lucide-react";
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50, 100];
@@ -436,22 +438,28 @@ export default function ShiftSchedulePage() {
   });
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight text-foreground">{t('attendance.shiftSchedule.title')}</h1>
-          <p className="text-[13px] text-muted-foreground mt-0.5">{t('attendance.shiftSchedule.subtitle')}</p>
+    <div className="space-y-4 px-2">
+      <div className="flex -translate-y-2 flex-wrap items-start justify-between gap-4">
+        <div className="flex items-start gap-3">
+          <span className="inline-flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-brand-600 dark:bg-brand-950/40 dark:text-brand-300">
+            <CalendarRange aria-hidden="true" className="h-9 w-9" />
+          </span>
+          <div>
+            <h1 className="text-[26px] font-bold leading-tight tracking-tight text-foreground">{t('attendance.shiftSchedule.title')}</h1>
+            <p className="mt-1 text-[14px] text-muted-foreground">{t('attendance.shiftSchedule.subtitle')}</p>
+          </div>
         </div>
         <button
+          type="button"
           onClick={() => setShowBulkAssign(true)}
-          className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-md text-[13px] font-medium hover:bg-brand-700 transition-colors"
+          className="inline-flex h-12 items-center gap-2 rounded-lg bg-brand-600 px-6 text-[14px] font-semibold text-white shadow-sm transition-colors hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30"
         >
-          <Users className="h-4 w-4" /> {t('attendance.shiftSchedule.bulkAssign')}
+          <Users aria-hidden="true" className="h-5 w-5" /> {t('attendance.shiftSchedule.bulkAssign')}
         </button>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 border-b border-border mb-6">
+      <div aria-label={t('attendance.shiftSchedule.title')} className="!mt-1.5 flex gap-2 overflow-x-auto rounded-xl border border-border bg-card px-4 shadow-sm">
         {([
           { key: "schedule", labelKey: "attendance.shiftSchedule.tabs.schedule", icon: Calendar },
           { key: "my-schedule", labelKey: "attendance.shiftSchedule.tabs.mySchedule", icon: Calendar },
@@ -459,16 +467,20 @@ export default function ShiftSchedulePage() {
         ] as const).map((tab_) => (
           <button
             key={tab_.key}
+            type="button"
+            aria-pressed={tab === tab_.key}
             onClick={() => setTab(tab_.key)}
-            className={`flex items-center gap-2 px-4 py-2.5 text-[13px] font-medium border-b-2 -mb-px transition ${
+            className={`inline-flex h-14 items-center gap-2 whitespace-nowrap border-b-2 px-3 text-[14px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30 ${
               tab === tab_.key
                 ? "border-brand-600 text-brand-600 dark:text-brand-400"
                 : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
-            <tab_.icon className="h-4 w-4" />
+            <tab_.icon aria-hidden="true" className="h-[18px] w-[18px]" />
             {t(tab_.labelKey)}
-            {tab_.key === "swap-requests" && pendingSwapCount > 0 ? ` (${pendingSwapCount})` : ""}
+            {tab_.key === "swap-requests" && pendingSwapCount > 0 && (
+              <span className="rounded-full bg-brand-600 px-2 py-0.5 text-[11px] tabular-nums text-white">{pendingSwapCount}</span>
+            )}
           </button>
         ))}
       </div>
@@ -849,140 +861,161 @@ export default function ShiftSchedulePage() {
 
       {/* Tab Content: Team Schedule */}
       {tab === "schedule" && (
-        <div>
+        <div className="space-y-4">
           {/* Month navigation — the whole month shows in one row, so this
               steps a full month at a time instead of week by week. */}
-          <div className="flex items-center justify-between mb-4">
-            <button
-              onClick={() => setMonthOffset((m) => m - 1)}
-              className="bg-card text-foreground flex items-center gap-1 text-[13px] text-muted-foreground hover:text-foreground px-3 py-1.5 border border-border rounded-md hover:bg-muted transition-colors"
-            >
-              <ChevronLeft className="h-4 w-4" /> {t('attendance.previous')}
-            </button>
-            <span className="text-[13px] font-semibold text-muted-foreground">
-              {formatMonthLabel(month.year, month.month, i18n.language)}
-            </span>
-            <div className="flex items-center gap-2">
-              {monthOffset !== 0 && (
-                <button
-                  onClick={() => setMonthOffset(0)}
-                  className="bg-card text-foreground text-[13px] text-muted-foreground hover:text-foreground px-3 py-1.5 border border-border rounded-md hover:bg-muted transition-colors"
-                >
-                  {t('attendance.shiftSchedule.thisMonth', { defaultValue: 'This month' })}
-                </button>
-              )}
+          <section className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+            <div className="flex min-h-16 flex-wrap items-center justify-between gap-3 px-4 py-2.5">
               <button
-                onClick={() => setMonthOffset((m) => m + 1)}
-                className="bg-card text-foreground flex items-center gap-1 text-[13px] text-muted-foreground hover:text-foreground px-3 py-1.5 border border-border rounded-md hover:bg-muted transition-colors"
+                type="button"
+                onClick={() => setMonthOffset((m) => m - 1)}
+                className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-border bg-card px-4 text-[13px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30"
               >
-                {t('attendance.next')} <ChevronRight className="h-4 w-4" />
+                <ChevronLeft aria-hidden="true" className="h-4 w-4" /> {t('attendance.previous')}
               </button>
-            </div>
-          </div>
-
-          {/* Shift Legend */}
-          {shifts.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-4">
-              {shifts.map((s: any) => (
-                <span key={s.id} className={`text-[11px] px-2 py-0.5 rounded-md font-medium ${shiftColors[s.id]}`}>
-                  {s.name} ({s.start_time}-{s.end_time})
+              <div className="flex items-center gap-3">
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-brand-600 dark:bg-brand-950/40 dark:text-brand-300">
+                  <Calendar aria-hidden="true" className="h-5 w-5" />
                 </span>
-              ))}
+                <div className="text-center">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">Schedule month</p>
+                  <p className="text-[16px] font-bold text-foreground">{formatMonthLabel(month.year, month.month, i18n.language)}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                {monthOffset !== 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setMonthOffset(0)}
+                    className="inline-flex h-10 items-center rounded-lg border border-border bg-card px-4 text-[13px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30"
+                  >
+                    {t('attendance.shiftSchedule.thisMonth', { defaultValue: 'This month' })}
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setMonthOffset((m) => m + 1)}
+                  className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-border bg-card px-4 text-[13px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30"
+                >
+                  {t('attendance.next')} <ChevronRight aria-hidden="true" className="h-4 w-4" />
+                </button>
+              </div>
             </div>
-          )}
+
+            {/* Shift Legend */}
+            {shifts.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2 border-t border-border bg-slate-50/70 px-4 py-2.5 dark:bg-slate-900/30">
+                <span className="mr-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Shift legend</span>
+                {shifts.map((s: any) => (
+                  <span key={s.id} className={`rounded-full px-3 py-1 text-[11px] font-semibold ${shiftColors[s.id]}`}>
+                    {s.name} <span className="font-normal opacity-80">{s.start_time}-{s.end_time}</span>
+                  </span>
+                ))}
+              </div>
+            )}
+          </section>
 
           {/* Filters (search + department / location / role) */}
-          <div className="bg-card rounded-lg border border-border p-3 mb-3 flex flex-wrap items-end gap-2.5">
-            <div className="flex-1 min-w-[220px]">
-              <label className="block text-xs font-medium text-muted-foreground mb-1">Search employee</label>
+          <section className="grid grid-cols-1 items-end gap-3 rounded-xl border border-border bg-card p-4 shadow-sm md:grid-cols-2 xl:grid-cols-[minmax(320px,2fr)_minmax(170px,.75fr)_minmax(170px,.75fr)_minmax(150px,.65fr)_auto]">
+            <div className="min-w-0">
+              <label htmlFor="shift-schedule-search" className="mb-1.5 block text-[12px] font-semibold text-muted-foreground">Search employee</label>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                <Search aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
                 <input
+                  id="shift-schedule-search"
                   type="search"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Name, employee code, or email"
-                  className="bg-card text-foreground w-full pl-9 pr-3 py-2 border border-border rounded-md text-[13px] focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                  className="h-11 w-full rounded-lg border border-border bg-card pl-10 pr-3 text-[14px] text-foreground outline-none transition-colors focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
                   aria-label="Search employee"
                 />
               </div>
             </div>
-            <div>
-              <label className="block text-xs font-medium text-muted-foreground mb-1">Department</label>
+            <label className="block min-w-0">
+              <span className="mb-1.5 block text-[12px] font-semibold text-muted-foreground">Department</span>
               <select
                 value={departmentId ?? ""}
                 onChange={(e) => setDepartmentId(e.target.value ? Number(e.target.value) : undefined)}
-                className="bg-card text-foreground px-3 py-2 border border-border rounded-md text-[13px]"
+                className="h-11 w-full rounded-lg border border-border bg-card px-3 text-[14px] text-foreground outline-none transition-colors focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
               >
                 <option value="">All departments</option>
                 {(departments as any[]).map((d) => (
                   <option key={d.id} value={d.id}>{d.name}</option>
                 ))}
               </select>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-muted-foreground mb-1">Location</label>
+            </label>
+            <label className="block min-w-0">
+              <span className="mb-1.5 block text-[12px] font-semibold text-muted-foreground">Location</span>
               <select
                 value={locationId ?? ""}
                 onChange={(e) => setLocationId(e.target.value ? Number(e.target.value) : undefined)}
-                className="bg-card text-foreground px-3 py-2 border border-border rounded-md text-[13px]"
+                className="h-11 w-full rounded-lg border border-border bg-card px-3 text-[14px] text-foreground outline-none transition-colors focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
               >
                 <option value="">All locations</option>
                 {(locations as any[]).map((l) => (
                   <option key={l.id} value={l.id}>{l.name}</option>
                 ))}
               </select>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-muted-foreground mb-1">Role</label>
+            </label>
+            <label className="block min-w-0">
+              <span className="mb-1.5 block text-[12px] font-semibold text-muted-foreground">Role</span>
               <select
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
-                className="bg-card text-foreground px-3 py-2 border border-border rounded-md text-[13px]"
+                className="h-11 w-full rounded-lg border border-border bg-card px-3 text-[14px] text-foreground outline-none transition-colors focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
               >
                 <option value="">All roles</option>
                 {ROLE_OPTIONS.map((r) => (
                   <option key={r.value} value={r.value}>{r.label}</option>
                 ))}
               </select>
-            </div>
-            {(search || departmentId || locationId || roleFilter) && (
-              <button
-                type="button"
-                onClick={() => { setSearch(""); setDepartmentId(undefined); setLocationId(undefined); setRoleFilter(""); }}
-                className="px-3 py-2 text-[13px] text-muted-foreground border border-border rounded-md hover:bg-muted transition-colors"
-              >
-                Clear
-              </button>
-            )}
-          </div>
+            </label>
+            <button
+              type="button"
+              onClick={() => { setSearch(""); setDepartmentId(undefined); setLocationId(undefined); setRoleFilter(""); }}
+              disabled={!search && !departmentId && !locationId && !roleFilter}
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 text-[13px] font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30"
+            >
+              <RotateCcw aria-hidden="true" className="h-4 w-4" />
+              Reset
+            </button>
+          </section>
 
           {/* Page size + visible-row stats */}
-          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
-            <span>{t('attendance.shiftSchedule.search.show')}</span>
-            <select
-              value={pageSize}
-              onChange={(e) => setPageSize(Number(e.target.value))}
-              className="px-2 py-1.5 border border-border rounded-md text-[13px] bg-card"
-              aria-label={t('attendance.shiftSchedule.search.show')}
-            >
-              {PAGE_SIZE_OPTIONS.map((n) => (
-                <option key={n} value={n}>{n}</option>
-              ))}
-            </select>
-            <span>{t('attendance.shiftSchedule.search.entries')}</span>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-[13px] text-muted-foreground">
+              {totalEntries > 0
+                ? t('attendance.shiftSchedule.search.showingRange', { from: startIdx + 1, to: endIdx, total: totalEntries })
+                : t('attendance.shiftSchedule.search.noResults')}
+            </p>
+            <label className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground">
+              <span>{t('attendance.shiftSchedule.search.show')}</span>
+              <select
+                value={pageSize}
+                onChange={(e) => setPageSize(Number(e.target.value))}
+                className="h-9 rounded-lg border border-border bg-card px-3 text-[13px] text-foreground outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+                aria-label={t('attendance.shiftSchedule.search.show')}
+              >
+                {PAGE_SIZE_OPTIONS.map((n) => (
+                  <option key={n} value={n}>{n}</option>
+                ))}
+              </select>
+              <span>{t('attendance.shiftSchedule.search.entries')}</span>
+            </label>
           </div>
 
           {/* Schedule Grid */}
-          <div className="bg-card rounded-lg border border-border overflow-x-auto">
+          <div className="overflow-x-auto rounded-xl border border-border bg-card shadow-sm">
             <table className="min-w-full">
-              <thead className="bg-muted/50 border-b border-border">
+              <caption className="sr-only">{t('attendance.shiftSchedule.title')}</caption>
+              <thead className="border-b border-border bg-slate-50/90 dark:bg-slate-900/50">
                 <tr>
                   {/* #1963 — sticky employee column needs an explicit z-index
                       and a non-translucent border-right; without those, the
                       scrolling shift badges painted over the employee name
                       when the user scrolled the table horizontally. */}
-                  <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5 sticky left-0 z-20 bg-muted border-r border-border min-w-[180px] shadow-[2px_0_4px_-2px_rgba(0,0,0,0.08)]">
+                  <th scope="col" className="sticky left-0 z-20 min-w-[220px] border-r border-border bg-slate-50 px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground shadow-[2px_0_4px_-2px_rgba(0,0,0,0.08)] dark:bg-slate-900">
                     {t('attendance.shiftSchedule.team.employee')}
                   </th>
                   {month.dates.map((date) => {
@@ -992,12 +1025,13 @@ export default function ShiftSchedulePage() {
                     return (
                       <th
                         key={date}
-                        className={`text-center text-xs font-medium uppercase px-1.5 py-2 min-w-[64px] ${
-                          isWeekend ? "text-muted-foreground bg-muted/60" : "text-muted-foreground"
+                        scope="col"
+                        className={`min-w-[64px] px-1.5 py-2.5 text-center text-xs font-medium uppercase ${
+                          isWeekend ? "bg-slate-100/80 text-slate-500 dark:bg-slate-800/70" : "text-muted-foreground"
                         }`}
                       >
-                        <div className="text-[10px] leading-tight">{weekday}</div>
-                        <div className="text-sm font-semibold leading-tight">{day}</div>
+                        <div className="text-[10px] font-semibold leading-tight tracking-wide">{weekday}</div>
+                        <div className="mt-0.5 text-[14px] font-bold leading-tight text-foreground">{day}</div>
                       </th>
                     );
                   })}
@@ -1024,15 +1058,22 @@ export default function ShiftSchedulePage() {
                   </tr>
                 ) : (
                   pagedSchedule.map((emp: any) => (
-                    <tr key={emp.user_id} className="hover:bg-muted">
-                      <td className="px-4 py-3 sticky left-0 z-10 bg-card group-hover:bg-muted border-r border-border shadow-[2px_0_4px_-2px_rgba(0,0,0,0.06)]">
-                        <div className="text-sm font-medium text-foreground">
-                          {emp.first_name} {emp.last_name}
+                    <tr key={emp.user_id} className="group h-[68px] transition-colors hover:bg-slate-50/70 dark:hover:bg-slate-900/30">
+                      <th scope="row" className="sticky left-0 z-10 border-r border-border bg-card px-4 py-2.5 text-left shadow-[2px_0_4px_-2px_rgba(0,0,0,0.06)] transition-colors group-hover:bg-slate-50 dark:group-hover:bg-slate-900">
+                        <div className="flex items-center gap-3">
+                          <span aria-hidden="true" className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-[13px] font-bold text-brand-600 dark:bg-brand-950/50 dark:text-brand-300">
+                            {`${emp.first_name?.[0] ?? "E"}${emp.last_name?.[0] ?? ""}`.toUpperCase()}
+                          </span>
+                          <div className="min-w-0">
+                            <div className="max-w-[145px] truncate text-[14px] font-semibold text-foreground">
+                              {emp.first_name} {emp.last_name}
+                            </div>
+                            {emp.emp_code && (
+                              <div className="mt-0.5 text-[12px] font-normal text-muted-foreground">{emp.emp_code}</div>
+                            )}
+                          </div>
                         </div>
-                        {emp.emp_code && (
-                          <div className="text-xs text-muted-foreground">{emp.emp_code}</div>
-                        )}
-                      </td>
+                      </th>
                       {month.dates.map((date) => {
                         const assignment = emp.assignments.find((a: any) =>
                           isDateInRange(date, a.effective_from, a.effective_to),
@@ -1062,7 +1103,7 @@ export default function ShiftSchedulePage() {
                             (workingDays.length > 0 && !workingDays.includes(dayOfWeek))
                           );
                         return (
-                          <td key={date} className="px-2 py-3 text-center">
+                          <td key={date} className={`border-r border-border/50 px-2 py-3 text-center last:border-r-0 ${dayOfWeek === 0 || dayOfWeek === 6 ? "bg-slate-50/60 dark:bg-slate-900/20" : ""}`}>
                             {assignment ? (
                               <div className="group relative inline-flex items-center gap-1">
                                 {isOffDay ? (
@@ -1082,8 +1123,9 @@ export default function ShiftSchedulePage() {
                                     {assignment.shift_name}
                                   </span>
                                 )}
-                                <span className="hidden group-hover:inline-flex items-center gap-0.5">
+                                <span className="inline-flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
                                   <button
+                                    type="button"
                                     onClick={() =>
                                       // Pre-fill the modal with the day the
                                       // user clicked, not the full assignment
@@ -1102,29 +1144,34 @@ export default function ShiftSchedulePage() {
                                         effective_to: date,
                                       })
                                     }
-                                    className="text-muted-foreground hover:text-brand-600 p-0.5"
+                                    className="rounded p-0.5 text-muted-foreground hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30"
                                     title={t('attendance.shiftSchedule.team.editTooltip')}
+                                    aria-label={t('attendance.shiftSchedule.team.editTooltip')}
                                   >
-                                    <Pencil className="h-3 w-3" />
+                                    <Pencil aria-hidden="true" className="h-3 w-3" />
                                   </button>
                                   <button
+                                    type="button"
                                     onClick={() => setRemoveAssignmentId(assignment.assignment_id)}
-                                    className="text-muted-foreground hover:text-red-600 p-0.5"
+                                    className="rounded p-0.5 text-muted-foreground hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/30"
                                     title={t('attendance.shiftSchedule.team.removeTooltip')}
+                                    aria-label={t('attendance.shiftSchedule.team.removeTooltip')}
                                   >
-                                    <Trash2 className="h-3 w-3" />
+                                    <Trash2 aria-hidden="true" className="h-3 w-3" />
                                   </button>
                                 </span>
                               </div>
                             ) : (
                               <button
+                                type="button"
                                 onClick={() =>
                                   setShowAssign({ userId: emp.user_id, date })
                                 }
-                                className="text-muted-foreground/50 hover:text-brand-500 transition"
+                                className="mx-auto inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground/60 transition-colors hover:bg-blue-50 hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30 dark:hover:bg-brand-950/40"
                                 title={t('attendance.shiftSchedule.team.assignTooltip')}
+                                aria-label={`${t('attendance.shiftSchedule.team.assignTooltip')} ${formatDate(date, i18n.language)}`}
                               >
-                                <Plus className="h-4 w-4 mx-auto" />
+                                <Plus aria-hidden="true" className="h-4 w-4" />
                               </button>
                             )}
                           </td>
