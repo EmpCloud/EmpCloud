@@ -17,15 +17,20 @@ import { useMemo, useState } from "react";
 import { useTranslation, Trans } from "react-i18next";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  Fingerprint,
   Loader2,
   MapPin,
+  MapPinned,
+  Monitor,
   Pencil,
   Plus,
+  RotateCcw,
   Search,
   Send,
   Settings as SettingsIcon,
   Smartphone,
   Trash2,
+  Users,
   X,
 } from "lucide-react";
 import api from "@/api/client";
@@ -40,6 +45,26 @@ const CHANNEL_LABEL: Record<Channel, string> = {
   dashboard: "Dashboard (web)",
   biometric: "Biometric devices",
   app: "EmpCloud mobile app",
+};
+const CHANNEL_META: Record<Channel, { icon: typeof Monitor; card: string; iconBox: string; blob: string }> = {
+  dashboard: {
+    icon: Monitor,
+    card: "border-blue-200 bg-blue-50/45 dark:border-blue-900/60 dark:bg-blue-950/20",
+    iconBox: "bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-300",
+    blob: "bg-blue-100/70 dark:bg-blue-900/20",
+  },
+  biometric: {
+    icon: Fingerprint,
+    card: "border-emerald-200 bg-emerald-50/45 dark:border-emerald-900/60 dark:bg-emerald-950/20",
+    iconBox: "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/50 dark:text-emerald-300",
+    blob: "bg-emerald-100/70 dark:bg-emerald-900/20",
+  },
+  app: {
+    icon: Smartphone,
+    card: "border-violet-200 bg-violet-50/45 dark:border-violet-900/60 dark:bg-violet-950/20",
+    iconBox: "bg-violet-100 text-violet-600 dark:bg-violet-900/50 dark:text-violet-300",
+    blob: "bg-violet-100/70 dark:bg-violet-900/20",
+  },
 };
 
 interface OrgSettings {
@@ -84,6 +109,39 @@ interface DirectoryEntry {
   last_name: string;
   email: string;
   designation?: string | null;
+}
+
+function SettingsToggle({
+  checked,
+  disabled,
+  label,
+  onChange,
+}: {
+  checked: boolean;
+  disabled?: boolean;
+  label: string;
+  onChange: (checked: boolean) => void;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
+      disabled={disabled}
+      onClick={() => onChange(!checked)}
+      className={`relative inline-flex h-7 w-12 shrink-0 items-center rounded-full border transition-colors after:absolute after:-inset-x-1 after:-inset-y-2 after:content-[''] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${
+        checked
+          ? "border-brand-600 bg-brand-600"
+          : "border-slate-300 bg-slate-200 dark:border-slate-600 dark:bg-slate-700"
+      }`}
+    >
+      <span
+        aria-hidden="true"
+        className={`h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${checked ? "translate-x-6" : "translate-x-1"}`}
+      />
+    </button>
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -137,82 +195,131 @@ export default function AttendanceSettingsPage() {
 
   return (
     <div className="space-y-4">
-      <header>
-        <h1 className="text-xl font-semibold tracking-tight text-foreground flex items-center gap-2">
-          <SettingsIcon className="h-5 w-5 text-brand-600 dark:text-brand-400" /> {t("attendanceSettings.title")}
-          <Tooltip content={t("attendanceSettings.subtitle")} side="bottom" />
-        </h1>
+      <header className="flex flex-wrap items-start justify-between gap-4">
+        <div className="flex items-start gap-5">
+          <span className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-brand-600 dark:bg-brand-950/40 dark:text-brand-300">
+            <SettingsIcon aria-hidden="true" className="h-9 w-9" />
+          </span>
+          <div>
+            <h1 className="text-[28px] font-bold leading-tight tracking-tight text-foreground">{t("attendanceSettings.title")}</h1>
+            <p className="mt-1 text-[14px] text-muted-foreground">{t("attendanceSettings.subtitle")}</p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => updateSettings.mutate({ allowed_channels: ALL_CHANNELS, geofence_advisory: false, telegram_enabled: false })}
+          disabled={settingsQ.isLoading || updateSettings.isPending}
+          className="inline-flex h-11 items-center gap-2 rounded-xl border border-border bg-card px-5 text-[13px] font-semibold text-slate-700 shadow-sm transition-colors hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30 focus-visible:ring-offset-2 disabled:opacity-50 dark:text-slate-200 dark:hover:bg-brand-950/30"
+        >
+          <RotateCcw aria-hidden="true" className="h-4 w-4" />
+          {t("attendanceSettings.resetDefault", { defaultValue: "Reset to Default" })}
+        </button>
       </header>
 
       {/* Org-level settings */}
-      <section className="bg-card rounded-lg border border-border p-4">
-        <div className="flex items-center gap-2 mb-4">
-          <h2 className="text-base font-semibold text-foreground">{t("attendanceSettings.allowedChannels")}</h2>
-          <Tooltip content={t("attendanceSettings.allowedChannelsDesc")} />
+      <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+        <div className="mb-4 flex items-start gap-3">
+          <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-blue-50 text-brand-600 dark:bg-brand-950/40 dark:text-brand-300">
+            <Monitor aria-hidden="true" className="h-5 w-5" />
+          </span>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <h2 className="text-base font-semibold text-foreground">{t("attendanceSettings.allowedChannels")}</h2>
+              <Tooltip content={t("attendanceSettings.allowedChannelsDesc")} />
+            </div>
+            <p className="mt-0.5 text-[13px] text-muted-foreground">{t("attendanceSettings.allowedChannelsDesc")}</p>
+          </div>
         </div>
 
         {settingsQ.isLoading ? (
-          <div className="flex items-center gap-2 text-muted-foreground text-sm">
-            <Loader2 className="h-4 w-4 animate-spin" /> {t("attendanceSettings.loading")}
+          <div className="flex min-h-28 items-center justify-center gap-2 text-sm text-muted-foreground" role="status">
+            <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" /> {t("attendanceSettings.loading")}
           </div>
         ) : (
-          <div className="grid sm:grid-cols-3 gap-3">
+          <div className="grid gap-4 md:grid-cols-3">
             {ALL_CHANNELS.map((channel) => {
               const enabled = settingsQ.data?.allowed_channels.includes(channel) ?? false;
+              const meta = CHANNEL_META[channel];
+              const ChannelIcon = meta.icon;
               return (
-                <label
+                <article
                   key={channel}
-                  className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${
-                    enabled
-                      ? "border-brand-300 bg-brand-50 dark:bg-brand-950/40"
-                      : "border-border bg-card hover:border-border"
-                  }`}
+                  className={`relative min-h-[128px] overflow-hidden rounded-xl border p-4 transition-colors ${enabled ? meta.card : "border-border bg-card"}`}
                 >
-                  <input
-                    type="checkbox"
-                    checked={enabled}
-                    onChange={() => toggleChannel(channel)}
-                    disabled={updateSettings.isPending}
-                    className="h-4 w-4 text-brand-600 dark:text-brand-400"
-                  />
-                  <span className="text-sm font-medium text-foreground">
-                    {t(`attendanceSettings.channel.${channel}`, { defaultValue: CHANNEL_LABEL[channel] })}
-                  </span>
-                  <Tooltip content={t(`attendanceSettings.channelDesc.${channel}`)} />
-                </label>
+                  <span aria-hidden="true" className={`absolute -bottom-9 -right-5 h-20 w-32 -rotate-12 rounded-[50%] ${enabled ? meta.blob : "bg-slate-100/60 dark:bg-slate-800/40"}`} />
+                  <div className="relative z-10 flex items-start gap-5">
+                    <span className={`inline-flex h-[60px] w-[60px] shrink-0 items-center justify-center rounded-xl ${meta.iconBox}`}>
+                      <ChannelIcon aria-hidden="true" className="h-8 w-8" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-start justify-between gap-2">
+                        <h3 className="text-base font-semibold text-foreground">
+                          {t(`attendanceSettings.channel.${channel}`, { defaultValue: CHANNEL_LABEL[channel] })}
+                        </h3>
+                        <SettingsToggle
+                          checked={enabled}
+                          onChange={() => toggleChannel(channel)}
+                          label={t(`attendanceSettings.channel.${channel}`, { defaultValue: CHANNEL_LABEL[channel] })}
+                          disabled={updateSettings.isPending}
+                        />
+                      </div>
+                      <p className="mt-0.5 text-[13px] leading-5 text-muted-foreground">{t(`attendanceSettings.channelDesc.${channel}`)}</p>
+                      <span className={`mt-2 inline-flex rounded-full px-3.5 py-1.5 text-xs font-semibold ${enabled ? "bg-emerald-100/80 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"}`}>
+                        {enabled
+                          ? t("attendanceSettings.enabled", { defaultValue: "Enabled" })
+                          : t("attendanceSettings.disabled", { defaultValue: "Disabled" })}
+                      </span>
+                    </div>
+                  </div>
+                </article>
               );
             })}
           </div>
         )}
 
-        <div className="mt-6 pt-6 border-t border-border">
-          <label className="flex items-center gap-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={!!settingsQ.data?.geofence_advisory}
-              onChange={(e) => updateSettings.mutate({ geofence_advisory: e.target.checked })}
-              disabled={updateSettings.isPending || settingsQ.isLoading}
-              className="h-4 w-4 text-brand-600 dark:text-brand-400"
-            />
-            <span className="text-sm font-medium text-foreground flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-muted-foreground" />
-              {t("attendanceSettings.enableGeofencing")}
+        <div className="relative mt-4 overflow-hidden rounded-xl border border-amber-200 bg-amber-50/40 p-4 dark:border-amber-900/60 dark:bg-amber-950/20">
+          <span aria-hidden="true" className="absolute -bottom-12 left-1/2 h-20 w-56 -translate-x-1/2 rounded-[50%] bg-amber-100/60 dark:bg-amber-900/20" />
+          <div className="relative z-10 flex flex-wrap items-center gap-3">
+            <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100 text-amber-600 dark:bg-amber-900/50 dark:text-amber-300">
+              <MapPin aria-hidden="true" className="h-6 w-6" />
             </span>
-            <Tooltip content={t("attendanceSettings.enableGeofencingDesc")} />
-          </label>
+            <div className="min-w-[220px] flex-1">
+              <div className="flex items-center gap-2">
+                <h3 className="text-[15px] font-semibold text-foreground">{t("attendanceSettings.enableGeofencing")}</h3>
+                <Tooltip content={t("attendanceSettings.enableGeofencingDesc")} />
+              </div>
+              <p className="mt-0.5 text-[12px] text-muted-foreground">{t("attendanceSettings.enableGeofencingDesc")}</p>
+            </div>
+            <SettingsToggle
+              checked={!!settingsQ.data?.geofence_advisory}
+              onChange={(checked) => updateSettings.mutate({ geofence_advisory: checked })}
+              disabled={updateSettings.isPending || settingsQ.isLoading}
+              label={t("attendanceSettings.enableGeofencing")}
+            />
+            <button
+              type="button"
+              onClick={() => document.getElementById("attendance-geofences")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+              className="inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-card px-4 text-[13px] font-semibold text-brand-600 shadow-sm hover:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30 dark:hover:bg-brand-950/30"
+            >
+              <SettingsIcon aria-hidden="true" className="h-4 w-4" />
+              {t("attendanceSettings.configure", { defaultValue: "Configure" })}
+            </button>
+          </div>
         </div>
       </section>
 
-      {/* Daily attendance report over Telegram */}
-      <TelegramReportSection
-        settings={settingsQ.data}
-        isLoading={settingsQ.isLoading}
-        isSaving={updateSettings.isPending}
-        onChange={(patch) => updateSettings.mutate(patch)}
-      />
+      <div className="grid gap-4 xl:grid-cols-2">
+        {/* Daily attendance report over Telegram */}
+        <TelegramReportSection
+          settings={settingsQ.data}
+          isLoading={settingsQ.isLoading}
+          isSaving={updateSettings.isPending}
+          onChange={(patch) => updateSettings.mutate(patch)}
+        />
 
-      {/* Geofences with inline CRUD */}
-      <GeofencesSection geofences={fencesQ.data ?? []} isLoading={fencesQ.isLoading} />
+        {/* Geofences with inline CRUD */}
+        <GeofencesSection geofences={fencesQ.data ?? []} isLoading={fencesQ.isLoading} />
+      </div>
 
 
       {/* Per-user overrides */}
@@ -299,10 +406,15 @@ function TelegramReportSection({
   };
 
   return (
-    <section className="bg-card border border-border rounded-xl p-6">
-      <div className="flex items-center gap-2 mb-4">
-        <Send className="h-5 w-5 text-brand-600 dark:text-brand-400" />
-        <h2 className="text-base font-semibold text-foreground">
+    <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div className="flex min-w-0 items-start gap-3">
+          <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-brand-600 dark:bg-brand-950/40 dark:text-brand-300">
+            <Send aria-hidden="true" className="h-6 w-6" />
+          </span>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+        <h2 className="text-[17px] font-semibold text-foreground">
           {t("attendanceSettings.telegramTitle", { defaultValue: "Daily Attendance Report (Telegram)" })}
         </h2>
         <Tooltip
@@ -311,28 +423,23 @@ function TelegramReportSection({
               "Sends a full attendance report — every employee's check-in/check-out plus an absentee list — to the chats below, every day at midnight for the day that just ended.",
           })}
         />
+            </div>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              {t("attendanceSettings.telegramDescShort", { defaultValue: "Send daily attendance summary to selected Telegram chats." })}
+            </p>
+          </div>
+        </div>
+        <SettingsToggle
+          checked={enabled}
+          onChange={(checked) => onChange({ telegram_enabled: checked })}
+          disabled={isSaving || isLoading}
+          label={t("attendanceSettings.telegramEnable", { defaultValue: "Enable daily report" })}
+        />
       </div>
 
-      <label className="flex items-center gap-3 cursor-pointer">
-        <input
-          type="checkbox"
-          checked={enabled}
-          onChange={(e) => onChange({ telegram_enabled: e.target.checked })}
-          disabled={isSaving || isLoading}
-          className="h-4 w-4 text-brand-600 dark:text-brand-400"
-        />
-        <span className="text-sm font-medium text-foreground">
-          {t("attendanceSettings.telegramEnable", { defaultValue: "Enable daily report" })}
-        </span>
-        <Tooltip
-          content={t("attendanceSettings.telegramEnableDesc", {
-            defaultValue: "When off, no report is sent even if chat IDs are configured.",
-          })}
-        />
-      </label>
-
-      <div className="mt-6 pt-6 border-t border-border">
-        <div className="flex items-center gap-2 mb-3">
+      <div className="rounded-xl border border-border bg-muted/30 p-4">
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-foreground">
             {t("attendanceSettings.telegramRecipients", { defaultValue: "Recipient chat IDs" })}
           </span>
@@ -342,16 +449,14 @@ function TelegramReportSection({
                 "Send /start to the EMP Cloud bot (in a direct message, or a group it has been added to) and it replies with the chat ID. Paste it here — you can add multiple.",
             })}
           />
+          </div>
+          <span className="text-xs tabular-nums text-muted-foreground">
+            {chatIds.length} {t("attendanceSettings.added", { defaultValue: "added" })}
+          </span>
         </div>
 
-        {chatIds.length === 0 ? (
-          <p className="text-xs text-muted-foreground italic mb-3">
-            {t("attendanceSettings.telegramNoRecipients", {
-              defaultValue: "No chat IDs yet — the report has nowhere to go.",
-            })}
-          </p>
-        ) : (
-          <ul className="space-y-2 mb-3">
+        {chatIds.length > 0 && (
+          <ul className="mb-3 space-y-2">
             {chatIds.map((id) => (
               <li
                 key={id}
@@ -362,10 +467,11 @@ function TelegramReportSection({
                   type="button"
                   onClick={() => removeChatId(id)}
                   disabled={isSaving}
+                  aria-label={`${t("common.remove", { defaultValue: "Remove" })} ${id}`}
                   title={t("common.remove", { defaultValue: "Remove" })}
                   className="text-muted-foreground hover:text-red-600 disabled:opacity-50"
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 aria-hidden="true" className="h-4 w-4" />
                 </button>
               </li>
             ))}
@@ -375,6 +481,8 @@ function TelegramReportSection({
         <div className="flex items-center gap-2">
           <input
             type="text"
+            name="telegram_chat_id"
+            autoComplete="off"
             inputMode="numeric"
             value={newChatId}
             onChange={(e) => {
@@ -391,13 +499,14 @@ function TelegramReportSection({
               defaultValue: "e.g. 123456789 or -1001234567890",
             })}
             disabled={isSaving}
-            className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm"
+            aria-label={t("attendanceSettings.telegramRecipients", { defaultValue: "Recipient chat IDs" })}
+            className="h-10 min-w-0 flex-1 rounded-lg border border-border bg-background px-3 text-[13px] outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
           />
           <button
             type="button"
             onClick={addChatId}
             disabled={isSaving || !newChatId.trim()}
-            className="inline-flex items-center gap-1 rounded-lg bg-brand-600 px-3 py-2 text-sm text-white hover:bg-brand-700 disabled:opacity-50"
+            className="inline-flex h-10 items-center gap-2 rounded-lg bg-brand-600 px-5 text-[13px] font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30 disabled:opacity-50"
           >
             <Plus className="h-4 w-4" />
             {t("common.add", { defaultValue: "Add" })}
@@ -407,12 +516,12 @@ function TelegramReportSection({
       </div>
 
       {/* Manual trigger — sends the real report for the last completed day. */}
-      <div className="mt-6 pt-6 border-t border-border flex items-center gap-3">
+      <div className="mt-3 flex min-h-12 items-center gap-3 rounded-xl border border-dashed border-border px-4 py-3">
         <button
           type="button"
           onClick={() => sendTest.mutate()}
           disabled={sendTest.isPending || isSaving || chatIds.length === 0}
-          className="inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm font-medium text-foreground hover:bg-muted disabled:opacity-50"
+          className="inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-card px-4 text-[13px] font-semibold text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30 disabled:opacity-50"
         >
           {sendTest.isPending ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -429,7 +538,7 @@ function TelegramReportSection({
         />
         {chatIds.length === 0 && (
           <span className="text-xs text-muted-foreground">
-            {t("attendanceSettings.telegramNeedChatId", { defaultValue: "Add a chat ID first" })}
+            {t("attendanceSettings.telegramNeedChatId", { defaultValue: "Add a chat ID first, then send a test report." })}
           </span>
         )}
       </div>
@@ -459,10 +568,15 @@ function GeofencesSection({ geofences, isLoading }: { geofences: Geofence[]; isL
   });
 
   return (
-    <section className="bg-card rounded-lg border border-border p-4">
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
-        <div className="flex items-center gap-2">
-          <h2 className="text-base font-semibold text-foreground">{t("attendanceSettings.geofences")}</h2>
+    <section id="attendance-geofences" className="scroll-mt-24 rounded-2xl border border-border bg-card p-5 shadow-sm">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex items-start gap-3">
+          <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-300">
+            <MapPin aria-hidden="true" className="h-6 w-6" />
+          </span>
+          <div>
+            <div className="flex items-center gap-2">
+          <h2 className="text-[16px] font-semibold text-foreground">{t("attendanceSettings.geofences")}</h2>
           <Tooltip
             content={
               <Trans
@@ -473,12 +587,18 @@ function GeofencesSection({ geofences, isLoading }: { geofences: Geofence[]; isL
               />
             }
           />
+            </div>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              {t("attendanceSettings.geofencesSummary", { defaultValue: "Create location-based boundaries for mobile check-in." })}
+            </p>
+          </div>
         </div>
         <button
+          type="button"
           onClick={() => setCreating(true)}
-          className="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-[13px] font-medium px-3 py-2 rounded-md shrink-0 transition-colors"
+          className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg bg-brand-600 px-5 text-[13px] font-semibold text-white transition-colors hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30"
         >
-          <Plus className="h-4 w-4" /> {t("attendanceSettings.addGeofence")}
+          <Plus aria-hidden="true" className="h-4 w-4" /> {t("attendanceSettings.addGeofence")}
         </button>
       </div>
 
@@ -487,8 +607,15 @@ function GeofencesSection({ geofences, isLoading }: { geofences: Geofence[]; isL
           <Loader2 className="h-4 w-4 animate-spin" /> {t("attendanceSettings.loading")}
         </div>
       ) : geofences.length === 0 ? (
-        <div className="text-sm text-muted-foreground italic py-6 text-center border border-dashed border-border rounded-lg">
-          <Trans i18nKey="attendanceSettings.noGeofences" components={{ strong: <strong /> }} />
+        <div className="flex min-h-[184px] flex-col items-center justify-center rounded-xl border border-dashed border-border px-6 py-6 text-center text-sm text-muted-foreground">
+          <span className="mb-3 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-blue-50 text-brand-500 dark:bg-brand-950/40">
+            <MapPinned aria-hidden="true" className="h-8 w-8" />
+          </span>
+          <p className="font-semibold text-foreground">{t("attendanceSettings.noGeofences")}</p>
+          <p className="mt-1 text-xs leading-5">
+            <span className="block">{t("attendanceSettings.noGeofencesHintLine1")}</span>
+            <span className="block">{t("attendanceSettings.noGeofencesHintLine2")}</span>
+          </p>
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 gap-3">
@@ -897,37 +1024,52 @@ function OverridesSection({ geofences }: { geofences: Geofence[] }) {
   }, [overridesQ.data, search]);
 
   return (
-    <section className="bg-card rounded-lg border border-border p-4">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-        <div className="flex items-center gap-2">
-          <h2 className="text-base font-semibold text-foreground">{t("attendanceSettings.overrides")}</h2>
+    <section className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-3">
+          <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-brand-600 dark:bg-brand-950/40 dark:text-brand-300">
+            <Users aria-hidden="true" className="h-6 w-6" />
+          </span>
+          <div>
+            <div className="flex items-center gap-2">
+          <h2 className="text-[16px] font-semibold text-foreground">{t("attendanceSettings.overrides")}</h2>
           <Tooltip content={t("attendanceSettings.overridesDesc")} />
+            </div>
+            <p className="mt-0.5 text-xs text-muted-foreground">{t("attendanceSettings.overridesDesc")}</p>
+          </div>
         </div>
         <button
+          type="button"
           onClick={() => setCreating(true)}
-          className="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-[13px] font-medium px-3 py-2 rounded-md shrink-0 transition-colors"
+          className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg bg-brand-600 px-5 text-[13px] font-semibold text-white transition-colors hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30"
         >
-          <Plus className="h-4 w-4" /> {t("attendanceSettings.newOverride")}
+          <Plus aria-hidden="true" className="h-4 w-4" /> {t("attendanceSettings.newOverride")}
         </button>
       </div>
 
-      <div className="relative mb-3">
-        <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+      {(overridesQ.data?.length ?? 0) > 0 && <div className="relative mb-3">
+        <Search aria-hidden="true" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <input
+          type="search"
+          name="override_employee_search"
+          autoComplete="off"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={t("attendanceSettings.searchEmployee")}
-          className="bg-card text-foreground w-full pl-9 pr-3 py-2 border border-border rounded-md text-[13px] focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+          aria-label={t("attendanceSettings.searchEmployee")}
+          className="h-10 w-full rounded-lg border border-border bg-card pl-9 pr-3 text-[13px] text-foreground outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
         />
-      </div>
+      </div>}
 
       {overridesQ.isLoading || directoryQ.isLoading ? (
         <div className="text-sm text-muted-foreground flex items-center gap-2">
           <Loader2 className="h-4 w-4 animate-spin" /> {t("attendanceSettings.loadingOverrides")}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-sm text-muted-foreground italic py-6 text-center border border-dashed border-border rounded-lg">
-          {search ? t("attendanceSettings.noOverridesMatch") : t("attendanceSettings.noOverrides")}
+        <div className="flex min-h-[96px] flex-col items-center justify-center rounded-xl border border-dashed border-border px-6 py-3 text-center text-sm text-muted-foreground">
+          <Users aria-hidden="true" className="mb-2 h-6 w-6 text-brand-500" />
+          <span className="font-medium text-foreground">{search ? t("attendanceSettings.noOverridesMatch") : t("attendanceSettings.noOverrides")}</span>
+          {!search && <span className="mt-1 text-xs">{t("attendanceSettings.noOverridesHint", { defaultValue: "Click “New override” to set custom attendance settings for an employee." })}</span>}
         </div>
       ) : (
         <div className="overflow-x-auto">

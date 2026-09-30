@@ -127,7 +127,18 @@ export async function submitRegularization(orgId: number, userId: number, data: 
 
 export async function listRegularizations(
   orgId: number,
-  params?: { page?: number; perPage?: number; status?: string; userIds?: number[]; locationId?: number; search?: string }
+  params?: {
+    page?: number;
+    perPage?: number;
+    status?: string;
+    userIds?: number[];
+    locationId?: number;
+    departmentId?: number;
+    dateFrom?: string;
+    dateTo?: string;
+    sortOrder?: "asc" | "desc";
+    search?: string;
+  }
 ) {
   const db = getDB();
   const page = params?.page || 1;
@@ -136,6 +147,7 @@ export async function listRegularizations(
   let query = db("attendance_regularizations as ar")
     .join("users as u", "ar.user_id", "u.id")
     .leftJoin("organization_locations as loc", "u.location_id", "loc.id")
+    .leftJoin("organization_departments as dept", "u.department_id", "dept.id")
     .leftJoin("organizations as org", "ar.organization_id", "org.id")
     .where("ar.organization_id", orgId);
 
@@ -154,6 +166,15 @@ export async function listRegularizations(
   if (params?.locationId) {
     query = query.where("u.location_id", params.locationId);
   }
+  if (params?.departmentId) {
+    query = query.where("u.department_id", params.departmentId);
+  }
+  if (params?.dateFrom) {
+    query = query.where("ar.date", ">=", params.dateFrom);
+  }
+  if (params?.dateTo) {
+    query = query.where("ar.date", "<=", params.dateTo);
+  }
   if (params?.search) {
     const term = `%${params.search}%`;
     query = query.where(function () {
@@ -171,11 +192,13 @@ export async function listRegularizations(
       "u.last_name",
       "u.email",
       "u.emp_code",
+      "dept.name as department_name",
       "loc.name as location_name",
       "loc.timezone as location_timezone",
       "org.timezone as organization_timezone",
     )
-    .orderBy("ar.created_at", "desc")
+    .orderBy("ar.date", params?.sortOrder ?? "desc")
+    .orderBy("ar.id", params?.sortOrder ?? "desc")
     .limit(perPage)
     .offset((page - 1) * perPage);
 
@@ -357,7 +380,7 @@ export async function deleteRegularization(
 export async function getMyRegularizations(
   orgId: number,
   userId: number,
-  params?: { page?: number; perPage?: number }
+  params?: { page?: number; perPage?: number; sortOrder?: "asc" | "desc" }
 ) {
   const db = getDB();
   const page = params?.page || 1;
@@ -377,7 +400,8 @@ export async function getMyRegularizations(
       "loc.timezone as location_timezone",
       "org.timezone as organization_timezone",
     )
-    .orderBy("ar.created_at", "desc")
+    .orderBy("ar.date", params?.sortOrder ?? "desc")
+    .orderBy("ar.id", params?.sortOrder ?? "desc")
     .limit(perPage)
     .offset((page - 1) * perPage);
 

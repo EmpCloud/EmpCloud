@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import api from "@/api/client";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
-import { ChevronLeft, ChevronRight, Loader2, Search, X, CalendarPlus, AlertTriangle, Download } from "lucide-react";
+import { AlertTriangle, Building2, CalendarDays, CalendarPlus, ChevronLeft, ChevronRight, Download, Loader2, MapPin, Search, X } from "lucide-react";
 import * as XLSX from "xlsx";
 
 const STORAGE_KEY_LOCATION = "empcloud:filter:grid:location_name";
@@ -128,6 +128,8 @@ export default function AttendanceGridPage() {
   // in the org) so filtering with useMemo is plenty fast and avoids round-
   // tripping the whole grid on every keystroke.
   const [search, setSearch] = useState("");
+  const [pageSize, setPageSize] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
   // Department + location persist across reloads so HR doesn't have to reselect
   // their team / branch every time. Cross-tab sync via the `storage` event.
   const [department, setDepartment] = useState<string>(() => readStored(STORAGE_KEY_DEPARTMENT));
@@ -216,6 +218,16 @@ export default function AttendanceGridPage() {
     });
   }, [data.employees, search, department, location]);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, department, location, pageSize, month, year]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredEmployees.length / pageSize));
+  const pagedEmployees = useMemo(
+    () => filteredEmployees.slice((currentPage - 1) * pageSize, currentPage * pageSize),
+    [filteredEmployees, currentPage, pageSize],
+  );
+
   const filtersActive = !!(search || department || location);
   const clearFilters = () => {
     setSearch("");
@@ -263,20 +275,6 @@ export default function AttendanceGridPage() {
         text: err.response?.data?.error?.message || t("attendance.grid.saveFailed"),
       });
     }
-  }
-
-  function shiftMonth(delta: number) {
-    let m = month + delta;
-    let y = year;
-    if (m < 1) {
-      m = 12;
-      y -= 1;
-    } else if (m > 12) {
-      m = 1;
-      y += 1;
-    }
-    setMonth(m);
-    setYear(y);
   }
 
   const summaryFor = useMemo(
@@ -457,14 +455,19 @@ export default function AttendanceGridPage() {
   ];
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          {t("nav.attendanceGrid", "Attendance Grid")}
-        </h1>
-        <p className="mt-0.5 text-[13px] text-muted-foreground">
-          {t("attendance.grid.subtitle")}
-        </p>
+    <div className="space-y-4 pb-4">
+      <div className="flex items-start gap-4">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-300">
+          <CalendarDays aria-hidden="true" className="h-5 w-5" />
+        </div>
+        <div>
+          <h1 className="text-[22px] font-bold tracking-tight text-foreground">
+            {t("nav.attendance", "Attendance")}
+          </h1>
+          <p className="mt-0.5 text-[13px] text-muted-foreground">
+            {t("attendance.grid.subtitle")}
+          </p>
+        </div>
       </div>
 
       {status && (
@@ -479,137 +482,155 @@ export default function AttendanceGridPage() {
         </div>
       )}
 
-      <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-900">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => shiftMonth(-1)}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-gray-300 hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-800"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </button>
-          <span className="min-w-[140px] text-center text-sm font-medium text-gray-900 dark:text-gray-100">
-            {monthLabel(month, year)} {year}
-          </span>
-          <button
-            onClick={() => shiftMonth(1)}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-gray-300 hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-800"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </button>
-        </div>
-        <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600 dark:text-gray-300">
-          <LegendDot label="P" cls={codeStyle("P")} desc={t("attendance.grid.legend.present")} />
-          <LegendDot label="A" cls={codeStyle("A")} desc={t("attendance.grid.legend.absent")} />
-          <LegendDot label="H" cls={codeStyle("H")} desc={t("attendance.grid.legend.halfDay")} />
-          <LegendDot label="L" cls={codeStyle("L")} desc={t("attendance.grid.legend.onLeave")} />
-          <LegendDot label="HPL" cls={codeStyle("HPL")} desc={t("attendance.grid.legend.hpl")} />
-          <LegendDot label="WO" cls={codeStyle("WO")} desc={t("attendance.grid.legend.weekOff")} />
-          <LegendDot label="HO" cls={codeStyle("HO")} desc={t("attendance.grid.legend.holiday")} />
-          <LegendDot label="WOT" cls={codeStyle("WOT")} desc={t("attendance.grid.legend.wot")} />
-          <LegendDot label="HOT" cls={codeStyle("HOT")} desc={t("attendance.grid.legend.hot")} />
-          <LegendDot label="M" cls={codeStyle("M")} desc={t("attendance.grid.legend.missed")} />
+      <section className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-900" aria-label="Attendance filters">
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-[1.1fr_1fr_1fr_auto]">
+          <label className="space-y-1.5 text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+            <span>Month &amp; Year</span>
+            <span className="relative block">
+              <CalendarDays aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-blue-600" />
+              <input
+                type="month"
+                name="attendance_month"
+                value={`${year}-${String(month).padStart(2, "0")}`}
+                onChange={(event) => {
+                  const [nextYear, nextMonth] = event.target.value.split("-").map(Number);
+                  if (nextYear && nextMonth) {
+                    setYear(nextYear);
+                    setMonth(nextMonth);
+                  }
+                }}
+                className="h-11 w-full rounded-lg border border-gray-200 bg-white pl-10 pr-3 text-sm font-medium normal-case text-gray-900 outline-none transition focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+              />
+            </span>
+          </label>
+          <label className="space-y-1.5 text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+            <span>{t("attendance.grid.location")}</span>
+            <span className="relative block">
+              <MapPin aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-blue-600" />
+              <select
+                name="attendance_location"
+                value={location}
+                onChange={(event) => setLocation(event.target.value)}
+                className="h-11 w-full appearance-none rounded-lg border border-gray-200 bg-white pl-10 pr-8 text-sm font-medium normal-case text-gray-900 outline-none transition focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+              >
+                <option value="">{t("attendance.grid.allLocations")}</option>
+                {locationOptions.map((item) => <option key={item} value={item}>{item}</option>)}
+              </select>
+            </span>
+          </label>
+          <label className="space-y-1.5 text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+            <span>{t("attendance.grid.department")}</span>
+            <span className="relative block">
+              <Building2 aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-blue-600" />
+              <select
+                name="attendance_department"
+                value={department}
+                onChange={(event) => setDepartment(event.target.value)}
+                className="h-11 w-full appearance-none rounded-lg border border-gray-200 bg-white pl-10 pr-8 text-sm font-medium normal-case text-gray-900 outline-none transition focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+              >
+                <option value="">{t("attendance.grid.allDepartments")}</option>
+                {departmentOptions.map((item) => <option key={item} value={item}>{item}</option>)}
+              </select>
+            </span>
+          </label>
           <button
             type="button"
             onClick={exportToExcel}
             disabled={exporting || isLoading || !filteredEmployees.length}
-            title={t("attendance.grid.exportTooltip")}
-            className="ml-2 inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+            className="mt-auto inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-blue-600 px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {exporting ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            ) : (
-              <Download className="h-3.5 w-3.5" />
-            )}
-            {exporting ? t("attendance.grid.exporting") : t("attendance.grid.export")}
+            {exporting ? <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" /> : <Download aria-hidden="true" className="h-4 w-4" />}
+            {exporting ? t("attendance.grid.exporting") : "Export Excel"}
           </button>
         </div>
-      </div>
+      </section>
 
       {/* Filter bar — search by name / emp_code, narrow by department or
           location. Filters operate client-side over the already-fetched
           rows so changes feel instant. */}
-      <div className="flex flex-wrap items-end gap-3 rounded-lg border border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-900">
-        <div className="flex-1 min-w-[220px]">
-          <label className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
-            {t("attendance.grid.searchEmployee")}
+      <section className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900" aria-label="Attendance report">
+        <div className="flex flex-col gap-3 border-b border-gray-200 px-4 py-3 sm:flex-row sm:items-center sm:justify-between dark:border-gray-700">
+          <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+            <span>Show</span>
+            <select
+              name="attendance_page_size"
+              value={pageSize}
+              onChange={(event) => setPageSize(Number(event.target.value))}
+              className="h-9 rounded-md border border-gray-200 bg-white px-2 font-semibold text-gray-900 outline-none focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+            >
+              {[10, 25, 50, 100].map((size) => <option key={size} value={size}>{size}</option>)}
+            </select>
+            <span>Entries</span>
           </label>
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder={t("attendance.grid.searchPlaceholder")}
-              className="w-full rounded-md border border-gray-300 bg-white pl-8 pr-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
-            />
+          <div className="flex min-w-0 flex-1 flex-wrap items-center justify-end gap-3">
+            <div className="hidden flex-wrap items-center justify-end gap-x-2.5 gap-y-1 xl:flex" aria-label="Attendance legend">
+              <LegendDot label="P" cls={codeStyle("P")} desc={t("attendance.grid.legend.present")} />
+              <LegendDot label="A" cls={codeStyle("A")} desc={t("attendance.grid.legend.absent")} />
+              <LegendDot label="H" cls={codeStyle("H")} desc={t("attendance.grid.legend.halfDay")} />
+              <LegendDot label="L" cls={codeStyle("L")} desc={t("attendance.grid.legend.onLeave")} />
+              <LegendDot label="WO" cls={codeStyle("WO")} desc={t("attendance.grid.legend.weekOff")} />
+              <LegendDot label="HO" cls={codeStyle("HO")} desc={t("attendance.grid.legend.holiday")} />
+            </div>
+            <div className="relative w-full min-w-[240px] sm:w-[264px] sm:flex-none">
+              <Search aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              <input
+                type="search"
+                name="attendance_employee_search"
+                autoComplete="off"
+                aria-label={t("attendance.grid.searchEmployee")}
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder={t("attendance.grid.searchPlaceholder")}
+                className="h-9 w-full rounded-md border border-gray-200 bg-white pl-9 pr-8 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+              />
+              {filtersActive && (
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  aria-label={t("attendance.grid.clearFilters")}
+                  className="absolute right-1.5 top-1/2 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded text-gray-400 hover:bg-gray-100 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                >
+                  <X aria-hidden="true" className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
           </div>
         </div>
-        <div>
-          <label className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
-            {t("attendance.grid.department")}
-          </label>
-          <select
-            value={department}
-            onChange={(e) => setDepartment(e.target.value)}
-            className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
-          >
-            <option value="">{t("attendance.grid.allDepartments")}</option>
-            {departmentOptions.map((d) => (
-              <option key={d} value={d}>{d}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
-            {t("attendance.grid.location")}
-          </label>
-          <select
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
-          >
-            <option value="">{t("attendance.grid.allLocations")}</option>
-            {locationOptions.map((l) => (
-              <option key={l} value={l}>{l}</option>
-            ))}
-          </select>
-        </div>
-        <div className="ml-auto flex items-center gap-3">
-          <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
-            {t("attendance.grid.employeeCount", { shown: filteredEmployees.length, total: data.employees.length })}
-          </span>
-          {filtersActive && (
-            <button
-              type="button"
-              onClick={clearFilters}
-              className="inline-flex items-center gap-1 rounded-md border border-gray-300 bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
-            >
-              <X className="h-3 w-3" />
-              {t("attendance.grid.clearFilters")}
-            </button>
-          )}
-        </div>
-      </div>
-
-      <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+        <div className="overflow-x-auto" tabIndex={0} aria-label="Scrollable monthly attendance grid">
         {isLoading ? (
           <div className="flex h-64 items-center justify-center">
             <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
           </div>
         ) : (
-          <table className="min-w-full text-xs">
+          <table className="min-w-full border-separate border-spacing-0 text-xs">
+            <caption className="sr-only">
+              {monthLabel(month, year)} {year} attendance by employee and day
+            </caption>
             <thead className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-800">
               <tr>
-                <th className="sticky left-0 z-20 min-w-[180px] border-b border-r border-gray-200 bg-gray-50 px-3 py-2 text-left font-semibold text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
-                  {t("attendance.grid.employee")}
+                <th scope="col" className="sticky left-0 z-30 w-[208px] min-w-[208px] border-b border-r border-gray-200 bg-gray-50 px-3 py-2.5 text-left font-semibold uppercase tracking-wide text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
+                  Employee Name
+                </th>
+                <th scope="col" className="sticky left-[208px] z-30 w-[155px] min-w-[155px] border-b border-r border-gray-200 bg-gray-50 px-3 py-2.5 text-left font-semibold uppercase tracking-wide text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
+                  Location
+                </th>
+                <th scope="col" className="sticky left-[363px] z-30 w-[165px] min-w-[165px] border-b border-r border-gray-200 bg-gray-50 px-3 py-2.5 text-left font-semibold uppercase tracking-wide text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
+                  Department
+                </th>
+                <th scope="col" className="sticky left-[528px] z-30 w-[137px] min-w-[137px] border-b border-r border-gray-200 bg-gray-50 px-3 py-2.5 text-left font-semibold uppercase tracking-wide text-gray-600 shadow-[4px_0_8px_-6px_rgba(15,23,42,0.45)] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
+                  Employee Code
                 </th>
                 {data.days.map((d) => (
                   <th
                     key={d.date}
-                    className="border-b border-gray-200 px-1 py-2 text-center font-semibold text-gray-600 dark:border-gray-700 dark:text-gray-300"
+                    scope="col"
+                    className="w-[52px] min-w-[52px] border-b border-r border-gray-200 px-1 py-2 text-center font-semibold text-gray-600 dark:border-gray-700 dark:text-gray-300"
                     title={d.date}
                   >
-                    {d.day}
+                    <span className="block text-[11px] font-bold text-gray-800 dark:text-gray-100">{d.day}</span>
+                    <span className="block text-[9px] font-medium text-gray-400">
+                      {new Intl.DateTimeFormat(undefined, { weekday: "short" }).format(new Date(`${d.date}T00:00:00`))}
+                    </span>
                   </th>
                 ))}
                 <th className="border-b border-l border-gray-200 px-2 py-2 text-center font-semibold text-gray-700 dark:border-gray-700 dark:text-gray-200">
@@ -648,7 +669,7 @@ export default function AttendanceGridPage() {
               {filteredEmployees.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={data.days.length + 8}
+                    colSpan={data.days.length + 11}
                     className="px-4 py-8 text-center text-gray-400 dark:text-gray-500"
                   >
                     {data.employees.length === 0
@@ -657,19 +678,29 @@ export default function AttendanceGridPage() {
                   </td>
                 </tr>
               ) : (
-                filteredEmployees.map((emp) => {
+                pagedEmployees.map((emp) => {
                   const summary = summaryFor(emp);
                   return (
-                    <tr key={emp.user_id} className="hover:bg-gray-50 dark:hover:bg-gray-800/40">
-                      <td className="sticky left-0 z-10 border-r border-gray-200 bg-white px-3 py-2 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
-                        <div className="font-medium">
+                    <tr key={emp.user_id} className="group hover:bg-gray-50 dark:hover:bg-gray-800/40">
+                      <th scope="row" className="sticky left-0 z-20 w-[208px] min-w-[208px] border-b border-r border-gray-200 bg-white px-3 py-2.5 text-left text-gray-900 group-hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:group-hover:bg-gray-800">
+                        <div className="font-semibold">
                           {emp.first_name} {emp.last_name}
                         </div>
-                        {emp.emp_code && (
-                          <div className="text-[10px] text-gray-500 dark:text-gray-400">
-                            {emp.emp_code}
-                          </div>
-                        )}
+                      </th>
+                      <td className="sticky left-[208px] z-20 w-[155px] min-w-[155px] border-b border-r border-gray-200 bg-white px-3 py-2.5 text-gray-600 group-hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:group-hover:bg-gray-800">
+                        <span className="inline-flex items-center gap-1.5">
+                          <MapPin aria-hidden="true" className="h-3.5 w-3.5 text-blue-500" />
+                          {emp.location || "—"}
+                        </span>
+                      </td>
+                      <td className="sticky left-[363px] z-20 w-[165px] min-w-[165px] border-b border-r border-gray-200 bg-white px-3 py-2.5 text-gray-600 group-hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:group-hover:bg-gray-800">
+                        <span className="inline-flex items-center gap-1.5">
+                          <Building2 aria-hidden="true" className="h-3.5 w-3.5 text-blue-500" />
+                          {emp.department || "—"}
+                        </span>
+                      </td>
+                      <td className="sticky left-[528px] z-20 w-[137px] min-w-[137px] border-b border-r border-gray-200 bg-white px-3 py-2.5 font-medium tabular-nums text-gray-700 shadow-[4px_0_8px_-6px_rgba(15,23,42,0.45)] group-hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:group-hover:bg-gray-800">
+                        {emp.emp_code || "—"}
                       </td>
                       {data.days.map((d) => {
                         const stored = emp.days[d.date] || "";
@@ -723,14 +754,22 @@ export default function AttendanceGridPage() {
                                 }}
                               />
                             ) : null}
-                            <div className="relative mx-auto h-7 w-7">
-                              <div
+                            <div className="relative mx-auto h-8 w-8">
+                              <button
+                                type="button"
                                 onDoubleClick={() => setEditing({ uid: emp.user_id, date: d.date })}
+                                onKeyDown={(event) => {
+                                  if (event.key === "Enter" || event.key === " ") {
+                                    event.preventDefault();
+                                    setEditing({ uid: emp.user_id, date: d.date });
+                                  }
+                                }}
+                                aria-label={`Edit attendance for ${emp.first_name} ${emp.last_name} on ${d.date}${displayCode ? `, currently ${displayCode}` : ""}`}
                                 title={cellTitle}
-                                className={`flex h-full w-full cursor-pointer items-center justify-center rounded-md text-[11px] font-semibold transition hover:ring-2 hover:ring-brand-400 ${codeStyle(displayCode)}`}
+                                className={`flex h-full w-full items-center justify-center rounded-md text-[11px] font-semibold transition hover:ring-2 hover:ring-brand-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${codeStyle(displayCode)}`}
                               >
                                 {displayCode || "—"}
-                              </div>
+                              </button>
                               {showRibbon && (
                                 <span
                                   aria-label={t("attendance.grid.legend.weekOff")}
@@ -791,7 +830,8 @@ export default function AttendanceGridPage() {
                 {FOOTER_ROWS.map((row) => (
                   <tr key={row.code} className="border-t border-gray-200 dark:border-gray-700">
                     <td
-                      className={`sticky left-0 z-10 border-r border-gray-200 bg-gray-50 px-3 py-1.5 text-left text-[11px] font-semibold dark:border-gray-700 dark:bg-gray-800/60 ${row.cls}`}
+                      colSpan={4}
+                      className={`sticky left-0 z-20 min-w-[665px] border-r border-gray-200 bg-gray-50 px-3 py-1.5 text-left text-[11px] font-semibold shadow-[4px_0_8px_-6px_rgba(15,23,42,0.45)] dark:border-gray-700 dark:bg-gray-800 ${row.cls}`}
                     >
                       {t("attendance.grid.totalRow", { code: row.code, label: row.label })}
                     </td>
@@ -818,7 +858,36 @@ export default function AttendanceGridPage() {
             )}
           </table>
         )}
-      </div>
+        </div>
+        <div className="flex flex-col gap-2 border-t border-gray-200 px-4 py-3 text-xs text-gray-500 sm:flex-row sm:items-center sm:justify-between dark:border-gray-700 dark:text-gray-400">
+          <span>
+            Showing {filteredEmployees.length === 0 ? 0 : (currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, filteredEmployees.length)} of {filteredEmployees.length} entries
+          </span>
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+              disabled={currentPage === 1}
+              aria-label="Previous page"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-gray-200 text-gray-600 transition hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-40 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+            >
+              <ChevronLeft aria-hidden="true" className="h-4 w-4" />
+            </button>
+            <span className="min-w-8 rounded-md bg-blue-600 px-2.5 py-2 text-center font-semibold text-white tabular-nums">
+              {currentPage}
+            </span>
+            <button
+              type="button"
+              onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+              disabled={currentPage >= totalPages}
+              aria-label="Next page"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-gray-200 text-gray-600 transition hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-40 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+            >
+              <ChevronRight aria-hidden="true" className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      </section>
 
       <p className="text-xs text-gray-500 dark:text-gray-400">
         {t("attendance.grid.tip")}

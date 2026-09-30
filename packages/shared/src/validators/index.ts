@@ -12,6 +12,8 @@ import {
   EmploymentType,
 } from "../types/index.js";
 
+export { regularizationListFiltersSchema, regularizationSortQuerySchema } from "./regularization-query.js";
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
