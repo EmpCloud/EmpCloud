@@ -124,13 +124,13 @@ export default function LoginPage() {
         </div>
       </section>
 
-      <section className="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-white via-white to-[#f3f7ff] px-5 py-20 lg:items-start lg:px-10 lg:pt-[10vh]">
+      <section className="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-white via-white to-[#f3f7ff] px-5 py-20 lg:px-10">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute bottom-[-180px] left-1/2 h-[460px] w-[460px] -translate-x-1/2 rounded-full bg-[#dbe9ff]/60 blur-3xl"
         />
 
-        <div className="relative z-10 w-full max-w-[372px] rounded-[18px] border border-[#dfe7f3] bg-white/95 p-5 shadow-[0_24px_70px_rgba(50,89,160,0.15)] backdrop-blur-sm sm:p-6 lg:translate-x-6 lg:translate-y-6">
+        <div className="relative z-10 w-full max-w-[372px] rounded-[18px] border border-[#dfe7f3] bg-white/95 p-5 shadow-[0_24px_70px_rgba(50,89,160,0.15)] backdrop-blur-sm sm:p-6">
           <header className="text-center">
             <img
               src="/empcloud-logo.png"
