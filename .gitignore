@@ -32,6 +32,7 @@ test-artifacts/
 test-screenshots/
 *.png
 !packages/server/public/*.png
+!packages/client/public/empcloud-login-hero.png
 packages/server/logs/
 
 # Claude Code agent worktrees / local settings (never commit)

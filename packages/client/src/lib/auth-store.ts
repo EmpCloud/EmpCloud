@@ -3,8 +3,37 @@
 // =============================================================================
 
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { createJSONStorage, persist, type StateStorage } from "zustand/middleware";
 import { queryClient } from "@/main";
+
+const AUTH_STORAGE_NAME = "empcloud-auth";
+const AUTH_STORAGE_MODE = "empcloud-auth-storage-mode";
+
+const authStorage: StateStorage = {
+  getItem: (name) =>
+    sessionStorage.getItem(name) ?? localStorage.getItem(name),
+  setItem: (name, value) => {
+    const useSessionStorage =
+      sessionStorage.getItem(AUTH_STORAGE_MODE) === "session";
+    const target = useSessionStorage ? sessionStorage : localStorage;
+    const fallback = useSessionStorage ? localStorage : sessionStorage;
+
+    target.setItem(name, value);
+    fallback.removeItem(name);
+  },
+  removeItem: (name) => {
+    localStorage.removeItem(name);
+    sessionStorage.removeItem(name);
+  },
+};
+
+export function setAuthPersistence(remember: boolean) {
+  if (remember) {
+    sessionStorage.removeItem(AUTH_STORAGE_MODE);
+  } else {
+    sessionStorage.setItem(AUTH_STORAGE_MODE, "session");
+  }
+}
 
 export interface AuthUser {
   id: number;
@@ -74,6 +103,9 @@ export const useAuthStore = create<AuthState>()(
         });
       },
     }),
-    { name: "empcloud-auth" }
+    {
+      name: AUTH_STORAGE_NAME,
+      storage: createJSONStorage(() => authStorage),
+    }
   )
 );
