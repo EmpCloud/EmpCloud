@@ -969,9 +969,26 @@ pnpm --filter server migrate
 # Seed demo data
 pnpm --filter server seed
 
+# Populate the local Helpdesk and Knowledge Base UI for visual review.
+# This guarded command only accepts a loopback database and requires the
+# target tenant/user explicitly. Replace the IDs for your local tenant.
+ALLOW_LOCAL_DEMO_SEED=1 pnpm seed:ui-demo -- --org-id 3 --owner-id 12
+
 # Start dev servers
 pnpm dev
 ```
+
+On PowerShell, set and remove the acknowledgement variable around the command:
+
+```powershell
+$env:ALLOW_LOCAL_DEMO_SEED = "1"
+pnpm seed:ui-demo -- --org-id 3 --owner-id 12
+Remove-Item Env:ALLOW_LOCAL_DEMO_SEED
+```
+
+The UI demo seed is idempotent: rerunning it replaces only records marked
+`[UI Demo]` or `ui-demo-` inside the selected organization. It refuses to run
+in production or against a non-local database host.
 
 Once running, visit:
 - **Client**: http://localhost:5173
