@@ -23,6 +23,20 @@ function addHours(date: Date, hours: number): Date {
   return new Date(date.getTime() + hours * 60 * 60 * 1000);
 }
 
+function startOfCalendarDate(value: string): Date | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return null;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const date = new Date(year, month - 1, day);
+  return date.getFullYear() === year &&
+    date.getMonth() === month - 1 &&
+    date.getDate() === day
+    ? date
+    : null;
+}
+
 // ---------------------------------------------------------------------------
 // Create Ticket
 // ---------------------------------------------------------------------------
@@ -84,7 +98,12 @@ export async function listTickets(
     assigned_to?: number;
     raised_by?: number;
     search?: string;
+    created_date?: string;
     resolved_date?: string;
+    sla?: "on-track" | "at-risk" | "breached";
+    sort_by?: "id" | "subject" | "category" | "priority" | "status" | "created_at";
+    sort_order?: "asc" | "desc";
+    sort_direction?: "asc" | "desc";
   }
 ) {
   const db = getDB();
@@ -103,13 +122,9 @@ export async function listTickets(
       start = new Date();
       start.setHours(0, 0, 0, 0);
     } else {
-      start = new Date(filters.resolved_date);
-      if (isNaN(start.getTime())) {
-        start = new Date();
-        start.setHours(0, 0, 0, 0);
-      } else {
-        start.setHours(0, 0, 0, 0);
-      }
+      const parsed = startOfCalendarDate(filters.resolved_date);
+      if (!parsed) throw new ValidationError("Invalid resolved date");
+      start = parsed;
     }
     const end = new Date(start);
     end.setDate(end.getDate() + 1);
@@ -117,6 +132,17 @@ export async function listTickets(
       .whereNotNull("helpdesk_tickets.resolved_at")
       .where("helpdesk_tickets.resolved_at", ">=", start)
       .where("helpdesk_tickets.resolved_at", "<", end);
+  }
+
+  if (filters?.created_date) {
+    const start = new Date(`${filters.created_date}T00:00:00`);
+    if (!Number.isNaN(start.getTime())) {
+      const end = new Date(start);
+      end.setDate(end.getDate() + 1);
+      query = query
+        .where("helpdesk_tickets.created_at", ">=", start)
+        .where("helpdesk_tickets.created_at", "<", end);
+    }
   }
 
   // #1376 — Dashboard's "open ticket" count aggregates 4 statuses. When the
@@ -148,9 +174,35 @@ export async function listTickets(
     });
   }
 
+  if (filters?.sla) {
+    const now = new Date();
+    const atRiskThreshold = addHours(now, 4);
+    query = query
+      .whereNotIn("helpdesk_tickets.status", ["resolved", "closed"])
+      .whereNotNull("helpdesk_tickets.sla_resolution_due");
+
+    if (filters.sla === "breached") {
+      query = query.where("helpdesk_tickets.sla_resolution_due", "<", now);
+    } else if (filters.sla === "at-risk") {
+      query = query
+        .where("helpdesk_tickets.sla_resolution_due", ">=", now)
+        .where("helpdesk_tickets.sla_resolution_due", "<", atRiskThreshold);
+    } else {
+      query = query.where(
+        "helpdesk_tickets.sla_resolution_due",
+        ">=",
+        atRiskThreshold,
+      );
+    }
+  }
+
   const [{ count }] = await query.clone().count("helpdesk_tickets.id as count");
 
-  const tickets = await query
+  const sortBy = filters?.sort_by || "created_at";
+  // Prefer the helpdesk-specific parameter when both aliases are supplied,
+  // then fall back to the platform-wide pagination alias.
+  const sortDirection = filters?.sort_direction ?? filters?.sort_order ?? "desc";
+  const ticketsQuery = query
     .clone()
     .select(
       "helpdesk_tickets.*",
@@ -161,7 +213,15 @@ export async function listTickets(
         `(SELECT CONCAT(u2.first_name, ' ', u2.last_name) FROM users u2 WHERE u2.id = helpdesk_tickets.assigned_to) as assigned_to_name`
       )
     )
-    .orderBy("helpdesk_tickets.created_at", "desc")
+    .orderBy(`helpdesk_tickets.${sortBy}`, sortDirection);
+
+  // Non-unique sort columns need a stable tie-breaker or records can move
+  // between offset-based pages when several rows share the same value.
+  if (sortBy !== "id") {
+    ticketsQuery.orderBy("helpdesk_tickets.id", sortDirection);
+  }
+
+  const tickets = await ticketsQuery
     .limit(perPage)
     .offset((page - 1) * perPage);
 
@@ -577,6 +637,10 @@ export async function getMyTickets(
     perPage?: number;
     status?: string;
     category?: string;
+    priority?: string;
+    search?: string;
+    date_range?: "7" | "30" | "90";
+    sort?: "recent" | "oldest" | "priority";
   }
 ) {
   const db = getDB();
@@ -586,20 +650,63 @@ export async function getMyTickets(
   let query = db("helpdesk_tickets")
     .where({ organization_id: orgId, raised_by: userId });
 
-  if (filters?.status) query = query.where("status", filters.status);
+  // Employee-facing tabs intentionally group reopened work under Open and
+  // tickets waiting on the requester under In Progress. This keeps the four
+  // visible status buckets exhaustive and aligned with the dashboard totals.
+  if (filters?.status === "open") {
+    query = query.whereIn("status", ["open", "reopened"]);
+  } else if (filters?.status === "in_progress") {
+    query = query.whereIn("status", ["in_progress", "awaiting_response"]);
+  } else if (filters?.status) {
+    query = query.where("status", filters.status);
+  }
   if (filters?.category) query = query.where("category", filters.category);
+  if (filters?.priority) query = query.where("priority", filters.priority);
+  if (filters?.search) {
+    const isNumeric = /^\d+$/.test(filters.search);
+    const searchTerm = filters.search;
+    query = query.where(function () {
+      if (isNumeric) {
+        this.where("helpdesk_tickets.id", searchTerm);
+      }
+      this.orWhere("helpdesk_tickets.subject", "like", `%${searchTerm}%`)
+        .orWhere("helpdesk_tickets.description", "like", `%${searchTerm}%`);
+    });
+  }
+  if (filters?.date_range) {
+    const createdSince = new Date();
+    createdSince.setDate(createdSince.getDate() - Number(filters.date_range));
+    query = query.where("helpdesk_tickets.created_at", ">=", createdSince);
+  }
 
   const [{ count }] = await query.clone().count("id as count");
 
-  const tickets = await query
+  let ticketsQuery = query
     .clone()
     .select(
       "helpdesk_tickets.*",
       db.raw(
         `(SELECT CONCAT(u.first_name, ' ', u.last_name) FROM users u WHERE u.id = helpdesk_tickets.assigned_to) as assigned_to_name`
       )
-    )
-    .orderBy("helpdesk_tickets.id", "desc")
+    );
+
+  if (filters?.sort === "oldest") {
+    ticketsQuery = ticketsQuery
+      .orderBy("helpdesk_tickets.created_at", "asc")
+      .orderBy("helpdesk_tickets.id", "asc");
+  } else if (filters?.sort === "priority") {
+    ticketsQuery = ticketsQuery
+      .orderByRaw(
+        "CASE helpdesk_tickets.priority WHEN 'urgent' THEN 1 WHEN 'high' THEN 2 WHEN 'medium' THEN 3 WHEN 'low' THEN 4 ELSE 5 END",
+      )
+      .orderBy("helpdesk_tickets.id", "desc");
+  } else {
+    ticketsQuery = ticketsQuery
+      .orderBy("helpdesk_tickets.created_at", "desc")
+      .orderBy("helpdesk_tickets.id", "desc");
+  }
+
+  const tickets = await ticketsQuery
     .limit(perPage)
     .offset((page - 1) * perPage);
 

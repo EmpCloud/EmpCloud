@@ -92,7 +92,10 @@ export default function GlobalNavSearch({ items }: { items: NavItem[] }) {
   const inputClassName = "h-8 w-full rounded-lg border border-border bg-background ps-9 pe-16 text-xs text-foreground shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2";
 
   return (
-    <div ref={containerRef} className="relative hidden w-full max-w-lg sm:block">
+    <div
+      ref={containerRef}
+      className="relative hidden w-full max-w-[640px] sm:block"
+    >
       <Search
         aria-hidden="true"
         className="pointer-events-none absolute start-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground"
