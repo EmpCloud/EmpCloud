@@ -50,6 +50,7 @@ function createMockDB() {
   chain.update = vi.fn(() => 1);
   chain.delete = vi.fn(() => 1);
   chain.orderBy = vi.fn(() => chain);
+  chain.orderByRaw = vi.fn(() => chain);
   chain.limit = vi.fn(() => chain);
   chain.offset = vi.fn(() => chain);
   chain.count = vi.fn(() => chain);
@@ -130,6 +131,91 @@ describe("helpdesk.service", () => {
 
       const insertArgs = chain.insert.mock.calls[0][0];
       expect(insertArgs.tags).toBe(JSON.stringify(["laptop", "hardware"]));
+    });
+  });
+
+  // -----------------------------------------------------------------------
+  // listTickets / getMyTickets query contracts
+  // -----------------------------------------------------------------------
+  describe("ticket list query contracts", () => {
+    it("uses sort_order as an alias and adds a deterministic id tie-breaker", async () => {
+      chain._result = [{ count: 0 }];
+
+      await listTickets(1, {
+        sort_by: "subject",
+        sort_order: "asc",
+      });
+
+      expect(chain.orderBy).toHaveBeenNthCalledWith(
+        1,
+        "helpdesk_tickets.subject",
+        "asc",
+      );
+      expect(chain.orderBy).toHaveBeenNthCalledWith(
+        2,
+        "helpdesk_tickets.id",
+        "asc",
+      );
+    });
+
+    it("prefers sort_direction when both sort aliases are supplied", async () => {
+      chain._result = [{ count: 0 }];
+
+      await listTickets(1, {
+        sort_by: "status",
+        sort_order: "asc",
+        sort_direction: "desc",
+      });
+
+      expect(chain.orderBy).toHaveBeenNthCalledWith(
+        1,
+        "helpdesk_tickets.status",
+        "desc",
+      );
+      expect(chain.orderBy).toHaveBeenNthCalledWith(
+        2,
+        "helpdesk_tickets.id",
+        "desc",
+      );
+    });
+
+    it("applies employee ticket search within the scoped query", async () => {
+      chain._result = [{ count: 0 }];
+
+      await getMyTickets(1, 10, { search: "VPN" });
+
+      expect(chain.orWhere).toHaveBeenCalledWith(
+        "helpdesk_tickets.subject",
+        "like",
+        "%VPN%",
+      );
+      expect(chain.orWhere).toHaveBeenCalledWith(
+        "helpdesk_tickets.description",
+        "like",
+        "%VPN%",
+      );
+    });
+
+    it("applies employee filters and server-side priority sorting", async () => {
+      chain._result = [{ count: 0 }];
+
+      await getMyTickets(1, 10, {
+        priority: "high",
+        date_range: "30",
+        sort: "priority",
+      });
+
+      expect(chain.where).toHaveBeenCalledWith("priority", "high");
+      expect(chain.where).toHaveBeenCalledWith(
+        "helpdesk_tickets.created_at",
+        ">=",
+        expect.any(Date),
+      );
+      expect(chain.orderByRaw).toHaveBeenCalledTimes(1);
+      expect(chain.orderBy).toHaveBeenCalledWith(
+        "helpdesk_tickets.id",
+        "desc",
+      );
     });
   });
 

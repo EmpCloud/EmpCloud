@@ -1441,18 +1441,42 @@ export const updateArticleSchema = z.object({
   is_featured: z.boolean().optional(),
 });
 
+const helpdeskDateSchema = z.string().date();
+const helpdeskSearchSchema = z.string().trim().max(255);
+
+export const helpdeskMyTicketsQuerySchema = paginationSchema
+  .pick({ page: true, per_page: true })
+  .extend({
+    status: ticketStatusEnum.optional(),
+    category: helpdeskCategoryEnum.optional(),
+    priority: ticketPriorityEnum.optional(),
+    search: helpdeskSearchSchema.optional(),
+    date_range: z.enum(["7", "30", "90"]).optional(),
+    sort: z.enum(["recent", "oldest", "priority"]).optional(),
+  });
+
 export const helpdeskQuerySchema = paginationSchema.extend({
   status: ticketStatusEnum.optional(),
   category: helpdeskCategoryEnum.optional(),
   priority: ticketPriorityEnum.optional(),
   assigned_to: z.coerce.number().int().positive().optional(),
   raised_by: z.coerce.number().int().positive().optional(),
-  search: z.string().optional(),
+  search: helpdeskSearchSchema.optional(),
+  created_date: helpdeskDateSchema.optional(),
+  sla: z.enum(["on-track", "at-risk", "breached"]).optional(),
+  sort_by: z
+    .enum(["id", "subject", "category", "priority", "status", "created_at"])
+    .optional(),
+  // `sort_direction` is the helpdesk client's current name. Keep the common
+  // pagination `sort_order` alias too, but remove its inherited default so an
+  // omitted alias does not change helpdesk's established newest-first order.
+  sort_order: z.enum(["asc", "desc"]).optional(),
+  sort_direction: z.enum(["asc", "desc"]).optional(),
   // "today" or YYYY-MM-DD. When set, only tickets whose resolved_at falls on
   // that date are returned — regardless of current status. Used by the
   // "Resolved Today" stat card to avoid drifting from the dashboard count
   // when tickets are resolved and then closed or reopened.
-  resolved_date: z.string().optional(),
+  resolved_date: z.union([z.literal("today"), helpdeskDateSchema]).optional(),
 });
 
 export type CreateTicketInput = z.infer<typeof createTicketSchema>;
@@ -1461,6 +1485,9 @@ export type AddCommentInput = z.infer<typeof addCommentSchema>;
 export type RateTicketInput = z.infer<typeof rateTicketSchema>;
 export type CreateArticleInput = z.infer<typeof createArticleSchema>;
 export type UpdateArticleInput = z.infer<typeof updateArticleSchema>;
+export type HelpdeskMyTicketsQueryInput = z.infer<
+  typeof helpdeskMyTicketsQuerySchema
+>;
 export type HelpdeskQueryInput = z.infer<typeof helpdeskQuerySchema>;
 
 // ---------------------------------------------------------------------------

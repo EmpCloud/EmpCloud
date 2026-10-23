@@ -103,6 +103,14 @@ export default function DashboardLayout() {
 
   const isHR = !!(user && HR_ROLES.includes(user.role));
   const isOrgAdmin = user?.role === "org_admin";
+  const userRoleLabel = user?.role
+    ? t(`roles.${user.role}`, {
+        defaultValue: user.role
+          .split("_")
+          .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+          .join(" "),
+      })
+    : "";
 
   // RBAC v1 — view-mode toggle. HR users always see the admin sidebar.
   // Non-HR users with at least one admin-level permission (via custom roles)
@@ -160,7 +168,7 @@ export default function DashboardLayout() {
   const renderSidebar = (isCollapsed: boolean) => (
     <div
       className={`flex h-full flex-col overflow-x-hidden bg-card border-r border-border transition-[width] duration-200 ${
-        isCollapsed ? "w-16 sidebar-collapsed" : "w-[220px]"
+        isCollapsed ? "w-16 sidebar-collapsed" : "w-[264px]"
       }`}
     >
       <Link
@@ -256,7 +264,9 @@ export default function DashboardLayout() {
               <p className="text-sm font-medium text-foreground truncate">
                 {user?.first_name} {user?.last_name}
               </p>
-              <p className="text-xs text-muted-foreground truncate">{user?.role}</p>
+              <p className="truncate text-xs text-muted-foreground">
+                {userRoleLabel}
+              </p>
             </div>
           </div>
         )}
@@ -349,6 +359,28 @@ export default function DashboardLayout() {
               <ThemeToggle />
               <LanguageSwitcher />
               <NotificationDropdown />
+              <Link
+                to="/my-profile"
+                aria-label={t("nav.myProfile")}
+                className="hidden min-w-0 items-center gap-2 rounded-lg px-1.5 py-1 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 lg:flex"
+              >
+                <EmployeeAvatar
+                  userId={user?.id}
+                  firstName={user?.first_name}
+                  lastName={user?.last_name}
+                  hasPhoto={!!meProfile?.photo_path}
+                  hasBiometricFace={!!meProfile?.has_biometric_face}
+                  size="sm"
+                />
+                <span className="min-w-0 leading-tight">
+                  <span className="block max-w-28 truncate text-xs font-semibold text-foreground">
+                    {user?.first_name} {user?.last_name}
+                  </span>
+                  <span className="block max-w-28 truncate text-[10px] text-muted-foreground">
+                    {userRoleLabel}
+                  </span>
+                </span>
+              </Link>
             </div>
           </div>
         </header>

@@ -159,6 +159,17 @@ export default function ChatWidget() {
   // overlaps the chat composer + message ticks, and an AI bubble inside a
   // person-to-person chat UI is redundant.
   const onMessagesPage = location.pathname.startsWith("/messages") || location.pathname.startsWith("/assistant");
+  // These dense dashboard pages use the bottom-right area for tables and row
+  // actions, and their approved designs intentionally omit the floating
+  // launcher. The assistant remains available from the persistent sidebar.
+  const normalizedPath = location.pathname.replace(/\/+$/, "") || "/";
+  const onDenseDashboard = [
+    "/leave",
+    "/helpdesk/dashboard",
+    "/helpdesk/tickets",
+    "/helpdesk/my-tickets",
+    "/helpdesk/kb",
+  ].includes(normalizedPath);
   const [isOpen, setIsOpen] = useState(false);
   const [convoId] = useState<number | null>(null);
   const [input, setInput] = useState("");
@@ -314,8 +325,8 @@ export default function ChatWidget() {
   }, [handleOpen]);
 
   if (!canUseChatbot) return null;
-  // Don't render the floating widget over the Messages page.
-  if (onMessagesPage) return null;
+  // Don't render the floating widget where it would obscure primary controls.
+  if (onMessagesPage || onDenseDashboard) return null;
 
   if (!isOpen) {
     return (

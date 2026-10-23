@@ -15,6 +15,7 @@ import {
   rateTicketSchema,
   createArticleSchema,
   updateArticleSchema,
+  helpdeskMyTicketsQuerySchema,
   helpdeskQuerySchema,
   paginationSchema,
   AuditAction,
@@ -73,16 +74,29 @@ router.get(
   authenticate,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { page, per_page } = paginationSchema.parse(req.query);
-      const status = req.query.status as string | undefined;
-      const category = req.query.category as string | undefined;
+      const filters = helpdeskMyTicketsQuerySchema.parse(req.query);
 
       const result = await helpdeskService.getMyTickets(
         req.user!.org_id,
         req.user!.sub,
-        { page, perPage: per_page, status, category }
+        {
+          page: filters.page,
+          perPage: filters.per_page,
+          status: filters.status,
+          category: filters.category,
+          priority: filters.priority,
+          search: filters.search,
+          date_range: filters.date_range,
+          sort: filters.sort,
+        }
       );
-      sendPaginated(res, result.tickets, result.total, page, per_page);
+      sendPaginated(
+        res,
+        result.tickets,
+        result.total,
+        filters.page,
+        filters.per_page
+      );
     } catch (err) {
       next(err);
     }
@@ -108,6 +122,7 @@ router.get(
             perPage: filters.per_page,
             status: filters.status,
             category: filters.category,
+            search: filters.search,
           }
         );
         return sendPaginated(
@@ -128,6 +143,11 @@ router.get(
         assigned_to: filters.assigned_to,
         raised_by: filters.raised_by,
         search: filters.search,
+        created_date: filters.created_date,
+        sla: filters.sla,
+        sort_by: filters.sort_by,
+        sort_order: filters.sort_order,
+        sort_direction: filters.sort_direction,
         resolved_date: filters.resolved_date,
       });
       sendPaginated(res, result.tickets, result.total, filters.page, filters.per_page);
