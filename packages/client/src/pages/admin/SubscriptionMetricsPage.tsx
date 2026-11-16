@@ -110,11 +110,11 @@ type MetricCardProps = {
 
 function MetricCard({ icon, label, value, detail, tone }: MetricCardProps) {
   return (
-    <article className="rounded-xl border border-border bg-card p-5 shadow-sm">
+    <article className="rounded-lg border border-border bg-card p-3 transition-colors duration-150 hover:border-brand-400">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <p className="text-sm font-medium text-muted-foreground">{label}</p>
-          <p className="mt-2 text-2xl font-bold tabular-nums tracking-tight text-foreground">{value}</p>
+          <p className="mt-2 text-2xl font-semibold tabular-nums tracking-tight text-foreground">{value}</p>
           <p className="mt-1 text-xs leading-5 text-muted-foreground">{detail}</p>
         </div>
         <span className={cn("flex h-11 w-11 shrink-0 items-center justify-center rounded-lg", tone)}>
@@ -145,17 +145,17 @@ function PanelHeading({ title, description, trailing }: PanelHeadingProps) {
 
 function DashboardSkeleton() {
   return (
-    <div className="space-y-6 p-6" aria-busy="true" aria-live="polite">
+    <div className="space-y-4" aria-busy="true" aria-live="polite">
       <span className="sr-only">Loading subscription analytics</span>
-      <div className="h-16 max-w-xl animate-pulse rounded-xl bg-muted" />
+      <div className="h-16 max-w-xl animate-pulse rounded-lg bg-muted" />
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {[0, 1, 2, 3].map((item) => (
-          <div key={item} className="h-32 animate-pulse rounded-xl border border-border bg-card" />
+          <div key={item} className="h-32 animate-pulse rounded-lg border border-border bg-card" />
         ))}
       </div>
       <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-        <div className="h-[430px] animate-pulse rounded-xl border border-border bg-card" />
-        <div className="h-[430px] animate-pulse rounded-xl border border-border bg-card" />
+        <div className="h-[430px] animate-pulse rounded-lg border border-border bg-card" />
+        <div className="h-[430px] animate-pulse rounded-lg border border-border bg-card" />
       </div>
     </div>
   );
@@ -219,8 +219,8 @@ export default function SubscriptionMetricsPage() {
 
   if (isError || !data) {
     return (
-      <div className="p-6">
-        <div className="mx-auto flex min-h-64 max-w-xl flex-col items-center justify-center rounded-xl border border-border bg-card p-8 text-center">
+      <div>
+        <div className="mx-auto flex min-h-64 max-w-xl flex-col items-center justify-center rounded-lg border border-border bg-card p-8 text-center">
           <CircleAlert className="h-10 w-10 text-red-500" aria-hidden="true" />
           <h1 className="mt-4 text-lg font-semibold text-foreground">
             {t("subscriptionMetrics.error.title", { defaultValue: "Subscription analytics could not be loaded" })}
@@ -242,14 +242,14 @@ export default function SubscriptionMetricsPage() {
   }
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-4">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex min-w-0 items-start gap-3">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-brand-100 bg-brand-50 text-brand-700 dark:border-brand-900 dark:bg-brand-950/50 dark:text-brand-300">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-brand-100 bg-brand-50 text-brand-700 dark:border-brand-900 dark:bg-brand-950/50 dark:text-brand-300">
             <CreditCard className="h-5 w-5" aria-hidden="true" />
           </span>
           <div className="min-w-0">
-            <h1 className="text-pretty text-2xl font-bold tracking-tight text-foreground">
+            <h1 className="text-pretty text-xl font-semibold tracking-tight text-foreground">
               {t("subscriptionMetrics.title")}
             </h1>
             <p className="mt-1 max-w-3xl text-sm leading-6 text-muted-foreground">
@@ -329,7 +329,7 @@ export default function SubscriptionMetricsPage() {
 
       <section
         className={cn(
-          "flex flex-wrap items-center justify-between gap-4 rounded-xl border p-4",
+          "flex flex-wrap items-center justify-between gap-4 rounded-lg border p-4",
           attentionCount > 0
             ? "border-amber-200 bg-amber-50/70 dark:border-amber-900 dark:bg-amber-950/30"
             : "border-emerald-200 bg-emerald-50/70 dark:border-emerald-900 dark:bg-emerald-950/30",
@@ -370,7 +370,7 @@ export default function SubscriptionMetricsPage() {
       </section>
 
       <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-        <section className="rounded-xl border border-border bg-card p-5 shadow-sm">
+        <section className="rounded-lg border border-border bg-card p-4">
           <PanelHeading
             title={t("subscriptionMetrics.charts.subscriptionStatus")}
             description={t("subscriptionMetrics.charts.statusDescription", { defaultValue: "Current portfolio health across every subscription status." })}
@@ -453,7 +453,7 @@ export default function SubscriptionMetricsPage() {
           )}
         </section>
 
-        <section className="rounded-xl border border-border bg-card p-5 shadow-sm">
+        <section className="rounded-lg border border-border bg-card p-4">
           <PanelHeading
             title={t("subscriptionMetrics.charts.planCapacity", { defaultValue: "Plan mix and seat capacity" })}
             description={t("subscriptionMetrics.charts.planCapacityDescription", { defaultValue: "Compare adoption and licensed-seat usage across active plan tiers." })}
@@ -538,7 +538,7 @@ export default function SubscriptionMetricsPage() {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[0.7fr_1.3fr]">
-        <section className="rounded-xl border border-border bg-card p-5 shadow-sm">
+        <section className="rounded-lg border border-border bg-card p-4">
           <PanelHeading
             title={t("subscriptionMetrics.charts.billingCycle")}
             description={t("subscriptionMetrics.charts.billingCycleDescription", { defaultValue: "Renewal cadence across active and trial subscriptions." })}
@@ -578,7 +578,7 @@ export default function SubscriptionMetricsPage() {
           )}
         </section>
 
-        <section className="rounded-xl border border-border bg-card p-5 shadow-sm">
+        <section className="rounded-lg border border-border bg-card p-4">
           <PanelHeading
             title={t("subscriptionMetrics.charts.subscriptionChurn")}
             description={t("subscriptionMetrics.charts.churnDescription", { defaultValue: "Cancelled subscriptions recorded during the last 12 months." })}

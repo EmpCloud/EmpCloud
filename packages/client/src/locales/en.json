@@ -5085,6 +5085,7 @@
       "delete": "Delete",
       "assignEmployee": "Assign Employee"
     },
+    "statusLabel": "Position status",
     "status": {
       "active": "Active",
       "filled": "Filled",

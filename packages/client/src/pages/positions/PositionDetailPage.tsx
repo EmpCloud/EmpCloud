@@ -2,11 +2,22 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams, Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, UserPlus, X, Briefcase, AlertTriangle, MapPin, Pencil, Trash2, Save, Loader2 } from "lucide-react";
+import { UserPlus, X, Briefcase, AlertTriangle, MapPin, Pencil, Trash2, Save, Loader2, Users, History, CircleGauge } from "lucide-react";
 import { useDepartments } from "@/api/hooks";
 import api from "@/api/client";
 import { showToast } from "@/components/ui/Toast";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { Panel } from "@/components/ui/Panel";
+
+const controlClass =
+  "min-h-9 w-full rounded-md border border-border bg-card px-3 py-2 text-[13px] text-foreground outline-none transition-colors duration-150 placeholder:text-muted-foreground focus:border-brand-400 focus-visible:ring-2 focus-visible:ring-brand-500/30 disabled:cursor-not-allowed disabled:opacity-60";
+const labelClass = "mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-muted-foreground";
+const secondaryButtonClass =
+  "inline-flex min-h-9 items-center justify-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-[13px] font-medium text-foreground transition-colors duration-150 hover:border-brand-300 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:pointer-events-none disabled:opacity-50";
+const primaryButtonClass =
+  "inline-flex min-h-9 items-center justify-center gap-2 rounded-md bg-brand-600 px-3 py-2 text-[13px] font-medium text-white transition-colors duration-150 hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
 
 export default function PositionDetailPage() {
   const { t } = useTranslation();
@@ -177,12 +188,27 @@ export default function PositionDetailPage() {
   }, [data, searchParams]);
 
   if (isLoading) {
-    return <div className="flex items-center justify-center h-64"><div className="text-gray-400">{t("positionDetail.loading")}</div></div>;
+    return (
+      <div className="mx-auto max-w-[1600px] space-y-3" aria-busy="true" aria-label={t("positionDetail.loading")}>
+        <div className="h-16 animate-pulse rounded-lg border border-border bg-card" />
+        <div className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div key={index} className="h-28 animate-pulse rounded-lg border border-border bg-card" />
+          ))}
+        </div>
+        <div className="h-72 animate-pulse rounded-lg border border-border bg-card" />
+        <span className="sr-only">{t("positionDetail.loading")}</span>
+      </div>
+    );
   }
 
   const pos = data;
   if (!pos) {
-    return <div className="text-center py-12 text-gray-400">{t("positionDetail.notFound")}</div>;
+    return (
+      <Panel className="mx-auto max-w-[1600px]">
+        <EmptyState icon={Briefcase} title={t("positionDetail.notFound")} />
+      </Panel>
+    );
   }
 
   const activeAssignments = (pos.assignments || []).filter((a: any) => a.status === "active");
@@ -198,36 +224,50 @@ export default function PositionDetailPage() {
   };
 
   return (
-    <div>
-      <Link to="/positions/list" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-4">
-        <ArrowLeft className="h-4 w-4" /> {t("positionDetail.backToPositions")}
-      </Link>
-
-      <div className="flex items-start justify-between mb-6">
-        <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-gray-900">{pos.title}</h1>
-            {pos.is_critical && <AlertTriangle className="h-5 w-5 text-red-500" />}
-          </div>
-          <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
-            {pos.code && <span className="font-mono bg-gray-100 px-2 py-0.5 rounded">{pos.code}</span>}
-            {pos.department_name && <span>{pos.department_name}</span>}
-            {pos.location_name && (
-              <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{pos.location_name}</span>
+    <div className="mx-auto max-w-[1600px] space-y-3">
+      <PageHeader
+        icon={Briefcase}
+        title={
+          <span className="flex items-center gap-2">
+            <span className="truncate">{pos.title}</span>
+            {pos.is_critical && (
+              <span className="inline-flex shrink-0 items-center gap-1 rounded-md bg-red-50 px-2 py-1 text-[11px] font-medium text-red-700 dark:bg-red-950/40 dark:text-red-300">
+                <AlertTriangle aria-hidden="true" className="h-3.5 w-3.5" />
+                {t("positionDetail.editForm.criticalRole")}
+              </span>
             )}
+          </span>
+        }
+        description={pos.department_name || t("positionDetail.details.heading")}
+        backLink={{ to: "/positions/list", label: t("positionDetail.backToPositions") }}
+        meta={
+          <>
+            {pos.code && <span className="rounded-md bg-muted px-2 py-1 font-mono tabular-nums text-foreground">{pos.code}</span>}
+            {pos.location_name && (
+              <span className="inline-flex items-center gap-1">
+                <MapPin aria-hidden="true" className="h-3.5 w-3.5" />
+                {pos.location_name}
+              </span>
+            )}
+            <label className="sr-only" htmlFor="position-status">
+              {t("positionDetail.statusLabel", { defaultValue: "Position status" })}
+            </label>
             <select
+              id="position-status"
+              name="position_status"
               value={pos.status}
               onChange={(e) => {
-                if (e.target.value !== pos.status) {
-                  updateStatusMutation.mutate(e.target.value);
-                }
+                if (e.target.value !== pos.status) updateStatusMutation.mutate(e.target.value);
               }}
               disabled={updateStatusMutation.isPending}
-              className={`text-xs px-2 py-1 rounded-full font-medium border-0 cursor-pointer ${
-                pos.status === "active" ? "bg-green-50 text-green-700" :
-                pos.status === "filled" ? "bg-blue-50 text-blue-700" :
-                pos.status === "frozen" ? "bg-amber-50 text-amber-700" :
-                "bg-gray-100 text-gray-500"
+              className={`min-h-7 cursor-pointer rounded-md border px-2 py-1 text-[11px] font-semibold outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
+                pos.status === "active"
+                  ? "border-green-200 bg-green-50 text-green-700 dark:border-green-900/60 dark:bg-green-950/40 dark:text-green-300"
+                  : pos.status === "filled"
+                    ? "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900/60 dark:bg-blue-950/40 dark:text-blue-300"
+                    : pos.status === "frozen"
+                      ? "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300"
+                      : "border-border bg-muted text-muted-foreground"
               }`}
             >
               <option value="active">{t("positionDetail.status.active")}</option>
@@ -235,60 +275,64 @@ export default function PositionDetailPage() {
               <option value="frozen">{t("positionDetail.status.frozen")}</option>
               <option value="closed">{t("positionDetail.status.closed")}</option>
             </select>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => {
-              setEditForm({
-                title: pos.title || "",
-                department_id: pos.department_id ? String(pos.department_id) : "",
-                employment_type: pos.employment_type || "full_time",
-                headcount_budget: pos.headcount_budget != null ? String(pos.headcount_budget) : "1",
-                is_critical: pos.is_critical || false,
-                job_description: pos.job_description || "",
-                min_salary: pos.min_salary ? String(pos.min_salary) : "",
-                max_salary: pos.max_salary ? String(pos.max_salary) : "",
-                currency: pos.currency || "INR",
-              });
-              setShowEdit(!showEdit);
-            }}
-            className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50"
-          >
-            <Pencil className="h-4 w-4" />
-            {t("positionDetail.action.edit")}
-          </button>
-          <button
-            onClick={() => {
-              setShowDelete(true);
-              setDeleteError(null);
-            }}
-            className="inline-flex items-center gap-2 px-4 py-2 border border-red-300 text-red-600 text-sm font-medium rounded-lg hover:bg-red-50"
-          >
-            <Trash2 className="h-4 w-4" />
-            {t("positionDetail.action.delete")}
-          </button>
-          {(pos.status === "active" || pos.status === "filled") && pos.headcount_filled < pos.headcount_budget && (
+          </>
+        }
+        actions={
+          <>
             <button
-              onClick={() => setShowAssign(!showAssign)}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700"
+              type="button"
+              onClick={() => {
+                setEditForm({
+                  title: pos.title || "",
+                  department_id: pos.department_id ? String(pos.department_id) : "",
+                  employment_type: pos.employment_type || "full_time",
+                  headcount_budget: pos.headcount_budget != null ? String(pos.headcount_budget) : "1",
+                  is_critical: pos.is_critical || false,
+                  job_description: pos.job_description || "",
+                  min_salary: pos.min_salary ? String(pos.min_salary) : "",
+                  max_salary: pos.max_salary ? String(pos.max_salary) : "",
+                  currency: pos.currency || "INR",
+                });
+                setShowEdit(!showEdit);
+              }}
+              aria-expanded={showEdit}
+              className={secondaryButtonClass}
             >
-              <UserPlus className="h-4 w-4" />
-              {t("positionDetail.action.assignEmployee")}
+              <Pencil aria-hidden="true" className="h-4 w-4" />
+              {t("positionDetail.action.edit")}
             </button>
-          )}
-        </div>
-      </div>
+            <button
+              type="button"
+              onClick={() => {
+                setShowDelete(true);
+                setDeleteError(null);
+              }}
+              className="inline-flex min-h-9 items-center justify-center gap-2 rounded-md border border-red-200 bg-card px-3 py-2 text-[13px] font-medium text-red-600 transition-colors duration-150 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 dark:border-red-900/60 dark:text-red-300 dark:hover:bg-red-950/40"
+            >
+              <Trash2 aria-hidden="true" className="h-4 w-4" />
+              {t("positionDetail.action.delete")}
+            </button>
+            {(pos.status === "active" || pos.status === "filled") && pos.headcount_filled < pos.headcount_budget && (
+              <button type="button" onClick={() => setShowAssign(!showAssign)} aria-expanded={showAssign} className={primaryButtonClass}>
+                <UserPlus aria-hidden="true" className="h-4 w-4" />
+                {t("positionDetail.action.assignEmployee")}
+              </button>
+            )}
+          </>
+        }
+      />
 
       {/* Assign Form */}
       {showAssign && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t("positionDetail.assignForm.heading")}</h3>
-          <form onSubmit={handleAssign} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <Panel title={t("positionDetail.assignForm.heading")} icon={UserPlus} bodyClassName="p-4">
+          <form onSubmit={handleAssign} className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("positionDetail.assignForm.employeeLabel")}</label>
+              <label htmlFor="assign-employee-search" className={labelClass}>{t("positionDetail.assignForm.employeeLabel")}</label>
               <input
+                id="assign-employee-search"
+                name="employee_search"
                 type="text"
+                autoComplete="off"
                 value={userSearch}
                 onChange={(e) => {
                   setUserSearch(e.target.value);
@@ -298,7 +342,7 @@ export default function PositionDetailPage() {
                   if (assignForm.user_id) setAssignForm({ ...assignForm, user_id: "" });
                 }}
                 placeholder={t("positionDetail.assignForm.searchPlaceholder")}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 mb-2"
+                className={`${controlClass} mb-2`}
               />
               {/* #1547 — The user list was previously always rendered with every
                   user in the org, making it look like a dropdown "auto-opened".
@@ -306,9 +350,9 @@ export default function PositionDetailPage() {
                   character — or after a valid selection has been stored (so the
                   picked row stays visible). */}
               {(userSearch.trim().length > 0 || assignForm.user_id) && (
-                <div className="max-h-48 overflow-y-auto border border-gray-300 rounded-lg text-sm bg-white">
+                <div className="max-h-48 overflow-y-auto overscroll-contain rounded-md border border-border bg-card text-[13px]" role="listbox" aria-label={t("positionDetail.assignForm.employeeLabel")}>
                   {(usersData || []).length === 0 ? (
-                    <div className="px-3 py-2 text-gray-400">{t("positionDetail.assignForm.noUsersMatch")}</div>
+                    <div className="px-3 py-2 text-muted-foreground">{t("positionDetail.assignForm.noUsersMatch")}</div>
                   ) : (
                     (usersData || []).map((u: any) => {
                       const selected = String(u.id) === String(assignForm.user_id);
@@ -316,13 +360,15 @@ export default function PositionDetailPage() {
                         <button
                           type="button"
                           key={u.id}
+                          role="option"
+                          aria-selected={selected}
                           onClick={() => setAssignForm({ ...assignForm, user_id: String(u.id) })}
-                          className={`w-full text-left px-3 py-2 border-b border-gray-100 last:border-0 hover:bg-brand-50 ${
-                            selected ? "bg-brand-50 text-brand-700 font-medium" : "text-gray-700"
+                          className={`w-full border-b border-border px-3 py-2 text-left transition-colors duration-150 last:border-0 hover:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500 dark:hover:bg-brand-950/40 ${
+                            selected ? "bg-brand-50 font-medium text-brand-700 dark:bg-brand-950/40 dark:text-brand-300" : "text-foreground"
                           }`}
                         >
                           {u.first_name} {u.last_name}{" "}
-                          <span className="text-xs text-gray-400">({u.email})</span>
+                          <span className="text-[11px] text-muted-foreground">({u.email})</span>
                         </button>
                       );
                     })
@@ -333,51 +379,48 @@ export default function PositionDetailPage() {
               <input type="hidden" value={assignForm.user_id} required readOnly />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("positionDetail.assignForm.startDateLabel")}</label>
+              <label htmlFor="assign-start-date" className={labelClass}>{t("positionDetail.assignForm.startDateLabel")}</label>
               <input
+                id="assign-start-date"
+                name="start_date"
                 type="date"
                 value={assignForm.start_date}
                 onChange={(e) => setAssignForm({ ...assignForm, start_date: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className={controlClass}
                 required
               />
             </div>
             <div className="flex items-end gap-3">
-              <label className="flex items-center gap-2 text-sm text-gray-700">
+              <label className="flex min-h-9 cursor-pointer items-center gap-2 rounded-md px-2 text-[13px] text-foreground hover:bg-muted">
                 <input
                   type="checkbox"
                   checked={assignForm.is_primary}
                   onChange={(e) => setAssignForm({ ...assignForm, is_primary: e.target.checked })}
-                  className="h-4 w-4 text-brand-600 border-gray-300 rounded"
+                  className="h-4 w-4 rounded border-border text-brand-600 focus-visible:ring-2 focus-visible:ring-brand-500"
                 />
                 {t("positionDetail.assignForm.primaryPosition")}
               </label>
             </div>
             <div className="col-span-full flex gap-3">
-              <button
-                type="submit"
-                disabled={assignMutation.isPending}
-                className="px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 disabled:opacity-50"
-              >
+              <button type="submit" disabled={assignMutation.isPending} className={primaryButtonClass}>
                 {assignMutation.isPending ? t("positionDetail.assignForm.assigning") : t("positionDetail.assignForm.assign")}
               </button>
-              <button type="button" onClick={() => setShowAssign(false)} className="px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50">
+              <button type="button" onClick={() => setShowAssign(false)} className={secondaryButtonClass}>
                 {t("positionDetail.common.cancel")}
               </button>
             </div>
             {assignMutation.isError && (
-              <p className="col-span-full text-sm text-red-600">
+              <p className="col-span-full text-[13px] text-red-600 dark:text-red-300" role="alert">
                 {(assignMutation.error as any)?.response?.data?.error?.message || t("positionDetail.assignForm.assignFailedInline")}
               </p>
             )}
           </form>
-        </div>
+        </Panel>
       )}
 
       {/* Edit Form */}
       {showEdit && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t("positionDetail.editForm.heading")}</h3>
+        <Panel title={t("positionDetail.editForm.heading")} icon={Pencil} bodyClassName="p-4">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -398,24 +441,29 @@ export default function PositionDetailPage() {
                 currency: editForm.currency,
               });
             }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+            className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
           >
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("positionDetail.editForm.titleLabel")}</label>
+              <label htmlFor="edit-position-title" className={labelClass}>{t("positionDetail.editForm.titleLabel")}</label>
               <input
+                id="edit-position-title"
+                name="position_title"
                 type="text"
+                autoComplete="off"
                 value={editForm.title}
                 onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className={controlClass}
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("positionDetail.editForm.departmentLabel")}</label>
+              <label htmlFor="edit-position-department" className={labelClass}>{t("positionDetail.editForm.departmentLabel")}</label>
               <select
+                id="edit-position-department"
+                name="department_id"
                 value={editForm.department_id}
                 onChange={(e) => setEditForm({ ...editForm, department_id: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className={controlClass}
               >
                 <option value="">{t("positionDetail.editForm.departmentNone")}</option>
                 {(departments || []).map((d: any) => (
@@ -424,11 +472,13 @@ export default function PositionDetailPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("positionDetail.editForm.employmentTypeLabel")}</label>
+              <label htmlFor="edit-employment-type" className={labelClass}>{t("positionDetail.editForm.employmentTypeLabel")}</label>
               <select
+                id="edit-employment-type"
+                name="employment_type"
                 value={editForm.employment_type}
                 onChange={(e) => setEditForm({ ...editForm, employment_type: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className={controlClass}
               >
                 <option value="full_time">{t("positionDetail.employmentType.full_time")}</option>
                 <option value="part_time">{t("positionDetail.employmentType.part_time")}</option>
@@ -437,184 +487,176 @@ export default function PositionDetailPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("positionDetail.editForm.headcountBudgetLabel")}</label>
+              <label htmlFor="edit-headcount-budget" className={labelClass}>{t("positionDetail.editForm.headcountBudgetLabel")}</label>
               <input
+                id="edit-headcount-budget"
+                name="headcount_budget"
                 type="number"
+                inputMode="numeric"
                 value={editForm.headcount_budget}
                 onChange={(e) => setEditForm({ ...editForm, headcount_budget: e.target.value })}
                 min={1}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className={controlClass}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("positionDetail.editForm.minSalaryLabel")}</label>
+              <label htmlFor="edit-min-salary" className={labelClass}>{t("positionDetail.editForm.minSalaryLabel")}</label>
               <input
+                id="edit-min-salary"
+                name="min_salary"
                 type="number"
+                inputMode="decimal"
                 value={editForm.min_salary}
                 onChange={(e) => setEditForm({ ...editForm, min_salary: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className={controlClass}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("positionDetail.editForm.maxSalaryLabel")}</label>
+              <label htmlFor="edit-max-salary" className={labelClass}>{t("positionDetail.editForm.maxSalaryLabel")}</label>
               <input
+                id="edit-max-salary"
+                name="max_salary"
                 type="number"
+                inputMode="decimal"
                 value={editForm.max_salary}
                 onChange={(e) => setEditForm({ ...editForm, max_salary: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className={controlClass}
               />
             </div>
             <div className="col-span-full">
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("positionDetail.editForm.jobDescriptionLabel")}</label>
+              <label htmlFor="edit-job-description" className={labelClass}>{t("positionDetail.editForm.jobDescriptionLabel")}</label>
               <textarea
+                id="edit-job-description"
+                name="job_description"
                 value={editForm.job_description}
                 onChange={(e) => setEditForm({ ...editForm, job_description: e.target.value })}
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className={`${controlClass} resize-y`}
               />
             </div>
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="edit_is_critical"
-                checked={editForm.is_critical}
-                onChange={(e) => setEditForm({ ...editForm, is_critical: e.target.checked })}
-                className="h-4 w-4 text-brand-600 border-gray-300 rounded"
-              />
-              <label htmlFor="edit_is_critical" className="text-sm text-gray-700">{t("positionDetail.editForm.criticalRole")}</label>
-            </div>
+            <label className="flex min-h-9 cursor-pointer items-center gap-2 rounded-md px-2 text-[13px] text-foreground hover:bg-muted">
+              <input type="checkbox" id="edit_is_critical" checked={editForm.is_critical} onChange={(e) => setEditForm({ ...editForm, is_critical: e.target.checked })} className="h-4 w-4 rounded border-border text-brand-600 focus-visible:ring-2 focus-visible:ring-brand-500" />
+              {t("positionDetail.editForm.criticalRole")}
+            </label>
             <div className="col-span-full flex gap-3">
-              <button
-                type="submit"
-                disabled={updateMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 disabled:opacity-50"
-              >
-                <Save className="h-4 w-4" />
+              <button type="submit" disabled={updateMutation.isPending} className={primaryButtonClass}>
+                <Save aria-hidden="true" className="h-4 w-4" />
                 {updateMutation.isPending ? t("positionDetail.editForm.saving") : t("positionDetail.editForm.saveChanges")}
               </button>
-              <button
-                type="button"
-                onClick={() => setShowEdit(false)}
-                className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50"
-              >
+              <button type="button" onClick={() => setShowEdit(false)} className={secondaryButtonClass}>
                 {t("positionDetail.common.cancel")}
               </button>
             </div>
             {updateMutation.isError && (
-              <p className="col-span-full text-sm text-red-600">
+              <p className="col-span-full text-[13px] text-red-600 dark:text-red-300" role="alert">
                 {(updateMutation.error as any)?.response?.data?.error?.message || t("positionDetail.editForm.updateFailedInline")}
               </p>
             )}
           </form>
-        </div>
+        </Panel>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
         {/* Position Details */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="space-y-3 lg:col-span-2">
           {/* Info */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t("positionDetail.details.heading")}</h3>
-            <div className="grid grid-cols-2 gap-4 text-sm">
+          <Panel title={t("positionDetail.details.heading")} icon={CircleGauge} bodyClassName="p-4">
+            <dl className="grid grid-cols-1 gap-x-6 gap-y-4 text-[13px] sm:grid-cols-2">
               <div>
-                <span className="text-gray-500">{t("positionDetail.details.employmentType")}</span>
-                <p className="font-medium text-gray-900 capitalize mt-1">{t(`positionDetail.employmentType.${pos.employment_type}`, { defaultValue: (pos.employment_type || "").replace("_", " ") })}</p>
+                <dt className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{t("positionDetail.details.employmentType")}</dt>
+                <dd className="mt-1 font-medium capitalize text-foreground">{t(`positionDetail.employmentType.${pos.employment_type}`, { defaultValue: (pos.employment_type || "").replace("_", " ") })}</dd>
               </div>
               <div>
-                <span className="text-gray-500">{t("positionDetail.details.headcount")}</span>
-                <p className="font-medium text-gray-900 mt-1">{pos.headcount_filled} / {pos.headcount_budget}</p>
+                <dt className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{t("positionDetail.details.headcount")}</dt>
+                <dd className="mt-1 font-medium tabular-nums text-foreground">{pos.headcount_filled} / {pos.headcount_budget}</dd>
               </div>
               {(pos.min_salary || pos.max_salary) && (
                 <div>
-                  <span className="text-gray-500">{t("positionDetail.details.salaryRange")}</span>
-                  <p className="font-medium text-gray-900 mt-1">
+                  <dt className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{t("positionDetail.details.salaryRange")}</dt>
+                  <dd className="mt-1 font-medium tabular-nums text-foreground">
                     {pos.currency} {pos.min_salary ? (pos.min_salary / 100).toLocaleString() : "0"} - {pos.max_salary ? (pos.max_salary / 100).toLocaleString() : "0"}
-                  </p>
+                  </dd>
                 </div>
               )}
               {pos.reports_to && (
                 <div>
-                  <span className="text-gray-500">{t("positionDetail.details.reportsTo")}</span>
-                  <p className="font-medium text-gray-900 mt-1">
-                    <Link to={`/positions/${pos.reports_to.id}`} className="text-brand-600 hover:underline">
+                  <dt className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{t("positionDetail.details.reportsTo")}</dt>
+                  <dd className="mt-1 font-medium text-foreground">
+                    <Link to={`/positions/${pos.reports_to.id}`} className="rounded-sm text-brand-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-brand-400">
                       {pos.reports_to.title} ({pos.reports_to.code})
                     </Link>
-                  </p>
+                  </dd>
                 </div>
               )}
-            </div>
-          </div>
+            </dl>
+          </Panel>
 
           {/* Job Description */}
           {pos.job_description && (
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">{t("positionDetail.jobDescription.heading")}</h3>
-              <p className="text-sm text-gray-600 whitespace-pre-wrap">{pos.job_description}</p>
-            </div>
+            <Panel title={t("positionDetail.jobDescription.heading")} icon={Briefcase} bodyClassName="p-4">
+              <p className="whitespace-pre-wrap break-words text-[13px] leading-6 text-muted-foreground">{pos.job_description}</p>
+            </Panel>
           )}
 
           {/* Requirements */}
           {pos.requirements && (
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">{t("positionDetail.requirements.heading")}</h3>
-              <p className="text-sm text-gray-600 whitespace-pre-wrap">{pos.requirements}</p>
-            </div>
+            <Panel title={t("positionDetail.requirements.heading")} icon={AlertTriangle} bodyClassName="p-4">
+              <p className="whitespace-pre-wrap break-words text-[13px] leading-6 text-muted-foreground">{pos.requirements}</p>
+            </Panel>
           )}
         </div>
 
         {/* Sidebar — Assignments */}
-        <div className="space-y-6">
+        <div className="space-y-3">
           {/* Current Assignees */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              {t("positionDetail.assignees.heading", { count: activeAssignments.length })}
-            </h3>
+          <Panel title={t("positionDetail.assignees.heading", { count: activeAssignments.length })} icon={Users}>
             {activeAssignments.length === 0 ? (
-              <p className="text-sm text-gray-400">{t("positionDetail.assignees.noneAssigned")}</p>
+              <EmptyState icon={Users} title={t("positionDetail.assignees.noneAssigned")} className="py-8" />
             ) : (
-              <div className="space-y-3">
+              <div className="divide-y divide-border">
                 {activeAssignments.map((a: any) => (
-                  <div key={a.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-brand-100 flex items-center justify-center text-sm font-semibold text-brand-700">
+                  <div key={a.id} className="flex items-center justify-between gap-3 px-4 py-2.5">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div aria-hidden="true" className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-100 text-[11px] font-semibold text-brand-700 dark:bg-brand-950/50 dark:text-brand-300">
                         {a.first_name?.[0]}{a.last_name?.[0]}
                       </div>
-                      <div>
-                        <Link to={`/employees/${a.user_id}`} className="text-sm font-medium text-gray-900 hover:text-brand-600">
+                      <div className="min-w-0">
+                        <Link to={`/employees/${a.user_id}`} className="block truncate rounded-sm text-[13px] font-medium text-foreground hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:hover:text-brand-400">
                           {a.first_name} {a.last_name}
                         </Link>
-                        <p className="text-xs text-gray-500">{t("positionDetail.assignees.since", { date: new Date(a.start_date).toLocaleDateString() })}</p>
-                        {!a.is_primary && <span className="text-xs text-amber-600">{t("positionDetail.assignees.actingInterim")}</span>}
+                        <p className="truncate text-[11px] text-muted-foreground">{t("positionDetail.assignees.since", { date: new Date(a.start_date).toLocaleDateString() })}</p>
+                        {!a.is_primary && <span className="text-[11px] text-amber-600 dark:text-amber-300">{t("positionDetail.assignees.actingInterim")}</span>}
                       </div>
                     </div>
                     <button
+                      type="button"
                       onClick={() => setEndAssignmentId(a.id)}
-                      className="text-gray-400 hover:text-red-500"
+                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors duration-150 hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 dark:hover:bg-red-950/40 dark:hover:text-red-300"
                       title={t("positionDetail.assignees.endAssignmentTitle")}
+                      aria-label={t("positionDetail.assignees.endAssignmentTitle")}
                     >
-                      <X className="h-4 w-4" />
+                      <X aria-hidden="true" className="h-4 w-4" />
                     </button>
                   </div>
                 ))}
               </div>
             )}
-          </div>
+          </Panel>
 
           {/* Past Assignments */}
           {pastAssignments.length > 0 && (
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
-              <h3 className="text-sm font-semibold text-gray-700 mb-3">{t("positionDetail.history.heading")}</h3>
-              <div className="space-y-2">
+            <Panel title={t("positionDetail.history.heading")} icon={History}>
+              <div className="divide-y divide-border">
                 {pastAssignments.map((a: any) => (
-                  <div key={a.id} className="text-sm text-gray-500 flex items-center gap-2">
-                    <Briefcase className="h-3 w-3" />
-                    <span>
+                  <div key={a.id} className="flex items-start gap-2 px-4 py-2.5 text-[11px] text-muted-foreground">
+                    <Briefcase aria-hidden="true" className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                    <span className="min-w-0 break-words tabular-nums">
                       {a.first_name} {a.last_name} ({new Date(a.start_date).toLocaleDateString()} - {a.end_date ? new Date(a.end_date).toLocaleDateString() : t("positionDetail.history.dateRangeNA")})
                     </span>
                   </div>
                 ))}
               </div>
-            </div>
+            </Panel>
           )}
         </div>
       </div>
@@ -622,37 +664,41 @@ export default function PositionDetailPage() {
       {/* Delete confirmation modal */}
       {showDelete && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
           onClick={() => !deleteMutation.isPending && setShowDelete(false)}
         >
           <div
-            className="w-full max-w-md rounded-xl bg-white shadow-xl"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-position-title"
+            aria-describedby="delete-position-description"
+            className="w-full max-w-md overflow-hidden rounded-lg border border-border bg-card shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="px-6 py-5">
+            <div className="px-4 py-4">
               <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-50">
-                  <Trash2 className="h-5 w-5 text-red-600" />
+                <div aria-hidden="true" className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-300">
+                  <Trash2 className="h-5 w-5" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900">{t("positionDetail.delete.heading")}</h3>
-                  <p className="mt-1 text-sm text-gray-500">
+                  <h3 id="delete-position-title" className="text-base font-semibold text-foreground">{t("positionDetail.delete.heading")}</h3>
+                  <p id="delete-position-description" className="mt-1 text-[13px] text-muted-foreground">
                     {t("positionDetail.delete.body", { name: pos.title })}
                   </p>
                 </div>
               </div>
             </div>
             {deleteError && (
-              <div className="mx-6 mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+              <div className="mx-4 mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-[13px] text-red-700 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300" role="alert">
                 {deleteError}
               </div>
             )}
-            <div className="flex justify-end gap-3 rounded-b-xl border-t border-gray-100 bg-gray-50 px-6 py-4">
+            <div className="flex justify-end gap-2 border-t border-border bg-muted/40 px-4 py-3">
               <button
                 type="button"
                 onClick={() => setShowDelete(false)}
                 disabled={deleteMutation.isPending}
-                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-white disabled:opacity-50"
+                className={secondaryButtonClass}
               >
                 {t("positionDetail.common.cancel")}
               </button>
@@ -660,11 +706,11 @@ export default function PositionDetailPage() {
                 type="button"
                 onClick={() => deleteMutation.mutate()}
                 disabled={deleteMutation.isPending}
-                className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+                className="inline-flex min-h-9 items-center justify-center gap-2 rounded-md bg-red-600 px-3 py-2 text-[13px] font-medium text-white transition-colors duration-150 hover:bg-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
               >
                 {deleteMutation.isPending ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin" /> {t("positionDetail.delete.deleting")}
+                    <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" /> {t("positionDetail.delete.deleting")}
                   </>
                 ) : (
                   t("positionDetail.delete.confirm")

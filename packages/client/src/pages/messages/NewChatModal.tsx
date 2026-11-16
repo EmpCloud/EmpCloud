@@ -9,7 +9,8 @@
 // The employee list comes from the directory (GET /employees/directory),
 // debounced on search. The current user is excluded.
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import * as Dialog from "@radix-ui/react-dialog";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import type { ConversationSummary } from "@empcloud/shared";
@@ -67,7 +68,7 @@ function EmployeeListItem({
     <button
       onClick={onClick}
       className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors ${
-        selected ? "bg-brand-50" : "hover:bg-gray-50"
+        selected ? "bg-brand-50 dark:bg-brand-950/40" : "hover:bg-muted"
       }`}
     >
       <EmployeeAvatar
@@ -79,17 +80,17 @@ function EmployeeListItem({
         size="sm"
       />
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-gray-900 truncate">
+        <p className="truncate text-[13px] font-medium text-foreground">
           {emp.first_name} {emp.last_name}
         </p>
         {emp.designation && (
-          <p className="text-xs text-gray-400 truncate">{emp.designation}</p>
+          <p className="truncate text-xs text-muted-foreground">{emp.designation}</p>
         )}
       </div>
       {showCheckbox ? (
         <span
           className={`flex items-center justify-center h-5 w-5 rounded border flex-shrink-0 ${
-            selected ? "bg-brand-600 border-brand-600 text-white" : "border-gray-300"
+            selected ? "border-brand-600 bg-brand-600 text-white" : "border-border"
           }`}
         >
           {selected && <Check className="h-3.5 w-3.5" />}
@@ -114,19 +115,13 @@ export default function NewChatModal({
   const [groupName, setGroupName] = useState("");
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Debounce the search input (300ms) before it hits the API.
   useEffect(() => {
     const timer = setTimeout(() => setSearch(rawSearch.trim()), 300);
     return () => clearTimeout(timer);
   }, [rawSearch]);
-
-  // Close on Escape.
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
 
   const { data: employees, isLoading, isError } = useDirectory(search);
 
@@ -176,35 +171,44 @@ export default function NewChatModal({
   };
 
   return (
-    <div
-      className="fixed inset-0 z-[9998] flex items-center justify-center bg-black/40 p-4"
-      onClick={onClose}
-    >
-      <div
-        className="bg-white rounded-2xl shadow-xl w-full max-w-md flex flex-col max-h-[85vh]"
-        onClick={(e) => e.stopPropagation()}
+    <Dialog.Root open onOpenChange={(open) => !open && onClose()}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 z-[9998] bg-black/40" />
+        <Dialog.Content
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="new-chat-dialog-title"
+          aria-describedby={undefined}
+          onOpenAutoFocus={(event) => {
+            event.preventDefault();
+            searchInputRef.current?.focus();
+          }}
+          className="fixed left-1/2 top-1/2 z-[9998] flex max-h-[85vh] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-lg border border-border bg-card shadow-xl focus:outline-none"
       >
         {/* Header */}
         <div className="flex items-center justify-between px-5 pt-5 pb-3">
-          <h2 className="text-lg font-bold text-gray-900">{t("newChatModal.header.title")}</h2>
+          <Dialog.Title asChild>
+            <h2 id="new-chat-dialog-title" className="text-base font-semibold tracking-tight text-foreground">{t("newChatModal.header.title")}</h2>
+          </Dialog.Title>
           <button
+            type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100"
+            className="rounded-md p-1.5 text-muted-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
             aria-label={t("newChatModal.actions.close")}
           >
-            <X className="h-5 w-5" />
+            <X aria-hidden="true" className="h-5 w-5" />
           </button>
         </div>
 
         {/* Mode toggle */}
         <div className="px-5">
-          <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
+          <div className="flex gap-1 rounded-md bg-muted p-1">
             {(["direct", "group"] as const).map((m) => (
               <button
                 key={m}
                 onClick={() => setMode(m)}
                 className={`flex-1 px-3 py-1.5 rounded-md text-sm font-medium transition-colors capitalize ${
-                  mode === m ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
+                  mode === m ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {m === "group" ? t("newChatModal.mode.group") : t("newChatModal.mode.direct")}
@@ -217,12 +221,13 @@ export default function NewChatModal({
         {mode === "group" && (
           <div className="px-5 pt-4">
             <input
+              aria-label={t("newChatModal.group.namePlaceholder")}
               type="text"
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
               placeholder={t("newChatModal.group.namePlaceholder")}
               maxLength={120}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none transition-colors focus:border-brand-400 focus:ring-1 focus:ring-brand-200"
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-[13px] text-foreground transition-colors duration-150 focus-visible:border-brand-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
             />
           </div>
         )}
@@ -230,14 +235,15 @@ export default function NewChatModal({
         {/* Search */}
         <div className="px-5 pt-3 pb-2">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search aria-hidden="true" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
+              ref={searchInputRef}
+              aria-label={t("newChatModal.search.placeholder")}
               type="text"
               value={rawSearch}
               onChange={(e) => setRawSearch(e.target.value)}
               placeholder={t("newChatModal.search.placeholder")}
-              autoFocus
-              className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm outline-none transition-colors focus:border-brand-400 focus:ring-1 focus:ring-brand-200"
+              className="w-full rounded-md border border-border bg-background py-2 pl-9 pr-3 text-[13px] text-foreground transition-colors duration-150 focus-visible:border-brand-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
             />
           </div>
         </div>
@@ -245,7 +251,7 @@ export default function NewChatModal({
         {/* Employee list */}
         <div className="flex-1 overflow-y-auto px-3 pb-1 min-h-[12rem]">
           {isLoading ? (
-            <div className="flex items-center justify-center py-10 text-gray-400">
+            <div className="flex items-center justify-center py-10 text-muted-foreground">
               <Loader2 className="h-5 w-5 animate-spin" />
             </div>
           ) : isError ? (
@@ -253,7 +259,7 @@ export default function NewChatModal({
               {t("newChatModal.list.loadError")}
             </div>
           ) : list.length === 0 ? (
-            <div className="py-10 text-center text-sm text-gray-400">
+            <div className="py-10 text-center text-[13px] text-muted-foreground">
               {search ? t("newChatModal.list.emptySearch") : t("newChatModal.list.empty")}
             </div>
           ) : (
@@ -275,8 +281,8 @@ export default function NewChatModal({
 
         {/* Footer (group mode → create button) */}
         {mode === "group" && (
-          <div className="px-5 py-4 border-t border-gray-100 flex items-center justify-between gap-3">
-            <span className="text-xs text-gray-500">
+          <div className="flex items-center justify-between gap-3 border-t border-border px-4 py-3">
+            <span className="text-xs text-muted-foreground">
               {!groupName.trim() ? (
                 <span className="text-amber-600">{t("newChatModal.group.enterNameHint")}</span>
               ) : selectedIds.length < 2 ? (
@@ -288,6 +294,7 @@ export default function NewChatModal({
               )}
             </span>
             <button
+              type="button"
               onClick={createGroup}
               disabled={submitting || !groupName.trim() || selectedIds.length < 2}
               className="flex items-center gap-2 bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-40 disabled:cursor-not-allowed"
@@ -299,11 +306,12 @@ export default function NewChatModal({
         )}
 
         {mode === "direct" && submitting && (
-          <div className="px-5 py-3 border-t border-gray-100 flex items-center gap-2 text-sm text-gray-500">
+          <div className="flex items-center gap-2 border-t border-border px-4 py-3 text-[13px] text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" /> {t("newChatModal.direct.starting")}
           </div>
         )}
-      </div>
-    </div>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }

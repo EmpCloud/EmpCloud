@@ -89,7 +89,9 @@ export function MessageContextMenu({
       type="button"
       onClick={onClick}
       className={`flex w-full items-center gap-2.5 px-3 py-1.5 text-left text-sm ${
-        danger ? "text-red-600 hover:bg-red-50" : "text-gray-700 hover:bg-gray-50"
+        danger
+          ? "text-red-600 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-950/40"
+          : "text-foreground hover:bg-muted"
       }`}
     >
       {icon}
@@ -101,16 +103,16 @@ export function MessageContextMenu({
     <div
       ref={ref}
       style={{ left: pos.left, top: pos.top }}
-      className="fixed z-50 min-w-[180px] rounded-xl border border-gray-200 bg-white py-1 shadow-lg"
+      className="fixed z-50 min-w-[180px] rounded-lg border border-border bg-card py-1 shadow-lg"
     >
       {/* Quick reactions */}
-      <div className="flex items-center gap-0.5 px-2 pb-1.5 pt-1 border-b border-gray-100">
+      <div className="flex items-center gap-0.5 border-b border-border px-2 pb-1.5 pt-1">
         {QUICK_REACTIONS.map((e) => (
           <button
             key={e}
             type="button"
             onClick={() => run(() => actions.onReact(e))}
-            className="flex h-7 w-7 items-center justify-center rounded-full text-base hover:bg-gray-100"
+            className="flex h-7 w-7 items-center justify-center rounded-md text-base hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
           >
             {e}
           </button>

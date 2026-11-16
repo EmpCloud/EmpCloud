@@ -292,16 +292,16 @@ export default function SubscriptionsAdminPage() {
   });
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-4">
       <div>
-        <h1 className="text-pretty text-2xl font-bold text-foreground dark:text-gray-100">{t("subscriptionsAdmin.title")}</h1>
+        <h1 className="text-pretty text-xl font-semibold tracking-tight text-foreground">{t("subscriptionsAdmin.title")}</h1>
         <p className="mt-1 text-sm text-muted-foreground dark:text-muted-foreground">
           {t("subscriptionsAdmin.subtitle")}
         </p>
       </div>
 
       {/* Filters */}
-      <div className="rounded-xl border border-border bg-card p-4 dark:border-gray-700 dark:bg-gray-900">
+      <div className="rounded-lg border border-border bg-card p-4">
         <div className="flex flex-wrap items-end gap-3">
           <div className="flex-1 min-w-[200px]">
             <label htmlFor="subscription-org-search" className="mb-1 block text-xs font-medium text-muted-foreground">{t("subscriptionsAdmin.filters.searchOrg.label")}</label>
@@ -361,7 +361,7 @@ export default function SubscriptionsAdminPage() {
       </div>
 
       {/* Organization groups */}
-      <div className="overflow-hidden rounded-xl border border-border bg-card dark:border-gray-700 dark:bg-gray-900">
+      <div className="overflow-hidden rounded-lg border border-border bg-card">
         {listQ.isLoading ? (
           <div className="flex items-center justify-center py-12 text-sm text-muted-foreground" role="status" aria-live="polite">
             <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" /> {t("subscriptionsAdmin.loading")}
@@ -382,7 +382,7 @@ export default function SubscriptionsAdminPage() {
                 <col className="w-[8%]" />
                 <col className="w-[22%]" />
               </colgroup>
-              <thead className="border-b border-border bg-muted/60 text-[11px] uppercase tracking-wide text-muted-foreground dark:bg-gray-800/70">
+              <thead className="border-b border-border bg-muted/60 text-[11px] uppercase tracking-wide text-muted-foreground">
                 <tr>
                   <th className="px-4 py-2.5 text-left font-semibold">{t("subscriptionsAdmin.table.columns.module")}</th>
                   <th className="px-3 py-2.5 text-left font-semibold">{t("subscriptionsAdmin.table.columns.tier")}</th>
@@ -398,9 +398,9 @@ export default function SubscriptionsAdminPage() {
                 const country = group.rows[0]?.organization_country;
 
                 return (
-                  <tbody key={group.key} className="border-t-4 border-muted first:border-t-0 dark:border-gray-800">
+                  <tbody key={group.key} className="border-t-4 border-muted first:border-t-0">
                     <tr>
-                      <th colSpan={8} scope="rowgroup" className="bg-muted/35 px-4 py-3 text-left font-normal dark:bg-gray-800/45">
+                      <th colSpan={8} scope="rowgroup" className="bg-muted/35 px-4 py-3 text-left font-normal">
                         <AdminOrganizationGroupHeader
                           name={group.name || ""}
                           organizationId={group.id}
@@ -411,7 +411,7 @@ export default function SubscriptionsAdminPage() {
                       </th>
                     </tr>
                     {group.rows.map((r) => (
-                      <tr key={r.id} className="border-t border-border/70 align-middle transition-colors hover:bg-muted/25 dark:border-gray-800">
+                      <tr key={r.id} className="border-t border-border/70 align-middle transition-colors hover:bg-muted/25">
                         <td className="px-4 py-2.5 font-medium text-foreground">{r.module_name}</td>
                         <td className="px-3 py-2.5 capitalize text-muted-foreground">{r.plan_tier.replace(/_/g, " ")}</td>
                         <td className="px-3 py-2.5">
@@ -810,9 +810,9 @@ function BigModal({
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto">
-      <div className={`w-full ${small ? "max-w-md" : "max-w-3xl"} my-8 rounded-xl bg-card p-6 shadow-xl dark:bg-gray-900`}>
+      <div className={`my-8 w-full ${small ? "max-w-md" : "max-w-3xl"} rounded-lg border border-border bg-card p-4 shadow-xl`}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-foreground dark:text-gray-100">{title}</h3>
+          <h3 className="text-lg font-semibold text-foreground">{title}</h3>
           <button onClick={onClose} className="text-muted-foreground hover:text-muted-foreground">
             <X className="h-5 w-5" />
           </button>

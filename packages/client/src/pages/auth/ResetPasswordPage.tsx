@@ -6,8 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { resetPasswordSchema, type ResetPasswordInput } from "@empcloud/shared";
 import { useResetPassword } from "@/api/hooks";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
-import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { AuthPageShell } from "@/components/auth/AuthPageShell";
 
 interface FormValues {
   password: string;
@@ -62,93 +61,89 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <div className="absolute top-4 right-4 flex items-center gap-2">
-        <ThemeToggle />
-        <LanguageSwitcher />
-      </div>
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <img src="/empcloud-logo.png" alt="EmpCloud" className="h-12 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-foreground">
-            {t("auth.resetPasswordTitle")}
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            {t("auth.resetPasswordDescription")}
-          </p>
-        </div>
-
-        <div className="bg-card rounded-xl shadow-sm border border-border p-8 space-y-5">
+    <AuthPageShell
+      title={t("auth.resetPasswordTitle")}
+      description={t("auth.resetPasswordDescription")}
+    >
           {!token ? (
             <div className="space-y-4">
-              <div className="bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200 text-sm px-4 py-3 rounded-lg">
+              <div role="alert" className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2.5 text-[13px] text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-200">
                 {t("auth.missingResetToken")}
               </div>
               <Link
                 to="/forgot-password"
-                className="inline-flex items-center gap-1.5 text-sm text-brand-600 dark:text-brand-400 hover:text-brand-700 font-medium"
+                className="inline-flex min-h-10 items-center gap-1.5 rounded-md px-2 text-[13px] font-medium text-brand-600 transition-colors duration-150 hover:bg-brand-50 hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-brand-400 dark:hover:bg-brand-950/40"
               >
-                <ArrowLeft className="h-4 w-4" /> {t("auth.forgotPasswordTitle")}
+                <ArrowLeft aria-hidden="true" className="h-4 w-4" /> {t("auth.forgotPasswordTitle")}
               </Link>
             </div>
           ) : (
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
               {error && (
-                <div className="bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 text-sm px-4 py-3 rounded-lg">
+                <div role="alert" className="rounded-md border border-red-200 bg-red-50 px-3 py-2.5 text-[13px] text-red-700 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300">
                   {error}
                 </div>
               )}
 
               <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1">
+                <label htmlFor="reset-password" className="mb-1.5 block text-[13px] font-medium text-foreground">
                   {t("auth.newPassword")}
                 </label>
                 <div className="relative">
                   <input
+                    id="reset-password"
                     type={showPassword ? "text" : "password"}
+                    autoComplete="new-password"
                     {...register("password")}
-                    className="bg-card text-foreground w-full px-3 py-2 pr-10 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                    aria-invalid={Boolean(errors.password)}
+                    aria-describedby={errors.password ? "reset-password-error" : undefined}
+                    className="h-10 w-full rounded-md border border-border bg-card px-3 pr-11 text-[13px] text-foreground outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-muted-foreground hover:border-brand-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
                     placeholder={t("auth.newPassword")}
-                    autoFocus
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-pressed={showPassword}
+                    className="absolute right-1 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                   >
                     {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
+                      <EyeOff aria-hidden="true" className="h-4 w-4" />
                     ) : (
-                      <Eye className="h-4 w-4" />
+                      <Eye aria-hidden="true" className="h-4 w-4" />
                     )}
                   </button>
                 </div>
                 {errors.password && (
-                  <p className="text-red-500 text-xs mt-1">
+                  <p id="reset-password-error" className="mt-1 text-xs text-red-600 dark:text-red-400">
                     {errors.password.message}
                   </p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1">
+                <label htmlFor="reset-password-confirm" className="mb-1.5 block text-[13px] font-medium text-foreground">
                   {t("auth.confirmPassword")}
                 </label>
                 <input
+                  id="reset-password-confirm"
                   type={showPassword ? "text" : "password"}
+                  autoComplete="new-password"
                   {...register("confirmPassword")}
-                  className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                  aria-invalid={Boolean(errors.confirmPassword) || Boolean(password && watch("confirmPassword") && password !== watch("confirmPassword"))}
+                  aria-describedby={errors.confirmPassword ? "reset-password-confirm-error" : undefined}
+                  className="h-10 w-full rounded-md border border-border bg-card px-3 text-[13px] text-foreground outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-muted-foreground hover:border-brand-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
                   placeholder={t("auth.confirmPassword")}
                 />
                 {errors.confirmPassword && (
-                  <p className="text-red-500 text-xs mt-1">
+                  <p id="reset-password-confirm-error" className="mt-1 text-xs text-red-600 dark:text-red-400">
                     {errors.confirmPassword.message}
                   </p>
                 )}
                 {password &&
                   watch("confirmPassword") &&
                   password !== watch("confirmPassword") && (
-                    <p className="text-red-500 text-xs mt-1">
+                    <p className="mt-1 text-xs text-red-600 dark:text-red-400">
                       {t("auth.passwordsDontMatch")}
                     </p>
                   )}
@@ -157,7 +152,7 @@ export default function ResetPasswordPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-brand-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 transition-colors"
+                className="flex h-10 w-full items-center justify-center rounded-md bg-brand-600 px-4 text-[13px] font-semibold text-white transition-colors duration-150 hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isSubmitting
                   ? t("auth.resettingPassword")
@@ -166,14 +161,12 @@ export default function ResetPasswordPage() {
 
               <Link
                 to="/login"
-                className="flex items-center justify-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+                className="flex min-h-10 items-center justify-center gap-1.5 rounded-md text-[13px] text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
               >
-                <ArrowLeft className="h-4 w-4" /> {t("auth.backToLogin")}
+                <ArrowLeft aria-hidden="true" className="h-4 w-4" /> {t("auth.backToLogin")}
               </Link>
             </form>
           )}
-        </div>
-      </div>
-    </div>
+    </AuthPageShell>
   );
 }

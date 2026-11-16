@@ -76,11 +76,11 @@ export default function RevenueAnalyticsPage() {
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-amber-50 dark:bg-amber-950/40 flex items-center justify-center">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-50 dark:bg-amber-950/40">
             <BarChart3 className="h-5 w-5 text-amber-600 dark:text-amber-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">{t("revenueAnalytics.title")}</h1>
+            <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("revenueAnalytics.title")}</h1>
             <p className="text-muted-foreground mt-0.5 text-sm">
               {t("revenueAnalytics.subtitle")}
             </p>
@@ -90,7 +90,7 @@ export default function RevenueAnalyticsPage() {
 
       {/* Top Revenue Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-card rounded-xl border border-border p-6">
+        <div className="rounded-lg border border-border bg-card p-3 transition-colors duration-150 hover:border-brand-400">
           <div className="flex items-start justify-between">
             <div className="h-10 w-10 rounded-lg bg-green-50 dark:bg-green-950/40 flex items-center justify-center">
               <TrendingUp className="h-5 w-5 text-green-600 dark:text-green-400" />
@@ -106,23 +106,23 @@ export default function RevenueAnalyticsPage() {
               </span>
             )}
           </div>
-          <p className="text-2xl font-bold text-foreground mt-3">{formatINR(revenue?.mrr ?? 0)}</p>
+          <p className="mt-3 text-2xl font-semibold tabular-nums text-foreground">{formatINR(revenue?.mrr ?? 0)}</p>
           <p className="text-sm text-muted-foreground mt-1">{t("revenueAnalytics.stats.mrr")}</p>
         </div>
 
-        <div className="bg-card rounded-xl border border-border p-6">
+        <div className="rounded-lg border border-border bg-card p-3 transition-colors duration-150 hover:border-brand-400">
           <div className="h-10 w-10 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 flex items-center justify-center">
             <DollarSign className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
           </div>
-          <p className="text-2xl font-bold text-foreground mt-3">{formatINR(revenue?.arr ?? 0)}</p>
+          <p className="mt-3 text-2xl font-semibold tabular-nums text-foreground">{formatINR(revenue?.arr ?? 0)}</p>
           <p className="text-sm text-muted-foreground mt-1">{t("revenueAnalytics.stats.arr")}</p>
         </div>
 
-        <div className="bg-card rounded-xl border border-border p-6">
+        <div className="rounded-lg border border-border bg-card p-3 transition-colors duration-150 hover:border-brand-400">
           <div className="h-10 w-10 rounded-lg bg-purple-50 dark:bg-purple-950/40 flex items-center justify-center">
             <Calendar className="h-5 w-5 text-purple-600 dark:text-purple-400" />
           </div>
-          <p className="text-2xl font-bold text-foreground mt-3">
+          <p className="mt-3 text-2xl font-semibold tabular-nums text-foreground">
             {subscriptions?.overall_utilization ?? 0}%
           </p>
           <p className="text-sm text-muted-foreground mt-1">{t("revenueAnalytics.stats.seatUtilization")}</p>
@@ -134,11 +134,11 @@ export default function RevenueAnalyticsPage() {
           </p>
         </div>
 
-        <div className="bg-card rounded-xl border border-border p-6">
+        <div className="rounded-lg border border-border bg-card p-3 transition-colors duration-150 hover:border-brand-400">
           <div className="h-10 w-10 rounded-lg bg-amber-50 dark:bg-amber-950/40 flex items-center justify-center">
             <BarChart3 className="h-5 w-5 text-amber-600 dark:text-amber-400" />
           </div>
-          <p className="text-2xl font-bold text-foreground mt-3">
+          <p className="mt-3 text-2xl font-semibold tabular-nums text-foreground">
             {(revenue?.top_customers || []).length}
           </p>
           <p className="text-sm text-muted-foreground mt-1">{t("revenueAnalytics.stats.payingCustomers")}</p>
@@ -148,8 +148,8 @@ export default function RevenueAnalyticsPage() {
       {/* Revenue Trend + Revenue by Module */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Monthly Revenue Trend */}
-        <div className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-lg font-semibold text-foreground mb-4">{t("revenueAnalytics.charts.revenueTrend.title")}</h2>
+        <div className="rounded-lg border border-border bg-card p-4">
+          <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("revenueAnalytics.charts.revenueTrend.title")}</h2>
           {revenue?.revenue_trend?.length > 0 ? (
             <ResponsiveContainer width="100%" height={320}>
               <LineChart data={revenue.revenue_trend}>
@@ -175,8 +175,8 @@ export default function RevenueAnalyticsPage() {
         </div>
 
         {/* Revenue by Module */}
-        <div className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-lg font-semibold text-foreground mb-4">{t("revenueAnalytics.charts.revenueByModule.title")}</h2>
+        <div className="rounded-lg border border-border bg-card p-4">
+          <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("revenueAnalytics.charts.revenueByModule.title")}</h2>
           {revenue?.revenue_by_module?.length > 0 ? (
             <ResponsiveContainer width="100%" height={320}>
               <BarChart data={revenue.revenue_by_module}>
@@ -198,8 +198,8 @@ export default function RevenueAnalyticsPage() {
       {/* Revenue by Tier + Billing Cycle */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Revenue by Plan Tier (Pie) */}
-        <div className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-lg font-semibold text-foreground mb-4">{t("revenueAnalytics.charts.revenueByTier.title")}</h2>
+        <div className="rounded-lg border border-border bg-card p-4">
+          <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("revenueAnalytics.charts.revenueByTier.title")}</h2>
           {revenue?.revenue_by_tier?.length > 0 ? (
             <div className="flex items-center gap-6">
               <ResponsiveContainer width="60%" height={280}>
@@ -245,8 +245,8 @@ export default function RevenueAnalyticsPage() {
         </div>
 
         {/* Billing Cycle Distribution */}
-        <div className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-lg font-semibold text-foreground mb-4">{t("revenueAnalytics.charts.billingCycle.title")}</h2>
+        <div className="rounded-lg border border-border bg-card p-4">
+          <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("revenueAnalytics.charts.billingCycle.title")}</h2>
           {revenue?.billing_cycle_distribution?.length > 0 ? (
             <div className="space-y-4 pt-4">
               {revenue.billing_cycle_distribution.map((cycle: any) => {
@@ -268,7 +268,7 @@ export default function RevenueAnalyticsPage() {
                     </div>
                     <div className="h-3 rounded-full bg-muted overflow-hidden">
                       <div
-                        className="h-full rounded-full bg-indigo-500 transition-all"
+                        className="h-full rounded-full bg-indigo-500 transition-[width] duration-300"
                         style={{ width: `${pct}%` }}
                       />
                     </div>
@@ -286,8 +286,8 @@ export default function RevenueAnalyticsPage() {
       </div>
 
       {/* Top 10 Customers */}
-      <div className="bg-card rounded-xl border border-border p-6">
-        <h2 className="text-lg font-semibold text-foreground mb-4">{t("revenueAnalytics.topCustomers.title")}</h2>
+      <div className="rounded-lg border border-border bg-card p-4">
+        <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("revenueAnalytics.topCustomers.title")}</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>

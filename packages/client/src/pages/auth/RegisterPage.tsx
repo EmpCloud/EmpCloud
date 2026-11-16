@@ -7,6 +7,11 @@ import { registerSchema, type RegisterInput } from "@empcloud/shared";
 import { useRegister } from "@/api/hooks";
 import { useAuthStore } from "@/lib/auth-store";
 import { Eye, EyeOff } from "lucide-react";
+import { AuthPageShell } from "@/components/auth/AuthPageShell";
+
+const fieldClassName =
+  "h-10 w-full rounded-md border border-border bg-card px-3 text-[13px] text-foreground outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-muted-foreground hover:border-brand-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20";
+const labelClassName = "mb-1.5 block text-[13px] font-medium text-foreground";
 
 export default function RegisterPage() {
   const { t } = useTranslation();
@@ -44,86 +49,95 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4 py-12">
-      <div className="w-full max-w-lg">
-        <div className="text-center mb-8">
-          <img src="/empcloud-logo.png" alt="EmpCloud" className="h-12 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-foreground">{t("registerPage.header.title")}</h1>
-          <p className="text-sm text-muted-foreground mt-1">{t("registerPage.header.subtitle")}</p>
-        </div>
-
-        <form onSubmit={handleSubmit(onSubmit)} className="bg-card rounded-xl shadow-sm border border-border p-8 space-y-5">
+    <AuthPageShell
+      title={t("registerPage.header.title")}
+      description={t("registerPage.header.subtitle")}
+      maxWidth="lg"
+    >
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
           {error && (
-            <div className="bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 text-sm px-4 py-3 rounded-lg">{error}</div>
+            <div role="alert" className="rounded-md border border-red-200 bg-red-50 px-3 py-2.5 text-[13px] text-red-700 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300">{error}</div>
           )}
 
-          <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">{t("registerPage.section.organization")}</h3>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="col-span-2">
-              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("registerPage.field.companyName.label")}</label>
-              <input {...register("org_name")} className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none" placeholder={t("registerPage.field.companyName.placeholder")} />
-              {errors.org_name && <p className="text-red-500 text-xs mt-1">{errors.org_name.message}</p>}
+          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("registerPage.section.organization")}</h2>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="sm:col-span-2">
+              <label htmlFor="register-org-name" className={labelClassName}>{t("registerPage.field.companyName.label")}</label>
+              <input
+                id="register-org-name"
+                autoComplete="organization"
+                {...register("org_name")}
+                aria-invalid={Boolean(errors.org_name)}
+                aria-describedby={errors.org_name ? "register-org-name-error" : undefined}
+                className={fieldClassName}
+                placeholder={t("registerPage.field.companyName.placeholder")}
+              />
+              {errors.org_name && <p id="register-org-name-error" className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.org_name.message}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("registerPage.field.country.label")}</label>
-              <input {...register("org_country")} className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none" placeholder="IN" />
+              <label htmlFor="register-org-country" className={labelClassName}>{t("registerPage.field.country.label")}</label>
+              <input id="register-org-country" autoComplete="country" {...register("org_country")} className={fieldClassName} placeholder="IN" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("registerPage.field.state.label")}</label>
-              <input {...register("org_state")} className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none" placeholder="Karnataka" />
+              <label htmlFor="register-org-state" className={labelClassName}>{t("registerPage.field.state.label")}</label>
+              <input id="register-org-state" autoComplete="address-level1" {...register("org_state")} className={fieldClassName} placeholder="Karnataka" />
             </div>
           </div>
 
           <hr className="border-border" />
-          <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">{t("registerPage.section.adminAccount")}</h3>
-          <div className="grid grid-cols-2 gap-4">
+          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("registerPage.section.adminAccount")}</h2>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("registerPage.field.firstName.label")}</label>
-              <input {...register("first_name")} className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none" />
-              {errors.first_name && <p className="text-red-500 text-xs mt-1">{errors.first_name.message}</p>}
+              <label htmlFor="register-first-name" className={labelClassName}>{t("registerPage.field.firstName.label")}</label>
+              <input id="register-first-name" autoComplete="given-name" {...register("first_name")} aria-invalid={Boolean(errors.first_name)} aria-describedby={errors.first_name ? "register-first-name-error" : undefined} className={fieldClassName} />
+              {errors.first_name && <p id="register-first-name-error" className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.first_name.message}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("registerPage.field.lastName.label")}</label>
-              <input {...register("last_name")} className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none" />
-              {errors.last_name && <p className="text-red-500 text-xs mt-1">{errors.last_name.message}</p>}
+              <label htmlFor="register-last-name" className={labelClassName}>{t("registerPage.field.lastName.label")}</label>
+              <input id="register-last-name" autoComplete="family-name" {...register("last_name")} aria-invalid={Boolean(errors.last_name)} aria-describedby={errors.last_name ? "register-last-name-error" : undefined} className={fieldClassName} />
+              {errors.last_name && <p id="register-last-name-error" className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.last_name.message}</p>}
             </div>
-            <div className="col-span-2">
-              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("registerPage.field.email.label")}</label>
-              <input type="email" {...register("email")} className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none" placeholder={t("registerPage.field.email.placeholder")} />
-              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+            <div className="sm:col-span-2">
+              <label htmlFor="register-email" className={labelClassName}>{t("registerPage.field.email.label")}</label>
+              <input id="register-email" type="email" autoComplete="email" spellCheck={false} {...register("email")} aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? "register-email-error" : undefined} className={fieldClassName} placeholder={t("registerPage.field.email.placeholder")} />
+              {errors.email && <p id="register-email-error" className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.email.message}</p>}
             </div>
-            <div className="col-span-2">
-              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("registerPage.field.password.label")}</label>
+            <div className="sm:col-span-2">
+              <label htmlFor="register-password" className={labelClassName}>{t("registerPage.field.password.label")}</label>
               <div className="relative">
                 <input
+                  id="register-password"
                   type={showPassword ? "text" : "password"}
+                  autoComplete="new-password"
                   {...register("password")}
-                  className="bg-card text-foreground w-full px-3 py-2 pr-10 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                  aria-invalid={Boolean(errors.password)}
+                  aria-describedby={errors.password ? "register-password-error" : undefined}
+                  className={`${fieldClassName} pr-11`}
                   placeholder={t("registerPage.field.password.placeholder")}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-muted-foreground"
+                  className="absolute right-1 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                   aria-label={showPassword ? t("registerPage.password.hideAriaLabel") : t("registerPage.password.showAriaLabel")}
+                  aria-pressed={showPassword}
                 >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showPassword ? <EyeOff aria-hidden="true" className="h-4 w-4" /> : <Eye aria-hidden="true" className="h-4 w-4" />}
                 </button>
               </div>
-              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
+              {errors.password && <p id="register-password-error" className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.password.message}</p>}
             </div>
           </div>
 
-          <button type="submit" disabled={isSubmitting} className="w-full bg-brand-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 transition-colors">
+          <button type="submit" disabled={isSubmitting} className="flex h-10 w-full items-center justify-center rounded-md bg-brand-600 px-4 text-[13px] font-semibold text-white transition-colors duration-150 hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60">
             {isSubmitting ? t("registerPage.submit.creating") : t("registerPage.submit.default")}
           </button>
 
-          <p className="text-center text-sm text-muted-foreground">
+          <p className="text-center text-[13px] text-muted-foreground">
             {t("registerPage.footer.alreadyHaveAccount")}{" "}
-            <Link to="/login" className="text-brand-600 dark:text-brand-400 hover:text-brand-700 font-medium">{t("registerPage.footer.signIn")}</Link>
+            <Link to="/login" className="rounded-sm font-medium text-brand-600 hover:text-brand-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-brand-400">{t("registerPage.footer.signIn")}</Link>
           </p>
         </form>
-      </div>
-    </div>
+    </AuthPageShell>
   );
 }

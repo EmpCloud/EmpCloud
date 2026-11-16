@@ -89,7 +89,7 @@ function OverallStatusBanner({ status }: { status: SanityReport["overall_status"
   }[status];
 
   return (
-    <div className={`flex items-center gap-4 p-5 rounded-xl border ${cfg.bg}`}>
+    <div className={`flex items-center gap-3 rounded-lg border p-4 ${cfg.bg}`}>
       {cfg.icon}
       <div>
         <h2 className={`text-lg font-semibold ${cfg.text}`}>{cfg.title}</h2>
@@ -218,7 +218,7 @@ function ConfirmFixDialog({
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-card rounded-xl shadow-xl max-w-md w-full mx-4 p-6">
+      <div className="mx-4 w-full max-w-md rounded-lg border border-border bg-card p-4 shadow-xl">
         <div className="flex items-center gap-3 mb-4">
           <div className="h-10 w-10 rounded-full bg-amber-100 dark:bg-amber-950/40 flex items-center justify-center">
             <Wrench className="h-5 w-5 text-amber-600 dark:text-amber-400" />
@@ -264,7 +264,7 @@ function ConfirmFixDialog({
 function FixResultsBanner({ report }: { report: FixReport }) {
   const { t } = useTranslation();
   return (
-    <div className="bg-blue-50 dark:bg-blue-950/40 border border-blue-200 rounded-xl p-4">
+    <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-900/60 dark:bg-blue-950/40">
       <h3 className="text-sm font-semibold text-blue-800 mb-2">
         {t("dataSanity.fixResults.title", { count: report.total_fixes })}
       </h3>
@@ -344,7 +344,7 @@ export default function DataSanityPage() {
           <div className="flex items-center gap-2">
             <DatabaseZap className="h-6 w-6 text-brand-600 dark:text-brand-400" />
             <div>
-              <h1 className="text-xl font-bold text-foreground">{t("dataSanity.title")}</h1>
+              <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("dataSanity.title")}</h1>
               <p className="text-sm text-muted-foreground">{t("dataSanity.subtitle")}</p>
             </div>
           </div>
@@ -373,7 +373,7 @@ export default function DataSanityPage() {
 
       {/* Loading state */}
       {(isLoading || isFetching) && !report && (
-        <div className="bg-card rounded-xl border border-border p-12 text-center">
+        <div className="rounded-lg border border-border bg-card p-10 text-center">
           <RefreshCw className="h-10 w-10 text-brand-500 animate-spin mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-foreground mb-1">{t("dataSanity.loading.title")}</h3>
           <p className="text-sm text-muted-foreground">
@@ -384,7 +384,7 @@ export default function DataSanityPage() {
 
       {/* Empty state */}
       {!isLoading && !isFetching && !report && (
-        <div className="bg-card rounded-xl border border-border p-12 text-center">
+        <div className="rounded-lg border border-border bg-card p-10 text-center">
           <Shield className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-foreground mb-1">{t("dataSanity.empty.title")}</h3>
           <p className="text-sm text-muted-foreground mb-4">
@@ -411,20 +411,20 @@ export default function DataSanityPage() {
 
           {/* Summary cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-card rounded-xl border border-border p-4 text-center">
-              <p className="text-2xl font-bold text-foreground">{report.summary.total_checks}</p>
+            <div className="rounded-lg border border-border bg-card p-3 text-center transition-colors duration-150 hover:border-brand-400">
+              <p className="text-2xl font-semibold tabular-nums text-foreground">{report.summary.total_checks}</p>
               <p className="text-xs text-muted-foreground mt-1">{t("dataSanity.summary.totalChecks")}</p>
             </div>
-            <div className="bg-card rounded-xl border border-border p-4 text-center">
-              <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{report.summary.passed}</p>
+            <div className="rounded-lg border border-border bg-card p-3 text-center transition-colors duration-150 hover:border-brand-400">
+              <p className="text-2xl font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">{report.summary.passed}</p>
               <p className="text-xs text-muted-foreground mt-1">{t("dataSanity.summary.passed")}</p>
             </div>
-            <div className="bg-card rounded-xl border border-border p-4 text-center">
-              <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">{report.summary.warnings}</p>
+            <div className="rounded-lg border border-border bg-card p-3 text-center transition-colors duration-150 hover:border-brand-400">
+              <p className="text-2xl font-semibold tabular-nums text-amber-600 dark:text-amber-400">{report.summary.warnings}</p>
               <p className="text-xs text-muted-foreground mt-1">{t("dataSanity.summary.warnings")}</p>
             </div>
-            <div className="bg-card rounded-xl border border-border p-4 text-center">
-              <p className="text-2xl font-bold text-red-600 dark:text-red-400">{report.summary.failures}</p>
+            <div className="rounded-lg border border-border bg-card p-3 text-center transition-colors duration-150 hover:border-brand-400">
+              <p className="text-2xl font-semibold tabular-nums text-red-600 dark:text-red-400">{report.summary.failures}</p>
               <p className="text-xs text-muted-foreground mt-1">{t("dataSanity.summary.failures")}</p>
             </div>
           </div>

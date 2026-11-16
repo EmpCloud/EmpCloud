@@ -30,7 +30,7 @@ export function ReactionPills({
           className={`flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-xs transition-colors ${
             r.reacted
               ? "border-brand-300 bg-brand-50 text-brand-700"
-              : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
+              : "border-border bg-card text-muted-foreground hover:bg-muted"
           }`}
         >
           <span className="leading-none">{r.emoji}</span>
@@ -44,7 +44,7 @@ export function ReactionPills({
 /** The hover quick-picker (a tiny popover of emojis to add a reaction). */
 export function ReactionPicker({ onPick }: { onPick: (emoji: string) => void }) {
   return (
-    <div className="flex items-center gap-0.5 rounded-full border border-gray-200 bg-white px-1 py-0.5 shadow-sm">
+    <div className="flex items-center gap-0.5 rounded-md border border-border bg-card px-1 py-0.5 shadow-sm">
       {QUICK_REACTIONS.map((e) => (
         <button
           key={e}
@@ -53,7 +53,7 @@ export function ReactionPicker({ onPick }: { onPick: (emoji: string) => void }) 
             ev.preventDefault();
             onPick(e);
           }}
-          className="flex h-6 w-6 items-center justify-center rounded-full text-sm hover:bg-gray-100"
+          className="flex h-6 w-6 items-center justify-center rounded-md text-sm hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
         >
           {e}
         </button>

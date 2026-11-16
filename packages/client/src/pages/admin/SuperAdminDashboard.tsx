@@ -65,7 +65,7 @@ function StatCard({
   trendValue?: string;
 }) {
   return (
-    <div className="bg-card rounded-xl border border-border p-6 hover:shadow-md transition-shadow">
+    <div className="rounded-lg border border-border bg-card p-3 transition-colors duration-150 hover:border-brand-400">
       <div className="flex items-start justify-between">
         <div className={`h-12 w-12 rounded-lg ${color} flex items-center justify-center`}>
           <Icon className="h-6 w-6" />
@@ -90,7 +90,7 @@ function StatCard({
         )}
       </div>
       <div className="mt-4">
-        <p className="text-2xl font-bold text-foreground">{value}</p>
+        <p className="text-2xl font-semibold tabular-nums text-foreground">{value}</p>
         <p className="text-sm text-muted-foreground mt-1">{label}</p>
         {subtitle && <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>}
       </div>
@@ -132,7 +132,7 @@ function QuickLinkCard({
   return (
     <Link
       to={to}
-      className="flex items-center gap-4 p-4 bg-card rounded-xl border border-border hover:border-border hover:shadow-sm transition-all group"
+      className="group flex items-center gap-3 rounded-lg border border-border bg-card p-3 transition-colors duration-150 hover:border-brand-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
     >
       <div className={`h-10 w-10 rounded-lg ${color} flex items-center justify-center shrink-0`}>
         <Icon className="h-5 w-5" />
@@ -216,11 +216,11 @@ export default function SuperAdminDashboard() {
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-amber-400 to-amber-600">
             <Crown className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">{t("superAdminDashboard.title")}</h1>
+            <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("superAdminDashboard.title")}</h1>
             <p className="text-muted-foreground mt-0.5 text-sm">
               {t("superAdminDashboard.subtitle")}
             </p>
@@ -326,9 +326,9 @@ export default function SuperAdminDashboard() {
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Revenue Trend (Line) */}
-        <div className="bg-card rounded-xl border border-border p-6">
+        <div className="rounded-lg border border-border bg-card p-4">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-foreground">{t("superAdminDashboard.charts.revenueTrend.title")}</h2>
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("superAdminDashboard.charts.revenueTrend.title")}</h2>
             <Link to="/admin/revenue" className="text-xs text-brand-600 dark:text-brand-400 hover:underline">
               {t("superAdminDashboard.charts.viewDetails")}
             </Link>
@@ -358,9 +358,9 @@ export default function SuperAdminDashboard() {
         </div>
 
         {/* Revenue by Module (Pie) */}
-        <div className="bg-card rounded-xl border border-border p-6">
+        <div className="rounded-lg border border-border bg-card p-4">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-foreground">{t("superAdminDashboard.charts.revenueByModule.title")}</h2>
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("superAdminDashboard.charts.revenueByModule.title")}</h2>
             <Link to="/admin/modules" className="text-xs text-brand-600 dark:text-brand-400 hover:underline">
               {t("superAdminDashboard.charts.viewDetails")}
             </Link>
@@ -398,8 +398,8 @@ export default function SuperAdminDashboard() {
       {/* Module Adoption + Growth Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Module Adoption (Bar) */}
-        <div className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-lg font-semibold text-foreground mb-4">{t("superAdminDashboard.charts.moduleAdoption.title")}</h2>
+        <div className="rounded-lg border border-border bg-card p-4">
+          <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("superAdminDashboard.charts.moduleAdoption.title")}</h2>
           {adoption?.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={adoption}>
@@ -420,8 +420,8 @@ export default function SuperAdminDashboard() {
         </div>
 
         {/* Org & User Growth */}
-        <div className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-lg font-semibold text-foreground mb-4">{t("superAdminDashboard.charts.growthTrends.title")}</h2>
+        <div className="rounded-lg border border-border bg-card p-4">
+          <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("superAdminDashboard.charts.growthTrends.title")}</h2>
           {growth?.org_growth?.length > 0 || growth?.user_growth?.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <BarChart
@@ -464,9 +464,9 @@ export default function SuperAdminDashboard() {
       {/* System Health + Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* System Health */}
-        <div className="bg-card rounded-xl border border-border p-6">
+        <div className="rounded-lg border border-border bg-card p-4">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-foreground">{t("superAdminDashboard.systemHealth.title")}</h2>
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("superAdminDashboard.systemHealth.title")}</h2>
             <span
               className={`text-xs font-medium px-2.5 py-1 rounded-full ${
                 health?.overall_status === "all_healthy"
@@ -515,8 +515,8 @@ export default function SuperAdminDashboard() {
         </div>
 
         {/* Recent Activity */}
-        <div className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-lg font-semibold text-foreground mb-4">{t("superAdminDashboard.activity.title")}</h2>
+        <div className="rounded-lg border border-border bg-card p-4">
+          <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("superAdminDashboard.activity.title")}</h2>
           <div className="space-y-0 max-h-[420px] overflow-y-auto">
             {activity?.length > 0 ? (
               activity.map((event: any) => (

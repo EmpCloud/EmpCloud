@@ -117,13 +117,13 @@ export default function OrgDetailPage() {
       </Link>
 
       {/* Org Info Card */}
-      <div className="bg-card rounded-xl border border-border p-6 mb-6">
+      <div className="mb-4 rounded-lg border border-border bg-card p-4">
         <div className="flex items-start gap-4">
-          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shrink-0">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-brand-700">
             <Building2 className="h-7 w-7 text-white" />
           </div>
           <div className="flex-1">
-            <h1 className="text-2xl font-bold text-foreground">{org.name}</h1>
+            <h1 className="text-xl font-semibold tracking-tight text-foreground">{org.name}</h1>
             {org.legal_name && org.legal_name !== org.name && (
               <p className="text-sm text-muted-foreground mt-0.5">{org.legal_name}</p>
             )}
@@ -204,7 +204,7 @@ export default function OrgDetailPage() {
       {/* Tab bar — pick which big-data block to show. Stacking all three on
           one screen made the page extremely long; tabs keep the cards above
           visible while letting HR drill into the relevant detail. */}
-      <div className="bg-card rounded-xl border border-border p-1.5 mb-6 inline-flex gap-1">
+      <div className="mb-4 inline-flex gap-1 rounded-lg border border-border bg-card p-1.5">
         {[
           { id: "users", label: t("orgDetail.tabs.users", { count: users.length }), icon: Users },
           { id: "subscriptions", label: t("orgDetail.tabs.subscriptions", { count: subscriptions.length }), icon: CreditCard },
@@ -229,7 +229,7 @@ export default function OrgDetailPage() {
 
       {/* Users Table */}
       {activeTab === "users" && (
-      <div className="bg-card rounded-xl border border-border p-6 mb-6">
+      <div className="mb-4 rounded-lg border border-border bg-card p-4">
         <h2 className="text-lg font-semibold text-foreground mb-4">
           {t("orgDetail.users.heading", { count: users.length })}
         </h2>
@@ -351,7 +351,7 @@ export default function OrgDetailPage() {
 
       {/* Subscriptions Table */}
       {activeTab === "subscriptions" && (
-      <div className="bg-card rounded-xl border border-border p-6 mb-6">
+      <div className="mb-4 rounded-lg border border-border bg-card p-4">
         <h2 className="text-lg font-semibold text-foreground mb-4">
           {t("orgDetail.subscriptions.heading", { count: subscriptions.length })}
         </h2>
@@ -427,7 +427,7 @@ export default function OrgDetailPage() {
 
       {/* Audit Log */}
       {activeTab === "audit" && audit_logs && audit_logs.length > 0 && (
-        <div className="bg-card rounded-xl border border-border p-6">
+        <div className="rounded-lg border border-border bg-card p-4">
           <div className="flex items-center gap-2 mb-4">
             <Shield className="h-5 w-5 text-muted-foreground" />
             <h2 className="text-lg font-semibold text-foreground">
@@ -480,7 +480,7 @@ export default function OrgDetailPage() {
       {/* Reset Password Modal */}
       {resetPasswordModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-card rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
+          <div className="mx-4 w-full max-w-md rounded-lg border border-border bg-card p-4 shadow-xl">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-foreground">{t("orgDetail.resetPassword.title")}</h3>
               <button onClick={() => setResetPasswordModal(null)} className="text-muted-foreground hover:text-muted-foreground">
@@ -529,7 +529,7 @@ export default function OrgDetailPage() {
       {/* Change Role Modal */}
       {changeRoleModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-card rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
+          <div className="mx-4 w-full max-w-md rounded-lg border border-border bg-card p-4 shadow-xl">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-foreground">{t("orgDetail.changeRole.title")}</h3>
               <button onClick={() => setChangeRoleModal(null)} className="text-muted-foreground hover:text-muted-foreground">
