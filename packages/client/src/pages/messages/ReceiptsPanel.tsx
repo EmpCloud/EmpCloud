@@ -7,6 +7,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import * as Dialog from "@radix-ui/react-dialog";
 import { X, CheckCheck, Check, Clock } from "lucide-react";
 import type { MessageReceiptBreakdown, ChatMessageReceipt } from "@empcloud/shared";
 import api from "@/api/client";
@@ -25,8 +26,8 @@ function Row({ r }: { r: ChatMessageReceipt }) {
         lastName={last}
         size="sm"
       />
-      <span className="flex-1 truncate text-sm text-gray-800">{r.name}</span>
-      {when && <span className="text-[11px] text-gray-400">{clockTime(when)}</span>}
+      <span className="flex-1 truncate text-[13px] text-foreground">{r.name}</span>
+      {when && <span className="text-[11px] tabular-nums text-muted-foreground">{clockTime(when)}</span>}
     </li>
   );
 }
@@ -78,28 +79,32 @@ export function ReceiptsPanel({
   });
 
   return (
-    <div
-      className="fixed inset-0 z-40 flex items-center justify-center bg-black/30 p-4"
-      onClick={onClose}
-    >
-      <div
-        className="w-full max-w-[18rem] max-h-[70vh] overflow-hidden rounded-2xl bg-white shadow-xl flex flex-col"
-        onClick={(e) => e.stopPropagation()}
+    <Dialog.Root open onOpenChange={(open) => !open && onClose()}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 z-40 bg-black/30" />
+        <Dialog.Content
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="message-receipts-dialog-title"
+          aria-describedby={undefined}
+          className="fixed left-1/2 top-1/2 z-40 flex max-h-[70vh] w-[calc(100%-2rem)] max-w-[18rem] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-lg border border-border bg-card shadow-xl focus:outline-none"
       >
-        <div className="flex items-center justify-between px-3 py-2 border-b border-gray-100">
-          <p className="text-sm font-semibold text-gray-900">{t("receiptsPanel.header.title")}</p>
+        <div className="flex items-center justify-between border-b border-border px-3 py-2">
+          <Dialog.Title asChild>
+            <h2 id="message-receipts-dialog-title" className="text-sm font-semibold text-foreground">{t("receiptsPanel.header.title")}</h2>
+          </Dialog.Title>
           <button
             type="button"
             onClick={onClose}
-            className="p-1 rounded-lg text-gray-400 hover:bg-gray-100"
+            className="rounded-md p-1 text-muted-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
             aria-label={t("receiptsPanel.actions.close")}
           >
-            <X className="h-4 w-4" />
+            <X aria-hidden="true" className="h-4 w-4" />
           </button>
         </div>
         <div className="flex-1 overflow-y-auto pb-1.5">
           {isLoading ? (
-            <p className="px-3 py-3 text-sm text-gray-400">{t("receiptsPanel.state.loading")}</p>
+            <p className="px-3 py-3 text-[13px] text-muted-foreground">{t("receiptsPanel.state.loading")}</p>
           ) : isError || !data ? (
             <p className="px-3 py-3 text-sm text-red-500">{t("receiptsPanel.state.error")}</p>
           ) : (
@@ -112,23 +117,24 @@ export function ReceiptsPanel({
               />
               <Section
                 title={t("receiptsPanel.section.deliveredTo")}
-                icon={<Check className="h-3.5 w-3.5 text-gray-400" />}
+                icon={<Check className="h-3.5 w-3.5 text-muted-foreground" />}
                 people={data.delivered}
-                tone="text-gray-500"
+                tone="text-muted-foreground"
               />
               <Section
                 title={t("receiptsPanel.section.pending")}
-                icon={<Clock className="h-3.5 w-3.5 text-gray-300" />}
+                icon={<Clock className="h-3.5 w-3.5 text-muted-foreground/70" />}
                 people={data.pending}
-                tone="text-gray-400"
+                tone="text-muted-foreground"
               />
               {data.read.length + data.delivered.length + data.pending.length === 0 && (
-                <p className="px-3 py-3 text-sm text-gray-400">{t("receiptsPanel.state.noOtherMembers")}</p>
+                <p className="px-3 py-3 text-[13px] text-muted-foreground">{t("receiptsPanel.state.noOtherMembers")}</p>
               )}
             </>
           )}
         </div>
-      </div>
-    </div>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }

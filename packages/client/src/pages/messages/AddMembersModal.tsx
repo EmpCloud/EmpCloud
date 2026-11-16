@@ -2,7 +2,8 @@
 // EMP CLOUD — Add members to a group (creator-only)
 // =============================================================================
 
-import { useState, useMemo } from "react";
+import { useRef, useState, useMemo } from "react";
+import * as Dialog from "@radix-ui/react-dialog";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import api from "@/api/client";
@@ -41,6 +42,7 @@ export function AddMembersModal({
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [saving, setSaving] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const { data: employees, isLoading } = useQuery<DirectoryEmployee[]>({
     queryKey: ["chat-directory", search],
@@ -79,40 +81,54 @@ export function AddMembersModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4" onClick={onClose}>
-      <div
-        className="w-full max-w-md max-h-[80vh] bg-white rounded-2xl shadow-xl flex flex-col"
-        onClick={(e) => e.stopPropagation()}
+    <Dialog.Root open onOpenChange={(open) => !open && onClose()}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 z-50 bg-black/40" />
+        <Dialog.Content
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="add-members-dialog-title"
+          aria-describedby={undefined}
+          onOpenAutoFocus={(event) => {
+            event.preventDefault();
+            searchInputRef.current?.focus();
+          }}
+          className="fixed left-1/2 top-1/2 z-50 flex max-h-[80vh] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-lg border border-border bg-card shadow-xl focus:outline-none"
       >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-          <h2 className="text-base font-semibold text-gray-900">{t("addMembersModal.header.title")}</h2>
+        <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
+          <Dialog.Title asChild>
+            <h2 id="add-members-dialog-title" className="text-sm font-semibold text-foreground">{t("addMembersModal.header.title")}</h2>
+          </Dialog.Title>
           <button
+            type="button"
             onClick={onClose}
             aria-label={t("addMembersModal.header.close")}
-            className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100"
+            className="rounded-md p-1.5 text-muted-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
           >
-            <X className="h-5 w-5" />
+            <X aria-hidden="true" className="h-5 w-5" />
           </button>
         </div>
 
-        <div className="px-5 py-3 border-b border-gray-100">
+        <div className="border-b border-border px-4 py-3">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search aria-hidden="true" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
-              autoFocus
+              ref={searchInputRef}
               value={search}
+              name="member-search"
+              aria-label={t("addMembersModal.search.placeholder")}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={t("addMembersModal.search.placeholder")}
-              className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+              className="w-full rounded-md border border-border bg-background py-2 pl-9 pr-3 text-[13px] text-foreground focus-visible:border-brand-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
             />
           </div>
         </div>
 
         <div className="flex-1 overflow-y-auto p-2">
           {isLoading ? (
-            <p className="px-3 py-6 text-center text-sm text-gray-400">{t("addMembersModal.list.loading")}</p>
+            <p className="px-3 py-6 text-center text-[13px] text-muted-foreground">{t("addMembersModal.list.loading")}</p>
           ) : candidates.length === 0 ? (
-            <p className="px-3 py-6 text-center text-sm text-gray-400">
+            <p className="px-3 py-6 text-center text-[13px] text-muted-foreground">
               {search
                 ? t("addMembersModal.list.noMatches", { search })
                 : t("addMembersModal.list.allInGroup")}
@@ -125,7 +141,7 @@ export function AddMembersModal({
                   key={emp.id}
                   onClick={() => toggle(emp.id)}
                   className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left ${
-                    isSel ? "bg-brand-50" : "hover:bg-gray-50"
+                    isSel ? "bg-brand-50 dark:bg-brand-950/40" : "hover:bg-muted"
                   }`}
                 >
                   <EmployeeAvatar
@@ -136,16 +152,16 @@ export function AddMembersModal({
                     size="md"
                   />
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-gray-800 truncate">
+                    <p className="truncate text-[13px] font-medium text-foreground">
                       {emp.first_name} {emp.last_name}
                     </p>
                     {emp.designation && (
-                      <p className="text-xs text-gray-400 truncate">{emp.designation}</p>
+                      <p className="truncate text-xs text-muted-foreground">{emp.designation}</p>
                     )}
                   </div>
                   <span
                     className={`flex h-5 w-5 items-center justify-center rounded-full border ${
-                      isSel ? "bg-brand-600 border-brand-600 text-white" : "border-gray-300"
+                      isSel ? "border-brand-600 bg-brand-600 text-white" : "border-border"
                     }`}
                   >
                     {isSel && <Check className="h-3 w-3" />}
@@ -156,20 +172,22 @@ export function AddMembersModal({
           )}
         </div>
 
-        <div className="flex items-center justify-between gap-3 px-5 py-4 border-t border-gray-100">
-          <span className="text-xs text-gray-400">
+        <div className="flex items-center justify-between gap-3 border-t border-border px-4 py-3">
+          <span className="text-xs text-muted-foreground">
             {t("addMembersModal.footer.selectedCount", { count: selected.size })}
           </span>
           <button
+            type="button"
             onClick={handleAdd}
             disabled={selected.size === 0 || saving}
             className="flex items-center gap-1.5 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-40"
           >
-            <UserPlus className="h-4 w-4" />
+            <UserPlus aria-hidden="true" className="h-4 w-4" />
             {saving ? t("addMembersModal.footer.adding") : t("addMembersModal.footer.add")}
           </button>
         </div>
-      </div>
-    </div>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }

@@ -106,7 +106,7 @@ const PAYMENT_TONES: Record<AdminOrganizationPaymentStatus, string> = {
   unpaid: "bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300",
   overdue: "bg-red-100 text-red-700 dark:bg-red-950/50 dark:text-red-300",
   no_invoice: "bg-muted text-muted-foreground",
-  not_configured: "bg-slate-100 text-slate-600 dark:bg-slate-900 dark:text-slate-300",
+  not_configured: "bg-muted text-muted-foreground",
   unavailable: "bg-purple-100 text-purple-700 dark:bg-purple-950/50 dark:text-purple-300",
 };
 
@@ -115,7 +115,7 @@ const SUBSCRIPTION_TONES: Record<string, string> = {
   trial: "bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300",
   past_due: "bg-red-100 text-red-700 dark:bg-red-950/50 dark:text-red-300",
   suspended: "bg-orange-100 text-orange-700 dark:bg-orange-950/50 dark:text-orange-300",
-  deactivated: "bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
+  deactivated: "bg-muted text-foreground",
   cancelled: "bg-muted text-muted-foreground",
   expired: "bg-muted text-muted-foreground",
 };
@@ -191,7 +191,7 @@ function AccessSwitch({
         <span className={`relative h-5 w-9 rounded-full transition-colors ${
           checked
             ? danger ? "bg-red-500" : "bg-amber-500"
-            : "bg-slate-300 dark:bg-slate-700"
+            : "bg-muted-foreground/40"
         }`}>
           <span className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${
             checked ? "translate-x-[18px]" : "translate-x-0.5"
@@ -239,7 +239,7 @@ function StatCard({
       onClick={onClick}
       disabled={!clickable}
       aria-pressed={clickable ? Boolean(active) : undefined}
-      className={`flex items-center gap-3 rounded-xl border bg-card px-4 py-3 text-left transition-colors ${
+      className={`flex items-center gap-3 rounded-lg border bg-card px-4 py-3 text-left transition-colors duration-150 ${
         active ? "border-brand-500 ring-1 ring-brand-500" : "border-border"
       } ${clickable ? "cursor-pointer hover:bg-muted/50" : "cursor-default"}`}
     >
@@ -543,11 +543,11 @@ export default function OrgListPage() {
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/40">
               <Building2 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-foreground">{t("orgList.title")}</h1>
+              <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("orgList.title")}</h1>
               <p className="text-muted-foreground mt-0.5 text-sm">
                 {t("orgList.subtitle", { count: meta.total })}
               </p>
@@ -566,7 +566,7 @@ export default function OrgListPage() {
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="fixed inset-0 bg-black/50" onClick={() => setShowCreateModal(false)} />
-          <div className="relative bg-card rounded-xl shadow-xl w-full max-w-lg mx-4 z-50">
+          <div className="relative z-50 mx-4 w-full max-w-lg rounded-lg border border-border bg-card shadow-xl">
             <div className="flex items-center justify-between px-6 py-4 border-b border-border">
               <h2 className="text-lg font-semibold text-foreground">{t("orgList.modal.title")}</h2>
               <button
@@ -582,7 +582,7 @@ export default function OrgListPage() {
                 setCreateError("");
                 createOrg.mutate(createForm);
               }}
-              className="p-6 space-y-4"
+              className="space-y-4 p-4"
             >
               <div>
                 <label className="block text-sm font-medium text-muted-foreground mb-1">{t("orgList.modal.fields.orgName")} *</label>
@@ -694,7 +694,7 @@ export default function OrgListPage() {
       )}
 
       {(isError || statsError) && (
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
           <span>Some organization analytics could not be loaded. Existing data may be incomplete.</span>
           <button
             type="button"
@@ -777,7 +777,7 @@ export default function OrgListPage() {
 
       {/* Portfolio analytics — deliberately currency-safe and lifecycle-aware. */}
       <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <div className="rounded-xl border border-border bg-card p-5">
+        <div className="rounded-lg border border-border bg-card p-3 transition-colors duration-150 hover:border-brand-400">
           <div className="mb-4 flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-foreground">License utilization</p>
@@ -793,7 +793,7 @@ export default function OrgListPage() {
           </div>
           <div className="h-2 overflow-hidden rounded-full bg-muted">
             <div
-              className="h-full rounded-full bg-brand-500 transition-all"
+              className="h-full rounded-full bg-brand-500 transition-[width] duration-300"
               style={{ width: `${Math.min(100, stats?.license_utilization ?? 0)}%` }}
             />
           </div>
@@ -802,7 +802,7 @@ export default function OrgListPage() {
           </p>
         </div>
 
-        <div className="rounded-xl border border-border bg-card p-5">
+        <div className="rounded-lg border border-border bg-card p-3 transition-colors duration-150 hover:border-brand-400">
           <div className="mb-4 flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-foreground">Monthly subscription value</p>
@@ -828,7 +828,7 @@ export default function OrgListPage() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-border bg-card p-5">
+        <div className="rounded-lg border border-border bg-card p-3 transition-colors duration-150 hover:border-brand-400">
           <div className="mb-4 flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-foreground">Portfolio mix</p>
@@ -860,7 +860,7 @@ export default function OrgListPage() {
       </div>
 
       {/* Filters */}
-      <div className="mb-6 rounded-xl border border-border bg-card p-4">
+      <div className="mb-4 rounded-lg border border-border bg-card p-4">
         <div className="flex flex-wrap items-end gap-3">
           <form onSubmit={handleSearch} className="min-w-[220px] flex-1">
             <label className="mb-1 block text-xs font-medium text-muted-foreground">
@@ -1034,7 +1034,7 @@ export default function OrgListPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-card rounded-xl border border-border overflow-hidden">
+      <div className="overflow-hidden rounded-lg border border-border bg-card">
         {isLoading ? (
           <div className="flex items-center justify-center py-16 text-muted-foreground">
             <div className="flex flex-col items-center gap-2">

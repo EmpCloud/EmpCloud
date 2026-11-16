@@ -138,7 +138,8 @@ function deriveAvailable(
   }
 
   return {
-    available_now: Math.max(0, roundToHalf(available)),
+    // Period quotas must not exceed the remaining allocation checked at approval.
+    available_now: Math.max(0, Math.min(Number(balance.balance), roundToHalf(available))),
     period_quota: periodQuota,
     fiscal_year_label: getFiscalYearLabel(info.fiscalYear, fyStartMonth),
   };

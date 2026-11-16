@@ -17,6 +17,7 @@
     "clean": "pnpm --parallel --filter ./packages/* clean",
     "migrate": "pnpm --filter @empcloud/server migrate",
     "seed": "pnpm --filter @empcloud/server seed",
+    "seed:ui-demo": "pnpm --filter @empcloud/server seed:ui-demo",
     "generate-keys": "pnpm --filter @empcloud/server generate-keys"
   },
   "devDependencies": {

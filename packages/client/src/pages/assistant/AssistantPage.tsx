@@ -51,7 +51,7 @@ function AssistantAnswer({ children }: { children: string }) {
           </blockquote>
         ),
         table: ({ children }) => (
-          <div className="my-4 max-w-full overflow-x-auto rounded-xl border">
+          <div className="my-4 max-w-full overflow-x-auto rounded-lg border border-border">
             <table className="w-full min-w-[640px] border-collapse text-left text-sm">{children}</table>
           </div>
         ),
@@ -340,37 +340,37 @@ export default function AssistantPage() {
 
   return (
     <section className="-m-4 flex h-[calc(100vh-4rem)] flex-col overflow-hidden bg-background md:-m-8">
-      <header className="flex items-center gap-3 border-b bg-card px-4 py-3 md:px-6">
-        <button type="button" onClick={() => setHistoryOpen(true)} className="flex h-9 w-9 items-center justify-center rounded-lg border text-muted-foreground md:hidden" aria-label="Open chat history">
-          <Menu className="h-4 w-4" />
+      <header className="flex items-center gap-3 border-b border-border bg-card px-4 py-2.5 md:px-6">
+        <button type="button" onClick={() => setHistoryOpen(true)} className="flex h-9 w-9 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 md:hidden" aria-label="Open chat history">
+          <Menu aria-hidden="true" className="h-4 w-4" />
         </button>
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-600 text-white shadow-sm">
+        <div aria-hidden="true" className="flex h-9 w-9 items-center justify-center rounded-md bg-brand-600 text-white shadow-sm">
           <Sparkles className="h-5 w-5" />
         </div>
         <div>
-          <h1 className="text-lg font-semibold text-foreground">HR Assistant</h1>
-          <p className="text-sm text-muted-foreground">Ask questions about your live HR data</p>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">HR Assistant</h1>
+          <p className="text-[13px] text-muted-foreground">Ask questions about your live HR data</p>
         </div>
-        <button type="button" onClick={newChat} className="ml-auto inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium text-foreground hover:bg-muted">
-          <Plus className="h-4 w-4" />
+        <button type="button" onClick={newChat} className="ml-auto inline-flex min-h-9 items-center gap-2 rounded-md border border-border px-3 text-[13px] font-medium text-foreground transition-colors duration-150 hover:border-brand-300 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+          <Plus aria-hidden="true" className="h-4 w-4" />
           <span className="hidden sm:inline">New chat</span>
         </button>
       </header>
 
       <div className="relative flex min-h-0 flex-1 overflow-hidden">
         {historyOpen && <button type="button" className="absolute inset-0 z-20 bg-black/30 md:hidden" onClick={() => setHistoryOpen(false)} aria-label="Close chat history overlay" />}
-        <aside className={`${historyOpen ? "flex" : "hidden"} absolute inset-y-0 left-0 z-30 w-72 flex-col border-r bg-card md:static md:flex md:w-64`}>
+        <aside className={`${historyOpen ? "flex" : "hidden"} absolute inset-y-0 left-0 z-30 w-72 flex-col border-r border-border bg-card md:static md:flex md:w-64`} aria-label="Chat history">
           <div className="flex items-center justify-between border-b px-4 py-3">
             <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-              <MessageSquare className="h-4 w-4" /> Chat history
+              <MessageSquare aria-hidden="true" className="h-4 w-4" /> Chat history
             </div>
             <button type="button" onClick={() => setHistoryOpen(false)} className="rounded-md p-1 text-muted-foreground hover:bg-muted md:hidden" aria-label="Close chat history">
-              <X className="h-4 w-4" />
+              <X aria-hidden="true" className="h-4 w-4" />
             </button>
           </div>
           <div className="p-3">
-            <button type="button" onClick={newChat} className="flex w-full items-center justify-center gap-2 rounded-lg bg-brand-600 px-3 py-2 text-sm font-medium text-white hover:bg-brand-700">
-              <Plus className="h-4 w-4" /> New chat
+            <button type="button" onClick={newChat} className="flex min-h-9 w-full items-center justify-center gap-2 rounded-md bg-brand-600 px-3 text-[13px] font-medium text-white transition-colors duration-150 hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2">
+              <Plus aria-hidden="true" className="h-4 w-4" /> New chat
             </button>
           </div>
           <div className="flex-1 overflow-y-auto px-2 pb-3">
@@ -379,7 +379,7 @@ export default function AssistantPage() {
             ) : conversations.length === 0 ? (
               <p className="px-3 py-8 text-center text-xs text-muted-foreground">No conversations yet</p>
             ) : conversations.map((conversation) => (
-              <div key={conversation.id} className={`group mb-1 flex items-center rounded-lg ${conversationId === conversation.id ? "bg-brand-50 text-brand-700 dark:bg-brand-950/30" : "hover:bg-muted"}`}>
+              <div key={conversation.id} className={`group mb-1 flex items-center rounded-md ${conversationId === conversation.id ? "bg-brand-50 text-brand-700 dark:bg-brand-950/30 dark:text-brand-300" : "hover:bg-muted"}`}>
                 <button type="button" onClick={() => void openConversation(conversation.id)} className="min-w-0 flex-1 px-3 py-2.5 text-left" disabled={isOpeningConversation}>
                   <span className="block truncate text-sm font-medium">{conversation.title || "Untitled chat"}</span>
                   <span className="block text-xs text-muted-foreground">{conversation.message_count} messages</span>
@@ -402,11 +402,11 @@ export default function AssistantPage() {
         <div className="mx-auto flex min-h-full w-full max-w-4xl flex-col px-4 py-6 md:px-8">
           {messages.length === 0 ? (
             <div className="m-auto flex w-full max-w-2xl flex-col items-center py-10 text-center">
-              <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-50 text-brand-600 dark:bg-brand-950/40">
-                <Bot className="h-7 w-7" />
+              <div aria-hidden="true" className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-brand-50 text-brand-600 dark:bg-brand-950/40 dark:text-brand-300">
+                <Bot className="h-6 w-6" />
               </div>
-              <h2 className="text-2xl font-semibold text-foreground">How can I help?</h2>
-              <p className="mt-2 max-w-md text-sm text-muted-foreground">
+              <h2 className="text-xl font-semibold tracking-tight text-foreground">How can I help?</h2>
+              <p className="mt-1.5 max-w-md text-[13px] text-muted-foreground">
                 Get quick answers from attendance, leave, payroll, and productivity data you have permission to view.
               </p>
               <div className="mt-7 grid w-full gap-2 sm:grid-cols-2">
@@ -415,7 +415,7 @@ export default function AssistantPage() {
                     key={question}
                     type="button"
                     onClick={() => void sendMessage(question)}
-                    className="rounded-xl border bg-card px-4 py-3 text-left text-sm text-foreground transition-colors hover:border-brand-300 hover:bg-brand-50/60 dark:hover:bg-brand-950/20"
+                    className="rounded-lg border border-border bg-card px-3 py-2.5 text-left text-[13px] text-foreground transition-colors duration-150 hover:border-brand-300 hover:bg-brand-50/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:hover:bg-brand-950/20"
                   >
                     {question}
                   </button>
@@ -435,7 +435,7 @@ export default function AssistantPage() {
                     </div>
                   )}
                   <div
-                    className={`rounded-2xl px-4 py-3 text-sm leading-6 ${
+                    className={`rounded-lg px-3.5 py-2.5 text-[13px] leading-5 ${
                       message.role === "user"
                         ? "max-w-[85%] whitespace-pre-wrap rounded-br-md bg-brand-600 text-white md:max-w-[75%]"
                         : "min-w-0 max-w-[calc(100%-2.75rem)] rounded-bl-md border bg-card text-foreground shadow-sm md:max-w-[90%]"
@@ -452,7 +452,7 @@ export default function AssistantPage() {
                                 type="button"
                                 onClick={() => void downloadMessageAsPdf(message, messageIndex)}
                                 disabled={Boolean(exportingMessageId)}
-                                className="inline-flex min-h-9 items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium text-brand-700 transition-colors hover:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-wait disabled:opacity-60 dark:text-brand-300 dark:hover:bg-brand-950/40"
+                                className="inline-flex min-h-9 items-center gap-2 rounded-md px-2.5 py-1.5 text-xs font-medium text-brand-700 transition-colors duration-150 hover:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-wait disabled:opacity-60 dark:text-brand-300 dark:hover:bg-brand-950/40"
                                 aria-label="Download response as PDF"
                               >
                                 {exportingMessageId === message.id
@@ -493,7 +493,7 @@ export default function AssistantPage() {
               {voiceStatus}
             </p>
           )}
-          <div className="flex items-end gap-2 rounded-2xl border bg-background p-2 shadow-sm focus-within:border-brand-400 focus-within:ring-2 focus-within:ring-brand-100 dark:focus-within:ring-brand-950">
+          <div className="flex items-end gap-2 rounded-lg border border-border bg-background p-1.5 shadow-sm focus-within:border-brand-400 focus-within:ring-2 focus-within:ring-brand-100 dark:focus-within:ring-brand-950">
             <button
               type="button"
               onClick={toggleVoiceMode}
@@ -502,7 +502,7 @@ export default function AssistantPage() {
               aria-disabled={!voice.supported || (isSending && !voice.enabled)}
               aria-describedby={voice.enabled ? "assistant-voice-status" : "assistant-voice-help"}
               title={voice.supported ? "Start a hands-free voice conversation" : "Voice mode requires the latest Chrome or Edge"}
-              className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 ${
+              className={`relative flex h-10 w-10 shrink-0 items-center justify-center rounded-md transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 ${
                 voice.enabled
                   ? "bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-950/30 dark:text-red-300"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -532,12 +532,12 @@ export default function AssistantPage() {
               className="max-h-32 min-h-11 flex-1 resize-none bg-transparent px-2 py-2.5 text-sm text-foreground outline-none placeholder:text-muted-foreground disabled:opacity-60"
             />
             {isSending ? (
-              <button type="button" onClick={stopStreaming} aria-label="Stop response" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-foreground text-background transition-opacity hover:opacity-80">
-                <Square className="h-4 w-4 fill-current" />
+              <button type="button" onClick={stopStreaming} aria-label="Stop response" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-foreground text-background transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2">
+                <Square aria-hidden="true" className="h-4 w-4 fill-current" />
               </button>
             ) : (
-              <button type="submit" disabled={!input.trim()} aria-label="Send message" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-600 text-white transition-colors hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-40">
-                <Send className="h-4 w-4" />
+              <button type="submit" disabled={!input.trim()} aria-label="Send message" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-brand-600 text-white transition-colors duration-150 hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40">
+                <Send aria-hidden="true" className="h-4 w-4" />
               </button>
             )}
           </div>
@@ -552,9 +552,9 @@ export default function AssistantPage() {
       <Dialog.Root open={Boolean(renameTarget)} onOpenChange={(open) => { if (!open && !isRenaming) setRenameTarget(undefined); }}>
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 z-50 bg-black/40 data-[state=open]:animate-in data-[state=open]:fade-in-0" />
-          <Dialog.Content className="fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-xl bg-card shadow-xl data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95">
+          <Dialog.Content className="fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg border border-border bg-card shadow-xl data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95">
             <form onSubmit={(event) => { event.preventDefault(); void saveConversationName(); }}>
-              <div className="flex items-start justify-between gap-4 p-6">
+              <div className="flex items-start justify-between gap-4 p-4">
                 <div>
                   <Dialog.Title className="text-base font-semibold text-foreground">Rename conversation</Dialog.Title>
                   <Dialog.Description className="mt-1 text-sm text-muted-foreground">Choose a clear title for this chat.</Dialog.Description>
@@ -565,7 +565,7 @@ export default function AssistantPage() {
                   </button>
                 </Dialog.Close>
               </div>
-              <div className="px-6 pb-6">
+              <div className="px-4 pb-4">
                 <label htmlFor="assistant-conversation-title" className="mb-2 block text-sm font-medium text-foreground">Conversation title</label>
                 <input
                   id="assistant-conversation-title"
@@ -574,14 +574,14 @@ export default function AssistantPage() {
                   onChange={(event) => setRenameTitle(event.target.value)}
                   maxLength={255}
                   disabled={isRenaming}
-                  className="h-10 w-full rounded-lg border bg-background px-3 text-sm text-foreground outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100 disabled:opacity-60 dark:focus:ring-brand-950"
+                  className="h-10 w-full rounded-md border border-border bg-background px-3 text-[13px] text-foreground outline-none transition-[border-color,box-shadow] duration-150 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 disabled:opacity-60 dark:focus:ring-brand-950"
                 />
                 {!renameTitle.trim() && <p className="mt-2 text-xs text-red-600">A conversation title is required.</p>}
                 <p className="mt-2 text-right text-xs text-muted-foreground">{renameTitle.length}/255</p>
               </div>
-              <div className="flex justify-end gap-3 rounded-b-xl border-t bg-muted px-6 py-4">
-                <button type="button" onClick={() => setRenameTarget(undefined)} disabled={isRenaming} className="rounded-lg border bg-card px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-muted disabled:opacity-50">Cancel</button>
-                <button type="submit" disabled={isRenaming || !renameTitle.trim()} className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50">
+              <div className="flex justify-end gap-2 rounded-b-lg border-t border-border bg-muted px-4 py-3">
+                <button type="button" onClick={() => setRenameTarget(undefined)} disabled={isRenaming} className="min-h-9 rounded-md border border-border bg-card px-4 text-[13px] font-medium text-muted-foreground transition-colors duration-150 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:opacity-50">Cancel</button>
+                <button type="submit" disabled={isRenaming || !renameTitle.trim()} className="min-h-9 rounded-md bg-brand-600 px-4 text-[13px] font-medium text-white transition-colors duration-150 hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:opacity-50">
                   {isRenaming ? "Saving…" : "Save"}
                 </button>
               </div>

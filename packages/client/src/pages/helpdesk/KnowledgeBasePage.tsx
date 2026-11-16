@@ -6,10 +6,18 @@ import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
 import RichTextEditor, { isRichTextEmpty } from "@/components/ui/RichTextEditor";
 import {
+  ArrowUpDown,
+  BookOpen,
   BookMarked,
+  Bookmark,
+  Building2,
+  CalendarDays,
+  DollarSign,
+  FileText,
   Search,
   Plus,
   Eye,
+  Heart,
   ThumbsUp,
   ThumbsDown,
   ArrowLeft,
@@ -20,6 +28,15 @@ import {
   Pencil,
   Trash2,
   Loader2,
+  LayoutGrid,
+  List,
+  Minus,
+  Monitor,
+  MoreVertical,
+  ShieldCheck,
+  UserPlus,
+  UsersRound,
+  type LucideIcon,
 } from "lucide-react";
 
 const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
@@ -44,15 +61,96 @@ function categoryLabel(c: string, t: TFn): string {
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
-  leave: "bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300",
-  payroll: "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300",
-  benefits: "bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300",
-  it: "bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300",
-  facilities: "bg-yellow-100 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-300",
-  onboarding: "bg-teal-100 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300",
-  policy: "bg-indigo-100 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300",
+  leave: "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300",
+  payroll: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300",
+  benefits: "bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300",
+  it: "bg-violet-50 text-violet-700 dark:bg-violet-950/40 dark:text-violet-300",
+  facilities: "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300",
+  onboarding: "bg-teal-50 text-teal-700 dark:bg-teal-950/40 dark:text-teal-300",
+  policy: "bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-300",
   general: "bg-muted text-muted-foreground",
 };
+
+type CategoryUi = {
+  icon: LucideIcon;
+  iconBox: string;
+  pill: string;
+};
+
+const CATEGORY_UI: Record<string, CategoryUi> = {
+  leave: {
+    icon: CalendarDays,
+    iconBox: "bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-300",
+    pill: "border-blue-100 bg-blue-50/80 text-blue-700 dark:border-blue-900/50 dark:bg-blue-950/30 dark:text-blue-300",
+  },
+  payroll: {
+    icon: DollarSign,
+    iconBox: "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-300",
+    pill: "border-emerald-100 bg-emerald-50/80 text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-300",
+  },
+  benefits: {
+    icon: Heart,
+    iconBox: "bg-rose-50 text-rose-500 dark:bg-rose-950/40 dark:text-rose-300",
+    pill: "border-rose-100 bg-rose-50/80 text-rose-700 dark:border-rose-900/50 dark:bg-rose-950/30 dark:text-rose-300",
+  },
+  it: {
+    icon: Monitor,
+    iconBox: "bg-violet-50 text-violet-600 dark:bg-violet-950/40 dark:text-violet-300",
+    pill: "border-violet-100 bg-violet-50/80 text-violet-700 dark:border-violet-900/50 dark:bg-violet-950/30 dark:text-violet-300",
+  },
+  facilities: {
+    icon: Building2,
+    iconBox: "bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-300",
+    pill: "border-amber-100 bg-amber-50/80 text-amber-700 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-300",
+  },
+  onboarding: {
+    icon: UserPlus,
+    iconBox: "bg-teal-50 text-teal-600 dark:bg-teal-950/40 dark:text-teal-300",
+    pill: "border-teal-100 bg-teal-50/80 text-teal-700 dark:border-teal-900/50 dark:bg-teal-950/30 dark:text-teal-300",
+  },
+  policy: {
+    icon: ShieldCheck,
+    iconBox: "bg-purple-50 text-purple-600 dark:bg-purple-950/40 dark:text-purple-300",
+    pill: "border-purple-100 bg-purple-50/80 text-purple-700 dark:border-purple-900/50 dark:bg-purple-950/30 dark:text-purple-300",
+  },
+  general: {
+    icon: FileText,
+    iconBox: "bg-slate-50 text-slate-600 dark:bg-slate-900 dark:text-slate-300",
+    pill: "border-slate-200 bg-slate-50/80 text-slate-700 dark:border-slate-800 dark:bg-slate-900/50 dark:text-slate-300",
+  },
+};
+
+function stripHtml(value: string): string {
+  return value.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function compactNumber(value: number): string {
+  return new Intl.NumberFormat(undefined, {
+    notation: value >= 1000 ? "compact" : "standard",
+    maximumFractionDigits: 1,
+  }).format(value);
+}
+
+function articleDate(value: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(date);
+}
+
+function initials(name: string): string {
+  const result = String(name || "")
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part.charAt(0))
+    .join("")
+    .toUpperCase();
+  return result || "KB";
+}
 
 export default function KnowledgeBasePage() {
   const { t } = useTranslation();
@@ -64,6 +162,8 @@ export default function KnowledgeBasePage() {
   const [category, setCategory] = useState("");
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
+  const [sortBy, setSortBy] = useState<"most-viewed" | "recent" | "title">("most-viewed");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedArticle, setSelectedArticle] = useState<any>(null);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -112,6 +212,18 @@ export default function KnowledgeBasePage() {
           },
         })
         .then((r) => r.data),
+  });
+
+  // The reference dashboard summarizes the full article library above the
+  // paginated results. Fetch the library once (the API caps this at 500) so
+  // the stat cards and category counts stay stable while users filter pages.
+  const { data: libraryData } = useQuery({
+    queryKey: ["kb-articles", "library-summary"],
+    queryFn: () =>
+      api
+        .get("/helpdesk/kb", { params: { page: 1, per_page: 500 } })
+        .then((r) => r.data),
+    staleTime: 60_000,
   });
 
   const createArticle = useMutation({
@@ -204,6 +316,90 @@ export default function KnowledgeBasePage() {
 
   const articles = data?.data || [];
   const meta = data?.meta;
+  const libraryArticles = (libraryData?.data || articles) as any[];
+  const libraryTotal = Number(libraryData?.meta?.total ?? meta?.total ?? libraryArticles.length);
+  const totalViews = libraryArticles.reduce(
+    (total: number, article: any) => total + Number(article.view_count || 0),
+    0,
+  );
+  const helpfulVotes = libraryArticles.reduce(
+    (total: number, article: any) => total + Number(article.helpful_count || 0),
+    0,
+  );
+  const unhelpfulVotes = libraryArticles.reduce(
+    (total: number, article: any) => total + Number(article.not_helpful_count || 0),
+    0,
+  );
+  const feedbackTotal = helpfulVotes + unhelpfulVotes;
+  const helpfulRate = feedbackTotal > 0 ? Math.round((helpfulVotes / feedbackTotal) * 100) : 0;
+  const categoryCounts = libraryArticles.reduce<Record<string, number>>((counts, article: any) => {
+    const key = String(article.category || "general");
+    counts[key] = (counts[key] || 0) + 1;
+    return counts;
+  }, {});
+  const sortedArticles = [...articles].sort((left: any, right: any) => {
+    if (sortBy === "title") {
+      return String(left.title || "").localeCompare(String(right.title || ""));
+    }
+    if (sortBy === "recent") {
+      return new Date(right.created_at).getTime() - new Date(left.created_at).getTime();
+    }
+    return Number(right.view_count || 0) - Number(left.view_count || 0);
+  });
+  const resultStart = articles.length > 0 ? (Number(meta?.page || page) - 1) * 12 + 1 : 0;
+  const resultEnd = Math.min(resultStart + articles.length - 1, Number(meta?.total || 0));
+  const totalPages = Number(meta?.total_pages || 1);
+  const visiblePages = Array.from({ length: Math.min(5, totalPages) }, (_, index) => {
+    if (totalPages <= 5) return index + 1;
+    const start = Math.min(Math.max(page - 2, 1), totalPages - 4);
+    return start + index;
+  });
+
+  const stats: Array<{
+    label: string;
+    value: string;
+    helper: string;
+    trendLabel?: string;
+    icon: LucideIcon;
+    cardClass: string;
+    iconClass: string;
+  }> = [
+    {
+      label: t("kb.totalArticles", { defaultValue: "Total Articles" }),
+      value: compactNumber(libraryTotal),
+      helper: t("kb.publishedKnowledge", { defaultValue: "Published knowledge" }),
+      trendLabel: t("kb.trendUnavailable", { defaultValue: "Trend unavailable" }),
+      icon: FileText,
+      cardClass: "border-blue-100 bg-gradient-to-br from-white to-blue-50/70 dark:border-blue-900/40 dark:from-card dark:to-blue-950/20",
+      iconClass: "bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-300",
+    },
+    {
+      label: t("kb.totalViews", { defaultValue: "Total Views" }),
+      value: compactNumber(totalViews),
+      helper: t("kb.acrossAllArticles", { defaultValue: "Across all articles" }),
+      trendLabel: t("kb.trendUnavailable", { defaultValue: "Trend unavailable" }),
+      icon: Eye,
+      cardClass: "border-emerald-100 bg-gradient-to-br from-white to-emerald-50/80 dark:border-emerald-900/40 dark:from-card dark:to-emerald-950/20",
+      iconClass: "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-300",
+    },
+    {
+      label: t("kb.helpfulRate", { defaultValue: "Helpful Rate" }),
+      value: `${helpfulRate}%`,
+      helper: t("kb.readerFeedback", { defaultValue: "Based on reader feedback" }),
+      trendLabel: t("kb.trendUnavailable", { defaultValue: "Trend unavailable" }),
+      icon: ThumbsUp,
+      cardClass: "border-amber-100 bg-gradient-to-br from-white to-amber-50/80 dark:border-amber-900/40 dark:from-card dark:to-amber-950/20",
+      iconClass: "bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-300",
+    },
+    {
+      label: t("kb.categories", { defaultValue: "Categories" }),
+      value: String(CATEGORIES.length),
+      helper: t("kb.organizedKnowledge", { defaultValue: "Organized knowledge" }),
+      icon: UsersRound,
+      cardClass: "border-purple-100 bg-gradient-to-br from-white to-purple-50/80 dark:border-purple-900/40 dark:from-card dark:to-purple-950/20",
+      iconClass: "bg-purple-50 text-purple-600 dark:bg-purple-950/50 dark:text-purple-300",
+    },
+  ];
 
   function renderDeleteDialog() {
     if (!deleteTarget) return null;
@@ -345,9 +541,7 @@ export default function KnowledgeBasePage() {
 
           <div className="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
             <span>{t("kb.byAuthor", { author: selectedArticle.author_name })}</span>
-            <span>
-              {new Date(selectedArticle.created_at).toLocaleDateString()}
-            </span>
+            <span>{articleDate(selectedArticle.created_at)}</span>
             <span className="flex items-center gap-1">
               <Eye className="h-3 w-3" aria-hidden="true" /> {t("kb.viewsCount", { count: selectedArticle.view_count })}
             </span>
@@ -419,14 +613,14 @@ export default function KnowledgeBasePage() {
   }
 
   return (
-    <div className="space-y-4 pb-4">
+    <div className="space-y-3 pb-4">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 items-center gap-3">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 ring-1 ring-inset ring-blue-100 dark:bg-blue-950/40 dark:text-blue-300 dark:ring-blue-900/50">
-            <BookMarked className="h-5 w-5" aria-hidden="true" />
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 ring-1 ring-inset ring-blue-100 dark:bg-blue-950/40 dark:text-blue-300 dark:ring-blue-900/50">
+            <BookOpen className="h-6 w-6" aria-hidden="true" />
           </span>
           <div className="min-w-0">
-            <h1 className="text-xl font-semibold tracking-tight text-foreground">
+            <h1 className="text-[22px] font-bold leading-tight tracking-tight text-foreground">
               {t("kb.title")}
             </h1>
             <p className="mt-0.5 text-[13px] text-muted-foreground">
@@ -448,7 +642,7 @@ export default function KnowledgeBasePage() {
                 setShowForm(true);
               }
             }}
-            className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-brand-600 px-4 text-[13px] font-semibold text-white shadow-sm transition-colors hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 sm:w-auto"
+            className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 px-5 text-[13px] font-semibold text-white shadow-[0_8px_18px_-8px_rgba(37,99,235,0.8)] transition-colors hover:from-blue-700 hover:to-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 sm:w-auto"
           >
             <Plus className="h-4 w-4" aria-hidden="true" />
             {t("kb.newArticle")}
@@ -587,43 +781,154 @@ export default function KnowledgeBasePage() {
         </section>
       )}
 
-      {/* Search + Category Filter */}
       <section
-        aria-label={t("kb.searchPlaceholder")}
-        className="rounded-xl border border-border bg-card p-3 shadow-sm"
+        aria-label={t("kb.overview", { defaultValue: "Knowledge base overview" })}
+        className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4"
       >
-        <form
-          onSubmit={handleSearch}
-          className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center"
-        >
-            <label className="relative min-w-0 flex-1">
-              <span className="sr-only">{t("kb.searchPlaceholder")}</span>
-              <Search
-                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-                aria-hidden="true"
-              />
-              <input
-                id="knowledge-base-search"
-                name="search"
-                type="search"
-                autoComplete="off"
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                placeholder={t("kb.searchPlaceholder")}
-                className="min-h-10 w-full rounded-lg border border-border bg-card py-2 pl-9 pr-3 text-[13px] text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-brand-400 focus:ring-2 focus:ring-brand-100 dark:focus:ring-brand-950"
-              />
-            </label>
-            <button
-              type="submit"
-              className="inline-flex min-h-10 w-full items-center justify-center rounded-lg bg-brand-600 px-5 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 sm:w-auto"
+        {stats.map((stat) => {
+          const StatIcon = stat.icon;
+          return (
+            <article
+              key={stat.label}
+              className={`relative min-h-[88px] overflow-hidden rounded-xl border px-4 py-3 shadow-sm ${stat.cardClass}`}
             >
+              <div className="relative z-10 flex items-center gap-3">
+                <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${stat.iconClass}`}>
+                  <StatIcon className="h-5 w-5" aria-hidden="true" />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-xl font-bold leading-none tabular-nums text-foreground">
+                    {stat.value}
+                  </p>
+                  <p className="mt-1 truncate text-[11px] font-medium text-muted-foreground">
+                    {stat.label}
+                  </p>
+                  {stat.trendLabel ? (
+                    <p className="mt-1.5 flex items-center gap-1.5 truncate text-[10px] text-muted-foreground">
+                      <span className="inline-flex shrink-0 items-center gap-0.5 font-semibold">
+                        <Minus className="h-3 w-3" aria-hidden="true" />
+                      </span>
+                      <span className="truncate">{stat.trendLabel}</span>
+                    </p>
+                  ) : (
+                    <p className="mt-1.5 truncate text-[10px] text-muted-foreground">
+                      {stat.helper}
+                    </p>
+                  )}
+                </div>
+              </div>
+              {stat.trendLabel && (
+                <svg
+                  viewBox="0 0 84 40"
+                  className="absolute bottom-3 right-2 h-10 w-20 text-slate-300 opacity-75 dark:text-slate-700"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M2 24 H82"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.7"
+                    strokeDasharray="4 4"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              )}
+            </article>
+          );
+        })}
+      </section>
+
+      {/* Search, sort, view toggle and category filters */}
+      <section aria-label={t("kb.searchPlaceholder")} className="space-y-3">
+        <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
+          <form onSubmit={handleSearch} className="relative min-w-0 flex-1">
+            <label htmlFor="knowledge-base-search" className="sr-only">
+              {t("kb.searchPlaceholder")}
+            </label>
+            <Search
+              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+              aria-hidden="true"
+            />
+            <input
+              id="knowledge-base-search"
+              name="search"
+              type="search"
+              autoComplete="off"
+              value={searchInput}
+              onChange={(event) => {
+                setSearchInput(event.target.value);
+                if (!event.target.value) {
+                  setSearch("");
+                  setPage(1);
+                }
+              }}
+              placeholder={t("kb.searchLongPlaceholder", {
+                defaultValue: "Search articles, keywords, or questions...",
+              })}
+              className="h-10 w-full rounded-lg border border-border bg-card py-2 pl-9 pr-3 text-[13px] text-foreground shadow-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-brand-400 focus:ring-2 focus:ring-brand-100 dark:focus:ring-brand-950"
+            />
+            <button type="submit" className="sr-only">
               {t("kb.search")}
             </button>
-        </form>
+          </form>
+
+          <label className="relative block min-w-[180px]">
+            <span className="sr-only">{t("kb.sortArticles", { defaultValue: "Sort articles" })}</span>
+            <ArrowUpDown
+              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+              aria-hidden="true"
+            />
+            <select
+              value={sortBy}
+              onChange={(event) => setSortBy(event.target.value as typeof sortBy)}
+              className="h-10 w-full rounded-lg border border-border bg-card pl-9 pr-8 text-[12px] font-medium text-foreground shadow-sm outline-none transition-colors focus:border-brand-400 focus:ring-2 focus:ring-brand-100 dark:focus:ring-brand-950"
+            >
+              <option value="most-viewed">
+                {t("kb.sortMostViewed", { defaultValue: "Sort: Most Viewed" })}
+              </option>
+              <option value="recent">{t("kb.sortRecent", { defaultValue: "Sort: Recent" })}</option>
+              <option value="title">{t("kb.sortTitle", { defaultValue: "Sort: Title" })}</option>
+            </select>
+          </label>
+
+          <div
+            role="group"
+            aria-label={t("kb.viewStyle", { defaultValue: "Article view style" })}
+            className="flex shrink-0 rounded-lg border border-border bg-card p-0.5 shadow-sm"
+          >
+            <button
+              type="button"
+              aria-label={t("kb.gridView", { defaultValue: "Grid view" })}
+              aria-pressed={viewMode === "grid"}
+              onClick={() => setViewMode("grid")}
+              className={`inline-flex h-9 w-10 items-center justify-center rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
+                viewMode === "grid"
+                  ? "bg-brand-600 text-white shadow-sm"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              }`}
+            >
+              <LayoutGrid className="h-4 w-4" aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              aria-label={t("kb.listView", { defaultValue: "List view" })}
+              aria-pressed={viewMode === "list"}
+              onClick={() => setViewMode("list")}
+              className={`inline-flex h-9 w-10 items-center justify-center rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
+                viewMode === "list"
+                  ? "bg-brand-600 text-white shadow-sm"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              }`}
+            >
+              <List className="h-4 w-4" aria-hidden="true" />
+            </button>
+          </div>
+        </div>
+
         <div
           role="group"
           aria-label={t("kb.categoryLabel")}
-          className="mt-3 flex max-w-full items-center gap-1 overflow-x-auto rounded-lg bg-muted/50 p-1"
+          className="flex max-w-full items-center gap-2 overflow-x-auto pb-0.5"
         >
           <button
             type="button"
@@ -632,36 +937,48 @@ export default function KnowledgeBasePage() {
               setCategory("");
               setPage(1);
             }}
-            className={`inline-flex min-h-9 shrink-0 items-center rounded-md px-3 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
+            className={`inline-flex h-9 shrink-0 items-center gap-2 rounded-lg border px-3 text-xs font-semibold shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
               !category
-                ? "bg-brand-600 text-white shadow-sm"
-                : "text-muted-foreground hover:bg-card hover:text-foreground"
+                ? "border-brand-600 bg-brand-600 text-white"
+                : "border-border bg-card text-muted-foreground hover:border-brand-200 hover:text-foreground"
             }`}
           >
             {t("kb.all")}
+            <span className={`rounded-full px-1.5 py-0.5 text-[10px] ${!category ? "bg-white/20" : "bg-muted"}`}>
+              {libraryTotal}
+            </span>
           </button>
-          {CATEGORIES.map((c) => (
-            <button
-              key={c}
-              type="button"
-              aria-pressed={category === c}
-              onClick={() => {
-                setCategory(c);
-                setPage(1);
-              }}
-              className={`inline-flex min-h-9 shrink-0 items-center rounded-md px-3 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
-                category === c
-                  ? "bg-brand-600 text-white shadow-sm"
-                  : "text-muted-foreground hover:bg-card hover:text-foreground"
-              }`}
-            >
-              {categoryLabel(c, t)}
-            </button>
-          ))}
+          {CATEGORIES.map((categoryName) => {
+            const categoryUi = CATEGORY_UI[categoryName] || CATEGORY_UI.general;
+            const CategoryIcon = categoryUi.icon;
+            const active = category === categoryName;
+            return (
+              <button
+                key={categoryName}
+                type="button"
+                aria-pressed={active}
+                onClick={() => {
+                  setCategory(categoryName);
+                  setPage(1);
+                }}
+                className={`inline-flex h-9 shrink-0 items-center gap-2 rounded-lg border px-3 text-xs font-semibold shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
+                  active
+                    ? "border-brand-600 bg-brand-600 text-white"
+                    : categoryUi.pill
+                }`}
+              >
+                <CategoryIcon className="h-3.5 w-3.5" aria-hidden="true" />
+                {categoryLabel(categoryName, t)}
+                <span className={`rounded-full px-1.5 py-0.5 text-[10px] ${active ? "bg-white/20" : "bg-white/70 dark:bg-black/10"}`}>
+                  {categoryCounts[categoryName] || 0}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </section>
 
-      {/* Articles Grid */}
+      {/* Articles */}
       {isLoading ? (
         <div
           className="flex min-h-44 flex-col items-center justify-center rounded-xl border border-border bg-card p-6 text-center shadow-sm"
@@ -674,9 +991,7 @@ export default function KnowledgeBasePage() {
               aria-hidden="true"
             />
           </span>
-          <p className="mt-3 text-sm font-semibold text-foreground">
-            {t("kb.loading")}
-          </p>
+          <p className="mt-3 text-sm font-semibold text-foreground">{t("kb.loading")}</p>
         </div>
       ) : isError && !data ? (
         <div
@@ -686,9 +1001,7 @@ export default function KnowledgeBasePage() {
           <span className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
             <BookMarked className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
           </span>
-          <p className="mt-3 text-sm font-semibold text-foreground">
-            {t("common.error")}
-          </p>
+          <p className="mt-3 text-sm font-semibold text-foreground">{t("common.error")}</p>
           <button
             type="button"
             onClick={() => void refetch()}
@@ -706,134 +1019,169 @@ export default function KnowledgeBasePage() {
           <span className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
             <BookMarked className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
           </span>
-          <p className="mt-3 text-sm font-semibold text-foreground">
-            {t("kb.noArticles")}
-          </p>
+          <p className="mt-3 text-sm font-semibold text-foreground">{t("kb.noArticles")}</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            {search
-              ? t("kb.tryDifferentSearch")
-              : t("kb.emptyHint")}
+            {search ? t("kb.tryDifferentSearch") : t("kb.emptyHint")}
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {articles.map((a: any) => (
-            <article
-              key={a.id}
-              className="group relative rounded-xl border border-border bg-card p-4 shadow-sm transition-[transform,box-shadow,border-color] hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-md motion-reduce:transform-none motion-reduce:transition-none"
-            >
-              {isHR && (
-                <div className="absolute right-3 top-3 z-10 flex items-center gap-1">
-                  <button
-                    type="button"
-                    aria-label={t("kb.editArticleTooltip")}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      startEdit(a);
-                    }}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-                    title={t("kb.editArticleTooltip")}
-                  >
-                    <Pencil className="h-4 w-4" aria-hidden="true" />
-                  </button>
-                  <button
-                    type="button"
-                    aria-label={t("kb.deleteArticleTooltip")}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setDeleteTarget({ id: a.id, title: a.title });
-                      setDeleteError(null);
-                    }}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 dark:hover:bg-red-950/40"
-                    title={t("kb.deleteArticleTooltip")}
-                  >
-                    <Trash2 className="h-4 w-4" aria-hidden="true" />
-                  </button>
-                </div>
-              )}
-              <button
-                type="button"
-                onClick={() => void handleViewArticle(a.slug || a.id)}
-                className="block w-full rounded-lg text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+        <div
+          className={
+            viewMode === "grid"
+              ? "grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4"
+              : "grid grid-cols-1 gap-3"
+          }
+        >
+          {sortedArticles.map((article: any) => {
+            const articleCategory = String(article.category || "general");
+            const categoryUi = CATEGORY_UI[articleCategory] || CATEGORY_UI.general;
+            const CategoryIcon = categoryUi.icon;
+            return (
+              <article
+                key={article.id}
+                className={`group relative overflow-hidden rounded-xl border border-border bg-card p-3 shadow-sm transition-[transform,box-shadow,border-color] hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-md motion-reduce:transform-none motion-reduce:transition-none ${
+                  viewMode === "grid" ? "min-h-[130px]" : "min-h-[108px]"
+                }`}
               >
-                <div className={`mb-2 flex items-center gap-2 ${isHR ? "pr-20" : ""}`}>
+                <div className="absolute right-2 top-2 z-10 flex items-center gap-0.5 text-muted-foreground">
                   <span
-                    className={`rounded px-2 py-0.5 text-xs font-medium ${
-                      CATEGORY_COLORS[a.category] || "bg-muted text-muted-foreground"
-                    }`}
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-md"
+                    aria-hidden="true"
                   >
-                    {categoryLabel(a.category, t)}
-                  </span>
-                  {Boolean(a.is_featured) && (
-                    <Star
-                      className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400"
-                      aria-label={t("kb.featured")}
+                    <Bookmark
+                      className={`h-3.5 w-3.5 ${article.is_featured ? "fill-brand-500 text-brand-500" : ""}`}
                     />
+                  </span>
+                  {isHR ? (
+                    <button
+                      type="button"
+                      aria-label={t("kb.editArticleTooltip")}
+                      title={t("kb.editArticleTooltip")}
+                      onClick={() => startEdit(article)}
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                    >
+                      <MoreVertical className="h-4 w-4" aria-hidden="true" />
+                    </button>
+                  ) : (
+                    <MoreVertical className="h-4 w-4" aria-hidden="true" />
                   )}
                 </div>
-                <h3 className="mb-1 line-clamp-2 text-sm font-semibold text-foreground">
-                  {a.title}
-                </h3>
-                {/* Card previews strip HTML so the snippet stays readable
-                    even when authors saved their content with markup
-                    (#1634). The detail view above still renders the
-                    sanitized HTML. */}
-                <p className="mb-3 line-clamp-3 text-xs text-muted-foreground">
-                  {(a.content || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()}
-                </p>
-                <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-                  {a.view_count > 0 && (
-                    <span className="flex items-center gap-1">
-                      <Eye className="h-3 w-3" aria-hidden="true" /> {a.view_count}
+
+                <button
+                  type="button"
+                  onClick={() => void handleViewArticle(article.slug || article.id)}
+                  className="block h-full w-full rounded-lg text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+                >
+                  <span className={`flex gap-3 ${viewMode === "list" ? "items-center" : "items-start"}`}>
+                    <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${categoryUi.iconBox}`}>
+                      <CategoryIcon className="h-5 w-5" aria-hidden="true" />
                     </span>
-                  )}
-                  {a.helpful_count > 0 && (
-                    <span className="flex items-center gap-1">
-                      <ThumbsUp className="h-3 w-3" aria-hidden="true" /> {a.helpful_count}
+                    <span className="min-w-0 flex-1 pr-14">
+                      <span
+                        className={`inline-flex rounded-md px-2 py-0.5 text-[10px] font-semibold ${
+                          CATEGORY_COLORS[articleCategory] || CATEGORY_COLORS.general
+                        }`}
+                      >
+                        {categoryLabel(articleCategory, t)}
+                      </span>
+                      <span className="mt-1 block line-clamp-1 text-[13px] font-semibold leading-5 text-foreground">
+                        {article.title}
+                      </span>
+                      <span className={`mt-0.5 block text-[11px] leading-4 text-muted-foreground ${viewMode === "grid" ? "line-clamp-2" : "line-clamp-1"}`}>
+                        {stripHtml(article.content || "")}
+                      </span>
                     </span>
-                  )}
-                  {(a.not_helpful_count ?? 0) > 0 && (
-                    <span className="flex items-center gap-1">
-                      <ThumbsDown className="h-3 w-3" aria-hidden="true" /> {a.not_helpful_count}
+                  </span>
+
+                  <span className="mt-3 flex min-w-0 items-end justify-between gap-3 border-t border-border/60 pt-2">
+                    <span className="flex shrink-0 items-center gap-3 text-[10px] text-muted-foreground">
+                      <span className="inline-flex items-center gap-1">
+                        <Eye className="h-3 w-3" aria-hidden="true" /> {Number(article.view_count || 0)}
+                      </span>
+                      <span className="inline-flex items-center gap-1">
+                        <ThumbsUp className="h-3 w-3" aria-hidden="true" /> {Number(article.helpful_count || 0)}
+                      </span>
+                      {Number(article.not_helpful_count || 0) > 0 && (
+                        <span className="inline-flex items-center gap-1">
+                          <ThumbsDown className="h-3 w-3" aria-hidden="true" /> {Number(article.not_helpful_count || 0)}
+                        </span>
+                      )}
                     </span>
-                  )}
-                  <span>{a.author_name}</span>
-                </div>
-              </button>
-            </article>
-          ))}
+                    <span className="flex min-w-0 items-center gap-2 text-right">
+                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-purple-100 text-[9px] font-bold text-purple-700 dark:bg-purple-950/50 dark:text-purple-300">
+                        {initials(article.author_name)}
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block max-w-24 truncate text-[10px] font-medium leading-3 text-muted-foreground">
+                          {article.author_name || t("kb.unknownAuthor", { defaultValue: "Unknown author" })}
+                        </span>
+                        <span className="block whitespace-nowrap text-[9px] leading-3 text-muted-foreground/80">
+                          {articleDate(article.created_at)}
+                        </span>
+                      </span>
+                    </span>
+                  </span>
+                </button>
+              </article>
+            );
+          })}
         </div>
       )}
 
-      {/* Pagination */}
-      {meta && meta.total_pages > 1 && (
+      {meta && articles.length > 0 && (
         <nav
           aria-label={t("kb.title")}
-          className="flex flex-col gap-3 rounded-xl border border-border bg-card p-3 shadow-sm sm:flex-row sm:items-center sm:justify-between"
+          className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
         >
           <p className="text-xs text-muted-foreground">
-            {t("kb.pageOf", { page: meta.page, total_pages: meta.total_pages, total: meta.total })}
+            {t("kb.showingArticles", {
+              defaultValue: "Showing {{start}}–{{end}} of {{total}} articles",
+              start: resultStart,
+              end: resultEnd,
+              total: meta.total,
+            })}
           </p>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="inline-flex min-h-10 flex-1 items-center justify-center gap-1 rounded-lg border border-border bg-card px-3 text-[13px] font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none"
-            >
-              <ChevronLeft className="h-4 w-4 rtl:rotate-180" aria-hidden="true" />
-              {t("kb.previous")}
-            </button>
-            <button
-              type="button"
-              onClick={() => setPage((p) => p + 1)}
-              disabled={page >= meta.total_pages}
-              className="inline-flex min-h-10 flex-1 items-center justify-center gap-1 rounded-lg border border-border bg-card px-3 text-[13px] font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none"
-            >
-              {t("kb.next")}
-              <ChevronRight className="h-4 w-4 rtl:rotate-180" aria-hidden="true" />
-            </button>
-          </div>
+          {totalPages > 1 && (
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                aria-label={t("kb.previous")}
+                onClick={() => setPage((currentPage) => Math.max(1, currentPage - 1))}
+                disabled={page === 1}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border bg-card text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                <ChevronLeft className="h-3.5 w-3.5 rtl:rotate-180" aria-hidden="true" />
+              </button>
+              {visiblePages.map((pageNumber) => (
+                <button
+                  key={pageNumber}
+                  type="button"
+                  aria-label={t("kb.goToPage", {
+                    defaultValue: "Go to page {{page}}",
+                    page: pageNumber,
+                  })}
+                  aria-current={pageNumber === page ? "page" : undefined}
+                  onClick={() => setPage(pageNumber)}
+                  className={`inline-flex h-8 min-w-8 items-center justify-center rounded-md border px-2 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
+                    pageNumber === page
+                      ? "border-brand-600 bg-brand-600 text-white"
+                      : "border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground"
+                  }`}
+                >
+                  {pageNumber}
+                </button>
+              ))}
+              <button
+                type="button"
+                aria-label={t("kb.next")}
+                onClick={() => setPage((currentPage) => Math.min(totalPages, currentPage + 1))}
+                disabled={page >= totalPages}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border bg-card text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                <ChevronRight className="h-3.5 w-3.5 rtl:rotate-180" aria-hidden="true" />
+              </button>
+            </div>
+          )}
         </nav>
       )}
 

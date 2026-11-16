@@ -73,12 +73,12 @@ export function MessageAttachment({
         type="button"
         onClick={openBlob}
         title={attachment.name}
-        className="block overflow-hidden rounded-xl border border-gray-200 bg-gray-50 max-w-[260px]"
+        className="block max-w-[260px] overflow-hidden rounded-lg border border-border bg-muted/50"
       >
         {isLoading ? (
-          <div className="h-40 w-60 animate-pulse bg-gray-200" />
+          <div className="h-40 w-60 animate-pulse bg-muted" />
         ) : isError || !blobUrl ? (
-          <div className="flex h-40 w-60 items-center justify-center text-gray-400">
+          <div className="flex h-40 w-60 items-center justify-center text-muted-foreground">
             <ImageIcon className="h-8 w-8" />
           </div>
         ) : (
@@ -100,10 +100,10 @@ export function MessageAttachment({
       onClick={openBlob}
       disabled={!blobUrl}
       title={t("messageAttachment.card.openTitle", { name: attachment.name })}
-      className={`flex items-center gap-3 rounded-xl border px-3 py-2.5 text-left max-w-[260px] transition-colors ${
+      className={`flex max-w-[260px] items-center gap-3 rounded-lg border px-3 py-2.5 text-left transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
         onBrand
           ? "border-white/30 bg-white/10 hover:bg-white/20"
-          : "border-gray-200 bg-white hover:bg-gray-50 shadow-sm"
+          : "border-border bg-card shadow-sm hover:bg-muted/70"
       }`}
     >
       <div
@@ -115,16 +115,16 @@ export function MessageAttachment({
       </div>
       <div className="min-w-0 flex-1">
         <p
-          className={`truncate text-sm font-medium ${onBrand ? "text-white" : "text-gray-800"}`}
+          className={`truncate text-[13px] font-medium ${onBrand ? "text-white" : "text-foreground"}`}
         >
           {attachment.name}
         </p>
-        <p className={`text-[11px] ${onBrand ? "text-white/70" : "text-gray-400"}`}>
+        <p className={`text-[11px] tabular-nums ${onBrand ? "text-white/70" : "text-muted-foreground"}`}>
           {formatFileSize(attachment.size)}
         </p>
       </div>
       <Download
-        className={`h-4 w-4 flex-shrink-0 ${onBrand ? "text-white/80" : "text-gray-400"}`}
+        className={`h-4 w-4 flex-shrink-0 ${onBrand ? "text-white/80" : "text-muted-foreground"}`}
       />
     </button>
   );

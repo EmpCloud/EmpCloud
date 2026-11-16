@@ -159,7 +159,7 @@ export default function LogDashboardPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t("logDashboard.title")}</h1>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("logDashboard.title")}</h1>
           <p className="text-sm text-muted-foreground mt-1">
             {t("logDashboard.subtitle")}
           </p>
@@ -202,27 +202,27 @@ export default function LogDashboardPage() {
         <div className="space-y-6">
           {/* Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-card border border-border rounded-xl p-5">
+            <div className="rounded-lg border border-border bg-card p-3 transition-colors duration-150 hover:border-brand-400">
               <div className="text-sm text-muted-foreground mb-1">{t("logDashboard.stats.auditEvents")}</div>
-              <div className="text-2xl font-bold text-foreground">
+              <div className="text-2xl font-semibold tabular-nums text-foreground">
                 {summary?.audit_events?.toLocaleString() ?? "--"}
               </div>
             </div>
-            <div className="bg-card border border-border rounded-xl p-5">
+            <div className="rounded-lg border border-border bg-card p-3 transition-colors duration-150 hover:border-brand-400">
               <div className="text-sm text-muted-foreground mb-1">{t("logDashboard.stats.fileErrors")}</div>
-              <div className="text-2xl font-bold text-red-600 dark:text-red-400">
+              <div className="text-2xl font-semibold tabular-nums text-red-600 dark:text-red-400">
                 {summary?.file_errors?.toLocaleString() ?? "--"}
               </div>
             </div>
-            <div className="bg-card border border-border rounded-xl p-5">
+            <div className="rounded-lg border border-border bg-card p-3 transition-colors duration-150 hover:border-brand-400">
               <div className="text-sm text-muted-foreground mb-1">{t("logDashboard.stats.slowQueries")}</div>
-              <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">
+              <div className="text-2xl font-semibold tabular-nums text-amber-600 dark:text-amber-400">
                 {slowQ.data?.meta?.total?.toLocaleString() ?? "--"}
               </div>
             </div>
-            <div className="bg-card border border-border rounded-xl p-5">
+            <div className="rounded-lg border border-border bg-card p-3 transition-colors duration-150 hover:border-brand-400">
               <div className="text-sm text-muted-foreground mb-1">{t("logDashboard.stats.healthyModules")}</div>
-              <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+              <div className="text-2xl font-semibold tabular-nums text-green-600 dark:text-green-400">
                 {healthData.filter((h) => h.status === "healthy").length} / {healthData.length || "--"}
               </div>
             </div>
@@ -230,7 +230,7 @@ export default function LogDashboardPage() {
 
           {/* Errors by Action */}
           {summary && summary.errors_by_action.length > 0 && (
-            <div className="bg-card border border-border rounded-xl p-5">
+            <div className="rounded-lg border border-border bg-card p-4">
               <h3 className="text-sm font-semibold text-muted-foreground mb-3">
                 {t("logDashboard.sections.errorsByAction")}
               </h3>
@@ -254,7 +254,7 @@ export default function LogDashboardPage() {
 
           {/* Module Error Breakdown */}
           {summary && (
-            <div className="bg-card border border-border rounded-xl p-5">
+            <div className="rounded-lg border border-border bg-card p-4">
               <h3 className="text-sm font-semibold text-muted-foreground mb-3">
                 {t("logDashboard.sections.errorsPerModule")}
               </h3>
@@ -291,7 +291,7 @@ export default function LogDashboardPage() {
           )}
 
           {/* Module Health Cards */}
-          <div className="bg-card border border-border rounded-xl p-5">
+          <div className="rounded-lg border border-border bg-card p-4">
             <h3 className="text-sm font-semibold text-muted-foreground mb-3">
               {t("logDashboard.sections.moduleHealth")}
             </h3>
@@ -320,7 +320,7 @@ export default function LogDashboardPage() {
 
       {/* Errors Tab */}
       {activeTab === "errors" && (
-        <div className="bg-card border border-border rounded-xl">
+        <div className="rounded-lg border border-border bg-card">
           <div className="p-5 border-b border-border">
             <h3 className="font-semibold text-foreground">{t("logDashboard.errors.title")}</h3>
             <p className="text-sm text-muted-foreground mt-1">
@@ -411,7 +411,7 @@ export default function LogDashboardPage() {
 
       {/* Slow Queries Tab */}
       {activeTab === "slow" && (
-        <div className="bg-card border border-border rounded-xl">
+        <div className="rounded-lg border border-border bg-card">
           <div className="p-5 border-b border-border">
             <h3 className="font-semibold text-foreground">{t("logDashboard.slow.title")}</h3>
             <p className="text-sm text-muted-foreground mt-1">
@@ -470,7 +470,7 @@ export default function LogDashboardPage() {
 
       {/* Auth Events Tab */}
       {activeTab === "auth" && (
-        <div className="bg-card border border-border rounded-xl">
+        <div className="rounded-lg border border-border bg-card">
           <div className="p-5 border-b border-border">
             <h3 className="font-semibold text-foreground">{t("logDashboard.auth.title")}</h3>
             <p className="text-sm text-muted-foreground mt-1">
@@ -551,7 +551,7 @@ export default function LogDashboardPage() {
           {healthData.map((mod) => (
             <div
               key={mod.name}
-              className={`flex items-center gap-4 p-5 rounded-xl border ${statusBg(mod.status)}`}
+              className={`flex items-center gap-3 rounded-lg border p-4 ${statusBg(mod.status)}`}
             >
               {statusIcon(mod.status)}
               <div className="flex-1">
@@ -570,7 +570,7 @@ export default function LogDashboardPage() {
             </div>
           ))}
           {healthData.length === 0 && (
-            <div className="bg-card border border-border rounded-xl p-8 text-center text-muted-foreground">
+            <div className="rounded-lg border border-border bg-card p-8 text-center text-muted-foreground">
               {healthQ.isLoading
                 ? t("logDashboard.healthTab.loading")
                 : t("logDashboard.healthTab.empty")}

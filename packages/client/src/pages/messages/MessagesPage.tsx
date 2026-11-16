@@ -78,14 +78,17 @@ function ConversationRow({
 
   return (
     <button
+      type="button"
       onClick={onClick}
-      className={`w-full flex items-start gap-3 px-3 py-3 rounded-lg text-left transition-colors ${
-        active ? "bg-brand-50 border border-brand-200" : "hover:bg-gray-50 border border-transparent"
+      className={`w-full flex items-start gap-3 rounded-md border px-3 py-2.5 text-left transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
+        active
+          ? "border-brand-200 bg-brand-50 dark:border-brand-900/70 dark:bg-brand-950/30"
+          : "border-transparent hover:bg-muted/70"
       }`}
     >
       {conv.is_self ? (
         <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-brand-100 text-brand-600">
-          <Bookmark className="h-5 w-5" />
+          <Bookmark aria-hidden="true" className="h-5 w-5" />
         </div>
       ) : isGroup ? (
         <GroupAvatar url={conv.avatar_url} />
@@ -102,16 +105,16 @@ function ConversationRow({
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-2">
           <span className="flex min-w-0 items-center gap-1">
-            <span className={`text-sm truncate ${conv.unread_count > 0 ? "font-semibold text-gray-900" : "font-medium text-gray-800"}`}>
+            <span className={`truncate text-[13px] text-foreground ${conv.unread_count > 0 ? "font-semibold" : "font-medium"}`}>
               {conv.title}
             </span>
             {conv.is_muted && (
-              <BellOff className="h-3 w-3 flex-shrink-0 text-gray-400" aria-label={t("messagesPage.conversationRow.mutedAriaLabel")} />
+              <BellOff className="h-3 w-3 flex-shrink-0 text-muted-foreground" aria-label={t("messagesPage.conversationRow.mutedAriaLabel")} />
             )}
           </span>
           {conv.last_message_at && (
             <span
-              className="text-[11px] text-gray-400 flex-shrink-0"
+              className="flex-shrink-0 text-[11px] tabular-nums text-muted-foreground"
               title={new Date(conv.last_message_at).toLocaleString()}
             >
               {relativeTime(conv.last_message_at)}
@@ -119,7 +122,7 @@ function ConversationRow({
           )}
         </div>
         <div className="flex items-center justify-between gap-2 mt-0.5">
-          <span className={`text-xs truncate ${conv.unread_count > 0 ? "text-gray-700" : "text-gray-400"}`}>
+          <span className={`truncate text-xs ${conv.unread_count > 0 ? "text-foreground" : "text-muted-foreground"}`}>
             {conv.last_message ?? (isGroup ? t("messagesPage.conversationRow.groupCreated") : t("messagesPage.conversationRow.noMessagesYet"))}
           </span>
           {conv.unread_count > 0 && (
@@ -127,7 +130,7 @@ function ConversationRow({
             // it doesn't draw attention the way an active brand-coloured one does.
             <span
               className={`inline-flex items-center justify-center h-5 min-w-[1.25rem] px-1.5 text-[11px] font-bold text-white rounded-full flex-shrink-0 ${
-                conv.is_muted ? "bg-gray-400" : "bg-brand-600"
+                conv.is_muted ? "bg-muted-foreground" : "bg-brand-600"
               }`}
             >
               {conv.unread_count > 99 ? t("messagesPage.conversationRow.unreadCountOverflow") : conv.unread_count}
@@ -256,18 +259,18 @@ export default function MessagesPage() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)]">
+    <div className="mx-auto flex h-[calc(100vh-8rem)] w-full max-w-[1600px] flex-col">
       <EnableNotificationsBanner />
-      <div className="flex flex-1 min-h-0 bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+      <div className="flex min-h-0 flex-1 overflow-hidden rounded-lg border border-border bg-card shadow-sm">
         {/* ---------------- LEFT: conversation list ----------------
             On mobile, hide the list once a conversation is open so the
             thread takes the full width (the thread's back button returns). */}
         <aside
           className={`${
             activeId ? "hidden sm:flex" : "flex"
-          } w-full sm:w-80 lg:w-[22rem] flex-shrink-0 border-r border-gray-200 flex-col min-h-0`}
+          } min-h-0 w-full flex-shrink-0 flex-col border-e border-border sm:w-80 lg:w-[22rem]`}
         >
-          <div className="px-4 pt-4 pb-3 border-b border-gray-100">
+          <div className="border-b border-border px-3 py-3">
             <div className="flex items-center justify-between mb-3 flex-shrink-0">
               <div className="flex items-center gap-3 min-w-0">
                 {/* My profile — compact avatar; click opens a small popover to
@@ -278,7 +281,7 @@ export default function MessagesPage() {
                     onClick={() => setShowProfile((v) => !v)}
                     title={t("messagesPage.profile.yourProfileTitle")}
                     aria-label={t("messagesPage.profile.yourProfileTitle")}
-                    className="relative block rounded-full ring-2 ring-transparent hover:ring-brand-200"
+                    className="relative block rounded-full ring-2 ring-transparent transition-shadow duration-150 hover:ring-brand-200 focus-visible:outline-none focus-visible:ring-brand-500"
                   >
                     <EmployeeAvatar
                       key={photoBust}
@@ -289,13 +292,18 @@ export default function MessagesPage() {
                       size="md"
                     />
                     {/* You're online whenever you're using the app. */}
-                    <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-white bg-green-500" />
+                    <span aria-hidden="true" className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-card bg-green-500" />
                   </button>
                   {showProfile && (
                     <>
                       {/* click-away backdrop */}
-                      <div className="fixed inset-0 z-30" onClick={() => setShowProfile(false)} />
-                      <div className="absolute left-0 top-full z-40 mt-2 w-64 rounded-xl border border-gray-200 bg-white p-3 shadow-lg">
+                      <button
+                        type="button"
+                        className="fixed inset-0 z-30 cursor-default"
+                        onClick={() => setShowProfile(false)}
+                        aria-label={t("common.close")}
+                      />
+                      <div className="absolute left-0 top-full z-40 mt-2 w-64 rounded-lg border border-border bg-card p-3 shadow-lg">
                         <div className="flex items-center gap-3">
                           <button
                             type="button"
@@ -312,7 +320,7 @@ export default function MessagesPage() {
                               lastName={me?.last_name}
                               size="md"
                             />
-                            <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/0 text-white opacity-0 transition group-hover:bg-black/40 group-hover:opacity-100">
+                            <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center rounded-full bg-black/0 text-white opacity-0 transition-[background-color,opacity] duration-150 group-hover:bg-black/40 group-hover:opacity-100">
                               <Camera className="h-4 w-4" />
                             </span>
                           </button>
@@ -323,13 +331,13 @@ export default function MessagesPage() {
                             className="hidden"
                             onChange={(e) => handleMyPhoto(e.target.files?.[0] ?? null)}
                           />
-                          <p className="truncate text-sm font-semibold text-gray-900">
+                          <p className="truncate text-[13px] font-semibold text-foreground">
                             {me ? `${me.first_name} ${me.last_name}` : t("messagesPage.profile.youFallback")}
                           </p>
                         </div>
                         {/* Status */}
                         <div className="mt-3">
-                          <p className="mb-1 text-[11px] font-medium uppercase tracking-wide text-gray-400">
+                          <p className="mb-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
                             {t("messagesPage.profile.statusLabel")}
                           </p>
                           {editingStatus ? (
@@ -343,14 +351,16 @@ export default function MessagesPage() {
                                   else if (e.key === "Escape") setEditingStatus(false);
                                 }}
                                 maxLength={140}
+                                name="chat-status"
+                                aria-label={t("messagesPage.profile.statusLabel")}
                                 placeholder={t("messagesPage.profile.statusPlaceholder")}
                                 data-gramm="false"
-                                className="min-w-0 flex-1 rounded-lg border border-brand-300 px-2 py-1 text-xs outline-none focus:ring-1 focus:ring-brand-200"
+                                className="min-w-0 flex-1 rounded-md border border-brand-300 bg-background px-2 py-1 text-xs text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                               />
                               <button
                                 type="button"
                                 onClick={saveStatus}
-                                className="rounded-lg bg-brand-600 px-2 py-1 text-xs font-medium text-white hover:bg-brand-700"
+                                className="rounded-md bg-brand-600 px-2 py-1 text-xs font-medium text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
                               >
                                 {t("messagesPage.profile.save")}
                               </button>
@@ -363,9 +373,9 @@ export default function MessagesPage() {
                                 setEditingStatus(true);
                               }}
                               title={t("messagesPage.profile.setStatusTitle")}
-                              className="flex w-full items-center gap-1.5 rounded-lg px-2 py-1 text-left text-sm text-gray-600 hover:bg-gray-50"
+                              className="flex w-full items-center gap-1.5 rounded-md px-2 py-1 text-left text-[13px] text-muted-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                             >
-                              <Pencil className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
+                              <Pencil aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" />
                               <span className="truncate">
                                 {myStatus?.status || t("messagesPage.profile.statusPlaceholder")}
                               </span>
@@ -376,9 +386,9 @@ export default function MessagesPage() {
                         <button
                           type="button"
                           onClick={openSelfChat}
-                          className="mt-3 flex w-full items-center gap-2 rounded-lg border-t border-gray-100 px-2 pt-3 text-left text-sm text-brand-700 hover:text-brand-800"
+                          className="mt-3 flex w-full items-center gap-2 border-t border-border px-2 pt-3 text-left text-[13px] text-brand-700 hover:text-brand-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-brand-300 dark:hover:text-brand-200"
                         >
-                          <Bookmark className="h-4 w-4 flex-shrink-0" />
+                          <Bookmark aria-hidden="true" className="h-4 w-4 flex-shrink-0" />
                           {t("messagesPage.profile.messageYourself")}
                         </button>
                       </div>
@@ -389,29 +399,32 @@ export default function MessagesPage() {
                 <button
                   type="button"
                   onClick={() => setShowProfile((v) => !v)}
-                  className="min-w-0 text-left"
+                  className="min-w-0 rounded-md text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                   title={t("messagesPage.profile.yourProfileTitle")}
                 >
-                  <p className="truncate text-base font-semibold leading-snug text-gray-900">
+                  <p className="truncate text-sm font-semibold leading-snug text-foreground">
                     {me ? `${me.first_name} ${me.last_name}` : t("messagesPage.profile.youFallback")}
                   </p>
-                  <p className="truncate text-xs leading-snug text-gray-500">
+                  <p className="truncate text-xs leading-snug text-muted-foreground">
                     {myStatus?.status || t("messagesPage.profile.statusPlaceholder")}
                   </p>
                 </button>
               </div>
               <button
+                type="button"
                 onClick={() => setShowNewChat(true)}
-                className="flex items-center gap-1.5 bg-brand-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-brand-700 flex-shrink-0"
+                className="flex flex-shrink-0 items-center gap-1.5 rounded-md bg-brand-600 px-3 py-2 text-xs font-medium text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
               >
-                <Plus className="h-4 w-4" /> {t("messagesPage.list.newChat")}
+                <Plus aria-hidden="true" className="h-4 w-4" /> {t("messagesPage.list.newChat")}
               </button>
             </div>
             <div className="relative h-10">
-              <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 z-10" />
+              <Search aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
                 type="text"
                 value={search}
+                name="message-search"
+                aria-label={t("messagesPage.search.placeholder")}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={t("messagesPage.search.placeholder")}
                 // data-gramm*: stop Grammarly/extensions from injecting an overlay
@@ -419,7 +432,7 @@ export default function MessagesPage() {
                 data-gramm="false"
                 data-gramm_editor="false"
                 data-enable-grammarly="false"
-                className="absolute inset-0 w-full h-full pl-9 pr-3 border border-gray-300 rounded-lg text-sm outline-none transition-colors focus:border-brand-400 focus:ring-1 focus:ring-brand-200"
+                className="absolute inset-0 h-full w-full rounded-md border border-border bg-background pl-9 pr-3 text-[13px] text-foreground transition-colors duration-150 placeholder:text-muted-foreground focus-visible:border-brand-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
               />
             </div>
           </div>
@@ -431,9 +444,9 @@ export default function MessagesPage() {
               <button
                 type="button"
                 onClick={() => setShowArchived((v) => !v)}
-                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-medium text-gray-600 hover:bg-gray-50"
+                className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-xs font-medium text-muted-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
               >
-                <Archive className="h-4 w-4 text-gray-400" />
+                <Archive aria-hidden="true" className="h-4 w-4 text-muted-foreground" />
                 {showArchived
                   ? t("messagesPage.list.backToChats")
                   : archivedCount > 0
@@ -445,26 +458,26 @@ export default function MessagesPage() {
               <div className="space-y-2 p-1">
                 {[1, 2, 3, 4].map((i) => (
                   <div key={i} className="flex items-center gap-3 p-2 animate-pulse">
-                    <div className="h-10 w-10 rounded-full bg-gray-200 flex-shrink-0" />
+                    <div className="h-10 w-10 flex-shrink-0 rounded-full bg-muted" />
                     <div className="flex-1 space-y-2">
-                      <div className="h-3 w-2/3 bg-gray-200 rounded" />
-                      <div className="h-2.5 w-full bg-gray-100 rounded" />
+                      <div className="h-3 w-2/3 rounded bg-muted" />
+                      <div className="h-2.5 w-full rounded bg-muted/60" />
                     </div>
                   </div>
                 ))}
               </div>
             ) : isError ? (
-              <div className="p-6 text-center text-sm text-red-500">
+              <div role="alert" className="p-6 text-center text-[13px] text-red-600 dark:text-red-300">
                 {t("messagesPage.list.loadError")}
               </div>
             ) : filtered.length === 0 ? (
-              <div className="flex flex-col items-center justify-center text-center px-6 py-12 text-gray-400">
-                <MessagesSquare className="h-10 w-10 mb-3 text-gray-300" />
+              <div className="flex flex-col items-center justify-center px-6 py-12 text-center text-muted-foreground">
+                <MessagesSquare aria-hidden="true" className="mb-3 h-10 w-10" />
                 {search ? (
                   <p className="text-sm">{t("messagesPage.list.noSearchMatch", { query: search })}</p>
                 ) : (
                   <>
-                    <p className="text-sm font-medium text-gray-500">{t("messagesPage.list.noConversationsTitle")}</p>
+                    <p className="text-sm font-medium text-foreground">{t("messagesPage.list.noConversationsTitle")}</p>
                     <p className="text-xs mt-1">{t("messagesPage.list.noConversationsHint")}</p>
                   </>
                 )}
@@ -485,14 +498,14 @@ export default function MessagesPage() {
             {/* Message-body search results (server-backed) */}
             {debouncedSearch.trim().length >= 2 && (
               <div className="mt-1">
-                <p className="px-2 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400">
+                <p className="px-2 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                   {t("messagesPage.search.messagesHeader")}
                   {searchingMessages && (
-                    <span className="ml-2 inline-block h-3 w-3 align-middle border-2 border-gray-300 border-t-brand-500 rounded-full animate-spin" />
+                    <span aria-hidden="true" className="ml-2 inline-block h-3 w-3 animate-spin rounded-full border-2 border-border border-t-brand-500 align-middle" />
                   )}
                 </p>
                 {!searchingMessages && !showMessageResults ? (
-                  <p className="px-2 py-2 text-xs text-gray-400">
+                  <p className="px-2 py-2 text-xs text-muted-foreground">
                     {t("messagesPage.search.noMessageMatch", { query: debouncedSearch.trim() })}
                   </p>
                 ) : (
@@ -500,21 +513,21 @@ export default function MessagesPage() {
                     <button
                       key={hit.message_id}
                       onClick={() => openFromSearch(hit.conversation_id)}
-                      className="flex w-full flex-col items-start gap-0.5 rounded-lg px-2 py-2 text-left hover:bg-gray-50"
+                      className="flex w-full flex-col items-start gap-0.5 rounded-md px-2 py-2 text-left hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                     >
                       <span className="flex w-full items-center justify-between gap-2">
-                        <span className="truncate text-sm font-medium text-gray-800">
+                        <span className="truncate text-[13px] font-medium text-foreground">
                           {hit.conversation_title}
                         </span>
                         <span
-                          className="flex-shrink-0 text-[10px] text-gray-400"
+                          className="flex-shrink-0 text-[10px] tabular-nums text-muted-foreground"
                           title={new Date(hit.created_at).toLocaleString()}
                         >
                           {relativeTime(hit.created_at)}
                         </span>
                       </span>
-                      <span className="truncate text-xs text-gray-500 w-full">
-                        <span className="text-gray-400">{t("messagesPage.search.senderPrefix", { name: hit.sender_name })}</span>
+                      <span className="w-full truncate text-xs text-muted-foreground">
+                        <span>{t("messagesPage.search.senderPrefix", { name: hit.sender_name })}</span>
                         {hit.body}
                       </span>
                     </button>
@@ -537,12 +550,12 @@ export default function MessagesPage() {
               onBack={() => navigate("/messages")}
             />
           ) : (
-            <div className="flex-1 flex flex-col items-center justify-center text-center px-8 text-gray-400">
-              <div className="h-16 w-16 rounded-2xl bg-brand-50 text-brand-500 flex items-center justify-center mb-4">
-                <MessagesSquare className="h-8 w-8" />
+            <div className="flex flex-1 flex-col items-center justify-center px-8 text-center text-muted-foreground">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-brand-50 text-brand-600 dark:bg-brand-950/40 dark:text-brand-300">
+                <MessagesSquare aria-hidden="true" className="h-6 w-6" />
               </div>
-              <p className="text-lg font-medium text-gray-600">{t("messagesPage.empty.yourMessagesTitle")}</p>
-              <p className="text-sm mt-1 max-w-xs">
+              <p className="text-sm font-semibold text-foreground">{t("messagesPage.empty.yourMessagesTitle")}</p>
+              <p className="mt-1 max-w-xs text-[13px]">
                 {t("messagesPage.empty.yourMessagesHint")}
               </p>
             </div>

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ChevronDown } from "lucide-react";
 import type { NavItem } from "./navigation.config";
@@ -52,6 +52,22 @@ function sectionLabel(section: string, t: (key: string, opts?: Record<string, un
 }
 
 export function NavSection({ label, items, location, t, activeClass = "bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300", unreadByPath }: NavSectionProps) {
+  const activeNestedPath =
+    items.find((item) =>
+      item.children?.some(
+        (child) =>
+          location.pathname === child.path ||
+          location.pathname.startsWith(child.path + "/"),
+      ),
+    )?.path ?? null;
+  const [openItemPath, setOpenItemPath] = useState<string | null>(
+    activeNestedPath,
+  );
+
+  useEffect(() => {
+    setOpenItemPath(activeNestedPath);
+  }, [activeNestedPath, location.pathname]);
+
   // Track the running section so a divider+label renders before the first
   // surviving item of each new group (resilient to permission-filtered items).
   let currentSection: string | undefined;
@@ -74,7 +90,15 @@ export function NavSection({ label, items, location, t, activeClass = "bg-brand-
               </div>
             )}
             {item.children ? (
-              <NestedNavItem item={item} location={location} activeClass={activeClass} />
+              <NestedNavItem
+                item={item}
+                location={location}
+                activeClass={activeClass}
+                open={openItemPath === item.path}
+                onOpenChange={(nextOpen) =>
+                  setOpenItemPath(nextOpen ? item.path : null)
+                }
+              />
             ) : (
               <NavLink item={item} location={location} activeClass={activeClass} allItems={items} unread={unreadByPath?.[item.path] ?? 0} />
             )}
@@ -131,26 +155,30 @@ function NestedNavItem({
   item,
   location,
   activeClass,
-
+  open,
+  onOpenChange,
 }: {
   item: NavItem;
   location: { pathname: string };
   activeClass: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }) {
   const { t } = useTranslation();
+  const panelId = useId();
   const Icon = item.icon;
   const childActive = item.children?.some((child) =>
     location.pathname === child.path || location.pathname.startsWith(child.path + "/")
   );
-  const [open, setOpen] = useState(!!childActive);
   const label = item.i18nKey && t(item.i18nKey) !== item.i18nKey ? t(item.i18nKey) : item.label;
 
   return (
     <div>
       <button
         type="button"
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => onOpenChange(!open)}
         aria-expanded={open}
+        aria-controls={panelId}
         title={label}
         className={`flex min-w-0 items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors w-full ${
           childActive
@@ -163,7 +191,7 @@ function NestedNavItem({
         <ChevronDown aria-hidden="true" className={`h-4 w-4 shrink-0 transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
       {open && item.children && (
-        <div className="mt-0.5 space-y-0.5">
+        <div id={panelId} className="mt-0.5 space-y-0.5">
           {item.children.map((child) => (
             <NavLink
               key={child.path}

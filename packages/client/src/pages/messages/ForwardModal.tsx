@@ -6,7 +6,8 @@
 // employee in the directory. Forwarding to an employee you've never chatted with
 // transparently starts/gets the direct conversation first, then forwards into it.
 
-import { useState, useMemo } from "react";
+import { useRef, useState, useMemo } from "react";
+import * as Dialog from "@radix-ui/react-dialog";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import type { ChatMessage, ConversationSummary } from "@empcloud/shared";
@@ -54,6 +55,7 @@ export function ForwardModal({
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [sending, setSending] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const meId = useAuthStore((s) => s.user?.id);
 
   const { data: conversations } = useQuery<ConversationSummary[]>({
@@ -186,7 +188,7 @@ export function ForwardModal({
       <button
         onClick={() => toggle(target.key)}
         className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left ${
-          isSel ? "bg-brand-50" : "hover:bg-gray-50"
+          isSel ? "bg-brand-50 dark:bg-brand-950/40" : "hover:bg-muted"
         }`}
       >
         {isGroup ? (
@@ -203,14 +205,14 @@ export function ForwardModal({
           />
         )}
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm font-medium text-gray-800">{target.title}</span>
+          <span className="block truncate text-[13px] font-medium text-foreground">{target.title}</span>
           {target.kind === "employee" && target.sub && (
-            <span className="block truncate text-xs text-gray-400">{target.sub}</span>
+            <span className="block truncate text-xs text-muted-foreground">{target.sub}</span>
           )}
         </span>
         <span
           className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border ${
-            isSel ? "bg-brand-600 border-brand-600 text-white" : "border-gray-300"
+            isSel ? "border-brand-600 bg-brand-600 text-white" : "border-border"
           }`}
         >
           {isSel && <Check className="h-3 w-3" />}
@@ -222,44 +224,56 @@ export function ForwardModal({
   const nothing = chatTargets.length === 0 && employeeTargets.length === 0;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4" onClick={onClose}>
-      <div
-        className="w-full max-w-md max-h-[80vh] bg-white rounded-2xl shadow-xl flex flex-col"
-        onClick={(e) => e.stopPropagation()}
+    <Dialog.Root open onOpenChange={(open) => !open && onClose()}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 z-50 bg-black/40" />
+        <Dialog.Content
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="forward-message-dialog-title"
+          aria-describedby={undefined}
+          onOpenAutoFocus={(event) => {
+            event.preventDefault();
+            searchInputRef.current?.focus();
+          }}
+          className="fixed left-1/2 top-1/2 z-50 flex max-h-[80vh] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-lg border border-border bg-card shadow-xl focus:outline-none"
       >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-          <h2 className="text-base font-semibold text-gray-900">{t("forwardModal.heading.title")}</h2>
-          <button onClick={onClose} className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100">
-            <X className="h-5 w-5" />
+        <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
+          <Dialog.Title asChild>
+            <h2 id="forward-message-dialog-title" className="text-sm font-semibold text-foreground">{t("forwardModal.heading.title")}</h2>
+          </Dialog.Title>
+          <button type="button" onClick={onClose} aria-label={t("newChatModal.actions.close")} className="rounded-md p-1.5 text-muted-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+            <X aria-hidden="true" className="h-5 w-5" />
           </button>
         </div>
 
         {/* The message being forwarded */}
         <div className="px-5 pt-3">
           <div className="rounded-lg border-l-2 border-brand-400 bg-brand-50/60 px-3 py-2">
-            <p className="text-xs text-gray-400">{t("forwardModal.section.forwarding")}</p>
-            <p className="truncate text-sm text-gray-700">{preview}</p>
+            <p className="text-xs text-muted-foreground">{t("forwardModal.section.forwarding")}</p>
+            <p className="truncate text-[13px] text-foreground">{preview}</p>
           </div>
         </div>
 
         <div className="px-5 py-3">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search aria-hidden="true" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
-              autoFocus
+              ref={searchInputRef}
               value={search}
+              aria-label={t("forwardModal.search.placeholder")}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={t("forwardModal.search.placeholder")}
-              className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+              className="w-full rounded-md border border-border bg-background py-2 pl-9 pr-3 text-[13px] text-foreground focus-visible:border-brand-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
             />
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-2 pb-2 border-t border-gray-100">
+        <div className="flex-1 overflow-y-auto border-t border-border px-2 pb-2">
           {nothing && empLoading ? (
-            <p className="px-3 py-6 text-center text-sm text-gray-400">{t("forwardModal.state.loading")}</p>
+            <p className="px-3 py-6 text-center text-[13px] text-muted-foreground">{t("forwardModal.state.loading")}</p>
           ) : nothing ? (
-            <p className="px-3 py-6 text-center text-sm text-gray-400">
+            <p className="px-3 py-6 text-center text-[13px] text-muted-foreground">
               {q
                 ? t("forwardModal.state.noMatches", { query: search })
                 : t("forwardModal.state.noTargets")}
@@ -268,7 +282,7 @@ export function ForwardModal({
             <>
               {chatTargets.length > 0 && (
                 <>
-                  <p className="px-3 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-wide text-gray-400">
+                  <p className="px-3 pb-1 pt-3 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
                     {t("forwardModal.section.chats")}
                   </p>
                   {chatTargets.map((target) => (
@@ -278,7 +292,7 @@ export function ForwardModal({
               )}
               {employeeTargets.length > 0 && (
                 <>
-                  <p className="px-3 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-wide text-gray-400">
+                  <p className="px-3 pb-1 pt-3 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
                     {t("forwardModal.section.people")}
                   </p>
                   {employeeTargets.map((target) => (
@@ -290,20 +304,22 @@ export function ForwardModal({
           )}
         </div>
 
-        <div className="flex items-center justify-between gap-3 px-5 py-4 border-t border-gray-100">
-          <span className="text-xs text-gray-400">
+        <div className="flex items-center justify-between gap-3 border-t border-border px-4 py-3">
+          <span className="text-xs text-muted-foreground">
             {t("forwardModal.footer.selectedCount", { count: selected.size })}
           </span>
           <button
+            type="button"
             onClick={handleForward}
             disabled={selected.size === 0 || sending}
             className="flex items-center gap-1.5 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-40"
           >
-            <Forward className="h-4 w-4" />
+            <Forward aria-hidden="true" className="h-4 w-4" />
             {sending ? t("forwardModal.button.forwarding") : t("forwardModal.button.forward")}
           </button>
         </div>
-      </div>
-    </div>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }

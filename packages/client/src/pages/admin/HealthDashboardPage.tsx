@@ -170,11 +170,11 @@ function OverallStatusBanner({ status, lastCheck }: { status: string; lastCheck:
     icon: <Activity className="h-8 w-8 text-muted-foreground" />,
     title: t("healthDashboard.overall.unknown.title"),
     subtitle: t("healthDashboard.overall.unknown.subtitle"),
-    dotColor: "bg-gray-400",
+    dotColor: "bg-muted-foreground",
   };
 
   return (
-    <div className={`rounded-xl border-2 p-6 ${bannerConfig.bg}`}>
+    <div className={`rounded-lg border p-4 ${bannerConfig.bg}`}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="relative">
@@ -184,7 +184,7 @@ function OverallStatusBanner({ status, lastCheck }: { status: string; lastCheck:
             />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-foreground">{bannerConfig.title}</h2>
+            <h2 className="text-lg font-semibold text-foreground">{bannerConfig.title}</h2>
             <p className="text-sm text-muted-foreground mt-0.5">{bannerConfig.subtitle}</p>
           </div>
         </div>
@@ -243,7 +243,7 @@ function ModuleCard({ module }: { module: ModuleHealth }) {
 
   return (
     <div
-      className={`bg-card rounded-xl border-2 ${borderColor} p-5 transition-all hover:shadow-md`}
+      className={`rounded-lg border bg-card p-4 transition-colors duration-150 hover:border-brand-400 ${borderColor}`}
     >
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
@@ -273,7 +273,7 @@ function ModuleCard({ module }: { module: ModuleHealth }) {
         </div>
         <div className="h-1.5 bg-muted rounded-full overflow-hidden">
           <div
-            className={`h-full rounded-full transition-all duration-500 ${getResponseTimeBg(module.responseTime)}`}
+            className={`h-full rounded-full transition-[width] duration-500 ${getResponseTimeBg(module.responseTime)}`}
             style={{ width: getResponseTimeBarWidth(module.responseTime) }}
           />
         </div>
@@ -331,7 +331,7 @@ function InfraCard({ infra }: { infra: InfraHealth }) {
 
   return (
     <div
-      className={`bg-card rounded-xl border-2 p-5 transition-all hover:shadow-md ${
+      className={`rounded-lg border bg-card p-4 transition-colors duration-150 hover:border-brand-400 ${
         isConnected
           ? "border-green-200 hover:border-green-300"
           : "border-red-200 hover:border-red-300"
@@ -430,37 +430,37 @@ function InfraCard({ infra }: { infra: InfraHealth }) {
 function EndpointsTable({ endpoints }: { endpoints: EndpointStatus[] }) {
   const { t } = useTranslation();
   return (
-    <div className="bg-card rounded-xl border border-border overflow-hidden">
-      <div className="px-6 py-4 border-b border-border">
+    <div className="overflow-hidden rounded-lg border border-border bg-card">
+      <div className="border-b border-border px-4 py-3">
         <div className="flex items-center gap-2">
-          <Globe className="h-5 w-5 text-muted-foreground" />
-          <h2 className="text-lg font-semibold text-foreground">{t("healthDashboard.endpoints.title")}</h2>
+          <Globe className="h-4 w-4 text-muted-foreground" />
+          <h2 className="text-base font-semibold text-foreground">{t("healthDashboard.endpoints.title")}</h2>
         </div>
-        <p className="text-sm text-muted-foreground mt-1">{t("healthDashboard.endpoints.description")}</p>
+        <p className="mt-1 text-[13px] text-muted-foreground">{t("healthDashboard.endpoints.description")}</p>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
             <tr className="bg-muted border-b border-border">
-              <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                 {t("healthDashboard.endpoints.columns.module")}
               </th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                 {t("healthDashboard.endpoints.columns.endpoint")}
               </th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                 {t("healthDashboard.endpoints.columns.method")}
               </th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                 {t("healthDashboard.endpoints.columns.status")}
               </th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                 {t("healthDashboard.endpoints.columns.response")}
               </th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                 {t("healthDashboard.endpoints.columns.httpCode")}
               </th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                 {t("healthDashboard.endpoints.columns.lastChecked")}
               </th>
             </tr>
@@ -468,20 +468,20 @@ function EndpointsTable({ endpoints }: { endpoints: EndpointStatus[] }) {
           <tbody className="divide-y divide-border">
             {endpoints.map((ep, i) => (
               <tr key={i} className="hover:bg-muted transition-colors">
-                <td className="px-6 py-3">
-                  <span className="text-sm font-medium text-foreground">{ep.module}</span>
+                <td className="px-3 py-2.5">
+                  <span className="text-[13px] font-medium text-foreground">{ep.module}</span>
                 </td>
-                <td className="px-6 py-3">
+                <td className="px-3 py-2.5">
                   <code className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded">
                     {ep.endpoint}
                   </code>
                 </td>
-                <td className="px-6 py-3">
+                <td className="px-3 py-2.5">
                   <span className="text-xs font-mono font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 px-2 py-0.5 rounded">
                     {ep.method}
                   </span>
                 </td>
-                <td className="px-6 py-3">
+                <td className="px-3 py-2.5">
                   {ep.status === "healthy" ? (
                     <span className="inline-flex items-center gap-1 text-xs font-medium text-green-700 dark:text-green-300">
                       <CheckCircle2 className="h-3.5 w-3.5" /> {t("healthDashboard.endpoints.status.ok")}
@@ -492,12 +492,12 @@ function EndpointsTable({ endpoints }: { endpoints: EndpointStatus[] }) {
                     </span>
                   )}
                 </td>
-                <td className="px-6 py-3">
+                <td className="px-3 py-2.5">
                   <span className={`text-xs font-bold ${getResponseTimeColor(ep.responseTime)}`}>
                     {ep.responseTime}ms
                   </span>
                 </td>
-                <td className="px-6 py-3">
+                <td className="px-3 py-2.5">
                   {ep.statusCode ? (
                     <span
                       className={`text-xs font-mono font-medium ${
@@ -510,7 +510,7 @@ function EndpointsTable({ endpoints }: { endpoints: EndpointStatus[] }) {
                     <span className="text-xs text-muted-foreground">-</span>
                   )}
                 </td>
-                <td className="px-6 py-3">
+                <td className="px-3 py-2.5">
                   <span className="text-xs text-muted-foreground">
                     {formatTimestamp(ep.lastChecked)}
                   </span>
@@ -572,11 +572,11 @@ export default function HealthDashboardPage() {
             <ArrowLeft className="h-5 w-5" />
           </Link>
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600">
               <Activity className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-foreground">{t("healthDashboard.title")}</h1>
+              <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("healthDashboard.title")}</h1>
               <p className="text-muted-foreground text-sm">
                 {t("healthDashboard.subtitle")}
               </p>
@@ -596,7 +596,7 @@ export default function HealthDashboardPage() {
           <button
             onClick={() => forceCheckMutation.mutate()}
             disabled={forceCheckMutation.isPending}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted hover:border-gray-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+            className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-4 py-2 text-sm font-medium text-muted-foreground shadow-sm transition-colors duration-150 hover:border-brand-400 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <RefreshCw
               className={`h-4 w-4 ${forceCheckMutation.isPending ? "animate-spin" : ""}`}
@@ -616,40 +616,40 @@ export default function HealthDashboardPage() {
 
       {/* Summary Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-        <div className="bg-card rounded-xl border border-border p-4">
+        <div className="rounded-lg border border-border bg-card p-3 transition-colors duration-150 hover:border-brand-400">
           <div className="flex items-center gap-2 mb-2">
             <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
               <Server className="h-4 w-4 text-muted-foreground" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-foreground">{health?.total_count || 0}</p>
+          <p className="text-2xl font-semibold tabular-nums text-foreground">{health?.total_count || 0}</p>
           <p className="text-xs text-muted-foreground">{t("healthDashboard.stats.totalServices")}</p>
         </div>
-        <div className="bg-card rounded-xl border border-green-200 p-4">
+        <div className="rounded-lg border border-green-200 bg-card p-3 transition-colors duration-150 hover:border-green-400 dark:border-green-900/60">
           <div className="flex items-center gap-2 mb-2">
             <div className="h-8 w-8 rounded-lg bg-green-100 dark:bg-green-950/40 flex items-center justify-center">
               <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-green-600 dark:text-green-400">{health?.healthy_count || 0}</p>
+          <p className="text-2xl font-semibold tabular-nums text-green-600 dark:text-green-400">{health?.healthy_count || 0}</p>
           <p className="text-xs text-muted-foreground">{t("healthDashboard.stats.healthy")}</p>
         </div>
-        <div className="bg-card rounded-xl border border-amber-200 p-4">
+        <div className="rounded-lg border border-amber-200 bg-card p-3 transition-colors duration-150 hover:border-amber-400 dark:border-amber-900/60">
           <div className="flex items-center gap-2 mb-2">
             <div className="h-8 w-8 rounded-lg bg-amber-100 dark:bg-amber-950/40 flex items-center justify-center">
               <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">{health?.degraded_count || 0}</p>
+          <p className="text-2xl font-semibold tabular-nums text-amber-600 dark:text-amber-400">{health?.degraded_count || 0}</p>
           <p className="text-xs text-muted-foreground">{t("healthDashboard.stats.degraded")}</p>
         </div>
-        <div className="bg-card rounded-xl border border-red-200 p-4">
+        <div className="rounded-lg border border-red-200 bg-card p-3 transition-colors duration-150 hover:border-red-400 dark:border-red-900/60">
           <div className="flex items-center gap-2 mb-2">
             <div className="h-8 w-8 rounded-lg bg-red-100 dark:bg-red-950/40 flex items-center justify-center">
               <XCircle className="h-4 w-4 text-red-600 dark:text-red-400" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-red-600 dark:text-red-400">{health?.down_count || 0}</p>
+          <p className="text-2xl font-semibold tabular-nums text-red-600 dark:text-red-400">{health?.down_count || 0}</p>
           <p className="text-xs text-muted-foreground">{t("healthDashboard.stats.down")}</p>
         </div>
       </div>

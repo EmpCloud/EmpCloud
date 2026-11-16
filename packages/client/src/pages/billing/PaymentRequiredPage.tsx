@@ -44,20 +44,20 @@ export default function PaymentRequiredPage() {
         <ThemeToggle />
       </div>
 
-      <section className="w-full max-w-lg overflow-hidden rounded-2xl border border-border bg-card shadow-xl">
-        <div className="border-b border-red-200 bg-red-50 px-7 py-8 text-center dark:border-red-900 dark:bg-red-950/30">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-300">
-            <ShieldAlert className="h-7 w-7" />
+      <section className="w-full max-w-lg overflow-hidden rounded-lg border border-border bg-card shadow-sm" aria-labelledby="payment-required-title">
+        <div className="border-b border-red-200 bg-red-50 px-5 py-6 text-center dark:border-red-900 dark:bg-red-950/30 sm:px-6">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-300">
+            <ShieldAlert aria-hidden="true" className="h-6 w-6" />
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Payment required</h1>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+          <h1 id="payment-required-title" className="text-balance text-xl font-semibold tracking-tight text-foreground">Payment required</h1>
+          <p className="mt-1.5 text-pretty text-[13px] leading-5 text-muted-foreground">
             Access for <span className="font-medium text-foreground">{user?.org_name || "your organization"}</span> is
             restricted because an invoice is overdue.
           </p>
         </div>
 
-        <div className="space-y-5 px-7 py-7">
-          <div className="rounded-xl border border-border bg-muted/40 p-4 text-sm leading-6 text-muted-foreground">
+        <div className="space-y-4 p-5 sm:p-6">
+          <div className="rounded-md border border-border bg-muted/40 p-3 text-[13px] leading-5 text-muted-foreground">
             {canManageBilling
               ? "Open Billing to review the overdue invoice and complete payment. Access will be restored after payment is confirmed."
               : "Please contact your organization administrator. Only an authorized billing administrator can settle the overdue invoice."}
@@ -68,9 +68,9 @@ export default function PaymentRequiredPage() {
               <button
                 type="button"
                 onClick={() => navigate(getPaymentRestrictionDestination(user!))}
-                className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-brand-700"
+                className="inline-flex min-h-10 flex-1 items-center justify-center gap-2 rounded-md bg-brand-600 px-4 text-[13px] font-semibold text-white transition-colors duration-150 hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
               >
-                <CreditCard className="h-4 w-4" />
+                <CreditCard aria-hidden="true" className="h-4 w-4" />
                 Open Billing
               </button>
             )}
@@ -78,9 +78,9 @@ export default function PaymentRequiredPage() {
               type="button"
               onClick={checkPaymentStatus}
               disabled={checking}
-              className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted disabled:opacity-60"
+              className="inline-flex min-h-10 flex-1 items-center justify-center gap-2 rounded-md border border-border bg-card px-4 text-[13px] font-medium text-foreground transition-colors duration-150 hover:border-brand-300 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <RefreshCw className={`h-4 w-4 ${checking ? "animate-spin" : ""}`} />
+              <RefreshCw aria-hidden="true" className={`h-4 w-4 ${checking ? "animate-spin" : ""}`} />
               {checking ? "Checking…" : "Check payment status"}
             </button>
           </div>
@@ -91,9 +91,9 @@ export default function PaymentRequiredPage() {
               logout();
               navigate("/login", { replace: true });
             }}
-            className="inline-flex w-full items-center justify-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-md text-[13px] text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
           >
-            <LogOut className="h-4 w-4" />
+            <LogOut aria-hidden="true" className="h-4 w-4" />
             Sign out
           </button>
         </div>

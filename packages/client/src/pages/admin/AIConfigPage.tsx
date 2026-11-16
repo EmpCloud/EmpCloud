@@ -312,7 +312,7 @@ function ProviderCard({
 
   return (
     <div
-      className={`border rounded-xl transition-all ${
+      className={`border rounded-lg transition-colors duration-150 ${
         isActive
           ? `${provider.borderColor} ring-2 ring-offset-1 ring-${provider.id === "anthropic" ? "amber" : provider.id === "openai" ? "green" : provider.id === "gemini" ? "blue" : "indigo"}-300`
           : "border-border hover:border-border"
@@ -644,7 +644,7 @@ export default function AIConfigPage() {
     <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
       {/* Page header */}
       <div>
-        <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
+        <h1 className="flex items-center gap-2 text-xl font-semibold tracking-tight text-foreground">
           <Sparkles className="w-7 h-7 text-indigo-600 dark:text-indigo-400" />
           {t("aiConfig.title")}
         </h1>
@@ -655,7 +655,7 @@ export default function AIConfigPage() {
 
       {/* Active provider banner */}
       <div
-        className={`rounded-xl p-4 ${
+        className={`rounded-lg p-4 ${
           activeProvider !== "none"
             ? "bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200"
             : "bg-muted border border-border"
@@ -730,7 +730,7 @@ export default function AIConfigPage() {
       </div>
 
       {/* General settings */}
-      <div className="border border-border rounded-xl p-4 space-y-4">
+      <div className="space-y-4 rounded-lg border border-border bg-card p-4">
         <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
           <Settings className="w-5 h-5" />
           {t("aiConfig.section.generalSettings")}
@@ -771,7 +771,7 @@ export default function AIConfigPage() {
       </div>
 
       {/* Info box */}
-      <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 rounded-xl p-4 text-sm text-amber-800 dark:text-amber-200">
+      <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-[13px] text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-200">
         <div className="flex items-start gap-2">
           <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
           <div>

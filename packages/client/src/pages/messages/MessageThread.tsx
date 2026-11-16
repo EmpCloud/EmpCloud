@@ -1421,19 +1421,19 @@ export default function MessageThread({
         {srAnnounce}
       </div>
       {/* ---------------- Header ---------------- */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-200 flex-shrink-0">
+      <div className="flex flex-shrink-0 items-center gap-3 border-b border-border px-3 py-2.5">
         {onBack && (
           <button
             onClick={onBack}
-            className="p-1.5 -ml-1.5 rounded-lg text-gray-500 hover:bg-gray-100 sm:hidden"
+            className="-ml-1.5 rounded-md p-1.5 text-muted-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 sm:hidden"
             aria-label={t("messageThread.header.backToConversations")}
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft aria-hidden="true" className="h-5 w-5" />
           </button>
         )}
         {conversation?.is_self ? (
           <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-brand-100 text-brand-600">
-            <Bookmark className="h-5 w-5" />
+            <Bookmark aria-hidden="true" className="h-5 w-5" />
           </div>
         ) : isGroup ? (
           <GroupAvatar url={conversation?.avatar_url} />
@@ -1447,7 +1447,7 @@ export default function MessageThread({
               size="md"
             />
             {counterpartPresence?.online && (
-              <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-green-500" />
+              <span aria-hidden="true" className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-card bg-green-500" />
             )}
           </div>
         )}
@@ -1456,20 +1456,20 @@ export default function MessageThread({
           <button
             type="button"
             onClick={() => setShowMembers(true)}
-            className="min-w-0 flex items-center gap-1 text-left rounded-lg px-1 -mx-1 hover:bg-gray-50"
+            className="-mx-1 flex min-w-0 items-center gap-1 rounded-md px-1 text-left hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
             title={rosterTitle ? t("messageThread.header.membersTooltip", { roster: rosterTitle }) : t("messageThread.header.viewMembers")}
           >
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-gray-900 truncate">
+              <p className="truncate text-sm font-semibold text-foreground">
                 {conversation?.title ?? t("messageThread.header.conversationTitleFallback")}
               </p>
-              {subtitle && <p className="text-xs text-gray-400 truncate">{subtitle}</p>}
+              {subtitle && <p className="truncate text-xs text-muted-foreground">{subtitle}</p>}
             </div>
-            <ChevronRight className="h-4 w-4 text-gray-300 flex-shrink-0" />
+            <ChevronRight aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
           </button>
         ) : (
           <div className="min-w-0">
-            <p className="text-sm font-semibold text-gray-900 truncate">
+            <p className="truncate text-sm font-semibold text-foreground">
               {conversation?.title ?? t("messageThread.header.conversationTitleFallback")}
             </p>
             {/* Presence line: "typing…" takes priority — when someone is typing
@@ -1490,15 +1490,15 @@ export default function MessageThread({
             ) : counterpartPresence?.online ? (
               <p className="text-xs text-green-600">{t("messageThread.presence.online")}</p>
             ) : counterpartPresence ? (
-              <p className="text-xs text-gray-400 truncate">
+              <p className="truncate text-xs text-muted-foreground">
                 {lastSeenLabel(counterpartPresence.last_seen)}
               </p>
             ) : conversation?.counterpart?.chat_status ? (
-              <p className="text-xs text-gray-400 truncate">
+              <p className="truncate text-xs text-muted-foreground">
                 {conversation.counterpart.chat_status}
               </p>
             ) : (
-              subtitle && <p className="text-xs text-gray-400 truncate">{subtitle}</p>
+              subtitle && <p className="truncate text-xs text-muted-foreground">{subtitle}</p>
             )}
           </div>
         )}
@@ -1513,11 +1513,11 @@ export default function MessageThread({
             }}
             title={t("messageThread.header.searchInConversation")}
             aria-label={t("messageThread.header.searchInConversation")}
-            className={`ml-auto p-2 rounded-lg hover:bg-gray-100 ${
-              searchOpen ? "text-brand-600" : "text-gray-500"
+            className={`ml-auto rounded-md p-2 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
+              searchOpen ? "text-brand-600 dark:text-brand-300" : "text-muted-foreground"
             }`}
           >
-            <Search className="h-5 w-5" />
+            <Search aria-hidden="true" className="h-5 w-5" />
           </button>
         )}
         {/* Mute / unmute toggle (notifications only — unread still accrues). */}
@@ -1528,8 +1528,8 @@ export default function MessageThread({
             disabled={mutingBusy}
             title={isMuted ? t("messageThread.mute.unmute") : t("messageThread.mute.mute")}
             aria-label={isMuted ? t("messageThread.mute.unmute") : t("messageThread.mute.mute")}
-            className={`p-2 rounded-lg hover:bg-gray-100 disabled:opacity-50 ${
-              isMuted ? "text-gray-400" : "text-gray-500"
+            className={`rounded-md p-2 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:opacity-50 ${
+              isMuted ? "text-muted-foreground/70" : "text-muted-foreground"
             }`}
           >
             {isMuted ? <BellOff className="h-5 w-5" /> : <Bell className="h-5 w-5" />}
@@ -1543,8 +1543,8 @@ export default function MessageThread({
             disabled={archivingBusy}
             title={isArchived ? t("messageThread.archive.unarchive") : t("messageThread.archive.archive")}
             aria-label={isArchived ? t("messageThread.archive.unarchive") : t("messageThread.archive.archive")}
-            className={`p-2 rounded-lg hover:bg-gray-100 disabled:opacity-50 ${
-              isArchived ? "text-brand-500" : "text-gray-500"
+            className={`rounded-md p-2 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:opacity-50 ${
+              isArchived ? "text-brand-500 dark:text-brand-300" : "text-muted-foreground"
             }`}
           >
             {isArchived ? (
@@ -1558,23 +1558,25 @@ export default function MessageThread({
 
       {/* ---------------- In-thread search panel ---------------- */}
       {searchOpen && (
-        <div className="border-b border-gray-200 bg-white px-3 py-2 flex-shrink-0">
+        <div className="flex-shrink-0 border-b border-border bg-card px-3 py-2">
           <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
               autoFocus
               type="text"
+              name="thread-search"
+              aria-label={t("messageThread.search.placeholder")}
               value={threadQuery}
               onChange={(e) => setThreadQuery(e.target.value)}
               placeholder={t("messageThread.search.placeholder")}
               data-gramm="false"
-              className="w-full rounded-lg border border-gray-300 pl-9 pr-3 py-2 text-sm outline-none transition-colors focus:border-brand-400 focus:ring-1 focus:ring-brand-200"
+              className="w-full rounded-md border border-border bg-background py-2 pl-9 pr-3 text-[13px] text-foreground transition-colors duration-150 focus-visible:border-brand-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
             />
           </div>
           {threadQuery.trim().length >= 2 && (
             <div className="mt-1.5 max-h-48 overflow-y-auto">
               {(threadHits?.length ?? 0) === 0 ? (
-                <p className="px-2 py-2 text-xs text-gray-400">{t("messageThread.search.noMatches")}</p>
+                <p className="px-2 py-2 text-xs text-muted-foreground">{t("messageThread.search.noMatches")}</p>
               ) : (
                 threadHits!.map((hit) => (
                   <button
@@ -1584,7 +1586,7 @@ export default function MessageThread({
                       jumpToMessage(hit.message_id);
                       setSearchOpen(false);
                     }}
-                    className="block w-full truncate rounded-lg px-2 py-1.5 text-left text-xs text-gray-600 hover:bg-gray-50"
+                    className="block w-full truncate rounded-md px-2 py-1.5 text-left text-xs text-muted-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                   >
                     {hit.body}
                   </button>
@@ -1597,7 +1599,7 @@ export default function MessageThread({
 
       {/* ---------------- Pinned-messages bar ---------------- */}
       {pinnedMessages && pinnedMessages.length > 0 && (
-        <div className="flex items-center gap-2 border-b border-amber-100 bg-amber-50 px-4 py-1.5 flex-shrink-0">
+        <div className="flex flex-shrink-0 items-center gap-2 border-b border-amber-200 bg-amber-50 px-4 py-1.5 dark:border-amber-900/60 dark:bg-amber-950/30">
           <Pin className="h-3.5 w-3.5 flex-shrink-0 text-amber-500" />
           <button
             type="button"
@@ -1605,13 +1607,13 @@ export default function MessageThread({
             title={t("messageThread.pinned.goTo")}
             className="min-w-0 flex-1 text-left"
           >
-            <p className="text-[11px] font-medium text-amber-700">
+            <p className="text-[11px] font-medium text-amber-700 dark:text-amber-300">
               {pinnedMessages.length > 1
                 ? t("messageThread.pinned.labelCount", { count: pinnedMessages.length })
                 : t("messageThread.pinned.label")}
             </p>
-            <p className="truncate text-xs text-gray-600">
-              <span className="text-gray-400">{pinnedMessages[0].sender_name}: </span>
+            <p className="truncate text-xs text-foreground">
+              <span className="text-muted-foreground">{pinnedMessages[0].sender_name}: </span>
               {pinnedMessages[0].body || t("messageThread.pinned.attachmentFallback")}
             </p>
           </button>
@@ -1638,10 +1640,10 @@ export default function MessageThread({
             role="dialog"
             aria-modal="true"
             aria-label={t("messageThread.members.dialogLabel")}
-            className="w-full max-w-sm max-h-[80vh] overflow-hidden rounded-2xl bg-white shadow-xl flex flex-col"
+            className="flex max-h-[80vh] w-full max-w-sm flex-col overflow-hidden rounded-lg border border-border bg-card shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between gap-2 px-4 py-3 border-b border-gray-200">
+            <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-2.5">
               <div className="min-w-0 flex-1">
                 {editingName ? (
                   <div className="flex items-center gap-1.5">
@@ -1654,13 +1656,13 @@ export default function MessageThread({
                         else if (e.key === "Escape") setEditingName(false);
                       }}
                       maxLength={150}
-                      className="min-w-0 flex-1 rounded-lg border border-brand-300 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-brand-200"
+                      className="min-w-0 flex-1 rounded-md border border-brand-300 bg-background px-2 py-1 text-[13px] text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                     />
                     <button
                       type="button"
                       onClick={handleRename}
                       disabled={savingName}
-                      className="p-1 rounded-lg text-brand-600 hover:bg-brand-50 disabled:opacity-50"
+                      className="rounded-md p-1 text-brand-600 hover:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:opacity-50 dark:text-brand-300 dark:hover:bg-brand-950/40"
                       aria-label={t("messageThread.members.saveName")}
                     >
                       <Check className="h-4 w-4" />
@@ -1669,7 +1671,7 @@ export default function MessageThread({
                       type="button"
                       onClick={() => setEditingName(false)}
                       disabled={savingName}
-                      className="p-1 rounded-lg text-gray-400 hover:bg-gray-100"
+                      className="rounded-md p-1 text-muted-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                       aria-label={t("messageThread.members.cancel")}
                     >
                       <X className="h-4 w-4" />
@@ -1677,7 +1679,7 @@ export default function MessageThread({
                   </div>
                 ) : (
                   <div className="flex items-center gap-1.5">
-                    <p className="truncate text-sm font-semibold text-gray-900">
+                    <p className="truncate text-sm font-semibold text-foreground">
                       {conversation.title}
                     </p>
                     {isOwner && (
@@ -1686,21 +1688,21 @@ export default function MessageThread({
                         onClick={startRename}
                         title={t("messageThread.members.renameGroup")}
                         aria-label={t("messageThread.members.renameGroup")}
-                        className="p-0.5 rounded text-gray-300 hover:text-brand-600 flex-shrink-0"
+                        className="flex-shrink-0 rounded p-0.5 text-muted-foreground hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                       >
                         <Pencil className="h-3.5 w-3.5" />
                       </button>
                     )}
                   </div>
                 )}
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-muted-foreground">
                   {t("messageThread.members.memberCount", { count: conversation.participants.length })}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setShowMembers(false)}
-                className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 flex-shrink-0"
+                className="flex-shrink-0 rounded-md p-1.5 text-muted-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                 aria-label={t("messageThread.members.close")}
               >
                 <X className="h-5 w-5" />
@@ -1708,7 +1710,7 @@ export default function MessageThread({
             </div>
 
             {/* Group profile: avatar + description */}
-            <div className="flex flex-col items-center gap-2 border-b border-gray-100 px-4 py-4 flex-shrink-0">
+            <div className="flex flex-shrink-0 flex-col items-center gap-2 border-b border-border px-4 py-3">
               <div className="relative">
                 <GroupAvatar url={conversation.avatar_url} size="h-16 w-16" iconSize="h-7 w-7" />
                 {isOwner && (
@@ -1742,14 +1744,14 @@ export default function MessageThread({
                     maxLength={500}
                     rows={2}
                     placeholder={t("messageThread.members.descriptionPlaceholder")}
-                    className="w-full resize-none rounded-lg border border-brand-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-200"
+                    className="w-full resize-none rounded-md border border-brand-300 bg-background px-2 py-1.5 text-[13px] text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                   />
                   <div className="mt-1 flex justify-end gap-2 text-xs">
                     <button
                       type="button"
                       onClick={() => setEditingDesc(false)}
                       disabled={savingDesc}
-                      className="rounded px-2 py-1 text-gray-500 hover:bg-gray-100"
+                      className="rounded-md px-2 py-1 text-muted-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                     >
                       {t("messageThread.members.descCancel")}
                     </button>
@@ -1768,7 +1770,7 @@ export default function MessageThread({
                   type="button"
                   onClick={isOwner ? startEditDesc : undefined}
                   className={`text-center text-xs ${
-                    isOwner ? "text-gray-500 hover:text-brand-600" : "text-gray-500"
+                    isOwner ? "text-muted-foreground hover:text-brand-600" : "text-muted-foreground"
                   }`}
                 >
                   {conversation.description ||
@@ -1789,7 +1791,7 @@ export default function MessageThread({
                 return (
                   <li
                     key={p.user_id}
-                    className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50"
+                    className="flex items-center gap-3 px-4 py-2.5 hover:bg-muted/70"
                   >
                     <EmployeeAvatar
                       userId={p.user_id}
@@ -1799,9 +1801,9 @@ export default function MessageThread({
                       size="md"
                     />
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-gray-900 truncate">
+                      <p className="truncate text-[13px] font-medium text-foreground">
                         {p.name}
-                        {isMe && <span className="ml-1 text-xs text-gray-400">{t("messageThread.members.youSuffix")}</span>}
+                        {isMe && <span className="ml-1 text-xs text-muted-foreground">{t("messageThread.members.youSuffix")}</span>}
                         {isCreator && (
                           <span className="ml-1 text-[10px] font-medium text-brand-600 uppercase tracking-wide">
                             {t("messageThread.members.adminBadge")}
@@ -1809,7 +1811,7 @@ export default function MessageThread({
                         )}
                       </p>
                       {p.designation && (
-                        <p className="text-xs text-gray-400 truncate">{p.designation}</p>
+                        <p className="truncate text-xs text-muted-foreground">{p.designation}</p>
                       )}
                     </div>
                     {canRemove && (
@@ -1818,7 +1820,7 @@ export default function MessageThread({
                         onClick={() => setPendingRemove({ id: p.user_id, name: p.name })}
                         title={t("messageThread.members.removeMember", { name: p.name })}
                         aria-label={t("messageThread.members.removeMember", { name: p.name })}
-                        className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 disabled:opacity-40 flex-shrink-0"
+                        className="flex-shrink-0 rounded-md p-1.5 text-muted-foreground hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 disabled:opacity-40 dark:hover:bg-red-950/40 dark:hover:text-red-300"
                       >
                         <UserMinus className="h-4 w-4" />
                       </button>
@@ -1828,7 +1830,7 @@ export default function MessageThread({
               })}
             </ul>
             {/* Footer: add members + delete (owner) / leave group (non-owner) */}
-            <div className="border-t border-gray-100 p-3 space-y-1 flex-shrink-0">
+            <div className="flex-shrink-0 space-y-1 border-t border-border p-3">
               {isOwner && (
                 <>
                   <button
@@ -2006,10 +2008,10 @@ export default function MessageThread({
           if (e.currentTarget === e.target) setIsDragging(false);
         }}
         onDrop={handleDrop}
-        className="relative flex-1 overflow-y-auto px-4 py-4 bg-gray-50/50"
+        className="relative flex-1 overflow-y-auto bg-muted/30 px-4 py-4"
       >
         {isDragging && (
-          <div className="pointer-events-none absolute inset-0 z-30 m-2 flex items-center justify-center rounded-xl border-2 border-dashed border-brand-400 bg-brand-50/80">
+          <div className="pointer-events-none absolute inset-0 z-30 m-2 flex items-center justify-center rounded-lg border-2 border-dashed border-brand-400 bg-brand-50/80 dark:bg-brand-950/70">
             <p className="text-sm font-medium text-brand-700">{t("messageThread.dropFiles")}</p>
           </div>
         )}
@@ -2017,7 +2019,7 @@ export default function MessageThread({
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
               <div key={i} className={`flex ${i % 2 ? "justify-start" : "justify-end"}`}>
-                <div className="h-10 w-48 rounded-2xl bg-gray-200 animate-pulse" />
+                <div className="h-10 w-48 animate-pulse rounded-lg bg-muted" />
               </div>
             ))}
           </div>
@@ -2026,8 +2028,8 @@ export default function MessageThread({
             {t("messageThread.list.failedToLoad")}
           </div>
         ) : !messages || messages.length === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center text-center text-gray-400">
-            <p className="text-sm font-medium text-gray-500">{t("messageThread.list.empty")}</p>
+          <div className="flex h-full flex-col items-center justify-center text-center text-muted-foreground">
+            <p className="text-sm font-medium text-foreground">{t("messageThread.list.empty")}</p>
             <p className="text-xs mt-1">{t("messageThread.list.emptyHint")}</p>
           </div>
         ) : (
@@ -2038,12 +2040,12 @@ export default function MessageThread({
             {/* Top-of-list pagination affordance */}
             {loadingOlder && (
               <div className="flex justify-center py-2">
-                <div className="h-4 w-4 border-2 border-gray-300 border-t-brand-500 rounded-full animate-spin" />
+                <div aria-hidden="true" className="h-4 w-4 animate-spin rounded-full border-2 border-border border-t-brand-500" />
               </div>
             )}
             {reachedStart && (
               <div className="flex justify-center py-2">
-                <span className="text-[11px] text-gray-400">{t("messageThread.list.beginning")}</span>
+                <span className="text-[11px] text-muted-foreground">{t("messageThread.list.beginning")}</span>
               </div>
             )}
             {messages.map((msg, idx) => {
@@ -2061,7 +2063,7 @@ export default function MessageThread({
                 <Fragment key={msg.id}>
                   {showDayDivider && (
                     <div className="flex justify-center my-3">
-                      <span className="text-[11px] font-semibold text-gray-600 bg-gray-100 px-2.5 py-0.5 rounded-full">
+                      <span className="rounded-md bg-muted px-2.5 py-0.5 text-[11px] font-semibold text-muted-foreground">
                         {dayLabel(msg.created_at)}
                       </span>
                     </div>
@@ -2078,7 +2080,7 @@ export default function MessageThread({
                   {msg.is_system ? (
                     // System event notice (membership changes): centered, author-less.
                     <div className="flex justify-center my-1.5">
-                      <span className="max-w-[80%] text-center text-[11px] text-gray-500 bg-gray-100/80 px-3 py-1 rounded-full">
+                      <span className="max-w-[80%] rounded-md bg-muted/80 px-3 py-1 text-center text-[11px] text-muted-foreground">
                         {msg.body}
                       </span>
                     </div>
@@ -2116,7 +2118,7 @@ export default function MessageThread({
                     {selectMode && (
                       <span
                         className={`order-first flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border ${
-                          isSelected ? "bg-brand-600 border-brand-600 text-white" : "border-gray-300 bg-white"
+                          isSelected ? "border-brand-600 bg-brand-600 text-white" : "border-border bg-card"
                         } ${selectable ? "" : "opacity-0"}`}
                       >
                         {isSelected && <Check className="h-3 w-3" />}
@@ -2124,13 +2126,13 @@ export default function MessageThread({
                     )}
                     <div className={`max-w-[75%] ${mine ? "items-end" : "items-start"} flex flex-col`}>
                       {showSender && (
-                        <span className="text-[11px] font-medium text-gray-500 ml-1 mb-0.5">
+                        <span className="mb-0.5 ml-1 text-[11px] font-medium text-muted-foreground">
                           {msg.sender_name}
                         </span>
                       )}
                       <div className={`flex items-end gap-1.5 ${mine ? "flex-row-reverse" : ""}`}>
                         {msg.is_deleted ? (
-                          <div className="px-3.5 py-2 rounded-2xl bg-gray-100 text-gray-400 italic text-sm">
+                          <div className="rounded-lg bg-muted px-3.5 py-2 text-sm italic text-muted-foreground">
                             {t("messageThread.message.deletedTombstone")}
                           </div>
                         ) : jumbo > 0 ? (
@@ -2162,7 +2164,7 @@ export default function MessageThread({
                                 }
                               }}
                               rows={2}
-                              className="resize-none rounded-xl border border-brand-300 bg-white px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-200"
+                              className="resize-none rounded-md border border-brand-300 bg-background px-3 py-2 text-[13px] text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                             />
                             <div className="flex items-center gap-2 text-[11px]">
                               <button
@@ -2177,25 +2179,25 @@ export default function MessageThread({
                                 type="button"
                                 onClick={cancelEdit}
                                 disabled={savingEdit}
-                                className="rounded-lg px-2 py-1 text-gray-500 hover:bg-gray-100"
+                                className="rounded-md px-2 py-1 text-muted-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                               >
                                 {t("messageThread.edit.cancel")}
                               </button>
-                              <span className="text-gray-400">{t("messageThread.edit.hint")}</span>
+                              <span className="text-muted-foreground">{t("messageThread.edit.hint")}</span>
                             </div>
                           </div>
                         ) : (
                           <div
-                            className={`px-3.5 py-2 rounded-2xl text-sm whitespace-pre-wrap break-words ${
+                            className={`break-words whitespace-pre-wrap rounded-lg px-3.5 py-2 text-[13px] ${
                               mine
                                 ? "bg-brand-600 text-white rounded-br-md"
-                                : "bg-white border border-gray-200 text-gray-800 rounded-bl-md"
+                                : "rounded-bl-md border border-border bg-card text-foreground"
                             }`}
                           >
                             {/* Forwarded provenance header */}
                             {msg.forwarded_from && (
                               <p
-                                className={`mb-1 flex items-center gap-1 text-xs italic ${mine ? "text-white/70" : "text-gray-400"}`}
+                                className={`mb-1 flex items-center gap-1 text-xs italic ${mine ? "text-white/70" : "text-muted-foreground"}`}
                               >
                                 <Forward className="h-3 w-3" /> {t("messageThread.message.forwardedFrom", { name: msg.forwarded_from })}
                               </p>
@@ -2221,7 +2223,7 @@ export default function MessageThread({
                                   {msg.reply_to.sender_name}
                                 </p>
                                 <p
-                                  className={`truncate ${mine ? "text-white/80" : "text-gray-500"}`}
+                                  className={`truncate ${mine ? "text-white/80" : "text-muted-foreground"}`}
                                 >
                                   {msg.reply_to.is_deleted
                                     ? t("messageThread.reply.deletedQuote")
@@ -2261,7 +2263,7 @@ export default function MessageThread({
                               }
                               title={t("messageThread.actions.react")}
                               aria-label={t("messageThread.actions.react")}
-                              className="p-1 rounded text-gray-300 hover:text-brand-600"
+                              className="rounded p-1 text-muted-foreground/60 hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                             >
                               <SmilePlus className="h-3.5 w-3.5" />
                             </button>
@@ -2278,7 +2280,7 @@ export default function MessageThread({
                               onClick={() => setReplyTo(msg)}
                               title={t("messageThread.actions.reply")}
                               aria-label={t("messageThread.actions.reply")}
-                              className="p-1 rounded text-gray-300 hover:text-brand-600"
+                              className="rounded p-1 text-muted-foreground/60 hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                             >
                               <Reply className="h-3.5 w-3.5" />
                             </button>
@@ -2286,7 +2288,7 @@ export default function MessageThread({
                               onClick={() => setForwardMsgs([msg])}
                               title={t("messageThread.actions.forward")}
                               aria-label={t("messageThread.actions.forward")}
-                              className="p-1 rounded text-gray-300 hover:text-brand-600"
+                              className="rounded p-1 text-muted-foreground/60 hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                             >
                               <Forward className="h-3.5 w-3.5" />
                             </button>
@@ -2295,7 +2297,7 @@ export default function MessageThread({
                                 onClick={() => startEdit(msg)}
                                 title={t("messageThread.actions.edit")}
                                 aria-label={t("messageThread.actions.edit")}
-                                className="p-1 rounded text-gray-300 hover:text-brand-600"
+                                className="rounded p-1 text-muted-foreground/60 hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                               >
                                 <Pencil className="h-3.5 w-3.5" />
                               </button>
@@ -2306,7 +2308,7 @@ export default function MessageThread({
                                 disabled={deletingId === msg.id}
                                 title={t("messageThread.actions.delete")}
                                 aria-label={t("messageThread.actions.delete")}
-                                className="p-1 rounded text-gray-300 hover:text-red-500 disabled:opacity-50"
+                                className="rounded p-1 text-muted-foreground/60 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 disabled:opacity-50"
                               >
                                 <Trash2 className="h-3.5 w-3.5" />
                               </button>
@@ -2315,7 +2317,7 @@ export default function MessageThread({
                         )}
                       </div>
                       <span
-                        className={`flex items-center gap-1 text-[10px] text-gray-500 mt-0.5 ${mine ? "mr-1" : "ml-1"}`}
+                        className={`mt-0.5 flex items-center gap-1 text-[10px] tabular-nums text-muted-foreground ${mine ? "mr-1" : "ml-1"}`}
                       >
                         {clockTime(msg.created_at)}
                         {msg.edited_at && !msg.is_deleted ? ` · ${t("messageThread.meta.edited")}` : ""}
@@ -2383,17 +2385,17 @@ export default function MessageThread({
 
       {/* ---------------- Selection toolbar (replaces composer in select mode) ---- */}
       {selectMode ? (
-        <div className="border-t border-gray-200 p-3 flex-shrink-0 bg-white flex items-center justify-between gap-3">
+        <div className="flex flex-shrink-0 items-center justify-between gap-3 border-t border-border bg-card p-3">
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={exitSelectMode}
-              className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-100"
+              className="rounded-md p-1.5 text-muted-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
               aria-label={t("messageThread.select.cancel")}
             >
               <X className="h-5 w-5" />
             </button>
-            <span className="text-sm font-medium text-gray-700">
+            <span className="text-[13px] font-medium text-foreground">
               {t("messageThread.select.countSelected", { count: selectedIds.size })}
             </span>
           </div>
@@ -2408,7 +2410,7 @@ export default function MessageThread({
                   ? t("messageThread.select.deleteOnlyOwn")
                   : t("messageThread.select.deleteSelected")
               }
-              className="flex items-center gap-1.5 rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-40"
+              className="flex items-center gap-1.5 rounded-md border border-red-200 px-4 py-2 text-[13px] font-medium text-red-600 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 disabled:opacity-40 dark:border-red-900/60 dark:text-red-300 dark:hover:bg-red-950/40"
             >
               <Trash2 className="h-4 w-4" /> {t("messageThread.select.delete")}
             </button>
@@ -2419,7 +2421,7 @@ export default function MessageThread({
                 const picked = (messages ?? []).filter((m) => selectedIds.has(m.id));
                 if (picked.length) setForwardMsgs(picked);
               }}
-              className="flex items-center gap-1.5 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-40"
+              className="flex items-center gap-1.5 rounded-md bg-brand-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:opacity-40"
             >
               <Forward className="h-4 w-4" /> {t("messageThread.select.forward")}
             </button>
@@ -2428,16 +2430,16 @@ export default function MessageThread({
       ) : (
       <>
       {/* ---------------- Composer ---------------- */}
-      <div className="border-t border-gray-200 p-3 flex-shrink-0 bg-white">
+      <div className="flex-shrink-0 border-t border-border bg-card p-3">
         {/* Replying-to chip */}
         {replyTo && (
-          <div className="mb-2 flex items-center gap-2 rounded-xl border-l-2 border-brand-400 bg-brand-50/60 px-3 py-2">
+          <div className="mb-2 flex items-center gap-2 rounded-md border-s-2 border-brand-400 bg-brand-50/60 px-3 py-2 dark:bg-brand-950/30">
             <Reply className="h-4 w-4 flex-shrink-0 text-brand-500" />
             <div className="min-w-0 flex-1">
               <p className="text-xs font-medium text-brand-700">
                 {t("messageThread.composer.reply.replyingTo", { name: replyTo.sender_name })}
               </p>
-              <p className="truncate text-xs text-gray-500">
+              <p className="truncate text-xs text-muted-foreground">
                 {replyTo.is_deleted
                   ? t("messageThread.composer.reply.deletedPreview")
                   : replyTo.body || (replyTo.attachment ? t("messageThread.composer.reply.attachmentPreview") : "")}
@@ -2446,7 +2448,7 @@ export default function MessageThread({
             <button
               type="button"
               onClick={() => setReplyTo(null)}
-              className="p-1 rounded-lg text-gray-400 hover:bg-gray-200 hover:text-gray-600"
+              className="rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
               aria-label={t("messageThread.composer.reply.cancel")}
             >
               <X className="h-4 w-4" />
@@ -2456,7 +2458,7 @@ export default function MessageThread({
 
         {/* Staged-attachment preview chip */}
         {file && (
-          <div className="mb-2 flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 max-w-sm">
+          <div className="mb-2 flex max-w-sm items-center gap-3 rounded-lg border border-border bg-muted/50 px-3 py-2">
             {filePreview ? (
               <img
                 src={filePreview}
@@ -2469,14 +2471,14 @@ export default function MessageThread({
               </div>
             )}
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium text-gray-800">{file.name}</p>
-              <p className="text-[11px] text-gray-400">{formatFileSize(file.size)}</p>
+              <p className="truncate text-[13px] font-medium text-foreground">{file.name}</p>
+              <p className="text-[11px] tabular-nums text-muted-foreground">{formatFileSize(file.size)}</p>
             </div>
             <button
               type="button"
               onClick={clearFile}
               disabled={sending}
-              className="p-1 rounded-lg text-gray-400 hover:bg-gray-200 hover:text-gray-600 disabled:opacity-50"
+              className="rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:opacity-50"
               aria-label={t("messageThread.composer.removeAttachment")}
             >
               <X className="h-4 w-4" />
@@ -2486,13 +2488,13 @@ export default function MessageThread({
 
         {/* Queued-files indicator (extra files sending one-per-message) */}
         {queuedFiles.length > 0 && (
-          <div className="mb-2 flex items-center gap-2 text-xs text-gray-500">
+          <div className="mb-2 flex items-center gap-2 text-xs text-muted-foreground">
             <Paperclip className="h-3.5 w-3.5" />
             {t("messageThread.composer.queuedFiles", { count: queuedFiles.length })}
             <button
               type="button"
               onClick={() => setQueuedFiles([])}
-              className="rounded px-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+              className="rounded-md px-1 text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
             >
               {t("messageThread.composer.queuedClear")}
             </button>
@@ -2513,7 +2515,7 @@ export default function MessageThread({
         <div className="relative flex items-end gap-2">
           {/* @-mention autocomplete dropdown */}
           {mention && mentionItems.length > 0 && (
-            <div className="absolute bottom-full left-0 mb-2 w-64 max-h-56 overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-lg z-20">
+            <div className="absolute bottom-full left-0 z-20 mb-2 max-h-56 w-64 overflow-y-auto rounded-lg border border-border bg-card shadow-lg">
               {mentionItems.map((item, idx) => {
                 const { first, last } = splitName(item.label);
                 return (
@@ -2532,7 +2534,7 @@ export default function MessageThread({
                     }}
                     onMouseEnter={() => setMentionIndex(idx)}
                     className={`flex w-full items-center gap-2.5 px-3 py-2 text-left ${
-                      idx === mentionIndex ? "bg-brand-50" : "hover:bg-gray-50"
+                      idx === mentionIndex ? "bg-brand-50 dark:bg-brand-950/40" : "hover:bg-muted"
                     }`}
                   >
                     {item.id === 0 ? (
@@ -2549,11 +2551,11 @@ export default function MessageThread({
                       />
                     )}
                     <span className="min-w-0">
-                      <span className="block truncate text-sm font-medium text-gray-800">
+                      <span className="block truncate text-[13px] font-medium text-foreground">
                         {item.label}
                       </span>
                       {item.sub && (
-                        <span className="block truncate text-[11px] text-gray-400">{item.sub}</span>
+                        <span className="block truncate text-[11px] text-muted-foreground">{item.sub}</span>
                       )}
                     </span>
                   </button>
@@ -2567,14 +2569,14 @@ export default function MessageThread({
           )}
 
           {/* Input pill: attach + emoji icons live inside the rounded field. */}
-          <div className="flex flex-1 items-end gap-1 rounded-3xl border border-gray-200 bg-gray-50 px-2 py-1 transition-colors focus-within:border-brand-400 focus-within:bg-white focus-within:ring-2 focus-within:ring-brand-100">
+          <div className="flex flex-1 items-end gap-1 rounded-lg border border-border bg-muted/50 px-2 py-1 transition-colors duration-150 focus-within:border-brand-400 focus-within:bg-background focus-within:ring-2 focus-within:ring-brand-500">
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={sending}
               title={t("messageThread.composer.attach")}
               aria-label={t("messageThread.composer.attach")}
-              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-gray-400 hover:bg-gray-200/70 hover:text-gray-600 disabled:opacity-40"
+              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:opacity-40"
             >
               <Paperclip className="h-5 w-5" />
             </button>
@@ -2601,6 +2603,12 @@ export default function MessageThread({
                 )
               }
               rows={1}
+              name="message"
+              aria-label={
+                isGroup
+                  ? t("messageThread.composer.placeholderGroup")
+                  : t("messageThread.composer.placeholderDirect")
+              }
               placeholder={
                 file
                   ? t("messageThread.composer.placeholderCaption")
@@ -2613,7 +2621,7 @@ export default function MessageThread({
               data-gramm="false"
               data-gramm_editor="false"
               data-enable-grammarly="false"
-              className="block flex-1 resize-none max-h-32 overflow-y-auto self-center bg-transparent px-1 py-2 text-sm leading-5 text-gray-800 placeholder:text-gray-400 focus:outline-none"
+              className="block max-h-32 flex-1 resize-none self-center overflow-y-auto bg-transparent px-1 py-2 text-[13px] leading-5 text-foreground placeholder:text-muted-foreground focus-visible:outline-none"
             />
             <button
               type="button"
@@ -2621,8 +2629,8 @@ export default function MessageThread({
               disabled={sending}
               title={t("messageThread.composer.emojiTitle")}
               aria-label={t("messageThread.composer.emojiAria")}
-              className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full hover:bg-gray-200/70 disabled:opacity-40 ${
-                showEmoji ? "text-brand-600" : "text-gray-400 hover:text-gray-600"
+              className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:opacity-40 ${
+                showEmoji ? "text-brand-600 dark:text-brand-300" : "text-muted-foreground hover:text-foreground"
               }`}
             >
               <Smile className="h-5 w-5" />
@@ -2635,14 +2643,14 @@ export default function MessageThread({
             disabled={
               (!draft.trim() && !file) || sending || draft.length > MAX_MESSAGE_CHARS
             }
-            className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-brand-600 text-white shadow-sm transition-all hover:bg-brand-700 hover:shadow active:scale-95 disabled:opacity-40 disabled:shadow-none disabled:hover:bg-brand-600 disabled:active:scale-100"
+            className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-md bg-brand-600 text-white shadow-sm transition-[background-color,box-shadow,transform] duration-150 hover:bg-brand-700 hover:shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 active:scale-95 disabled:opacity-40 disabled:shadow-none disabled:hover:bg-brand-600 disabled:active:scale-100"
             aria-label={t("messageThread.composer.send")}
           >
             <Send className="h-[18px] w-[18px] -ml-0.5" />
           </button>
         </div>
         <div className="mt-1.5 ml-2 flex items-center justify-between gap-2">
-          <p className="text-[10px] text-gray-400">
+          <p className="text-[10px] text-muted-foreground">
             {t("messageThread.composer.hint")}
             {isGroup ? t("messageThread.composer.hintMention") : t("messageThread.composer.hintAttach")}
           </p>
@@ -2650,7 +2658,7 @@ export default function MessageThread({
           {draft.length > MAX_MESSAGE_CHARS - 200 && (
             <span
               className={`text-[10px] font-medium tabular-nums ${
-                draft.length > MAX_MESSAGE_CHARS ? "text-red-500" : "text-gray-400"
+                draft.length > MAX_MESSAGE_CHARS ? "text-red-600 dark:text-red-300" : "text-muted-foreground"
               }`}
             >
               {draft.length}/{MAX_MESSAGE_CHARS}

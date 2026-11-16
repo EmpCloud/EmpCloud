@@ -65,11 +65,11 @@ export function EmojiPicker({
   return (
     <div
       ref={ref}
-      className="absolute bottom-full right-0 mb-2 w-72 max-h-72 overflow-y-auto rounded-2xl border border-gray-200 bg-white shadow-xl z-30 p-2"
+      className="absolute bottom-full right-0 z-30 mb-2 max-h-72 w-72 overflow-y-auto rounded-lg border border-border bg-card p-2 shadow-xl"
     >
       {CATEGORIES.map((cat) => (
         <div key={cat.labelKey} className="mb-1">
-          <p className="px-1.5 pt-1.5 pb-1 text-[10px] font-semibold uppercase tracking-wide text-gray-400">
+          <p className="px-1.5 pb-1 pt-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
             {t(`emojiPicker.${cat.labelKey}`)}
           </p>
           <div className="grid grid-cols-8 gap-0.5">
@@ -91,7 +91,7 @@ export function EmojiPicker({
                     onPick(e);
                   }
                 }}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-lg hover:bg-gray-100 focus:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-brand-300"
+                className="flex h-8 w-8 items-center justify-center rounded-md text-lg hover:bg-muted focus-visible:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:focus-visible:bg-brand-950/40"
               >
                 {e}
               </button>
