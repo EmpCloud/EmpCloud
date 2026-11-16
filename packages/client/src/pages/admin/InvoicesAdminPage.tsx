@@ -62,7 +62,7 @@ const SUBSCRIPTION_STATUS_COLOR: Record<string, string> = {
   trial: "bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300",
   past_due: "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-300",
   suspended: "bg-orange-100 text-orange-700 dark:bg-orange-950/40 dark:text-orange-300",
-  deactivated: "bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
+  deactivated: "bg-muted text-foreground",
   cancelled: "bg-muted text-muted-foreground",
   expired: "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-300",
 };
@@ -305,10 +305,10 @@ export default function InvoicesAdminPage() {
   });
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-4">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="flex items-center gap-2 text-pretty text-2xl font-bold text-foreground dark:text-gray-100">
+          <h1 className="flex items-center gap-2 text-pretty text-xl font-semibold tracking-tight text-foreground">
             <Receipt className="h-6 w-6 text-brand-600 dark:text-brand-400" aria-hidden="true" />
             {t("invoicesAdmin.title")}
           </h1>
@@ -338,7 +338,7 @@ export default function InvoicesAdminPage() {
       </div>
 
       {/* Filters */}
-      <div className="rounded-xl border border-border bg-card p-4 dark:border-gray-700 dark:bg-gray-900">
+      <div className="rounded-lg border border-border bg-card p-4">
         <div className="flex flex-wrap items-end gap-3">
           <div className="flex-1 min-w-[220px]">
             <label htmlFor="invoice-search" className="mb-1 block text-xs font-medium text-muted-foreground">{t("invoicesAdmin.filters.searchLabel")}</label>
@@ -383,7 +383,7 @@ export default function InvoicesAdminPage() {
       </div>
 
       {/* Organization groups */}
-      <div className="overflow-hidden rounded-xl border border-border bg-card dark:border-gray-700 dark:bg-gray-900">
+      <div className="overflow-hidden rounded-lg border border-border bg-card">
         {listQ.isLoading ? (
           <div className="flex items-center justify-center py-12 text-sm text-muted-foreground" role="status" aria-live="polite">
             <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" /> {t("invoicesAdmin.loading")}
@@ -402,7 +402,7 @@ export default function InvoicesAdminPage() {
                 <col className="w-[17%]" />
                 <col className="w-[20%]" />
               </colgroup>
-              <thead className="border-b border-border bg-muted/60 text-[11px] uppercase tracking-wide text-muted-foreground dark:bg-gray-800/70">
+              <thead className="border-b border-border bg-muted/60 text-[11px] uppercase tracking-wide text-muted-foreground">
                 <tr>
                   <th className="px-4 py-2.5 text-left font-semibold">{t("invoicesAdmin.table.invoice")}</th>
                   <th className="px-3 py-2.5 text-left font-semibold">{t("invoicesAdmin.table.status")}</th>
@@ -416,9 +416,9 @@ export default function InvoicesAdminPage() {
                 const plansWithComments = group.plans.filter((plan) => plan.internal_notes?.trim());
 
                 return (
-                  <tbody key={group.key} className="border-t-4 border-muted first:border-t-0 dark:border-gray-800">
+                  <tbody key={group.key} className="border-t-4 border-muted first:border-t-0">
                     <tr>
-                      <th colSpan={6} scope="rowgroup" className="bg-muted/35 px-4 py-3 text-left font-normal dark:bg-gray-800/45">
+                      <th colSpan={6} scope="rowgroup" className="bg-muted/35 px-4 py-3 text-left font-normal">
                         <AdminOrganizationGroupHeader
                           name={group.name || t("invoicesAdmin.group.unmappedClient")}
                           organizationId={group.id}
@@ -427,7 +427,7 @@ export default function InvoicesAdminPage() {
                         />
                       </th>
                     </tr>
-                    <tr className="border-t border-border/70 bg-muted/10 dark:border-gray-800">
+                    <tr className="border-t border-border/70 bg-muted/10">
                       <td colSpan={6} className="px-4 py-2.5">
                         <div className="grid gap-x-6 gap-y-3 xl:grid-cols-[minmax(0,1.65fr)_minmax(280px,1fr)]">
                           <div className="min-w-0">
@@ -453,7 +453,7 @@ export default function InvoicesAdminPage() {
                               <span className="text-xs text-muted-foreground">{t("invoicesAdmin.table.noPlan")}</span>
                             )}
                           </div>
-                          <div className="min-w-0 xl:border-l xl:border-border xl:pl-6 dark:xl:border-gray-800">
+                          <div className="min-w-0 xl:border-l xl:border-border xl:pl-6">
                             <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
                               {t("invoicesAdmin.table.internalComment")}
                             </p>
@@ -476,7 +476,7 @@ export default function InvoicesAdminPage() {
                       </td>
                     </tr>
                     {group.rows.map((r) => (
-                      <tr key={r.id} className="border-t border-border/70 align-middle transition-colors hover:bg-muted/25 dark:border-gray-800">
+                      <tr key={r.id} className="border-t border-border/70 align-middle transition-colors hover:bg-muted/25">
                         <td className="px-4 py-2.5 font-mono text-xs font-medium text-foreground">{r.invoice_number}</td>
                         <td className="px-3 py-2.5">
                           <span className={`inline-flex rounded-md px-2 py-1 text-xs font-medium ${STATUS_COLOR[r.status] || "bg-muted text-muted-foreground"}`}>
@@ -650,7 +650,7 @@ export default function InvoicesAdminPage() {
                 autoComplete="off"
               />
               {orgDropdownOpen && (orgsQ.isLoading || filteredOrgs.length > 0 || orgSearch.trim()) && (
-                <div className="absolute z-20 mt-1 max-h-64 w-full overflow-y-auto rounded-lg border border-border bg-card shadow-lg dark:border-gray-700 dark:bg-gray-900">
+                <div className="absolute z-20 mt-1 max-h-64 w-full overflow-y-auto rounded-lg border border-border bg-card shadow-lg">
                   {orgsQ.isLoading && (
                     <div className="px-3 py-2 text-sm text-muted-foreground">{t("invoicesAdmin.subscribe.orgDropdownLoading")}</div>
                   )}
@@ -670,20 +670,20 @@ export default function InvoicesAdminPage() {
                           setOrgSearch(`${o.name} (${o.email})`);
                           setOrgDropdownOpen(false);
                         }}
-                        className={`block w-full text-left px-3 py-2 text-sm hover:bg-brand-50 dark:hover:bg-gray-800 ${
+                        className={`block w-full px-3 py-2 text-left text-sm hover:bg-brand-50 dark:hover:bg-brand-950/40 ${
                           String(subForm.organization_id) === String(o.id)
-                            ? "bg-brand-50 dark:bg-gray-800"
+                            ? "bg-brand-50 dark:bg-brand-950/40"
                             : ""
                         }`}
                       >
-                        <div className="font-medium text-foreground dark:text-gray-100">
+                        <div className="font-medium text-foreground">
                           {o.name}
                         </div>
                         <div className="text-xs text-muted-foreground">{o.email}</div>
                       </button>
                     ))}
                   {filteredOrgs.length > 50 && (
-                    <div className="border-t border-border px-3 py-2 text-xs text-muted-foreground dark:border-gray-800">
+                    <div className="border-t border-border px-3 py-2 text-xs text-muted-foreground">
                       {t("invoicesAdmin.subscribe.orgMoreResults", { count: filteredOrgs.length - 50 })}
                     </div>
                   )}
@@ -804,9 +804,9 @@ function Modal({
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto">
-      <div className={`w-full ${wide ? "max-w-2xl" : "max-w-md"} my-8 rounded-xl bg-card p-6 shadow-xl dark:bg-gray-900`}>
+      <div className={`my-8 w-full ${wide ? "max-w-2xl" : "max-w-md"} rounded-lg border border-border bg-card p-4 shadow-xl`}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-foreground dark:text-gray-100">{title}</h3>
+          <h3 className="text-lg font-semibold text-foreground">{title}</h3>
           <button onClick={onClose} className="text-muted-foreground hover:text-muted-foreground">
             <X className="h-5 w-5" />
           </button>

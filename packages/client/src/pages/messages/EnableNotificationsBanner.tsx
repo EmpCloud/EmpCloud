@@ -60,7 +60,7 @@ export function EnableNotificationsBanner() {
   };
 
   return (
-    <div className="mb-3 flex items-center gap-3 rounded-xl border border-brand-200 bg-brand-50 px-4 py-2.5">
+    <div className="mb-3 flex items-center gap-3 rounded-lg border border-brand-200 bg-brand-50 px-4 py-2.5 dark:border-brand-900/60 dark:bg-brand-950/30">
       <BellRing className="h-5 w-5 flex-shrink-0 text-brand-600" />
       <p className="flex-1 text-sm text-brand-800">
         {t("enableNotificationsBanner.description")}

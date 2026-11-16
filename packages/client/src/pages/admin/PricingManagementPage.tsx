@@ -332,10 +332,10 @@ export default function PricingManagementPage() {
   });
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground dark:text-gray-100">
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">
             {t("pricingManagement.title")}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground dark:text-muted-foreground">
@@ -345,10 +345,10 @@ export default function PricingManagementPage() {
       </div>
 
       {/* ---------- Tiers ---------- */}
-      <section className="rounded-xl border border-border bg-card p-6 dark:border-gray-700 dark:bg-gray-900">
+      <section className="rounded-lg border border-border bg-card p-4">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="flex items-center gap-2 text-lg font-semibold text-foreground dark:text-gray-100">
-            <Tag className="h-5 w-5 text-brand-600 dark:text-brand-400" /> {t("pricingManagement.tiers.heading")}
+          <h2 className="flex items-center gap-2 text-base font-semibold text-foreground">
+            <Tag className="h-4 w-4 text-brand-600 dark:text-brand-400" /> {t("pricingManagement.tiers.heading")}
           </h2>
           <button
             onClick={openCreateTier}
@@ -366,7 +366,7 @@ export default function PricingManagementPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
-              <thead className="bg-muted text-xs uppercase text-muted-foreground dark:bg-gray-800 dark:text-muted-foreground">
+              <thead className="bg-muted text-xs uppercase text-muted-foreground">
                 <tr>
                   <th className="px-3 py-2 text-left">{t("pricingManagement.tiers.col.slug")}</th>
                   <th className="px-3 py-2 text-left">{t("pricingManagement.tiers.col.name")}</th>
@@ -380,7 +380,7 @@ export default function PricingManagementPage() {
                 {tiers.map((tier) => (
                   <tr key={tier.id}>
                     <td className="px-3 py-2 font-mono text-xs text-muted-foreground dark:text-muted-foreground/50">{tier.slug}</td>
-                    <td className="px-3 py-2 font-medium text-foreground dark:text-gray-100">{tier.name}</td>
+                    <td className="px-3 py-2 font-medium text-foreground">{tier.name}</td>
                     <td className="px-3 py-2 text-muted-foreground dark:text-muted-foreground">{tier.description}</td>
                     <td className="px-3 py-2 text-right text-muted-foreground dark:text-muted-foreground/50">{tier.sort_order}</td>
                     <td className="px-3 py-2 text-center">
@@ -420,10 +420,10 @@ export default function PricingManagementPage() {
       </section>
 
       {/* ---------- Pricing rows ---------- */}
-      <section className="rounded-xl border border-border bg-card p-6 dark:border-gray-700 dark:bg-gray-900">
+      <section className="rounded-lg border border-border bg-card p-4">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="flex items-center gap-2 text-lg font-semibold text-foreground dark:text-gray-100">
-            <Coins className="h-5 w-5 text-brand-600 dark:text-brand-400" /> {t("pricingManagement.pricingRows.heading")}
+          <h2 className="flex items-center gap-2 text-base font-semibold text-foreground">
+            <Coins className="h-4 w-4 text-brand-600 dark:text-brand-400" /> {t("pricingManagement.pricingRows.heading")}
           </h2>
           <button
             onClick={openCreatePrice}
@@ -442,7 +442,7 @@ export default function PricingManagementPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
-              <thead className="bg-muted text-xs uppercase text-muted-foreground dark:bg-gray-800 dark:text-muted-foreground">
+              <thead className="bg-muted text-xs uppercase text-muted-foreground">
                 <tr>
                   <th className="px-3 py-2 text-left">{t("pricingManagement.pricingRows.col.tier")}</th>
                   <th className="px-3 py-2 text-left">{t("pricingManagement.pricingRows.col.currency")}</th>
@@ -456,7 +456,7 @@ export default function PricingManagementPage() {
               <tbody className="divide-y divide-border dark:divide-gray-800">
                 {pricing.map((p) => (
                   <tr key={p.id}>
-                    <td className="px-3 py-2 font-medium text-foreground dark:text-gray-100">
+                    <td className="px-3 py-2 font-medium text-foreground">
                       {p.tier_name}{" "}
                       <span className="text-xs text-muted-foreground font-mono">({p.tier_slug})</span>
                     </td>
@@ -498,10 +498,10 @@ export default function PricingManagementPage() {
       </section>
 
       {/* ---------- Billing cycles ---------- */}
-      <section className="rounded-xl border border-border bg-card p-6 dark:border-gray-700 dark:bg-gray-900">
+      <section className="rounded-lg border border-border bg-card p-4">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="flex items-center gap-2 text-lg font-semibold text-foreground dark:text-gray-100">
-            <CalendarDays className="h-5 w-5 text-brand-600 dark:text-brand-400" /> {t("pricingManagement.billingCycles.heading")}
+          <h2 className="flex items-center gap-2 text-base font-semibold text-foreground">
+            <CalendarDays className="h-4 w-4 text-brand-600 dark:text-brand-400" /> {t("pricingManagement.billingCycles.heading")}
           </h2>
           <button
             onClick={() => openCycleModal()}
@@ -519,7 +519,7 @@ export default function PricingManagementPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
-              <thead className="bg-muted text-xs uppercase text-muted-foreground dark:bg-gray-800 dark:text-muted-foreground">
+              <thead className="bg-muted text-xs uppercase text-muted-foreground">
                 <tr>
                   <th className="px-3 py-2 text-left">{t("pricingManagement.billingCycles.col.cycle")}</th>
                   <th className="px-3 py-2 text-left">{t("pricingManagement.billingCycles.col.label")}</th>
@@ -533,7 +533,7 @@ export default function PricingManagementPage() {
                 {cycles.map((c) => (
                   <tr key={c.id}>
                     <td className="px-3 py-2 font-mono text-xs text-muted-foreground dark:text-muted-foreground/50">{c.cycle}</td>
-                    <td className="px-3 py-2 font-medium text-foreground dark:text-gray-100">{c.label}</td>
+                    <td className="px-3 py-2 font-medium text-foreground">{c.label}</td>
                     <td className="px-3 py-2 text-right text-emerald-700 dark:text-emerald-300">
                       {c.override_amount_per_seat != null && c.override_currency ? (
                         <span className="font-mono text-purple-700 dark:text-purple-300">
@@ -846,7 +846,7 @@ export default function PricingManagementPage() {
             {/* Flat-amount override: overrides the discount math entirely
                 for one currency. Useful when the price sheet quotes the
                 annual / quarterly total directly instead of a discount %. */}
-            <div className="rounded-lg border border-border bg-muted p-3 dark:border-gray-700 dark:bg-gray-800/40">
+            <div className="rounded-lg border border-border bg-muted p-3">
               <div className="text-xs font-medium text-muted-foreground dark:text-muted-foreground/50 mb-2">
                 {t("pricingManagement.cycleModal.override.heading")}
               </div>
@@ -920,9 +920,9 @@ function Modal({
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-lg rounded-xl bg-card p-6 shadow-xl dark:bg-gray-900">
+      <div className="w-full max-w-lg rounded-lg border border-border bg-card p-4 shadow-xl">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-foreground dark:text-gray-100">{title}</h3>
+          <h3 className="text-base font-semibold text-foreground">{title}</h3>
           <button onClick={onClose} className="text-muted-foreground hover:text-muted-foreground">
             <X className="h-5 w-5" />
           </button>

@@ -16,8 +16,7 @@ import { useTranslation } from "react-i18next";
 import axios from "axios";
 import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
-import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { AuthPageShell } from "@/components/auth/AuthPageShell";
 import { showToast } from "@/components/ui/Toast";
 
 const PASSWORD_MIN = 8;
@@ -143,57 +142,49 @@ export default function AcceptInvitationPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <div className="absolute top-4 right-4 flex items-center gap-2">
-        <ThemeToggle />
-        <LanguageSwitcher />
-      </div>
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <img src="/empcloud-logo.png" alt={t("acceptInvitation.logoAlt")} className="h-12 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-foreground">{t("acceptInvitation.heading")}</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            {t("acceptInvitation.subheading")}
-          </p>
-        </div>
-
+    <AuthPageShell
+      title={t("acceptInvitation.heading")}
+      description={t("acceptInvitation.subheading")}
+    >
         <form
           onSubmit={onSubmit}
-          className="bg-card rounded-xl shadow-sm border border-border p-8 space-y-5"
+          className="space-y-5"
+          aria-busy={submitting || infoLoading}
         >
           {error && (
-            <div className="bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 text-sm px-4 py-3 rounded-lg">{error}</div>
+            <div role="alert" className="rounded-md border border-red-200 bg-red-50 px-3 py-2.5 text-[13px] text-red-700 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300">{error}</div>
           )}
 
           {infoLoading && (
-            <p className="text-xs text-muted-foreground flex items-center gap-2">
-              <Loader2 className="h-3 w-3 animate-spin" /> {t("acceptInvitation.loadingInvitation")}
+            <p role="status" className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Loader2 aria-hidden="true" className="h-3 w-3 animate-spin" /> {t("acceptInvitation.loadingInvitation")}
             </p>
           )}
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("acceptInvitation.form.firstNameLabel")}</label>
+              <label htmlFor="invitation-first-name" className="mb-1.5 block text-[13px] font-medium text-foreground">{t("acceptInvitation.form.firstNameLabel")}</label>
               <input
+                id="invitation-first-name"
                 type="text"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 autoComplete="given-name"
-                autoFocus={!namesLocked}
                 disabled={namesLocked}
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed"
+                className="h-10 w-full rounded-md border border-border bg-card px-3 text-[13px] text-foreground outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-muted-foreground hover:border-brand-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
                 placeholder={t("acceptInvitation.form.firstNamePlaceholder")}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">{t("acceptInvitation.form.lastNameLabel")}</label>
+              <label htmlFor="invitation-last-name" className="mb-1.5 block text-[13px] font-medium text-foreground">{t("acceptInvitation.form.lastNameLabel")}</label>
               <input
+                id="invitation-last-name"
                 type="text"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 autoComplete="family-name"
                 disabled={lastNameLocked}
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed"
+                className="h-10 w-full rounded-md border border-border bg-card px-3 text-[13px] text-foreground outline-none transition-[border-color,box-shadow] duration-150 hover:border-brand-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
               />
             </div>
           </div>
@@ -206,35 +197,38 @@ export default function AcceptInvitationPage() {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-1">{t("acceptInvitation.form.passwordLabel")}</label>
+            <label htmlFor="invitation-password" className="mb-1.5 block text-[13px] font-medium text-foreground">{t("acceptInvitation.form.passwordLabel")}</label>
             <div className="relative">
               <input
+                id="invitation-password"
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="new-password"
-                className="bg-card text-foreground w-full px-3 py-2 pr-10 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                className="h-10 w-full rounded-md border border-border bg-card px-3 pr-11 text-[13px] text-foreground outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-muted-foreground hover:border-brand-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
                 placeholder={t("acceptInvitation.form.passwordPlaceholder", { count: PASSWORD_MIN })}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((s) => !s)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-muted-foreground"
+                className="absolute right-1 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                 aria-label={showPassword ? t("acceptInvitation.form.hidePasswordAria") : t("acceptInvitation.form.showPasswordAria")}
+                aria-pressed={showPassword}
               >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                {showPassword ? <EyeOff aria-hidden="true" className="h-4 w-4" /> : <Eye aria-hidden="true" className="h-4 w-4" />}
               </button>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-1">{t("acceptInvitation.form.confirmPasswordLabel")}</label>
+            <label htmlFor="invitation-password-confirm" className="mb-1.5 block text-[13px] font-medium text-foreground">{t("acceptInvitation.form.confirmPasswordLabel")}</label>
             <input
+              id="invitation-password-confirm"
               type={showPassword ? "text" : "password"}
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
               autoComplete="new-password"
-              className="bg-card text-foreground w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+              className="h-10 w-full rounded-md border border-border bg-card px-3 text-[13px] text-foreground outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-muted-foreground hover:border-brand-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
               placeholder={t("acceptInvitation.form.confirmPasswordPlaceholder")}
             />
           </div>
@@ -242,17 +236,16 @@ export default function AcceptInvitationPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full inline-flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg disabled:opacity-50"
+            className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-md bg-brand-600 px-4 text-[13px] font-semibold text-white transition-colors duration-150 hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
+            {submitting && <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />}
             {submitting ? t("acceptInvitation.form.submitting") : t("acceptInvitation.form.submit")}
           </button>
 
-          <p className="text-xs text-muted-foreground text-center">
-            {t("acceptInvitation.form.alreadyHaveAccount")} <Link to="/login" className="text-brand-600 dark:text-brand-400 hover:underline">{t("acceptInvitation.form.signInLink")}</Link>
+          <p className="text-center text-xs text-muted-foreground">
+            {t("acceptInvitation.form.alreadyHaveAccount")} <Link to="/login" className="rounded-sm font-medium text-brand-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-brand-400">{t("acceptInvitation.form.signInLink")}</Link>
           </p>
         </form>
-      </div>
-    </div>
+    </AuthPageShell>
   );
 }

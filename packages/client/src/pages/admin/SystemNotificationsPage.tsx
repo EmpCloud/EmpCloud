@@ -73,11 +73,11 @@ export default function SystemNotificationsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-violet-50 flex items-center justify-center">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-50 dark:bg-violet-950/40">
             <Bell className="h-5 w-5 text-violet-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">{t("systemNotifications.title")}</h1>
+            <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("systemNotifications.title")}</h1>
             <p className="text-muted-foreground mt-0.5 text-sm">
               {t("systemNotifications.subtitle")}
             </p>
@@ -94,7 +94,7 @@ export default function SystemNotificationsPage() {
 
       {/* Create Form */}
       {showForm && (
-        <div className="bg-card rounded-xl border border-border p-6 mb-6">
+        <div className="mb-4 rounded-lg border border-border bg-card p-4">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-foreground">{t("systemNotifications.form.heading")}</h2>
             <button onClick={() => setShowForm(false)} className="text-muted-foreground hover:text-muted-foreground">
@@ -205,7 +205,7 @@ export default function SystemNotificationsPage() {
       )}
 
       {/* Notifications List */}
-      <div className="bg-card rounded-xl border border-border p-6">
+      <div className="rounded-lg border border-border bg-card p-4">
         <h2 className="text-lg font-semibold text-foreground mb-4">
           {t("systemNotifications.list.heading", { count: notifications.length })}
         </h2>

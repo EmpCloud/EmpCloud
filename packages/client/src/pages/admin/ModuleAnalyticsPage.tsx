@@ -72,11 +72,11 @@ export default function ModuleAnalyticsPage() {
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-purple-50 dark:bg-purple-950/40 flex items-center justify-center">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-50 dark:bg-purple-950/40">
             <Package className="h-5 w-5 text-purple-600 dark:text-purple-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">{t("moduleAnalytics.title")}</h1>
+            <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("moduleAnalytics.title")}</h1>
             <p className="text-muted-foreground mt-0.5 text-sm">
               {t("moduleAnalytics.subtitle")}
             </p>
@@ -86,7 +86,7 @@ export default function ModuleAnalyticsPage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-card rounded-xl border border-border p-5">
+        <div className="rounded-lg border border-border bg-card p-3 transition-colors duration-150 hover:border-brand-400">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-lg bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center">
               <Package className="h-5 w-5 text-blue-600 dark:text-blue-400" />
@@ -97,7 +97,7 @@ export default function ModuleAnalyticsPage() {
             </div>
           </div>
         </div>
-        <div className="bg-card rounded-xl border border-border p-5">
+        <div className="rounded-lg border border-border bg-card p-3 transition-colors duration-150 hover:border-brand-400">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-lg bg-green-50 dark:bg-green-950/40 flex items-center justify-center">
               <Users className="h-5 w-5 text-green-600 dark:text-green-400" />
@@ -108,7 +108,7 @@ export default function ModuleAnalyticsPage() {
             </div>
           </div>
         </div>
-        <div className="bg-card rounded-xl border border-border p-5">
+        <div className="rounded-lg border border-border bg-card p-3 transition-colors duration-150 hover:border-brand-400">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-lg bg-purple-50 dark:bg-purple-950/40 flex items-center justify-center">
               <Layers className="h-5 w-5 text-purple-600 dark:text-purple-400" />
@@ -119,7 +119,7 @@ export default function ModuleAnalyticsPage() {
             </div>
           </div>
         </div>
-        <div className="bg-card rounded-xl border border-border p-5">
+        <div className="rounded-lg border border-border bg-card p-3 transition-colors duration-150 hover:border-brand-400">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-lg bg-amber-50 dark:bg-amber-950/40 flex items-center justify-center">
               <TrendingUp className="h-5 w-5 text-amber-600 dark:text-amber-400" />
@@ -135,8 +135,8 @@ export default function ModuleAnalyticsPage() {
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Revenue by Module (Bar) */}
-        <div className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-lg font-semibold text-foreground mb-4">{t("moduleAnalytics.charts.revenueByModule")}</h2>
+        <div className="rounded-lg border border-border bg-card p-4">
+          <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("moduleAnalytics.charts.revenueByModule")}</h2>
           {modules?.length > 0 ? (
             <ResponsiveContainer width="100%" height={350}>
               <BarChart data={modules.filter((m: any) => m.revenue > 0)}>
@@ -155,8 +155,8 @@ export default function ModuleAnalyticsPage() {
         </div>
 
         {/* Subscribers by Module (Pie) */}
-        <div className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-lg font-semibold text-foreground mb-4">{t("moduleAnalytics.charts.subscriberDistribution")}</h2>
+        <div className="rounded-lg border border-border bg-card p-4">
+          <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("moduleAnalytics.charts.subscriberDistribution")}</h2>
           {modules?.filter((m: any) => m.subscriber_count > 0).length > 0 ? (
             <ResponsiveContainer width="100%" height={350}>
               <PieChart>
@@ -193,7 +193,7 @@ export default function ModuleAnalyticsPage() {
         {(modules || []).map((mod: any) => (
           <div
             key={mod.id}
-            className="bg-card rounded-xl border border-border p-5 hover:shadow-md transition-shadow"
+            className="rounded-lg border border-border bg-card p-4 transition-colors duration-150 hover:border-brand-400"
           >
             <div className="flex items-start justify-between mb-4">
               <div>
@@ -251,7 +251,7 @@ export default function ModuleAnalyticsPage() {
                 </div>
                 <div className="h-2 rounded-full bg-muted overflow-hidden">
                   <div
-                    className={`h-full rounded-full transition-all ${
+                    className={`h-full rounded-full transition-[width] duration-300 ${
                       mod.seat_utilization > 80
                         ? "bg-red-500"
                         : mod.seat_utilization > 50
@@ -284,8 +284,8 @@ export default function ModuleAnalyticsPage() {
       </div>
 
       {/* Detailed Table */}
-      <div className="bg-card rounded-xl border border-border p-6">
-        <h2 className="text-lg font-semibold text-foreground mb-4">{t("moduleAnalytics.table.heading")}</h2>
+      <div className="rounded-lg border border-border bg-card p-4">
+        <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("moduleAnalytics.table.heading")}</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>

@@ -94,11 +94,11 @@ export default function PlatformSettingsPage() {
     <div>
       <div className="mb-8">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-purple-50 dark:bg-purple-950/40 flex items-center justify-center">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-50 dark:bg-purple-950/40">
             <Settings className="h-5 w-5 text-purple-600 dark:text-purple-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">{t("platformSettings.header.title")}</h1>
+            <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("platformSettings.header.title")}</h1>
             <p className="text-muted-foreground mt-0.5 text-sm">
               {t("platformSettings.header.subtitle")}
             </p>
@@ -109,7 +109,7 @@ export default function PlatformSettingsPage() {
       {isLoading ? (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-card rounded-xl border border-border p-6 animate-pulse">
+            <div key={i} className="animate-pulse rounded-lg border border-border bg-card p-4">
               <div className="h-5 w-32 bg-muted rounded mb-4" />
               <div className="space-y-3">
                 <div className="h-4 w-full bg-muted rounded" />
@@ -124,7 +124,7 @@ export default function PlatformSettingsPage() {
           {sections.map((section) => (
             <div
               key={section.title}
-              className="bg-card rounded-xl border border-border overflow-hidden"
+              className="overflow-hidden rounded-lg border border-border bg-card"
             >
               <div className="px-6 py-4 border-b border-border flex items-center gap-3">
                 <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${section.color}`}>
@@ -132,7 +132,7 @@ export default function PlatformSettingsPage() {
                 </div>
                 <h2 className="text-base font-semibold text-foreground">{section.title}</h2>
               </div>
-              <div className="p-6">
+              <div className="p-4">
                 <dl className="space-y-3">
                   {section.items.map((item: any) => (
                     <div key={item.label} className="flex items-center justify-between">
