@@ -20,7 +20,10 @@ const primaryButtonClass =
   "inline-flex min-h-9 items-center justify-center gap-2 rounded-md bg-brand-600 px-3 py-2 text-[13px] font-medium text-white transition-colors duration-150 hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
 
 export default function PositionDetailPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = i18n.resolvedLanguage || i18n.language || "en";
+  const numberFormatter = new Intl.NumberFormat(locale);
+  const dateFormatter = new Intl.DateTimeFormat(locale);
   const { id } = useParams();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -120,7 +123,7 @@ export default function PositionDetailPage() {
       const msg =
         err?.response?.data?.error?.message ||
         err?.response?.data?.message ||
-        "Failed to update position status.";
+        t("positionDetail.error.statusUpdateFailed");
       showToast("error", msg);
       queryClient.invalidateQueries({ queryKey: ["position", id] });
     },
@@ -250,7 +253,7 @@ export default function PositionDetailPage() {
               </span>
             )}
             <label className="sr-only" htmlFor="position-status">
-              {t("positionDetail.statusLabel", { defaultValue: "Position status" })}
+              {t("positionDetail.statusLabel")}
             </label>
             <select
               id="position-status"
@@ -574,7 +577,7 @@ export default function PositionDetailPage() {
                 <div>
                   <dt className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{t("positionDetail.details.salaryRange")}</dt>
                   <dd className="mt-1 font-medium tabular-nums text-foreground">
-                    {pos.currency} {pos.min_salary ? (pos.min_salary / 100).toLocaleString() : "0"} - {pos.max_salary ? (pos.max_salary / 100).toLocaleString() : "0"}
+                    {pos.currency} {pos.min_salary ? numberFormatter.format(pos.min_salary / 100) : "0"} - {pos.max_salary ? numberFormatter.format(pos.max_salary / 100) : "0"}
                   </dd>
                 </div>
               )}
@@ -624,7 +627,7 @@ export default function PositionDetailPage() {
                         <Link to={`/employees/${a.user_id}`} className="block truncate rounded-sm text-[13px] font-medium text-foreground hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:hover:text-brand-400">
                           {a.first_name} {a.last_name}
                         </Link>
-                        <p className="truncate text-[11px] text-muted-foreground">{t("positionDetail.assignees.since", { date: new Date(a.start_date).toLocaleDateString() })}</p>
+                        <p className="truncate text-[11px] text-muted-foreground">{t("positionDetail.assignees.since", { date: dateFormatter.format(new Date(a.start_date)) })}</p>
                         {!a.is_primary && <span className="text-[11px] text-amber-600 dark:text-amber-300">{t("positionDetail.assignees.actingInterim")}</span>}
                       </div>
                     </div>
@@ -651,7 +654,7 @@ export default function PositionDetailPage() {
                   <div key={a.id} className="flex items-start gap-2 px-4 py-2.5 text-[11px] text-muted-foreground">
                     <Briefcase aria-hidden="true" className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                     <span className="min-w-0 break-words tabular-nums">
-                      {a.first_name} {a.last_name} ({new Date(a.start_date).toLocaleDateString()} - {a.end_date ? new Date(a.end_date).toLocaleDateString() : t("positionDetail.history.dateRangeNA")})
+                      {a.first_name} {a.last_name} ({dateFormatter.format(new Date(a.start_date))} - {a.end_date ? dateFormatter.format(new Date(a.end_date)) : t("positionDetail.history.dateRangeNA")})
                     </span>
                   </div>
                 ))}

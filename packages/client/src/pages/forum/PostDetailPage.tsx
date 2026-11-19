@@ -21,6 +21,7 @@ import {
   BarChart3,
 } from "lucide-react";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
+import { localizeForumCategoryName } from "./forum-category-i18n";
 
 const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
 
@@ -31,7 +32,7 @@ const POST_TYPE_CONFIG: Record<string, { labelKey: string; color: string; icon: 
   poll: { labelKey: "postType.poll", color: "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300", icon: BarChart3 },
 };
 
-function timeAgo(dateStr: string, t: (key: string, opts?: Record<string, unknown>) => string) {
+function timeAgo(dateStr: string, t: (key: string, opts?: Record<string, unknown>) => string, locale: string) {
   const now = new Date();
   const date = new Date(dateStr);
   const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
@@ -39,11 +40,12 @@ function timeAgo(dateStr: string, t: (key: string, opts?: Record<string, unknown
   if (diff < 3600) return t("postDetail.time.minutesAgo", { count: Math.floor(diff / 60) });
   if (diff < 86400) return t("postDetail.time.hoursAgo", { count: Math.floor(diff / 3600) });
   if (diff < 604800) return t("postDetail.time.daysAgo", { count: Math.floor(diff / 86400) });
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  return date.toLocaleDateString(locale, { month: "short", day: "numeric", year: "numeric" });
 }
 
 export default function PostDetailPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = i18n.resolvedLanguage || i18n.language || "en";
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
@@ -171,7 +173,7 @@ export default function PostDetailPage() {
                 <span className="text-sm font-medium text-foreground">
                   {reply.author_first_name} {reply.author_last_name}
                 </span>
-                <span className="text-xs text-muted-foreground">{timeAgo(reply.created_at, t)}</span>
+                <span className="text-xs text-muted-foreground">{timeAgo(reply.created_at, t, locale)}</span>
                 {Boolean(reply.is_accepted) && (
                   <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-950/40 px-2 py-0.5 rounded-md">
                     <CheckCircle2 className="h-3 w-3" /> {t("postDetail.reply.acceptedAnswer")}
@@ -222,6 +224,9 @@ export default function PostDetailPage() {
                 {canDeleteReply && (
                   <button
                     onClick={() => setDeleteReplyId(reply.id)}
+                    aria-label={t("postDetail.reply.deleteAria", {
+                      name: `${reply.author_first_name} ${reply.author_last_name}`.trim(),
+                    })}
                     className="flex items-center gap-1 text-xs text-muted-foreground hover:text-red-500 transition-colors"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -246,6 +251,7 @@ export default function PostDetailPage() {
       <div className="flex items-center gap-3 mb-6">
         <button
           onClick={() => navigate(-1)}
+          aria-label={t("postDetail.navigation.backAria")}
           className="p-2 rounded-md hover:bg-muted text-muted-foreground hover:text-muted-foreground transition-colors"
         >
           <ArrowLeft className="h-5 w-5" />
@@ -254,7 +260,7 @@ export default function PostDetailPage() {
           to={`/forum/category/${post.category_id}`}
           className="text-sm text-brand-600 dark:text-brand-400 hover:text-brand-700"
         >
-          {post.category_name}
+          {localizeForumCategoryName(post.category_name, t)}
         </Link>
       </div>
 
@@ -292,7 +298,7 @@ export default function PostDetailPage() {
               <span className="font-medium text-muted-foreground">
                 {post.author_first_name} {post.author_last_name}
               </span>
-              <span>{timeAgo(post.created_at, t)}</span>
+              <span>{timeAgo(post.created_at, t, locale)}</span>
               <span className="flex items-center gap-1"><Eye className="h-3 w-3" /> {post.view_count}</span>
             </div>
 

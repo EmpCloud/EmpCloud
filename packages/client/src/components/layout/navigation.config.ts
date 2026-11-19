@@ -97,7 +97,7 @@ export const employeeNavItems: NavItem[] = [
 
   // — Communication —
   { path: "/messages", label: "Messages", i18nKey: "nav.messages", icon: MessagesSquare, section: "Communication" },
-  { path: "/assistant", label: "HR Assistant", icon: Sparkles, section: "Communication", badge: "NEW" },
+  { path: "/assistant", label: "HR Assistant", i18nKey: "nav.hrAssistant", icon: Sparkles, section: "Communication", badge: "aiBadge.new" },
 
   // — Company & services —
   { path: "/documents", label: "Company", i18nKey: "nav.company", icon: Building2, section: "Workplace & Community", children: [
@@ -180,7 +180,7 @@ export const adminNavItems: NavItem[] = [
 
   // — Communication —
   { path: "/messages", label: "Messages", i18nKey: "nav.messages", icon: MessagesSquare, section: "Communication" },
-  { path: "/assistant", label: "HR Assistant", icon: Sparkles, section: "Communication", badge: "NEW" },
+  { path: "/assistant", label: "HR Assistant", i18nKey: "nav.hrAssistant", icon: Sparkles, section: "Communication", badge: "aiBadge.new" },
 
   // — Company & services —
   { path: "/documents", label: "Company", i18nKey: "nav.company", icon: Building2, section: "Workplace & Community", children: [

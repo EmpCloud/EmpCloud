@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { Search, Package, Loader2, AlertTriangle, ChevronLeft, ChevronRight, Filter, Check, X } from "lucide-react";
 import api from "@/api/client";
 
@@ -49,6 +49,24 @@ export default function ModuleAccessPage() {
     activeModules.some((s: any) => s.module_id === m.id)
   );
 
+  const moduleLabel = (module: any) => {
+    const key = `modules.${module.slug}.name`;
+    const translated = t(key);
+    const fallback = String(module.name || module.slug || "").replace(/^EMP\s+/i, "");
+    return translated === key ? fallback : translated.replace(/^EMP\s+/i, "");
+  };
+
+  const roleLabel = (role: string | null | undefined) => {
+    if (!role) return "";
+    // Legacy organizations may still return hr_manager even though it is no
+    // longer a canonical role. Keep the stored value intact and localize its
+    // display until those records are migrated.
+    const normalizedRole = role.trim().toLowerCase().replace(/\s+/g, "_");
+    const key = `roles.${normalizedRole}`;
+    const translated = t(key);
+    return translated === key ? role.replace(/_/g, " ") : translated;
+  };
+
   const enableModule = useMutation({
     mutationFn: (data: { module_id: number; user_id: number }) =>
       api.post("/subscriptions/enable-module", data).then((r) => r.data.data),
@@ -61,22 +79,21 @@ export default function ModuleAccessPage() {
       } else if (data.sync_status === "skipped") {
         setSyncAlert({ type: "warning", message: t('modulesAccess.syncAlerts.enabledSkipped') });
       } else {
-        setSyncAlert({ type: "warning", message: t('modulesAccess.syncAlerts.enabledPartial', { status: data.sync_status }) });
+        setSyncAlert({ type: "warning", message: t('modulesAccess.syncAlerts.enabledPartial') });
       }
       setTimeout(() => setSyncAlert(null), 5000);
     },
     onError: (err: any) => {
-      // #1461 — Surface server-side seat-limit errors so admins see *why*
-      // the assignment failed instead of the UI silently incrementing.
+      // Keep API diagnostics out of translated UI. A conflict can mean the
+      // employee already has access or the subscription has no free seats.
       const status = err.response?.status;
-      const serverMsg = err.response?.data?.error?.message;
       const message =
-        status === 409 && serverMsg
-          ? serverMsg
-          : serverMsg || t('modulesAccess.syncAlerts.enableFailed');
+        status === 409
+          ? t('modulesAccess.syncAlerts.assignmentConflict')
+          : t('modulesAccess.syncAlerts.enableFailed');
       setSyncAlert({ type: "error", message });
       setConfirmAction(null);
-      // Seat-limit messages are longer and more important — keep them visible longer
+      // Conflict guidance is longer and actionable, so keep it visible longer.
       setTimeout(() => setSyncAlert(null), status === 409 ? 8000 : 5000);
     },
   });
@@ -91,12 +108,12 @@ export default function ModuleAccessPage() {
       if (data.sync_status === "synced") {
         setSyncAlert({ type: "success", message: t('modulesAccess.syncAlerts.disabledSynced') });
       } else {
-        setSyncAlert({ type: "warning", message: t('modulesAccess.syncAlerts.disabledPartial', { status: data.sync_status }) });
+        setSyncAlert({ type: "warning", message: t('modulesAccess.syncAlerts.disabledPartial') });
       }
       setTimeout(() => setSyncAlert(null), 5000);
     },
-    onError: (err: any) => {
-      setSyncAlert({ type: "error", message: err.response?.data?.error?.message || t('modulesAccess.syncAlerts.disableFailed') });
+    onError: () => {
+      setSyncAlert({ type: "error", message: t('modulesAccess.syncAlerts.disableFailed') });
       setTimeout(() => setSyncAlert(null), 5000);
     },
   });
@@ -110,12 +127,14 @@ export default function ModuleAccessPage() {
       setConfirmAllAction(null);
       setSyncAlert({
         type: "success",
-        message: `Enabled for ${data.enabled} employee(s)${data.skipped > 0 ? ` (${data.skipped} already had access)` : ""}.`,
+        message: data.skipped > 0
+          ? t("modulesAccess.bulkAlerts.enabledWithSkipped", { enabled: data.enabled, skipped: data.skipped })
+          : t("modulesAccess.bulkAlerts.enabled", { count: data.enabled }),
       });
       setTimeout(() => setSyncAlert(null), 6000);
     },
-    onError: (err: any) => {
-      setSyncAlert({ type: "error", message: err.response?.data?.error?.message || "Failed to enable for all" });
+    onError: () => {
+      setSyncAlert({ type: "error", message: t("modulesAccess.bulkAlerts.enableFailed") });
       setTimeout(() => setSyncAlert(null), 5000);
     },
   });
@@ -129,12 +148,14 @@ export default function ModuleAccessPage() {
       setConfirmAllAction(null);
       setSyncAlert({
         type: "success",
-        message: `Removed access for ${data.disabled} employee(s)${data.errors > 0 ? ` (${data.errors} failed)` : ""}.`,
+        message: data.errors > 0
+          ? t("modulesAccess.bulkAlerts.disabledWithErrors", { disabled: data.disabled, errors: data.errors })
+          : t("modulesAccess.bulkAlerts.disabled", { count: data.disabled }),
       });
       setTimeout(() => setSyncAlert(null), 6000);
     },
-    onError: (err: any) => {
-      setSyncAlert({ type: "error", message: err.response?.data?.error?.message || "Failed to disable for all" });
+    onError: () => {
+      setSyncAlert({ type: "error", message: t("modulesAccess.bulkAlerts.disableFailed") });
       setTimeout(() => setSyncAlert(null), 5000);
     },
   });
@@ -194,6 +215,7 @@ export default function ModuleAccessPage() {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
           {subscribedModules.map((m: any) => {
             const sub = activeModules.find((s: any) => s.module_id === m.id);
+            const displayName = moduleLabel(m);
             const used = sub?.used_seats || 0;
             const total = sub?.total_seats || 0;
             const pct = total > 0 ? Math.min(100, (used / total) * 100) : 0;
@@ -214,14 +236,14 @@ export default function ModuleAccessPage() {
                   type="button"
                   onClick={() => setFilterModule(isFilteredOnThis ? "all" : `enabled:${m.id}`)}
                   aria-label={isFilteredOnThis
-                    ? `Clear filter for ${m.name}`
-                    : `Show employees enabled for ${m.name}`}
+                    ? t("modulesAccess.filter.clearAria", { module: displayName })
+                    : t("modulesAccess.filter.showEnabledAria", { module: displayName })}
                   aria-pressed={isFilteredOnThis}
                   className="w-full text-left rounded-md -m-1 p-1 hover:bg-muted focus:outline-none focus:ring-2 focus:ring-brand-500 transition-colors"
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <span className={`w-2 h-2 rounded-full ${used > 0 ? "bg-green-500" : "bg-muted"}`} />
-                    <span className="text-[11px] font-medium text-muted-foreground truncate">{m.name.replace(/^EMP\s+/i, "")}</span>
+                    <span className="text-[11px] font-medium text-muted-foreground truncate">{displayName}</span>
                   </div>
                   <div className="text-lg font-bold text-foreground tabular-nums">{used}<span className="text-[13px] font-normal text-muted-foreground">/{total}</span></div>
                   <div className="w-full bg-muted rounded-full h-1.5 mt-1">
@@ -230,25 +252,25 @@ export default function ModuleAccessPage() {
                 </button>
                 <div className="flex gap-1 mt-3">
                   <button
-                    onClick={() => setConfirmAllAction({ moduleId: m.id, moduleName: m.name, action: "enable" })}
+                    onClick={() => setConfirmAllAction({ moduleId: m.id, moduleName: displayName, action: "enable" })}
                     disabled={enableModuleAll.isPending || disableModuleAll.isPending}
                     className="flex-1 text-[11px] py-1.5 px-2 rounded bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300 hover:bg-brand-100 dark:hover:bg-brand-900/50 font-medium disabled:opacity-50 transition-colors"
                   >
-                    Enable All
+                    {t("modulesAccess.enableAll")}
                   </button>
                   <button
-                    onClick={() => setConfirmAllAction({ moduleId: m.id, moduleName: m.name, action: "disable" })}
+                    onClick={() => setConfirmAllAction({ moduleId: m.id, moduleName: displayName, action: "disable" })}
                     disabled={enableModuleAll.isPending || disableModuleAll.isPending || m.slug === "emp-payroll"}
                     title={
                       m.slug === "emp-payroll"
-                        ? "Payroll is enabled for every employee by default. To remove it, cancel the subscription in Settings → Subscriptions."
+                        ? t("modulesAccess.lock.payrollTooltip")
                         : undefined
                     }
                     className={`flex-1 text-[11px] py-1.5 px-2 rounded bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 font-medium disabled:opacity-50 transition-colors ${
                       m.slug === "emp-payroll" ? "cursor-not-allowed" : ""
                     }`}
                   >
-                    Disable All
+                    {t("modulesAccess.disableAll")}
                   </button>
                 </div>
               </div>
@@ -266,7 +288,7 @@ export default function ModuleAccessPage() {
         }`}>
           {syncAlert.type === "success" ? <Check className="h-4 w-4" /> : <AlertTriangle className="h-4 w-4" />}
           {syncAlert.message}
-          <button onClick={() => setSyncAlert(null)} className="ml-auto"><X className="h-3.5 w-3.5" /></button>
+          <button type="button" onClick={() => setSyncAlert(null)} aria-label={t("modulesAccess.dismissAlert")} className="ml-auto"><X className="h-3.5 w-3.5" /></button>
         </div>
       )}
 
@@ -280,6 +302,7 @@ export default function ModuleAccessPage() {
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
             className="bg-card text-foreground w-full pl-10 pr-4 py-2.5 border border-border rounded-md text-[13px] focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
             placeholder={t('modulesAccess.searchPlaceholder')}
+            aria-label={t('modulesAccess.searchAriaLabel')}
           />
         </div>
         <div className="flex items-center gap-2">
@@ -287,17 +310,18 @@ export default function ModuleAccessPage() {
           <select
             value={filterModule}
             onChange={(e) => { setFilterModule(e.target.value); setPage(1); }}
+            aria-label={t('modulesAccess.filterAriaLabel')}
             className="bg-card text-foreground px-3 py-2.5 border border-border rounded-md text-[13px] focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
           >
             <option value="all">{t('modulesAccess.allEmployees')}</option>
             <optgroup label={t('modulesAccess.enabledFor')}>
               {subscribedModules.map((m: any) => (
-                <option key={`e-${m.id}`} value={`enabled:${m.id}`}>{m.name.replace(/^EMP\s+/i, "")} — {t('modulesAccess.enabledSuffix')}</option>
+                <option key={`e-${m.id}`} value={`enabled:${m.id}`}>{moduleLabel(m)} — {t('modulesAccess.enabledSuffix')}</option>
               ))}
             </optgroup>
             <optgroup label={t('modulesAccess.notEnabledFor')}>
               {subscribedModules.map((m: any) => (
-                <option key={`d-${m.id}`} value={`disabled:${m.id}`}>{m.name.replace(/^EMP\s+/i, "")} — {t('modulesAccess.notEnabledSuffix')}</option>
+                <option key={`d-${m.id}`} value={`disabled:${m.id}`}>{moduleLabel(m)} — {t('modulesAccess.notEnabledSuffix')}</option>
               ))}
             </optgroup>
           </select>
@@ -317,11 +341,13 @@ export default function ModuleAccessPage() {
                 <p className="text-[11px] text-muted-foreground">{t('modulesAccess.confirm.subtitle')}</p>
               </div>
             </div>
-            <p className="text-[13px] text-muted-foreground mb-6"
-               dangerouslySetInnerHTML={{
-                 __html: t('modulesAccess.confirm.message', { user: confirmAction.userName, module: confirmAction.moduleName })
-               }}
-            />
+            <p className="text-[13px] text-muted-foreground mb-6">
+              <Trans
+                i18nKey="modulesAccess.confirm.message"
+                values={{ user: confirmAction.userName, module: confirmAction.moduleName }}
+                components={{ strong: <strong /> }}
+              />
+            </p>
             <div className="flex justify-end gap-3">
               <button onClick={() => setConfirmAction(null)} className="px-4 py-2 text-[13px] font-medium text-muted-foreground border border-border rounded-md hover:bg-muted">{t('modulesAccess.confirm.cancel')}</button>
               <button
@@ -346,19 +372,20 @@ export default function ModuleAccessPage() {
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-foreground">
-                  {confirmAllAction.action === "enable" ? "Enable for All Employees" : "Disable for All Employees"}
+                  {confirmAllAction.action === "enable" ? t("modulesAccess.confirmAll.enableTitle") : t("modulesAccess.confirmAll.disableTitle")}
                 </h3>
                 <p className="text-[11px] text-muted-foreground">
-                  {confirmAllAction.action === "enable" ? "This will enable access for all employees" : "This will remove access from all employees"}
+                  {confirmAllAction.action === "enable" ? t("modulesAccess.confirmAll.enableSubtitle") : t("modulesAccess.confirmAll.disableSubtitle")}
                 </p>
               </div>
             </div>
             <p className="text-[13px] text-muted-foreground mb-6">
-              Are you sure you want to <strong>{confirmAllAction.action}</strong> <strong>{confirmAllAction.moduleName}</strong> for{" "}
-              <strong>all employees</strong>?
+              {confirmAllAction.action === "enable"
+                ? t("modulesAccess.confirmAll.enableMessage", { module: confirmAllAction.moduleName })
+                : t("modulesAccess.confirmAll.disableMessage", { module: confirmAllAction.moduleName })}
             </p>
             <div className="flex justify-end gap-3">
-              <button onClick={() => setConfirmAllAction(null)} className="px-4 py-2 text-[13px] font-medium text-muted-foreground border border-border rounded-md hover:bg-muted">Cancel</button>
+              <button onClick={() => setConfirmAllAction(null)} className="px-4 py-2 text-[13px] font-medium text-muted-foreground border border-border rounded-md hover:bg-muted">{t("modulesAccess.confirmAll.cancel")}</button>
               <button
                 onClick={() => {
                   if (confirmAllAction.action === "enable") {
@@ -375,8 +402,8 @@ export default function ModuleAccessPage() {
                 }`}
               >
                 {enableModuleAll.isPending || disableModuleAll.isPending
-                  ? confirmAllAction.action === "enable" ? "Enabling..." : "Disabling..."
-                  : confirmAllAction.action === "enable" ? "Enable for All" : "Disable for All"}
+                  ? confirmAllAction.action === "enable" ? t("modulesAccess.confirmAll.enabling") : t("modulesAccess.confirmAll.disabling")
+                  : confirmAllAction.action === "enable" ? t("modulesAccess.confirmAll.enableAction") : t("modulesAccess.confirmAll.disableAction")}
               </button>
             </div>
           </div>
@@ -395,7 +422,7 @@ export default function ModuleAccessPage() {
               <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t('modulesAccess.table.designation')}</th>
               {subscribedModules.map((m: any) => (
                 <th key={m.id} className="text-center text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5 min-w-[90px]">
-                  {m.slug.replace("emp-", "").charAt(0).toUpperCase() + m.slug.replace("emp-", "").slice(1)}
+                  {moduleLabel(m)}
                 </th>
               ))}
               <th className="text-center text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2.5">{t('modulesAccess.table.modules')}</th>
@@ -431,7 +458,7 @@ export default function ModuleAccessPage() {
                       </div>
                     </td>
                     <td className="px-4 py-2.5">
-                      <span className="text-[11px] px-2 py-0.5 rounded-md bg-muted text-muted-foreground font-medium">{user.role ? (t(`roles.${user.role}`) !== `roles.${user.role}` ? t(`roles.${user.role}`) : user.role.replace(/_/g, " ")) : ""}</span>
+                      <span className="text-[11px] px-2 py-0.5 rounded-md bg-muted text-muted-foreground font-medium">{roleLabel(user.role)}</span>
                     </td>
                     <td className="px-4 py-2.5 text-[11px] text-muted-foreground truncate max-w-[120px]">{user.designation || "-"}</td>
                     {subscribedModules.map((m: any) => {
@@ -453,10 +480,11 @@ export default function ModuleAccessPage() {
                       // Subscriptions instead.
                       const isPayrollLock = m.slug === "emp-payroll" && isEnabled;
                       const isLocked = isOrgAdminMonitorLock || isPayrollLock;
+                      const displayName = moduleLabel(m);
                       const lockTitle = isOrgAdminMonitorLock
-                        ? "EmpMonitor stays enabled for Org Admins. Disable the module in Settings → Subscriptions if you need to remove it."
+                        ? t("modulesAccess.lock.monitorTooltip")
                         : isPayrollLock
-                          ? "Payroll is enabled for every employee by default. To remove it, cancel the subscription in Settings → Subscriptions."
+                          ? t("modulesAccess.lock.payrollTooltip")
                           : undefined;
                       return (
                         <td key={m.id} className="px-4 py-2.5 text-center">
@@ -465,7 +493,7 @@ export default function ModuleAccessPage() {
                               handleToggle(
                                 user.id,
                                 m.id,
-                                m.name,
+                                displayName,
                                 `${user.first_name} ${user.last_name}`,
                                 isEnabled,
                               )
@@ -474,8 +502,10 @@ export default function ModuleAccessPage() {
                             title={lockTitle}
                             aria-label={
                               isLocked
-                                ? `${m.name} is locked on`
-                                : undefined
+                                ? t("modulesAccess.lock.lockedOn", { module: displayName })
+                                : isEnabled
+                                  ? t("modulesAccess.toggle.disableAria", { module: displayName, employee: `${user.first_name} ${user.last_name}` })
+                                  : t("modulesAccess.toggle.enableAria", { module: displayName, employee: `${user.first_name} ${user.last_name}` })
                             }
                             className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
                               isEnabled ? "bg-brand-600" : "bg-muted hover:bg-muted"

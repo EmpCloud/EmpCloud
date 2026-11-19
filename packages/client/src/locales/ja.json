@@ -374,6 +374,7 @@
     "moduleAccess": "モジュールアクセス",
     "wellnessCheckIn": "毎日のチェックイン",
     "messages": "メッセージ",
+    "hrAssistant": "HRアシスタント",
     "changePassword": "パスワードの変更",
     "viewAttendance": "勤怠を表示",
     "attendanceGrid": "勤怠グリッド",
@@ -1015,7 +1016,36 @@
     "welcomeBack": "おかえりなさい、{{name}}さん！",
     "overviewDesc": "こちらがあなたのセルフサービスダッシュボードの概要です。",
     "editMyDetails": "詳細を編集",
-    "requestUpdate": "更新をリクエスト"
+    "requestUpdate": "更新をリクエスト",
+    "greatDay": "良い一日を！",
+    "quickActions": "クイックアクション",
+    "profileDescription": "詳細の確認と更新",
+    "leaveDescription": "休暇を申請",
+    "attendanceDescription": "勤怠とログを確認",
+    "requestDescription": "リクエストを送信",
+    "summary": "従業員サマリー"
+  },
+  "profileCompletion": {
+    "title": "プロフィール完成度",
+    "done": "プロフィールの設定が完了しました！",
+    "subtitle": "人事部門が必要な情報を確認できるよう、プロフィールを完成させてください。",
+    "more": "ほか{{count}}件",
+    "cta": "プロフィールを完成させる",
+    "completeBadge": "すべての項目が入力済み",
+    "fields": {
+      "photo": "プロフィール写真",
+      "contact_number": "電話番号",
+      "date_of_birth": "生年月日",
+      "gender": "性別",
+      "personal_email": "個人用メール",
+      "emergency_contact_name": "緊急連絡先",
+      "emergency_contact_phone": "緊急連絡先電話番号",
+      "blood_group": "血液型",
+      "marital_status": "婚姻状況",
+      "nationality": "国籍",
+      "aadhar_number": "Aadhaar番号",
+      "pan_number": "PAN番号"
+    }
   },
   "attendance": {
     "title": "勤怠",
@@ -1032,6 +1062,10 @@
     "totalWorkedToday": "今日の総労働時間",
     "notCheckedInYet": "今日はまだ出勤していません",
     "attendanceComplete": "今日の勤怠は完了しました",
+    "duration": {
+      "hoursMinutes": "{{hours}}時間{{minutes}}分",
+      "minutes": "{{minutes}}分"
+    },
     "dashboardTitle": "勤怠ダッシュボード",
     "aiInsights": "AIインサイト",
     "dashboardSubtitle": "組織の今日の勤怠概要。",
@@ -1361,6 +1395,10 @@
       "employeeCount": "{{total}}人中{{shown}}人の従業員",
       "clearFilters": "フィルターをクリア",
       "employee": "従業員",
+      "nightAllowance": "夜勤手当",
+      "nightAllowanceTitle": "夜勤で勤務した日数",
+      "extraDay": "追加勤務日",
+      "extraDayTitle": "週休日および法定休日に勤務した日数",
       "noEmployees": "この組織に従業員がいません。",
       "noMatch": "現在のフィルターに一致する従業員はいません。",
       "totalRow": "合計 {{code}} — {{label}}",
@@ -1400,6 +1438,11 @@
       },
       "applyLeaveFailed": "休暇の適用に失敗しました"
     },
+    "updateCheckOut": "退勤時刻を更新",
+    "checkedOutAt": "{{time}}に退勤",
+    "updateCheckOutHint": "時刻を修正するにはもう一度退勤してください",
+    "checkInSuccess": "{{time}}に出勤しました",
+    "checkOutSuccess": "{{time}}に退勤しました",
     "location": "勤務地",
     "monthlyLate": {
       "lateDaysOne": "遅刻{{count}}日",
@@ -1559,6 +1602,7 @@
   "roles": {
     "employee": "従業員",
     "manager": "マネージャー",
+    "hr_manager": "人事マネージャー",
     "hr_admin": "HR管理者",
     "org_admin": "組織管理者",
     "super_admin": "スーパー管理者",
@@ -1620,6 +1664,8 @@
     "employeesCount": "{{count}}従業員",
     "seatsAssignedCount": "{{count}}シート割当て済み",
     "searchPlaceholder": "名前、メール、役職、または従業員コードで検索...",
+    "searchAriaLabel": "従業員を検索",
+    "filterAriaLabel": "モジュールアクセスで従業員を絞り込む",
     "allEmployees": "すべての従業員",
     "enabledFor": "有効",
     "notEnabledFor": "無効",
@@ -1629,6 +1675,23 @@
     "noEmployees": "従業員が見つかりません",
     "matchingSearch": "検索に一致する",
     "withFilter": "このフィルターで",
+    "enableAll": "全員に有効化",
+    "disableAll": "全員を無効化",
+    "dismissAlert": "通知を閉じる",
+    "filter": {
+      "clearAria": "{{module}}のフィルターを解除",
+      "showEnabledAria": "{{module}}が有効な従業員を表示"
+    },
+    "bulkAlerts": {
+      "enabled_one": "{{count}}人の従業員にアクセスを有効化しました。",
+      "enabled_other": "{{count}}人の従業員にアクセスを有効化しました。",
+      "enabledWithSkipped": "{{enabled}}人の従業員にアクセスを有効化しました（{{skipped}}人は既にアクセス可能でした）。",
+      "enableFailed": "すべての従業員へのアクセスを有効化できませんでした",
+      "disabled_one": "{{count}}人の従業員からアクセスを削除しました。",
+      "disabled_other": "{{count}}人の従業員からアクセスを削除しました。",
+      "disabledWithErrors": "{{disabled}}人の従業員からアクセスを削除しました（{{errors}}件失敗）。",
+      "disableFailed": "すべての従業員のアクセスを無効化できませんでした"
+    },
     "table": {
       "employee": "従業員",
       "role": "権限",
@@ -1643,6 +1706,28 @@
       "remove": "アクセスを削除",
       "removing": "削除中..."
     },
+    "confirmAll": {
+      "enableTitle": "すべての従業員に有効化",
+      "disableTitle": "すべての従業員を無効化",
+      "enableSubtitle": "すべての従業員にアクセスを有効化します",
+      "disableSubtitle": "すべての従業員からアクセスを削除します",
+      "enableMessage": "すべての従業員に{{module}}を有効化しますか？",
+      "disableMessage": "すべての従業員の{{module}}を無効化しますか？",
+      "cancel": "キャンセル",
+      "enabling": "有効化中...",
+      "disabling": "無効化中...",
+      "enableAction": "全員に有効化",
+      "disableAction": "全員を無効化"
+    },
+    "lock": {
+      "monitorTooltip": "EMP Monitorは組織管理者に対して常に有効です。削除するには、設定 → サブスクリプションでモジュールを無効化してください。",
+      "payrollTooltip": "給与計算はデフォルトですべての従業員に有効です。削除するには、設定 → サブスクリプションで契約を解除してください。",
+      "lockedOn": "{{module}}は有効な状態でロックされています"
+    },
+    "toggle": {
+      "enableAria": "{{employee}}に{{module}}を有効化",
+      "disableAria": "{{employee}}の{{module}}を無効化"
+    },
     "pagination": {
       "showing": "{{total}}人中{{from}}–{{to}}を表示",
       "previous": "前へ",
@@ -1651,10 +1736,11 @@
     "syncAlerts": {
       "enabledSynced": "モジュールが有効化され、ユーザーが正常に同期されました",
       "enabledSkipped": "シートが割り当てられました。モジュールに同期APIが設定されていません。",
-      "enabledPartial": "シートは割り当てられましたが、モジュールの同期に失敗しました ({{status}})。",
+      "enabledPartial": "シートは割り当てられましたが、モジュールの同期が完了していません。",
+      "assignmentConflict": "アクセスを有効にできませんでした。従業員がすでにアクセス権を持っているか、サブスクリプションのシート上限に達している可能性があります。",
       "enableFailed": "モジュールの有効化に失敗しました",
       "disabledSynced": "モジュールが無効化され、ユーザーが削除されました",
-      "disabledPartial": "シートは削除されましたが、モジュールの同期に失敗しました ({{status}})",
+      "disabledPartial": "シートは削除されましたが、モジュールの同期が完了していません。",
       "disableFailed": "モジュールの無効化に失敗しました"
     }
   },
@@ -1678,7 +1764,38 @@
     "yesCancel": "はい、キャンセル",
     "subscriptionCancelled": "購読が正常にキャンセルされました。",
     "cancelFailed": "購読のキャンセルに失敗しました。",
-    "subscriptionCreated": "購読が作成されました。請求書はまもなく生成されます。"
+    "subscriptionCreated": "購読が作成されました。請求書はまもなく生成されます。",
+    "subscribeModal": {
+      "title": "{{module}} に登録",
+      "subtitle": "サブスクリプションを設定",
+      "closeAria": "サブスクリプションダイアログを閉じる",
+      "selectPlan": "プランを選択",
+      "loadingPlans": "プランを読み込んでいます...",
+      "noPlans": "この通貨向けに公開されているプランは現在ありません。管理者にお問い合わせください。",
+      "pricePerSeatMonthly": "1シートあたり月額 {{price}}",
+      "notAvailable": "利用できません",
+      "seatsLabel": "シート数（ライセンス）",
+      "seatsSliderAria": "シート数を選択",
+      "seatsInputAria": "シート数",
+      "seatsDescription": "1つのシートで1人の従業員がこのモジュールにアクセスできます",
+      "billingCycle": "請求サイクル",
+      "savePercent": "{{percent}}% 割引",
+      "summaryPlan": "プラン",
+      "summaryPricePerSeat": "シート単価",
+      "priceMonthly": "{{price}}/月",
+      "summarySeats": "シート",
+      "users_one": "{{count}} ユーザー",
+      "users_other": "{{count}} ユーザー",
+      "summaryBillingCycle": "請求サイクル",
+      "summaryDiscount": "割引",
+      "summaryTotal": "合計",
+      "perMonth": "/月",
+      "perQuarter": "/四半期",
+      "perYear": "/年",
+      "perMonths": "/{{months}}か月",
+      "subscribing": "登録しています...",
+      "subscribeWithTotal": "登録 — {{total}}"
+    }
   },
   "helpdesk": {
     "list": {
@@ -1903,7 +2020,23 @@
       "allYears": "すべての年度",
       "failedApprove": "計画の承認に失敗しました",
       "failedReject": "計画の却下に失敗しました",
-      "failedSubmit": "計画の提出に失敗しました"
+      "failedSubmit": "計画の提出に失敗しました",
+      "totalPlans": "プラン総数",
+      "approvedPlans": "承認済みプラン",
+      "rejectedPlans": "却下されたプラン",
+      "draftInProgress": "下書き / 進行中",
+      "plansThisYear_one": "↑ 今年 {{count}} 件",
+      "plansThisYear_other": "↑ 今年 {{count}} 件",
+      "percentageOfTotal": "全体の{{percentage}}%",
+      "viewGroup": "人員計画の表示",
+      "gridView": "グリッド表示",
+      "tableView": "テーブル表示",
+      "createdRecently": "最近作成",
+      "createdOn": "{{date}}に作成",
+      "planActions": "{{title}}の操作",
+      "viewDetails": "詳細を表示",
+      "selectAllPlans": "表示中のプランをすべて選択",
+      "selectPlan": "{{title}}を選択"
     },
     "vacancies": {
       "title": "公開中の欠員",
@@ -1923,7 +2056,37 @@
       "markSuccessGeneric": "ポジションを充足済みにしました。",
       "markError": "ポジションを充足済みにできませんでした",
       "confirmTitle": "「{{title}}」を充足済みにしますか?",
-      "confirmDescription": "このポジションは公開中の欠員リストから削除されます。"
+      "confirmDescription": "このポジションは公開中の欠員リストから削除されます。",
+      "export": "エクスポート",
+      "exportFilename": "boshu-chu-positions.csv",
+      "openPositions": "募集中のポジション",
+      "totalBudget": "総定員（予算）",
+      "inProgress": "進行中のポジション",
+      "criticalPositions": "重要ポジション",
+      "searchPlaceholder": "役職名、コード、または部門で検索...",
+      "searchAriaLabel": "求人を検索",
+      "critical": "重要",
+      "statusFallback": "{{status}}",
+      "viewMode": "求人の表示形式",
+      "grid": "グリッド",
+      "list": "リスト",
+      "moreActions": "その他の操作",
+      "filled": "充足済み",
+      "positionTitle": "役職名",
+      "colOpenings": "空き枠",
+      "filledTotal": "充足数 / 合計",
+      "action": "操作",
+      "viewDetails": "{{title}}の詳細を表示",
+      "exportHeaders": {
+        "title": "役職名",
+        "code": "コード",
+        "department": "部門",
+        "type": "雇用形態",
+        "openings": "空き枠",
+        "filled": "充足済み",
+        "budget": "予算",
+        "status": "ステータス"
+      }
     },
     "list": {
       "title": "すべてのポジション",
@@ -1966,7 +2129,15 @@
       "deleting": "削除中...",
       "failedDelete": "ポジションの削除に失敗しました",
       "allTypes": "すべての種類",
-      "criticalOnly": "重要のみ"
+      "criticalOnly": "重要のみ",
+      "viewMode": "表示モード",
+      "gridView": "グリッド表示",
+      "listView": "リスト表示",
+      "positionsCount_one": "{{count}}件のポジション",
+      "positionsCount_other": "{{count}}件のポジション",
+      "unassigned": "未割り当て",
+      "yes": "はい",
+      "no": "いいえ"
     },
     "dashboard": {
       "title": "ポジションダッシュボード",
@@ -2100,7 +2271,7 @@
       "viewMode": "ディレクトリ表示",
       "tableView": "テーブル表示",
       "gridView": "グリッド表示",
-      "showingEmployees": "{{total}}人中{{from}}～{{to}}人を表示",
+      "showingEmployees": "{{total}}人中{{shown}}人を表示",
       "sortBy": "従業員を並べ替え",
       "sortNameAsc": "並べ替え：名前（A–Z）",
       "sortNameDesc": "並べ替え：名前（Z–A）",
@@ -2170,6 +2341,68 @@
       "emptyAll": "まだ何もありません — 最初に投稿しましょう。",
       "emptySearchHint": "別のキーワードをお試しください。",
       "emptyHint": "上のボックスを使って何か共有しましょう。"
+    },
+    "widget": {
+      "filterAria": "会社フィードを絞り込む",
+      "composerPlaceholder": "チームに共有する内容を入力...",
+      "loading": "フィードを読み込み中...",
+      "emptyFiltered": "{{filter}}の投稿はまだありません。",
+      "openFullFeed": "フィード全体を開く",
+      "filters": {
+        "all": "すべての投稿",
+        "announcements": "お知らせ",
+        "team": "チーム",
+        "recognition": "称賛"
+      }
+    },
+    "composer": {
+      "submitFailed": "投稿できませんでした",
+      "placeholder": "チームに共有する内容を入力...",
+      "characterCount_one": "{{count}}文字",
+      "characterCount_other": "{{count}}文字",
+      "posting": "投稿中...",
+      "post": "投稿"
+    },
+    "post": {
+      "saveFailed": "投稿を保存できませんでした",
+      "actions": "投稿の操作",
+      "saving": "保存中...",
+      "like": "いいね",
+      "hideComments": "コメントを非表示",
+      "comments": "コメント",
+      "deleteTitle": "投稿を削除しますか？",
+      "deleteDescription": "この投稿とすべてのコメントがフィードから削除されます。この操作は元に戻せません。",
+      "deleting": "削除中...",
+      "edited": "編集済み"
+    },
+    "comments": {
+      "submitFailed": "コメントを送信できませんでした",
+      "disabled": "この投稿ではコメントが無効になっています。",
+      "viewMore_one": "ほか{{count}}件のコメントを表示",
+      "viewMore_other": "ほか{{count}}件のコメントを表示",
+      "loading": "コメントを読み込み中...",
+      "placeholder": "コメントを入力...",
+      "send": "コメントを送信",
+      "actions": "コメントの操作"
+    },
+    "media": {
+      "attachment": "添付ファイル"
+    },
+    "categories": {
+      "deleteFailed": "カテゴリを削除できませんでした",
+      "title": "カテゴリ",
+      "add": "追加",
+      "namePlaceholder": "カテゴリ名",
+      "empty": "カテゴリはまだありません。",
+      "postCount_one": "{{count}}件の投稿",
+      "postCount_other": "{{count}}件の投稿",
+      "editAria": "{{name}}を編集",
+      "deleteAria": "{{name}}を削除",
+      "deleteTitle": "カテゴリを削除しますか？",
+      "deleteWithPosts_one": "{{name}}を削除しますか？既存の{{count}}件の投稿にはタグが残りますが、カテゴリを復元するまで新しい投稿を追加できません。",
+      "deleteWithPosts_other": "{{name}}を削除しますか？既存の{{count}}件の投稿にはタグが残りますが、カテゴリを復元するまで新しい投稿を追加できません。",
+      "deleteEmpty": "{{name}}を削除しますか？このカテゴリはフォーラムで非表示になります。",
+      "deleting": "削除中..."
     }
   },
   "wellness": {
@@ -2206,6 +2439,24 @@
     }
   },
   "forum": {
+    "defaultCategories": {
+      "general": {
+        "name": "一般",
+        "description": "一般的なディスカッションと会話"
+      },
+      "questions": {
+        "name": "質問",
+        "description": "質問を投稿して同僚から回答を得る"
+      },
+      "ideas": {
+        "name": "アイデア",
+        "description": "改善のためのアイデアや提案を共有する"
+      },
+      "announcements": {
+        "name": "お知らせ",
+        "description": "重要なお知らせと最新情報"
+      }
+    },
     "page": {
       "title": "コミュニティフォーラム",
       "subtitle": "同僚とつながり、議論し、アイデアを共有しましょう。",
@@ -2220,6 +2471,8 @@
       "postsCount_one": "{{count}}件の投稿",
       "postsCount_other": "{{count}}件の投稿",
       "searchPlaceholder": "ディスカッションを検索...",
+      "searchAria": "フォーラムのディスカッションを検索",
+      "sortAria": "フォーラム投稿を並べ替え",
       "sortRecent": "最新",
       "sortPopular": "人気",
       "sortTrending": "話題",
@@ -2243,6 +2496,7 @@
     },
     "create": {
       "title": "新規投稿を作成",
+      "backAria": "戻る",
       "category": "カテゴリ",
       "selectCategory": "カテゴリを選択...",
       "noCategories": "カテゴリがありません — フォーラムダッシュボードで作成してください",
@@ -2419,6 +2673,8 @@
     "geofencesDesc_one": "アクティブな場所{{count}}件。モバイルアプリは<code>GET /me/policy</code>でこのリストを受け取り、ユーザーのGPSをローカルで検証します。",
     "geofencesDesc_other": "アクティブな場所{{count}}件。モバイルアプリは<code>GET /me/policy</code>でこのリストを受け取り、ユーザーのGPSをローカルで検証します。",
     "noGeofences": "ジオフェンスが設定されていません。<strong>ジオフェンスを追加</strong>をクリックして作成してください。",
+    "noGeofencesHintLine1": "「ジオフェンスを追加」をクリックして位置境界を作成してください",
+    "noGeofencesHintLine2": "モバイル出勤用です。",
     "overrides": "ユーザーごとの上書き",
     "overridesDesc": "特定の従業員について、組織全体のルールを期間指定で上書きします。終了日を過ぎると、従業員は自動的に組織の既定に戻ります。",
     "newOverride": "新規上書き",
@@ -2426,6 +2682,7 @@
     "loadingOverrides": "上書きを読み込み中…",
     "noOverridesMatch": "検索に一致する上書きはありません。",
     "noOverrides": "ユーザーごとの上書きが設定されていません。",
+    "noOverridesHint": "「新しい上書き」をクリックして従業員ごとの勤怠設定を指定してください。",
     "mRadius": "半径 {{radius}} m",
     "editGeofence": "ジオフェンスを編集",
     "deleteGeofence": "ジオフェンスを削除",
@@ -3172,10 +3429,14 @@
     "table": {
       "invoice": "請求書",
       "org": "組織",
+      "plan": "プランとサブスクリプション",
       "status": "ステータス",
       "total": "合計",
       "due": "未払額",
       "issued": "発行日",
+      "internalComment": "内部コメント",
+      "noPlan": "プランなし",
+      "noInternalComment": "内部コメントなし",
       "actions": "操作",
       "dueDatePrefix": "期限"
     },
@@ -3473,6 +3734,55 @@
       "auditLog_other": "監査ログ (直近 {{count}} 件)"
     }
   },
+  "orgComments": {
+    "title": "内部メモ",
+    "description": "スーパー管理者のみ閲覧できます。組織内のユーザーには表示されません。",
+    "placeholder": "この組織に関するメモを追加…",
+    "add": "メモを追加",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "editAction": "編集",
+    "deleteAction": "削除",
+    "edited": "（編集済み）",
+    "confirmDelete": "このメモを削除しますか？",
+    "loading": "メモを読み込み中…",
+    "empty": "メモはまだありません。",
+    "unknownAuthor": "不明",
+    "toast": {
+      "added": "メモを追加しました",
+      "addFailed": "メモを追加できませんでした",
+      "updated": "メモを更新しました",
+      "updateFailed": "メモを更新できませんでした",
+      "deleted": "メモを削除しました",
+      "deleteFailed": "メモを削除できませんでした"
+    }
+  },
+  "orgDelete": {
+    "title": "危険な操作",
+    "description": "この組織と、その組織が所有するすべてのレコード（ユーザー、勤怠、休暇、給与データ、サブスクリプション、書類）を完全に削除します。この操作は元に戻せません。",
+    "button": "組織を削除",
+    "modal": {
+      "title": "組織を削除",
+      "irreversibleTitle": "この操作は永続的で、元に戻すことはできません。",
+      "irreversibleBody": "復元、取り消し、ゴミ箱からの回収はできません。確実に削除する場合のみ続行してください。",
+      "platformOrg": "これはスーパー管理者アカウントを所有するプラットフォーム組織です。削除できません。",
+      "warning": "次のデータが完全に削除されます：",
+      "users_one": "{{count}}件のユーザーアカウント",
+      "users_other": "{{count}}件のユーザーアカウント",
+      "subscriptions_one": "{{count}}件のモジュールサブスクリプション",
+      "subscriptions_other": "{{count}}件のモジュールサブスクリプション",
+      "allData": "すべての勤怠、休暇、給与、書類、チケット、資産データ",
+      "confirmPrompt": "確認のため組織名を入力してください：",
+      "confirmPlaceholder": "組織名",
+      "cancel": "キャンセル",
+      "confirm": "完全に削除",
+      "deleting": "削除中…"
+    },
+    "toast": {
+      "deleted": "組織を削除しました",
+      "failed": "組織を削除できませんでした"
+    }
+  },
   "orgList": {
     "title": "すべての組織",
     "createButton": "組織を作成",
@@ -3498,6 +3808,37 @@
     },
     "search": {
       "placeholder": "名前またはメールアドレスで検索..."
+    },
+    "stats": {
+      "total": "組織総数",
+      "today": "本日の登録数",
+      "thisWeek": "今週の登録数",
+      "thisMonth": "今月の登録数",
+      "active": "有効",
+      "inactive": "非アクティブ",
+      "totalEmployees": "従業員総数",
+      "mrr": "月間経常収益"
+    },
+    "filters": {
+      "search": "検索",
+      "registered": "登録日",
+      "from": "開始日",
+      "to": "終了日",
+      "statusAll": "すべてのステータス",
+      "subscription": "サブスクリプション",
+      "subAll": "すべて",
+      "subWith": "サブスクリプションあり",
+      "subWithout": "サブスクリプションなし",
+      "country": "国",
+      "clear": "クリア",
+      "period": {
+        "all": "全期間",
+        "today": "今日",
+        "week": "今週",
+        "month": "今月",
+        "year": "今年",
+        "custom": "期間を指定"
+      }
     },
     "table": {
       "headers": {
@@ -4874,9 +5215,11 @@
     },
     "header": {
       "defaultCategoryName": "カテゴリ",
-      "newPost": "新規投稿"
+      "newPost": "新規投稿",
+      "backAria": "コミュニティフォーラムに戻る"
     },
     "filters": {
+      "filterAria": "投稿タイプで絞り込む",
       "allTypes": "すべてのタイプ",
       "discussions": "ディスカッション",
       "questions": "質問",
@@ -4884,6 +5227,7 @@
       "polls": "投票"
     },
     "sort": {
+      "ariaLabel": "カテゴリ投稿を並べ替え",
       "recent": "新着",
       "popular": "人気",
       "active": "アクティブ",
@@ -4911,6 +5255,9 @@
     }
   },
   "postDetail": {
+    "navigation": {
+      "backAria": "戻る"
+    },
     "postType": {
       "discussion": "ディスカッション",
       "question": "質問",
@@ -4931,7 +5278,8 @@
     "reply": {
       "acceptedAnswer": "ベストアンサー",
       "replyAction": "返信",
-      "acceptAnswer": "回答を採用"
+      "acceptAnswer": "回答を採用",
+      "deleteAria": "{{name}}の返信を削除"
     },
     "badge": {
       "pinned": "固定",
@@ -4976,7 +5324,8 @@
     "error": {
       "assignFailed": "従業員をこのポジションに割り当てられませんでした。",
       "saveChangesFailed": "ポジションの変更を保存できませんでした。",
-      "deleteFailed": "ポジションを削除できませんでした"
+      "deleteFailed": "ポジションを削除できませんでした",
+      "statusUpdateFailed": "ポジションのステータスを更新できませんでした。"
     },
     "loading": "読み込み中...",
     "notFound": "ポジションが見つかりません",
@@ -4986,6 +5335,7 @@
       "delete": "削除",
       "assignEmployee": "従業員を割り当て"
     },
+    "statusLabel": "役職ステータス",
     "status": {
       "active": "有効",
       "filled": "充足済み",
@@ -6660,8 +7010,13 @@
     "myViewTitle": "個人向けセルフサービスビュー",
     "adminViewTitle": "管理者ビュー — カスタムロールの権限で許可された項目のみ"
   },
+  "languageSwitcher": {
+    "changeLanguage": "言語を変更",
+    "languageMenu": "言語を選択"
+  },
   "aiBadge": {
-    "label": "AI搭載"
+    "label": "AI搭載",
+    "new": "新着"
   },
   "celebrations": {
     "title": "お祝い",

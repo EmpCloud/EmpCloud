@@ -313,6 +313,7 @@
     "whistleblowing": "Whistleblowing",
     "chatbot": "AI Assistant",
     "messages": "Messages",
+    "hrAssistant": "HR Assistant",
     "myTeam": "My Team",
     "orgChart": "Org Chart",
     "biometrics": "Biometrics",
@@ -1020,6 +1021,28 @@
     "requestDescription": "Raise a request",
     "summary": "Employee summary"
   },
+  "profileCompletion": {
+    "title": "Profile completion",
+    "done": "Your profile is all set — nice work!",
+    "subtitle": "Complete your profile so HR has everything on file.",
+    "more": "+{{count}} more",
+    "cta": "Complete profile",
+    "completeBadge": "All fields complete",
+    "fields": {
+      "photo": "Profile photo",
+      "contact_number": "Phone number",
+      "date_of_birth": "Date of birth",
+      "gender": "Gender",
+      "personal_email": "Personal email",
+      "emergency_contact_name": "Emergency contact",
+      "emergency_contact_phone": "Emergency phone",
+      "blood_group": "Blood group",
+      "marital_status": "Marital status",
+      "nationality": "Nationality",
+      "aadhar_number": "Aadhaar number",
+      "pan_number": "PAN number"
+    }
+  },
   "attendance": {
     "title": "Attendance",
     "checkIn": "Check In",
@@ -1035,6 +1058,10 @@
     "totalWorkedToday": "Total worked today",
     "notCheckedInYet": "Not checked in yet today",
     "attendanceComplete": "Attendance complete for today",
+    "duration": {
+      "hoursMinutes": "{{hours}}h {{minutes}}m",
+      "minutes": "{{minutes}}m"
+    },
     "dashboardTitle": "Attendance Dashboard",
     "aiInsights": "AI Insights",
     "dashboardSubtitle": "Today's attendance overview for your organization.",
@@ -1571,6 +1598,7 @@
   "roles": {
     "employee": "Employee",
     "manager": "Manager",
+    "hr_manager": "HR Manager",
     "hr_admin": "HR Admin",
     "org_admin": "Org Admin",
     "super_admin": "Super Admin",
@@ -1632,6 +1660,8 @@
     "employeesCount": "{{count}} employees",
     "seatsAssignedCount": "{{count}} seats assigned",
     "searchPlaceholder": "Search by name, email, designation, or emp code...",
+    "searchAriaLabel": "Search employees",
+    "filterAriaLabel": "Filter employees by module access",
     "allEmployees": "All Employees",
     "enabledFor": "Enabled for",
     "notEnabledFor": "Not enabled for",
@@ -1641,6 +1671,23 @@
     "noEmployees": "No employees found",
     "matchingSearch": "matching your search",
     "withFilter": "with this filter",
+    "enableAll": "Enable All",
+    "disableAll": "Disable All",
+    "dismissAlert": "Dismiss notification",
+    "filter": {
+      "clearAria": "Clear the {{module}} filter",
+      "showEnabledAria": "Show employees enabled for {{module}}"
+    },
+    "bulkAlerts": {
+      "enabled_one": "Enabled for {{count}} employee.",
+      "enabled_other": "Enabled for {{count}} employees.",
+      "enabledWithSkipped": "Enabled for {{enabled}} employees ({{skipped}} already had access).",
+      "enableFailed": "Failed to enable access for all employees",
+      "disabled_one": "Removed access for {{count}} employee.",
+      "disabled_other": "Removed access for {{count}} employees.",
+      "disabledWithErrors": "Removed access for {{disabled}} employees ({{errors}} failed).",
+      "disableFailed": "Failed to disable access for all employees"
+    },
     "table": {
       "employee": "Employee",
       "role": "Role",
@@ -1655,6 +1702,28 @@
       "remove": "Remove Access",
       "removing": "Removing..."
     },
+    "confirmAll": {
+      "enableTitle": "Enable for All Employees",
+      "disableTitle": "Disable for All Employees",
+      "enableSubtitle": "This will enable access for all employees",
+      "disableSubtitle": "This will remove access from all employees",
+      "enableMessage": "Are you sure you want to enable {{module}} for all employees?",
+      "disableMessage": "Are you sure you want to disable {{module}} for all employees?",
+      "cancel": "Cancel",
+      "enabling": "Enabling...",
+      "disabling": "Disabling...",
+      "enableAction": "Enable for All",
+      "disableAction": "Disable for All"
+    },
+    "lock": {
+      "monitorTooltip": "EMP Monitor stays enabled for organization administrators. Disable the module in Settings → Subscriptions if you need to remove it.",
+      "payrollTooltip": "Payroll is enabled for every employee by default. To remove it, cancel the subscription in Settings → Subscriptions.",
+      "lockedOn": "{{module}} is locked on"
+    },
+    "toggle": {
+      "enableAria": "Enable {{module}} for {{employee}}",
+      "disableAria": "Disable {{module}} for {{employee}}"
+    },
     "pagination": {
       "showing": "Showing {{from}}–{{to}} of {{total}} employees",
       "previous": "Previous",
@@ -1663,10 +1732,11 @@
     "syncAlerts": {
       "enabledSynced": "Module enabled and user synced successfully",
       "enabledSkipped": "Seat assigned. Module has no sync API configured.",
-      "enabledPartial": "Seat assigned but module sync failed ({{status}}).",
+      "enabledPartial": "Seat assigned, but module synchronization is incomplete.",
+      "assignmentConflict": "Access could not be enabled. The employee may already have access, or the subscription seat limit may have been reached.",
       "enableFailed": "Failed to enable module",
       "disabledSynced": "Module disabled and user removed",
-      "disabledPartial": "Seat removed but module sync failed ({{status}})",
+      "disabledPartial": "Seat removed, but module synchronization is incomplete.",
       "disableFailed": "Failed to disable module"
     }
   },
@@ -1690,7 +1760,38 @@
     "yesCancel": "Yes, Cancel",
     "subscriptionCancelled": "Subscription cancelled successfully.",
     "cancelFailed": "Failed to cancel subscription.",
-    "subscriptionCreated": "Subscription created. Invoice will be generated shortly."
+    "subscriptionCreated": "Subscription created. Invoice will be generated shortly.",
+    "subscribeModal": {
+      "title": "Subscribe to {{module}}",
+      "subtitle": "Configure your subscription",
+      "closeAria": "Close subscription dialog",
+      "selectPlan": "Select plan",
+      "loadingPlans": "Loading plans...",
+      "noPlans": "No plans are currently published for this currency. Contact your administrator.",
+      "pricePerSeatMonthly": "{{price}} per seat/month",
+      "notAvailable": "Not available",
+      "seatsLabel": "Number of seats (licenses)",
+      "seatsSliderAria": "Select number of seats",
+      "seatsInputAria": "Number of seats",
+      "seatsDescription": "Each seat allows one employee to access this module",
+      "billingCycle": "Billing cycle",
+      "savePercent": "Save {{percent}}%",
+      "summaryPlan": "Plan",
+      "summaryPricePerSeat": "Price per seat",
+      "priceMonthly": "{{price}}/month",
+      "summarySeats": "Seats",
+      "users_one": "{{count}} user",
+      "users_other": "{{count}} users",
+      "summaryBillingCycle": "Billing cycle",
+      "summaryDiscount": "Discount",
+      "summaryTotal": "Total",
+      "perMonth": "/month",
+      "perQuarter": "/quarter",
+      "perYear": "/year",
+      "perMonths": "/{{months}} months",
+      "subscribing": "Subscribing...",
+      "subscribeWithTotal": "Subscribe — {{total}}"
+    }
   },
   "helpdesk": {
     "list": {
@@ -1915,7 +2016,23 @@
       "failedReject": "Failed to reject plan",
       "failedSubmit": "Failed to submit plan",
       "allDepartments": "All Departments",
-      "allYears": "All Years"
+      "allYears": "All Years",
+      "totalPlans": "Total Plans",
+      "approvedPlans": "Approved Plans",
+      "rejectedPlans": "Rejected Plans",
+      "draftInProgress": "Draft / In Progress",
+      "plansThisYear_one": "↑ {{count}} this year",
+      "plansThisYear_other": "↑ {{count}} this year",
+      "percentageOfTotal": "{{percentage}}% of total",
+      "viewGroup": "Headcount plan view",
+      "gridView": "Grid view",
+      "tableView": "Table view",
+      "createdRecently": "Created recently",
+      "createdOn": "Created {{date}}",
+      "planActions": "Actions for {{title}}",
+      "viewDetails": "View details",
+      "selectAllPlans": "Select all visible plans",
+      "selectPlan": "Select {{title}}"
     },
     "vacancies": {
       "title": "Open Vacancies",
@@ -1935,7 +2052,37 @@
       "markSuccessGeneric": "Position marked as filled.",
       "markError": "Failed to mark position as filled",
       "confirmTitle": "Mark \"{{title}}\" as filled?",
-      "confirmDescription": "This position will be removed from the open vacancies list."
+      "confirmDescription": "This position will be removed from the open vacancies list.",
+      "export": "Export",
+      "exportFilename": "open-vacancies.csv",
+      "openPositions": "Open Positions",
+      "totalBudget": "Total Headcount (Budget)",
+      "inProgress": "Positions in Progress",
+      "criticalPositions": "Critical Positions",
+      "searchPlaceholder": "Search by title, code, or department...",
+      "searchAriaLabel": "Search vacancies",
+      "critical": "Critical",
+      "statusFallback": "{{status}}",
+      "viewMode": "Vacancy view",
+      "grid": "Grid",
+      "list": "List",
+      "moreActions": "More actions",
+      "filled": "Filled",
+      "positionTitle": "Position Title",
+      "colOpenings": "Openings",
+      "filledTotal": "Filled / Total",
+      "action": "Action",
+      "viewDetails": "View {{title}} details",
+      "exportHeaders": {
+        "title": "Title",
+        "code": "Code",
+        "department": "Department",
+        "type": "Type",
+        "openings": "Openings",
+        "filled": "Filled",
+        "budget": "Budget",
+        "status": "Status"
+      }
     },
     "list": {
       "title": "All Positions",
@@ -1978,7 +2125,15 @@
       "deleting": "Deleting...",
       "failedDelete": "Failed to delete position",
       "criticalOnly": "Critical only",
-      "allTypes": "All Types"
+      "allTypes": "All Types",
+      "viewMode": "View mode",
+      "gridView": "Grid view",
+      "listView": "List view",
+      "positionsCount_one": "{{count}} position",
+      "positionsCount_other": "{{count}} positions",
+      "unassigned": "Unassigned",
+      "yes": "Yes",
+      "no": "No"
     },
     "dashboard": {
       "title": "Position Dashboard",
@@ -2182,6 +2337,68 @@
       "emptyAll": "Nothing here yet — be the first to post.",
       "emptySearchHint": "Try a different keyword.",
       "emptyHint": "Use the box above to share something."
+    },
+    "widget": {
+      "filterAria": "Filter company feed",
+      "composerPlaceholder": "Share something with the team...",
+      "loading": "Loading feed...",
+      "emptyFiltered": "No {{filter}} posts yet.",
+      "openFullFeed": "Open full feed",
+      "filters": {
+        "all": "All Posts",
+        "announcements": "Announcements",
+        "team": "Team",
+        "recognition": "Recognition"
+      }
+    },
+    "composer": {
+      "submitFailed": "Failed to post",
+      "placeholder": "Share something with the team...",
+      "characterCount_one": "{{count}} character",
+      "characterCount_other": "{{count}} characters",
+      "posting": "Posting...",
+      "post": "Post"
+    },
+    "post": {
+      "saveFailed": "Failed to save",
+      "actions": "Post actions",
+      "saving": "Saving...",
+      "like": "Like",
+      "hideComments": "Hide",
+      "comments": "Comments",
+      "deleteTitle": "Delete post?",
+      "deleteDescription": "This removes the post and all its comments from the feed. This cannot be undone.",
+      "deleting": "Deleting...",
+      "edited": "edited"
+    },
+    "comments": {
+      "submitFailed": "Failed to comment",
+      "disabled": "Comments are disabled on this post.",
+      "viewMore_one": "View {{count}} more comment",
+      "viewMore_other": "View {{count}} more comments",
+      "loading": "Loading comments...",
+      "placeholder": "Write a comment...",
+      "send": "Send comment",
+      "actions": "Comment actions"
+    },
+    "media": {
+      "attachment": "Attachment"
+    },
+    "categories": {
+      "deleteFailed": "Failed to delete category",
+      "title": "Categories",
+      "add": "Add",
+      "namePlaceholder": "Category name",
+      "empty": "No categories yet.",
+      "postCount_one": "{{count}} post",
+      "postCount_other": "{{count}} posts",
+      "editAria": "Edit {{name}}",
+      "deleteAria": "Delete {{name}}",
+      "deleteTitle": "Delete category?",
+      "deleteWithPosts_one": "Delete {{name}}? The {{count}} existing post keeps its tag, but no new posts can be added here until it is restored.",
+      "deleteWithPosts_other": "Delete {{name}}? The {{count}} existing posts keep their tag, but no new posts can be added here until it is restored.",
+      "deleteEmpty": "Delete {{name}}? The category will be hidden from the forum.",
+      "deleting": "Deleting..."
     }
   },
   "wellness": {
@@ -2218,6 +2435,24 @@
     }
   },
   "forum": {
+    "defaultCategories": {
+      "general": {
+        "name": "General",
+        "description": "General discussions and conversations"
+      },
+      "questions": {
+        "name": "Questions",
+        "description": "Ask questions and get answers from colleagues"
+      },
+      "ideas": {
+        "name": "Ideas",
+        "description": "Share ideas and suggestions for improvement"
+      },
+      "announcements": {
+        "name": "Announcements",
+        "description": "Important announcements and updates"
+      }
+    },
     "page": {
       "title": "Community Forum",
       "subtitle": "Connect, discuss, and share ideas with your colleagues.",
@@ -2232,6 +2467,8 @@
       "postsCount_one": "{{count}} post",
       "postsCount_other": "{{count}} posts",
       "searchPlaceholder": "Search discussions...",
+      "searchAria": "Search forum discussions",
+      "sortAria": "Sort forum posts",
       "sortRecent": "Recent",
       "sortPopular": "Popular",
       "sortTrending": "Trending",
@@ -2255,6 +2492,7 @@
     },
     "create": {
       "title": "Create New Post",
+      "backAria": "Go back",
       "category": "Category",
       "selectCategory": "Select category...",
       "noCategories": "No categories — create them in Forum Dashboard",
@@ -4973,9 +5211,11 @@
     },
     "header": {
       "defaultCategoryName": "Category",
-      "newPost": "New Post"
+      "newPost": "New Post",
+      "backAria": "Back to the community forum"
     },
     "filters": {
+      "filterAria": "Filter posts by type",
       "allTypes": "All Types",
       "discussions": "Discussions",
       "questions": "Questions",
@@ -4983,6 +5223,7 @@
       "polls": "Polls"
     },
     "sort": {
+      "ariaLabel": "Sort category posts",
       "recent": "Recent",
       "popular": "Popular",
       "active": "Active",
@@ -5010,6 +5251,9 @@
     }
   },
   "postDetail": {
+    "navigation": {
+      "backAria": "Go back"
+    },
     "postType": {
       "discussion": "Discussion",
       "question": "Question",
@@ -5030,7 +5274,8 @@
     "reply": {
       "acceptedAnswer": "Accepted Answer",
       "replyAction": "Reply",
-      "acceptAnswer": "Accept Answer"
+      "acceptAnswer": "Accept Answer",
+      "deleteAria": "Delete reply from {{name}}"
     },
     "badge": {
       "pinned": "Pinned",
@@ -5075,7 +5320,8 @@
     "error": {
       "assignFailed": "Failed to assign employee to this position.",
       "saveChangesFailed": "Failed to save position changes.",
-      "deleteFailed": "Failed to delete position"
+      "deleteFailed": "Failed to delete position",
+      "statusUpdateFailed": "Failed to update position status."
     },
     "loading": "Loading...",
     "notFound": "Position not found",
@@ -6760,8 +7006,13 @@
     "myViewTitle": "Personal self-service view",
     "adminViewTitle": "Admin view — only items your custom-role permissions unlock"
   },
+  "languageSwitcher": {
+    "changeLanguage": "Change language",
+    "languageMenu": "Choose a language"
+  },
   "aiBadge": {
-    "label": "AI Powered"
+    "label": "AI Powered",
+    "new": "NEW"
   },
   "celebrations": {
     "title": "Celebrations",

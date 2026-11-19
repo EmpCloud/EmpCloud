@@ -374,6 +374,7 @@
     "moduleAccess": "الوصول إلى الوحدات",
     "wellnessCheckIn": "تسجيل يومي",
     "messages": "الرسائل",
+    "hrAssistant": "مساعد الموارد البشرية",
     "changePassword": "تغيير كلمة المرور",
     "viewAttendance": "عرض الحضور",
     "attendanceGrid": "شبكة الحضور",
@@ -1015,7 +1016,36 @@
     "welcomeBack": "مرحباً بعودتك، {{name}}!",
     "overviewDesc": "إليك نظرة عامة على لوحة الخدمة الذاتية الخاصة بك.",
     "editMyDetails": "تعديل بياناتي",
-    "requestUpdate": "طلب تحديث"
+    "requestUpdate": "طلب تحديث",
+    "greatDay": "نتمنى لك يوماً رائعاً!",
+    "quickActions": "إجراءات سريعة",
+    "profileDescription": "عرض بياناتك وتحديثها",
+    "leaveDescription": "طلب إجازة",
+    "attendanceDescription": "عرض الحضور والسجلات",
+    "requestDescription": "تقديم طلب",
+    "summary": "ملخص الموظف"
+  },
+  "profileCompletion": {
+    "title": "اكتمال الملف الشخصي",
+    "done": "ملفك الشخصي مكتمل — أحسنت!",
+    "subtitle": "أكمل ملفك الشخصي ليكون لدى الموارد البشرية جميع البيانات المطلوبة.",
+    "more": "+{{count}} أخرى",
+    "cta": "إكمال الملف الشخصي",
+    "completeBadge": "جميع الحقول مكتملة",
+    "fields": {
+      "photo": "الصورة الشخصية",
+      "contact_number": "رقم الهاتف",
+      "date_of_birth": "تاريخ الميلاد",
+      "gender": "الجنس",
+      "personal_email": "البريد الإلكتروني الشخصي",
+      "emergency_contact_name": "جهة اتصال الطوارئ",
+      "emergency_contact_phone": "هاتف الطوارئ",
+      "blood_group": "فصيلة الدم",
+      "marital_status": "الحالة الاجتماعية",
+      "nationality": "الجنسية",
+      "aadhar_number": "رقم Aadhaar",
+      "pan_number": "رقم PAN"
+    }
   },
   "attendance": {
     "title": "الحضور",
@@ -1032,6 +1062,10 @@
     "totalWorkedToday": "إجمالي عمل اليوم",
     "notCheckedInYet": "لم يتم تسجيل الدخول بعد اليوم",
     "attendanceComplete": "تم إكمال حضور اليوم",
+    "duration": {
+      "hoursMinutes": "{{hours}} س {{minutes}} د",
+      "minutes": "{{minutes}} د"
+    },
     "dashboardTitle": "لوحة الحضور",
     "aiInsights": "رؤى الذكاء الاصطناعي",
     "dashboardSubtitle": "نظرة عامة على حضور اليوم في منظمتك.",
@@ -1361,6 +1395,10 @@
       "employeeCount": "{{shown}} من {{total}} موظفين",
       "clearFilters": "مسح الفلاتر",
       "employee": "الموظف",
+      "nightAllowance": "بدل الليل",
+      "nightAllowanceTitle": "أيام العمل ضمن وردية ليلية",
+      "extraDay": "يوم إضافي",
+      "extraDayTitle": "أيام الراحة الأسبوعية والعطلات الإلزامية التي تم العمل فيها",
       "noEmployees": "لا يوجد موظفون في هذه المؤسسة.",
       "noMatch": "لا يوجد موظف يطابق الفلاتر الحالية.",
       "totalRow": "إجمالي {{code}} — {{label}}",
@@ -1400,6 +1438,11 @@
       },
       "applyLeaveFailed": "فشل تطبيق الإجازة"
     },
+    "updateCheckOut": "تحديث الانصراف",
+    "checkedOutAt": "تم تسجيل الانصراف في {{time}}",
+    "updateCheckOutHint": "سجّل الانصراف مرة أخرى لتصحيح الوقت",
+    "checkInSuccess": "تم تسجيل الحضور بنجاح في {{time}}",
+    "checkOutSuccess": "تم تسجيل الانصراف بنجاح في {{time}}",
     "location": "الموقع",
     "monthlyLate": {
       "lateDaysOne": "{{count}} يوم تأخير",
@@ -1559,6 +1602,7 @@
   "roles": {
     "employee": "موظف",
     "manager": "مدير",
+    "hr_manager": "مدير الموارد البشرية",
     "hr_admin": "مسؤول الموارد البشرية",
     "org_admin": "مسؤول المنظمة",
     "super_admin": "مسؤول عام",
@@ -1620,6 +1664,8 @@
     "employeesCount": "{{count}} موظفين",
     "seatsAssignedCount": "{{count}} مقاعد مُعيّنة",
     "searchPlaceholder": "البحث بالاسم أو البريد أو المسمى الوظيفي أو رمز الموظف...",
+    "searchAriaLabel": "البحث عن الموظفين",
+    "filterAriaLabel": "تصفية الموظفين حسب الوصول إلى الوحدات",
     "allEmployees": "جميع الموظفين",
     "enabledFor": "مُفعّل لـ",
     "notEnabledFor": "غير مُفعّل لـ",
@@ -1629,6 +1675,23 @@
     "noEmployees": "لم يتم العثور على موظفين",
     "matchingSearch": "مطابقين لبحثك",
     "withFilter": "بهذا الفلتر",
+    "enableAll": "تمكين للجميع",
+    "disableAll": "تعطيل للجميع",
+    "dismissAlert": "إغلاق الإشعار",
+    "filter": {
+      "clearAria": "مسح عامل تصفية {{module}}",
+      "showEnabledAria": "عرض الموظفين المُمكَّن لهم {{module}}"
+    },
+    "bulkAlerts": {
+      "enabled_one": "تم التمكين لـ {{count}} موظف.",
+      "enabled_other": "تم التمكين لـ {{count}} موظفين.",
+      "enabledWithSkipped": "تم التمكين لـ {{enabled}} موظفين (كان لدى {{skipped}} منهم وصول بالفعل).",
+      "enableFailed": "تعذر تمكين الوصول لجميع الموظفين",
+      "disabled_one": "تمت إزالة الوصول لـ {{count}} موظف.",
+      "disabled_other": "تمت إزالة الوصول لـ {{count}} موظفين.",
+      "disabledWithErrors": "تمت إزالة الوصول لـ {{disabled}} موظفين (فشل {{errors}}).",
+      "disableFailed": "تعذر تعطيل الوصول لجميع الموظفين"
+    },
     "table": {
       "employee": "الموظف",
       "role": "الدور",
@@ -1643,6 +1706,28 @@
       "remove": "إزالة الوصول",
       "removing": "جاري الإزالة..."
     },
+    "confirmAll": {
+      "enableTitle": "التمكين لجميع الموظفين",
+      "disableTitle": "التعطيل لجميع الموظفين",
+      "enableSubtitle": "سيؤدي هذا إلى تمكين الوصول لجميع الموظفين",
+      "disableSubtitle": "سيؤدي هذا إلى إزالة الوصول من جميع الموظفين",
+      "enableMessage": "هل أنت متأكد من تمكين {{module}} لجميع الموظفين؟",
+      "disableMessage": "هل أنت متأكد من تعطيل {{module}} لجميع الموظفين؟",
+      "cancel": "إلغاء",
+      "enabling": "جارٍ التمكين...",
+      "disabling": "جارٍ التعطيل...",
+      "enableAction": "تمكين للجميع",
+      "disableAction": "تعطيل للجميع"
+    },
+    "lock": {
+      "monitorTooltip": "يبقى EMP Monitor ممكّنًا لمسؤولي المؤسسة. عطّل الوحدة من الإعدادات ← الاشتراكات إذا كنت بحاجة إلى إزالتها.",
+      "payrollTooltip": "يتم تمكين الرواتب لكل موظف افتراضيًا. لإزالتها، ألغِ الاشتراك من الإعدادات ← الاشتراكات.",
+      "lockedOn": "{{module}} مقفل في وضع التمكين"
+    },
+    "toggle": {
+      "enableAria": "تمكين {{module}} لـ {{employee}}",
+      "disableAria": "تعطيل {{module}} لـ {{employee}}"
+    },
     "pagination": {
       "showing": "عرض {{from}}–{{to}} من {{total}} موظف",
       "previous": "السابق",
@@ -1651,10 +1736,11 @@
     "syncAlerts": {
       "enabledSynced": "تم تفعيل الوحدة ومزامنة المستخدم بنجاح",
       "enabledSkipped": "تم تعيين المقعد. الوحدة لا تحتوي على API مزامنة مهيأة.",
-      "enabledPartial": "تم تعيين المقعد لكن فشلت مزامنة الوحدة ({{status}}).",
+      "enabledPartial": "تم تعيين المقعد، لكن مزامنة الوحدة غير مكتملة.",
+      "assignmentConflict": "تعذر تفعيل الوصول. قد يكون لدى الموظف وصول بالفعل، أو ربما تم بلوغ حد مقاعد الاشتراك.",
       "enableFailed": "فشل تفعيل الوحدة",
       "disabledSynced": "تم تعطيل الوحدة وإزالة المستخدم",
-      "disabledPartial": "تمت إزالة المقعد لكن فشلت مزامنة الوحدة ({{status}})",
+      "disabledPartial": "تمت إزالة المقعد، لكن مزامنة الوحدة غير مكتملة.",
       "disableFailed": "فشل تعطيل الوحدة"
     }
   },
@@ -1678,7 +1764,38 @@
     "yesCancel": "نعم، ألغي",
     "subscriptionCancelled": "تم إلغاء الاشتراك بنجاح.",
     "cancelFailed": "فشل إلغاء الاشتراك.",
-    "subscriptionCreated": "تم إنشاء الاشتراك. سيتم إنشاء الفاتورة قريباً."
+    "subscriptionCreated": "تم إنشاء الاشتراك. سيتم إنشاء الفاتورة قريباً.",
+    "subscribeModal": {
+      "title": "الاشتراك في {{module}}",
+      "subtitle": "إعداد اشتراكك",
+      "closeAria": "إغلاق مربع حوار الاشتراك",
+      "selectPlan": "اختر الخطة",
+      "loadingPlans": "جارٍ تحميل الخطط...",
+      "noPlans": "لا توجد خطط منشورة حاليًا لهذه العملة. تواصل مع المسؤول.",
+      "pricePerSeatMonthly": "{{price}} لكل مقعد شهريًا",
+      "notAvailable": "غير متاح",
+      "seatsLabel": "عدد المقاعد (التراخيص)",
+      "seatsSliderAria": "اختر عدد المقاعد",
+      "seatsInputAria": "عدد المقاعد",
+      "seatsDescription": "يتيح كل مقعد لموظف واحد الوصول إلى هذه الوحدة",
+      "billingCycle": "دورة الفوترة",
+      "savePercent": "وفّر {{percent}}٪",
+      "summaryPlan": "الخطة",
+      "summaryPricePerSeat": "السعر لكل مقعد",
+      "priceMonthly": "{{price}}/شهريًا",
+      "summarySeats": "المقاعد",
+      "users_one": "{{count}} مستخدم",
+      "users_other": "{{count}} مستخدمين",
+      "summaryBillingCycle": "دورة الفوترة",
+      "summaryDiscount": "الخصم",
+      "summaryTotal": "الإجمالي",
+      "perMonth": "/شهريًا",
+      "perQuarter": "/ربع سنوي",
+      "perYear": "/سنويًا",
+      "perMonths": "/كل {{months}} أشهر",
+      "subscribing": "جارٍ الاشتراك...",
+      "subscribeWithTotal": "اشترك — {{total}}"
+    }
   },
   "helpdesk": {
     "list": {
@@ -1903,7 +2020,27 @@
       "allYears": "جميع السنوات",
       "failedApprove": "فشل اعتماد الخطة",
       "failedReject": "فشل رفض الخطة",
-      "failedSubmit": "فشل إرسال الخطة"
+      "failedSubmit": "فشل إرسال الخطة",
+      "totalPlans": "إجمالي الخطط",
+      "approvedPlans": "الخطط المعتمدة",
+      "rejectedPlans": "الخطط المرفوضة",
+      "draftInProgress": "مسودة / قيد التنفيذ",
+      "plansThisYear_zero": "↑ {{count}} خطة هذا العام",
+      "plansThisYear_one": "↑ {{count}} خطة هذا العام",
+      "plansThisYear_two": "↑ {{count}} خطتان هذا العام",
+      "plansThisYear_few": "↑ {{count}} خطط هذا العام",
+      "plansThisYear_many": "↑ {{count}} خطة هذا العام",
+      "plansThisYear_other": "↑ {{count}} خطة هذا العام",
+      "percentageOfTotal": "{{percentage}}% من الإجمالي",
+      "viewGroup": "عرض خطط الملاك",
+      "gridView": "عرض شبكي",
+      "tableView": "عرض جدولي",
+      "createdRecently": "تم الإنشاء مؤخرًا",
+      "createdOn": "تم الإنشاء في {{date}}",
+      "planActions": "إجراءات {{title}}",
+      "viewDetails": "عرض التفاصيل",
+      "selectAllPlans": "تحديد جميع الخطط الظاهرة",
+      "selectPlan": "تحديد {{title}}"
     },
     "vacancies": {
       "title": "الشواغر المفتوحة",
@@ -1923,7 +2060,37 @@
       "markSuccessGeneric": "تم تمييز الوظيفة كمشغولة.",
       "markError": "فشل تمييز الوظيفة كمشغولة",
       "confirmTitle": "هل تريد تمييز \"{{title}}\" كمشغولة؟",
-      "confirmDescription": "ستتم إزالة هذه الوظيفة من قائمة الشواغر المفتوحة."
+      "confirmDescription": "ستتم إزالة هذه الوظيفة من قائمة الشواغر المفتوحة.",
+      "export": "تصدير",
+      "exportFilename": "الشواغر-المفتوحة.csv",
+      "openPositions": "الوظائف الشاغرة",
+      "totalBudget": "إجمالي عدد الموظفين (الميزانية)",
+      "inProgress": "الوظائف قيد التقدم",
+      "criticalPositions": "الوظائف الحرجة",
+      "searchPlaceholder": "البحث حسب المسمى أو الرمز أو القسم...",
+      "searchAriaLabel": "البحث في الوظائف الشاغرة",
+      "critical": "حرجة",
+      "statusFallback": "{{status}}",
+      "viewMode": "طريقة عرض الوظائف الشاغرة",
+      "grid": "شبكة",
+      "list": "قائمة",
+      "moreActions": "مزيد من الإجراءات",
+      "filled": "مشغولة",
+      "positionTitle": "المسمى الوظيفي",
+      "colOpenings": "الشواغر",
+      "filledTotal": "المشغول / الإجمالي",
+      "action": "الإجراء",
+      "viewDetails": "عرض تفاصيل {{title}}",
+      "exportHeaders": {
+        "title": "المسمى",
+        "code": "الرمز",
+        "department": "القسم",
+        "type": "النوع",
+        "openings": "الشواغر",
+        "filled": "المشغول",
+        "budget": "الميزانية",
+        "status": "الحالة"
+      }
     },
     "list": {
       "title": "جميع الوظائف",
@@ -1966,7 +2133,19 @@
       "deleting": "جاري الحذف...",
       "failedDelete": "فشل حذف الوظيفة",
       "allTypes": "جميع الأنواع",
-      "criticalOnly": "الحرجة فقط"
+      "criticalOnly": "الحرجة فقط",
+      "viewMode": "وضع العرض",
+      "gridView": "عرض شبكي",
+      "listView": "عرض القائمة",
+      "positionsCount_zero": "لا توجد وظائف",
+      "positionsCount_one": "{{count}} وظيفة",
+      "positionsCount_two": "وظيفتان",
+      "positionsCount_few": "{{count}} وظائف",
+      "positionsCount_many": "{{count}} وظيفة",
+      "positionsCount_other": "{{count}} وظيفة",
+      "unassigned": "غير مُعيَّنة",
+      "yes": "نعم",
+      "no": "لا"
     },
     "dashboard": {
       "title": "لوحة الوظائف",
@@ -2100,7 +2279,7 @@
       "viewMode": "عرض الدليل",
       "tableView": "عرض الجدول",
       "gridView": "عرض الشبكة",
-      "showingEmployees": "عرض {{from}}–{{to}} من أصل {{total}} موظفًا",
+      "showingEmployees": "عرض {{shown}} من أصل {{total}} موظفاً",
       "sortBy": "ترتيب الموظفين",
       "sortNameAsc": "الترتيب: الاسم (A–Z)",
       "sortNameDesc": "الترتيب: الاسم (Z–A)",
@@ -2170,6 +2349,84 @@
       "emptyAll": "لا شيء هنا بعد — كن أول من ينشر.",
       "emptySearchHint": "جرّب كلمة مفتاحية أخرى.",
       "emptyHint": "استخدم المربع أعلاه لمشاركة شيء ما."
+    },
+    "widget": {
+      "filterAria": "تصفية موجز الشركة",
+      "composerPlaceholder": "شارك شيئاً مع الفريق...",
+      "loading": "جارٍ تحميل الموجز...",
+      "emptyFiltered": "لا توجد منشورات من نوع {{filter}} بعد.",
+      "openFullFeed": "فتح الموجز الكامل",
+      "filters": {
+        "all": "كل المنشورات",
+        "announcements": "الإعلانات",
+        "team": "الفريق",
+        "recognition": "التقدير"
+      }
+    },
+    "composer": {
+      "submitFailed": "فشل نشر المنشور",
+      "placeholder": "شارك شيئاً مع الفريق...",
+      "characterCount_zero": "{{count}} حرف",
+      "characterCount_one": "{{count}} حرف",
+      "characterCount_two": "{{count}} حرفان",
+      "characterCount_few": "{{count}} أحرف",
+      "characterCount_many": "{{count}} حرفاً",
+      "characterCount_other": "{{count}} حرف",
+      "posting": "جارٍ النشر...",
+      "post": "نشر"
+    },
+    "post": {
+      "saveFailed": "فشل الحفظ",
+      "actions": "إجراءات المنشور",
+      "saving": "جارٍ الحفظ...",
+      "like": "إعجاب",
+      "hideComments": "إخفاء",
+      "comments": "التعليقات",
+      "deleteTitle": "حذف المنشور؟",
+      "deleteDescription": "سيؤدي ذلك إلى إزالة المنشور وجميع تعليقاته من الموجز. لا يمكن التراجع عن هذا الإجراء.",
+      "deleting": "جارٍ الحذف...",
+      "edited": "معدّل"
+    },
+    "comments": {
+      "submitFailed": "فشل إرسال التعليق",
+      "disabled": "التعليقات معطّلة على هذا المنشور.",
+      "viewMore_zero": "لا توجد تعليقات إضافية ({{count}})",
+      "viewMore_one": "عرض {{count}} تعليق إضافي",
+      "viewMore_two": "عرض {{count}} تعليقين إضافيين",
+      "viewMore_few": "عرض {{count}} تعليقات إضافية",
+      "viewMore_many": "عرض {{count}} تعليقاً إضافياً",
+      "viewMore_other": "عرض {{count}} تعليق إضافي",
+      "loading": "جارٍ تحميل التعليقات...",
+      "placeholder": "اكتب تعليقاً...",
+      "send": "إرسال التعليق",
+      "actions": "إجراءات التعليق"
+    },
+    "media": {
+      "attachment": "مرفق"
+    },
+    "categories": {
+      "deleteFailed": "فشل حذف الفئة",
+      "title": "الفئات",
+      "add": "إضافة",
+      "namePlaceholder": "اسم الفئة",
+      "empty": "لا توجد فئات بعد.",
+      "postCount_zero": "{{count}} منشور",
+      "postCount_one": "{{count}} منشور",
+      "postCount_two": "{{count}} منشوران",
+      "postCount_few": "{{count}} منشورات",
+      "postCount_many": "{{count}} منشوراً",
+      "postCount_other": "{{count}} منشور",
+      "editAria": "تعديل {{name}}",
+      "deleteAria": "حذف {{name}}",
+      "deleteTitle": "حذف الفئة؟",
+      "deleteWithPosts_zero": "حذف {{name}}؟ لا توجد منشورات حالية ({{count}})، وستُخفى الفئة من المنتدى.",
+      "deleteWithPosts_one": "حذف {{name}}؟ سيحتفظ المنشور الحالي البالغ {{count}} بوسمه، لكن لن يمكن إضافة منشورات جديدة هنا حتى استعادة الفئة.",
+      "deleteWithPosts_two": "حذف {{name}}؟ سيحتفظ المنشوران الحاليان البالغان {{count}} بوسمهما، لكن لن يمكن إضافة منشورات جديدة هنا حتى استعادة الفئة.",
+      "deleteWithPosts_few": "حذف {{name}}؟ ستحتفظ المنشورات الحالية البالغة {{count}} بوسومها، لكن لن يمكن إضافة منشورات جديدة هنا حتى استعادة الفئة.",
+      "deleteWithPosts_many": "حذف {{name}}؟ ستحتفظ المنشورات الحالية البالغة {{count}} بوسومها، لكن لن يمكن إضافة منشورات جديدة هنا حتى استعادة الفئة.",
+      "deleteWithPosts_other": "حذف {{name}}؟ ستحتفظ المنشورات الحالية البالغة {{count}} بوسومها، لكن لن يمكن إضافة منشورات جديدة هنا حتى استعادة الفئة.",
+      "deleteEmpty": "حذف {{name}}؟ ستُخفى الفئة من المنتدى.",
+      "deleting": "جارٍ الحذف..."
     }
   },
   "wellness": {
@@ -2206,6 +2463,24 @@
     }
   },
   "forum": {
+    "defaultCategories": {
+      "general": {
+        "name": "عام",
+        "description": "نقاشات ومحادثات عامة"
+      },
+      "questions": {
+        "name": "الأسئلة",
+        "description": "اطرح الأسئلة واحصل على إجابات من الزملاء"
+      },
+      "ideas": {
+        "name": "الأفكار",
+        "description": "شارك الأفكار والاقتراحات للتحسين"
+      },
+      "announcements": {
+        "name": "الإعلانات",
+        "description": "إعلانات وتحديثات مهمة"
+      }
+    },
     "page": {
       "title": "منتدى المجتمع",
       "subtitle": "تواصل وناقش وشارك الأفكار مع زملائك.",
@@ -2220,6 +2495,8 @@
       "postsCount_one": "{{count}} منشور",
       "postsCount_other": "{{count}} منشورات",
       "searchPlaceholder": "البحث في النقاشات...",
+      "searchAria": "البحث في نقاشات المنتدى",
+      "sortAria": "ترتيب منشورات المنتدى",
       "sortRecent": "الأحدث",
       "sortPopular": "الأكثر شيوعًا",
       "sortTrending": "الرائج",
@@ -2243,6 +2520,7 @@
     },
     "create": {
       "title": "إنشاء منشور جديد",
+      "backAria": "الرجوع",
       "category": "الفئة",
       "selectCategory": "اختر الفئة...",
       "noCategories": "لا توجد فئات — أنشئها في لوحة تحكم المنتدى",
@@ -2419,6 +2697,8 @@
     "geofencesDesc_one": "{{count}} موقع نشط. يتلقى تطبيق الهاتف هذه القائمة عبر <code>GET /me/policy</code> ويتحقق من GPS المستخدم محليًا.",
     "geofencesDesc_other": "{{count}} مواقع نشطة. يتلقى تطبيق الهاتف هذه القائمة عبر <code>GET /me/policy</code> ويتحقق من GPS المستخدم محليًا.",
     "noGeofences": "لا توجد أسيجة جغرافية مُهيأة. انقر على <strong>إضافة سياج جغرافي</strong> لإنشاء واحد.",
+    "noGeofencesHintLine1": "انقر على «إضافة سياج جغرافي» لإنشاء حدود الموقع",
+    "noGeofencesHintLine2": "لاستخدامها في تسجيل الحضور عبر الهاتف.",
     "overrides": "تجاوزات لكل مستخدم",
     "overridesDesc": "تجاوز قواعد المؤسسة بأكملها لموظف محدد لنطاق زمني. عند انتهاء تاريخ الانتهاء، يعود الموظف تلقائيًا إلى الإعداد الافتراضي للمؤسسة.",
     "newOverride": "تجاوز جديد",
@@ -2426,6 +2706,7 @@
     "loadingOverrides": "جارٍ تحميل التجاوزات…",
     "noOverridesMatch": "لا توجد تجاوزات تطابق بحثك.",
     "noOverrides": "لا توجد تجاوزات لكل مستخدم مُهيأة.",
+    "noOverridesHint": "انقر على «تجاوز جديد» لتعيين إعدادات حضور مخصصة لموظف.",
     "mRadius": "نصف قطر {{radius}} م",
     "editGeofence": "تعديل السياج الجغرافي",
     "deleteGeofence": "حذف السياج الجغرافي",
@@ -3240,10 +3521,14 @@
     "table": {
       "invoice": "الفاتورة",
       "org": "المؤسسة",
+      "plan": "الخطة والاشتراك",
       "status": "الحالة",
       "total": "الإجمالي",
       "due": "المستحق",
       "issued": "تاريخ الإصدار",
+      "internalComment": "تعليق داخلي",
+      "noPlan": "لا توجد خطة",
+      "noInternalComment": "لا يوجد تعليق داخلي",
       "actions": "الإجراءات",
       "dueDatePrefix": "الاستحقاق"
     },
@@ -3581,6 +3866,63 @@
       "auditLog_other": "سجل التدقيق (آخر {{count}})"
     }
   },
+  "orgComments": {
+    "title": "ملاحظات داخلية",
+    "description": "مرئية للمسؤولين الفائقين فقط، ولا تظهر لأي شخص داخل المؤسسة.",
+    "placeholder": "أضف ملاحظة عن هذه المؤسسة…",
+    "add": "إضافة ملاحظة",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "editAction": "تعديل",
+    "deleteAction": "حذف",
+    "edited": "(معدّلة)",
+    "confirmDelete": "حذف هذه الملاحظة؟",
+    "loading": "جارٍ تحميل الملاحظات…",
+    "empty": "لا توجد ملاحظات بعد.",
+    "unknownAuthor": "غير معروف",
+    "toast": {
+      "added": "تمت إضافة الملاحظة",
+      "addFailed": "تعذّرت إضافة الملاحظة",
+      "updated": "تم تحديث الملاحظة",
+      "updateFailed": "تعذّر تحديث الملاحظة",
+      "deleted": "تم حذف الملاحظة",
+      "deleteFailed": "تعذّر حذف الملاحظة"
+    }
+  },
+  "orgDelete": {
+    "title": "منطقة خطرة",
+    "description": "احذف هذه المؤسسة نهائياً وجميع السجلات التي تملكها، بما في ذلك المستخدمون والحضور والإجازات وبيانات الرواتب والاشتراكات والمستندات. لا يمكن التراجع عن هذا الإجراء.",
+    "button": "حذف المؤسسة",
+    "modal": {
+      "title": "حذف المؤسسة",
+      "irreversibleTitle": "هذا الإجراء نهائي ولا يمكن التراجع عنه.",
+      "irreversibleBody": "لا توجد استعادة أو تراجع أو سلة مهملات. لا تتابع إلا إذا كنت متأكداً تماماً.",
+      "platformOrg": "هذه هي مؤسسة المنصة التي تملك حسابات المسؤولين الفائقين، ولا يمكن حذفها.",
+      "warning": "سيؤدي ذلك إلى حذف ما يلي نهائياً:",
+      "users_zero": "{{count}} حساب مستخدم",
+      "users_one": "{{count}} حساب مستخدم",
+      "users_two": "{{count}} حسابا مستخدم",
+      "users_few": "{{count}} حسابات مستخدم",
+      "users_many": "{{count}} حساب مستخدم",
+      "users_other": "{{count}} حساب مستخدم",
+      "subscriptions_zero": "{{count}} اشتراك وحدة",
+      "subscriptions_one": "{{count}} اشتراك وحدة",
+      "subscriptions_two": "{{count}} اشتراكا وحدة",
+      "subscriptions_few": "{{count}} اشتراكات وحدة",
+      "subscriptions_many": "{{count}} اشتراك وحدة",
+      "subscriptions_other": "{{count}} اشتراك وحدة",
+      "allData": "جميع بيانات الحضور والإجازات والرواتب والمستندات والتذاكر والأصول",
+      "confirmPrompt": "اكتب اسم المؤسسة للتأكيد:",
+      "confirmPlaceholder": "اسم المؤسسة",
+      "cancel": "إلغاء",
+      "confirm": "حذف نهائي",
+      "deleting": "جارٍ الحذف…"
+    },
+    "toast": {
+      "deleted": "تم حذف المؤسسة",
+      "failed": "تعذّر حذف المؤسسة"
+    }
+  },
   "orgList": {
     "title": "جميع المؤسسات",
     "createButton": "إنشاء مؤسسة",
@@ -3606,6 +3948,37 @@
     },
     "search": {
       "placeholder": "البحث بالاسم أو البريد الإلكتروني..."
+    },
+    "stats": {
+      "total": "إجمالي المؤسسات",
+      "today": "المسجلة اليوم",
+      "thisWeek": "المسجلة هذا الأسبوع",
+      "thisMonth": "المسجلة هذا الشهر",
+      "active": "نشطة",
+      "inactive": "غير نشطة",
+      "totalEmployees": "إجمالي الموظفين",
+      "mrr": "الإيرادات الشهرية المتكررة"
+    },
+    "filters": {
+      "search": "بحث",
+      "registered": "تاريخ التسجيل",
+      "from": "من",
+      "to": "إلى",
+      "statusAll": "جميع الحالات",
+      "subscription": "الاشتراك",
+      "subAll": "الكل",
+      "subWith": "مع اشتراك",
+      "subWithout": "من دون اشتراك",
+      "country": "الدولة",
+      "clear": "مسح",
+      "period": {
+        "all": "كل الوقت",
+        "today": "اليوم",
+        "week": "هذا الأسبوع",
+        "month": "هذا الشهر",
+        "year": "هذه السنة",
+        "custom": "نطاق مخصص"
+      }
     },
     "table": {
       "headers": {
@@ -5114,9 +5487,11 @@
     },
     "header": {
       "defaultCategoryName": "الفئة",
-      "newPost": "منشور جديد"
+      "newPost": "منشور جديد",
+      "backAria": "العودة إلى منتدى المجتمع"
     },
     "filters": {
+      "filterAria": "تصفية المنشورات حسب النوع",
       "allTypes": "جميع الأنواع",
       "discussions": "المناقشات",
       "questions": "الأسئلة",
@@ -5124,6 +5499,7 @@
       "polls": "الاستطلاعات"
     },
     "sort": {
+      "ariaLabel": "ترتيب منشورات الفئة",
       "recent": "الأحدث",
       "popular": "الأكثر رواجًا",
       "active": "النشط",
@@ -5155,6 +5531,9 @@
     }
   },
   "postDetail": {
+    "navigation": {
+      "backAria": "الرجوع"
+    },
     "postType": {
       "discussion": "نقاش",
       "question": "سؤال",
@@ -5187,7 +5566,8 @@
     "reply": {
       "acceptedAnswer": "الإجابة المقبولة",
       "replyAction": "رد",
-      "acceptAnswer": "قبول الإجابة"
+      "acceptAnswer": "قبول الإجابة",
+      "deleteAria": "حذف رد {{name}}"
     },
     "badge": {
       "pinned": "مثبّت",
@@ -5240,7 +5620,8 @@
     "error": {
       "assignFailed": "تعذّر تعيين الموظف في هذا المنصب.",
       "saveChangesFailed": "تعذّر حفظ تغييرات المنصب.",
-      "deleteFailed": "تعذّر حذف المنصب"
+      "deleteFailed": "تعذّر حذف المنصب",
+      "statusUpdateFailed": "تعذّر تحديث حالة المنصب."
     },
     "loading": "جارٍ التحميل...",
     "notFound": "المنصب غير موجود",
@@ -5250,6 +5631,7 @@
       "delete": "حذف",
       "assignEmployee": "تعيين موظف"
     },
+    "statusLabel": "حالة المنصب",
     "status": {
       "active": "نشط",
       "filled": "مشغول",
@@ -7032,8 +7414,13 @@
     "myViewTitle": "عرض الخدمة الذاتية الشخصية",
     "adminViewTitle": "عرض المسؤول — العناصر التي تتيحها صلاحيات دورك المخصص فقط"
   },
+  "languageSwitcher": {
+    "changeLanguage": "تغيير اللغة",
+    "languageMenu": "اختيار اللغة"
+  },
   "aiBadge": {
-    "label": "مدعوم بالذكاء الاصطناعي"
+    "label": "مدعوم بالذكاء الاصطناعي",
+    "new": "جديد"
   },
   "celebrations": {
     "title": "الاحتفالات",

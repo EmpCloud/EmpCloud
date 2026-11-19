@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "@/api/client";
 import { Folder, Plus, Pencil, Trash2, X, Check, Loader2 } from "lucide-react";
@@ -16,6 +17,7 @@ type Category = {
 // Used on the unified feed page in place of the old standalone Forum
 // Dashboard, which had a much heavier form layout for the same task.
 export function CategoriesPanel() {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const { data: categories } = useQuery({
     queryKey: ["forum-categories"],
@@ -81,7 +83,7 @@ export function CategoriesPanel() {
       setDeleteError(null);
     },
     onError: (err: any) =>
-      setDeleteError(err?.response?.data?.error?.message || "Failed to delete category"),
+      setDeleteError(err?.response?.data?.error?.message || t("feed.categories.deleteFailed")),
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -102,7 +104,7 @@ export function CategoriesPanel() {
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
           <Folder className="h-4 w-4 text-brand-600 dark:text-brand-400" />
-          Categories
+          {t("feed.categories.title")}
         </h3>
         {!adding && !editing && (
           <button
@@ -110,7 +112,7 @@ export function CategoriesPanel() {
             onClick={startAdd}
             className="inline-flex items-center gap-1 rounded-md bg-brand-50 dark:bg-brand-950/40 px-2 py-1 text-xs font-medium text-brand-700 dark:text-brand-300 hover:bg-brand-100 dark:hover:bg-brand-900/50 transition-colors"
           >
-            <Plus className="h-3 w-3" /> Add
+            <Plus className="h-3 w-3" /> {t("feed.categories.add")}
           </button>
         )}
       </div>
@@ -131,7 +133,7 @@ export function CategoriesPanel() {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Category name"
+              placeholder={t("feed.categories.namePlaceholder")}
               required
               autoFocus
               className="flex-1 rounded-md border border-border bg-card px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
@@ -143,7 +145,7 @@ export function CategoriesPanel() {
               onClick={reset}
               className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-muted-foreground hover:bg-muted"
             >
-              <X className="h-3 w-3" /> Cancel
+              <X className="h-3 w-3" /> {t("common.cancel")}
             </button>
             <button
               type="submit"
@@ -155,7 +157,7 @@ export function CategoriesPanel() {
               ) : (
                 <Check className="h-3 w-3" />
               )}
-              {editing ? "Save" : "Create"}
+              {editing ? t("common.save") : t("common.create")}
             </button>
           </div>
         </form>
@@ -163,7 +165,7 @@ export function CategoriesPanel() {
 
       {/* List */}
       {!categories || categories.length === 0 ? (
-        <p className="text-xs text-muted-foreground">No categories yet.</p>
+        <p className="text-xs text-muted-foreground">{t("feed.categories.empty")}</p>
       ) : (
         <ul className="space-y-1">
           {categories.map((c) => (
@@ -175,14 +177,14 @@ export function CategoriesPanel() {
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-foreground truncate">{c.name}</p>
                 <p className="text-[11px] text-muted-foreground">
-                  {c.post_count} {c.post_count === 1 ? "post" : "posts"}
+                  {t("feed.categories.postCount", { count: c.post_count })}
                 </p>
               </div>
               <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
                 <button
                   type="button"
                   onClick={() => startEdit(c)}
-                  aria-label={`Edit ${c.name}`}
+                  aria-label={t("feed.categories.editAria", { name: c.name })}
                   className="inline-flex h-7 w-7 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground"
                 >
                   <Pencil className="h-3.5 w-3.5" />
@@ -193,7 +195,7 @@ export function CategoriesPanel() {
                     setDeleteTarget({ id: c.id, name: c.name, post_count: c.post_count });
                     setDeleteError(null);
                   }}
-                  aria-label={`Delete ${c.name}`}
+                  aria-label={t("feed.categories.deleteAria", { name: c.name })}
                   className="inline-flex h-7 w-7 items-center justify-center rounded text-muted-foreground hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-600"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
@@ -220,18 +222,14 @@ export function CategoriesPanel() {
                   <Trash2 className="h-5 w-5 text-red-600 dark:text-red-400" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-foreground">Delete category?</h3>
+                  <h3 className="text-lg font-semibold text-foreground">{t("feed.categories.deleteTitle")}</h3>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    Delete <span className="font-medium text-muted-foreground">{deleteTarget.name}</span>?
-                    {deleteTarget.post_count > 0 ? (
-                      <>
-                        {" "}The {deleteTarget.post_count} existing post
-                        {deleteTarget.post_count === 1 ? "" : "s"} keep their tag, but no new
-                        posts can be added here until it is restored.
-                      </>
-                    ) : (
-                      <>{" "}The category will be hidden from the forum.</>
-                    )}
+                    {deleteTarget.post_count > 0
+                      ? t("feed.categories.deleteWithPosts", {
+                          name: deleteTarget.name,
+                          count: deleteTarget.post_count,
+                        })
+                      : t("feed.categories.deleteEmpty", { name: deleteTarget.name })}
                   </p>
                 </div>
               </div>
@@ -248,7 +246,7 @@ export function CategoriesPanel() {
                 disabled={deleteCategory.isPending}
                 className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-card disabled:opacity-50"
               >
-                Cancel
+                {t("common.cancel")}
               </button>
               <button
                 type="button"
@@ -258,10 +256,10 @@ export function CategoriesPanel() {
               >
                 {deleteCategory.isPending ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin" /> Deleting...
+                    <Loader2 className="h-4 w-4 animate-spin" /> {t("feed.categories.deleting")}
                   </>
                 ) : (
-                  "Delete"
+                  t("common.delete")
                 )}
               </button>
             </div>
