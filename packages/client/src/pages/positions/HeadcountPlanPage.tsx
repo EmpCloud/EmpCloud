@@ -34,7 +34,8 @@ interface PlanSort {
 }
 
 export default function HeadcountPlanPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = i18n?.resolvedLanguage || i18n?.language || "en";
   const tx = (k: string, opts?: Record<string, unknown>) =>
     t(`positions.headcountPlans.${k}`, opts ?? {});
   const queryClient = useQueryClient();
@@ -339,6 +340,20 @@ export default function HeadcountPlanPage() {
     return Math.min(100, Math.round((Number(plan.approved_headcount || 0) / planned) * 100));
   };
 
+  const formatBudget = (amount: unknown, currency: unknown) => {
+    const numericAmount = Number(amount);
+    if (!Number.isFinite(numericAmount)) return "—";
+
+    try {
+      return new Intl.NumberFormat(locale, {
+        style: "currency",
+        currency: String(currency || "INR"),
+      }).format(numericAmount / 100);
+    } catch {
+      return new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(numericAmount / 100);
+    }
+  };
+
   return (
     <div>
       <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
@@ -360,9 +375,9 @@ export default function HeadcountPlanPage() {
       <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {[
           {
-            label: tx("totalPlans", { defaultValue: "Total Plans" }),
+            label: tx("totalPlans"),
             value: planStats.total,
-            detail: tx("plansThisYear", { count: planStats.createdThisYear, defaultValue: `↑ ${planStats.createdThisYear} this year` }),
+            detail: tx("plansThisYear", { count: planStats.createdThisYear }),
             icon: Users,
             iconClass: "bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-300",
             borderClass: "border-blue-100 dark:border-blue-900/50",
@@ -370,9 +385,9 @@ export default function HeadcountPlanPage() {
             blobClass: "bg-blue-100/70 dark:bg-blue-900/20",
           },
           {
-            label: tx("approvedPlans", { defaultValue: "Approved Plans" }),
+            label: tx("approvedPlans"),
             value: planStats.approved,
-            detail: tx("percentageOfTotal", { percentage: planStats.approvedPercentage, defaultValue: `${planStats.approvedPercentage}% of total` }),
+            detail: tx("percentageOfTotal", { percentage: planStats.approvedPercentage }),
             icon: CheckCircle,
             iconClass: "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-300",
             borderClass: "border-emerald-100 dark:border-emerald-900/50",
@@ -380,9 +395,9 @@ export default function HeadcountPlanPage() {
             blobClass: "bg-emerald-100/70 dark:bg-emerald-900/20",
           },
           {
-            label: tx("rejectedPlans", { defaultValue: "Rejected Plans" }),
+            label: tx("rejectedPlans"),
             value: planStats.rejected,
-            detail: tx("percentageOfTotal", { percentage: planStats.rejectedPercentage, defaultValue: `${planStats.rejectedPercentage}% of total` }),
+            detail: tx("percentageOfTotal", { percentage: planStats.rejectedPercentage }),
             icon: FileText,
             iconClass: "bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-300",
             borderClass: "border-rose-100 dark:border-rose-900/50",
@@ -390,9 +405,9 @@ export default function HeadcountPlanPage() {
             blobClass: "bg-rose-100/70 dark:bg-rose-900/20",
           },
           {
-            label: tx("draftInProgress", { defaultValue: "Draft / In Progress" }),
+            label: tx("draftInProgress"),
             value: planStats.draft,
-            detail: tx("percentageOfTotal", { percentage: planStats.draftPercentage, defaultValue: `${planStats.draftPercentage}% of total` }),
+            detail: tx("percentageOfTotal", { percentage: planStats.draftPercentage }),
             icon: Clock,
             iconClass: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200",
             borderClass: "border-slate-200 dark:border-slate-700",
@@ -594,12 +609,12 @@ export default function HeadcountPlanPage() {
           </select>
           <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
         </div>
-        <div className="flex h-11 items-center rounded-xl border border-border bg-card p-1 shadow-sm" role="group" aria-label="Headcount plan view">
+        <div className="flex h-11 items-center rounded-xl border border-border bg-card p-1 shadow-sm" role="group" aria-label={tx("viewGroup") as string}>
           <button
             type="button"
             onClick={() => setViewMode("grid")}
             aria-pressed={viewMode === "grid"}
-            aria-label="Grid view"
+            aria-label={tx("gridView") as string}
             className={cn(
               "inline-flex h-9 flex-1 items-center justify-center rounded-lg transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30",
               viewMode === "grid" ? "bg-brand-600 text-white shadow-sm" : "text-slate-500 hover:bg-muted hover:text-foreground",
@@ -611,7 +626,7 @@ export default function HeadcountPlanPage() {
             type="button"
             onClick={() => setViewMode("table")}
             aria-pressed={viewMode === "table"}
-            aria-label="Table view"
+            aria-label={tx("tableView") as string}
             className={cn(
               "inline-flex h-9 flex-1 items-center justify-center rounded-lg transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30",
               viewMode === "table" ? "bg-brand-600 text-white shadow-sm" : "text-slate-500 hover:bg-muted hover:text-foreground",
@@ -691,12 +706,20 @@ export default function HeadcountPlanPage() {
                   <div className="relative flex h-11 items-center justify-between border-t border-border px-4 text-[11px] text-slate-500">
                     <span className="inline-flex items-center gap-2">
                       <CalendarDays aria-hidden="true" className="h-4 w-4" />
-                      {tx("createdRecently", { defaultValue: "Created recently" })}
+                      {plan.created_at
+                        ? tx("createdOn", {
+                            date: new Intl.DateTimeFormat(locale, {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                            }).format(new Date(plan.created_at)),
+                          })
+                        : tx("createdRecently")}
                     </span>
                     <button
                       type="button"
                       onClick={() => setOpenActionsId((current) => current === planId ? null : planId)}
-                      aria-label={tx("planActions", { title: plan.title, defaultValue: `Actions for ${plan.title}` }) as string}
+                      aria-label={tx("planActions", { title: plan.title }) as string}
                       aria-haspopup="menu"
                       aria-expanded={openActionsId === planId}
                       className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-slate-600 transition hover:border-brand-200 hover:bg-brand-50 hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30"
@@ -711,7 +734,7 @@ export default function HeadcountPlanPage() {
                           onClick={() => { setOpenActionsId(null); setViewingPlan(plan); }}
                           className="w-full rounded-md px-3 py-2 text-left text-xs font-medium text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30"
                         >
-                          {tx("viewDetails", { defaultValue: "View details" })}
+                          {tx("viewDetails")}
                         </button>
                         {plan.status === "draft" && (
                           <button
@@ -765,7 +788,7 @@ export default function HeadcountPlanPage() {
                   type="checkbox"
                   checked={allVisibleSelected}
                   onChange={toggleVisibleSelection}
-                  aria-label={tx("selectAllPlans", { defaultValue: "Select all visible plans" }) as string}
+                  aria-label={tx("selectAllPlans") as string}
                   className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500/30"
                 />
               </th>
@@ -814,7 +837,7 @@ export default function HeadcountPlanPage() {
                       type="checkbox"
                       checked={selectedPlanIds.has(Number(plan.id))}
                       onChange={() => togglePlanSelection(Number(plan.id))}
-                      aria-label={tx("selectPlan", { title: plan.title, defaultValue: `Select ${plan.title}` }) as string}
+                      aria-label={tx("selectPlan", { title: plan.title }) as string}
                       className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500/30"
                     />
                   </td>
@@ -852,7 +875,7 @@ export default function HeadcountPlanPage() {
                     <button
                       type="button"
                       onClick={() => setOpenActionsId((current) => current === Number(plan.id) ? null : Number(plan.id))}
-                      aria-label={tx("planActions", { title: plan.title, defaultValue: `Actions for ${plan.title}` }) as string}
+                      aria-label={tx("planActions", { title: plan.title }) as string}
                       aria-haspopup="menu"
                       aria-expanded={openActionsId === Number(plan.id)}
                       className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-slate-600 transition hover:border-brand-200 hover:bg-brand-50 hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30 dark:hover:bg-brand-950/30"
@@ -867,7 +890,7 @@ export default function HeadcountPlanPage() {
                           onClick={() => { setOpenActionsId(null); setViewingPlan(plan); }}
                           className="w-full rounded-md px-3 py-2 text-left text-xs font-medium text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30"
                         >
-                          {tx("viewDetails", { defaultValue: "View details" })}
+                          {tx("viewDetails")}
                         </button>
                         {plan.status === "draft" && (
                           <button
@@ -975,7 +998,7 @@ export default function HeadcountPlanPage() {
                   <p className="text-xs text-muted-foreground mb-1">{tx("budget")}</p>
                   <p className="text-foreground font-medium">
                     {viewingPlan.budget_amount != null
-                      ? `${viewingPlan.budget_amount} ${viewingPlan.currency || ""}`.trim()
+                      ? formatBudget(viewingPlan.budget_amount, viewingPlan.currency)
                       : "\u2014"}
                   </p>
                 </div>
@@ -988,7 +1011,12 @@ export default function HeadcountPlanPage() {
                 {viewingPlan.created_at && (
                   <div>
                     <p className="text-xs text-muted-foreground mb-1">{tx("createdAt")}</p>
-                    <p className="text-foreground font-medium">{new Date(viewingPlan.created_at).toLocaleString()}</p>
+                    <p className="text-foreground font-medium">
+                      {new Intl.DateTimeFormat(locale, {
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                      }).format(new Date(viewingPlan.created_at))}
+                    </p>
                   </div>
                 )}
                 {viewingPlan.notes && (

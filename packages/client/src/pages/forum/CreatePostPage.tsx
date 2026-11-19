@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import api from "@/api/client";
 import { ArrowLeft, Send } from "lucide-react";
+import { localizeForumCategoryName } from "./forum-category-i18n";
 
 export default function CreatePostPage() {
   const { t } = useTranslation();
@@ -54,6 +55,7 @@ export default function CreatePostPage() {
       <div className="flex items-center gap-3 mb-6">
         <button
           onClick={() => navigate(-1)}
+          aria-label={t("forum.create.backAria")}
           className="p-2 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="h-5 w-5" />
@@ -82,7 +84,7 @@ export default function CreatePostPage() {
               )}
               {(categories || []).map((cat: any) => (
                 <option key={cat.id} value={cat.id}>
-                  {cat.icon ? `${cat.icon} ` : ""}{cat.name}
+                  {cat.icon ? `${cat.icon} ` : ""}{localizeForumCategoryName(cat.name, t)}
                 </option>
               ))}
             </select>

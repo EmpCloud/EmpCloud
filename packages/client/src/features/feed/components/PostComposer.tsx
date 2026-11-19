@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuthStore } from "@/lib/auth-store";
 import { useCreatePost } from "../api";
 import { AuthorChip } from "./AuthorChip";
@@ -16,6 +17,7 @@ type Props = {
 // so adding an image picker in phase 2 is additive and won't touch this
 // signature.
 export function PostComposer({ placeholder, autofocus, onPosted, compact = false }: Props) {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const [content, setContent] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -30,7 +32,7 @@ export function PostComposer({ placeholder, autofocus, onPosted, compact = false
       setContent("");
       onPosted?.();
     } catch (err: any) {
-      setError(err?.response?.data?.error?.message || "Failed to post");
+      setError(err?.response?.data?.error?.message || t("feed.composer.submitFailed"));
     }
   };
 
@@ -50,7 +52,7 @@ export function PostComposer({ placeholder, autofocus, onPosted, compact = false
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        placeholder={placeholder || "Share something with the team..."}
+        placeholder={placeholder || t("feed.composer.placeholder")}
         autoFocus={autofocus}
         rows={compact ? 2 : 3}
         className={`mt-3 w-full resize-none rounded-lg border border-border px-3 py-2 text-sm focus:bg-card focus:outline-none focus:ring-2 focus:ring-brand-500 ${compact ? "bg-card" : "bg-muted"}`}
@@ -60,7 +62,7 @@ export function PostComposer({ placeholder, autofocus, onPosted, compact = false
       )}
       <div className={`${compact ? "mt-2" : "mt-3"} flex items-center justify-between`}>
         <span className="text-xs text-muted-foreground">
-          {content.length > 0 ? `${content.length} characters` : ""}
+          {content.length > 0 ? t("feed.composer.characterCount", { count: content.length }) : ""}
         </span>
         <button
           type="submit"
@@ -69,11 +71,11 @@ export function PostComposer({ placeholder, autofocus, onPosted, compact = false
         >
           {createPost.isPending ? (
             <>
-              <Loader2 className="h-4 w-4 animate-spin" /> Posting...
+              <Loader2 className="h-4 w-4 animate-spin" /> {t("feed.composer.posting")}
             </>
           ) : (
             <>
-              <Send className="h-4 w-4" /> Post
+              <Send className="h-4 w-4" /> {t("feed.composer.post")}
             </>
           )}
         </button>

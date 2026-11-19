@@ -374,6 +374,7 @@
     "moduleAccess": "मॉड्यूल एक्सेस",
     "wellnessCheckIn": "दैनिक चेक-इन",
     "messages": "संदेश",
+    "hrAssistant": "एचआर सहायक",
     "changePassword": "पासवर्ड बदलें",
     "viewAttendance": "उपस्थिति देखें",
     "attendanceGrid": "उपस्थिति ग्रिड",
@@ -457,6 +458,14 @@
     "password": "पासवर्ड",
     "forgotPassword": "पासवर्ड भूल गए?",
     "loginFailed": "अमान्य ईमेल या पासवर्ड",
+    "sessionExpired": "आपका सत्र समाप्त हो गया है। कृपया फिर से साइन इन करें।",
+    "organizationLoginBlocked": "इस संगठन के लिए लॉगिन अक्षम कर दिया गया है। सहायता टीम से संपर्क करें।",
+    "networkError": "सर्वर से संपर्क नहीं हो पा रहा है। अपना कनेक्शन जाँचें और फिर से प्रयास करें।",
+    "tooManyAttempts": "लॉगिन के बहुत अधिक प्रयास हुए हैं। कृपया प्रतीक्षा करें और फिर से प्रयास करें।",
+    "tooManyAttemptsRetry": "लॉगिन के बहुत अधिक प्रयास हुए हैं। लगभग {{minutes}} मिनट में फिर से प्रयास करें।",
+    "genericLoginError": "लॉगिन विफल रहा। कृपया फिर से प्रयास करें।",
+    "invalidEmail": "एक मान्य ईमेल पता दर्ज करें।",
+    "passwordRequired": "अपना पासवर्ड दर्ज करें।",
     "loginSuccess": "लॉगिन सफल",
     "noAccount": "खाता नहीं है?",
     "registerOrg": "अपना संगठन पंजीकृत करें",
@@ -1015,7 +1024,36 @@
     "welcomeBack": "वापसी स्वागत है, {{name}}!",
     "overviewDesc": "यहाँ आपका सेल्फ-सर्विस डैशबोर्ड अवलोकन है।",
     "editMyDetails": "मेरा विवरण संपादित करें",
-    "requestUpdate": "अपडेट का अनुरोध करें"
+    "requestUpdate": "अपडेट का अनुरोध करें",
+    "greatDay": "आपका दिन शुभ हो!",
+    "quickActions": "त्वरित कार्रवाइयाँ",
+    "profileDescription": "अपना विवरण देखें और अपडेट करें",
+    "leaveDescription": "छुट्टी का अनुरोध करें",
+    "attendanceDescription": "उपस्थिति और लॉग देखें",
+    "requestDescription": "अनुरोध दर्ज करें",
+    "summary": "कर्मचारी सारांश"
+  },
+  "profileCompletion": {
+    "title": "प्रोफ़ाइल पूर्णता",
+    "done": "आपकी प्रोफ़ाइल पूरी हो गई है — बहुत अच्छा!",
+    "subtitle": "अपनी प्रोफ़ाइल पूरी करें ताकि एचआर के पास सभी जानकारी उपलब्ध हो।",
+    "more": "+{{count}} और",
+    "cta": "प्रोफ़ाइल पूरी करें",
+    "completeBadge": "सभी फ़ील्ड पूर्ण",
+    "fields": {
+      "photo": "प्रोफ़ाइल फ़ोटो",
+      "contact_number": "फ़ोन नंबर",
+      "date_of_birth": "जन्म तिथि",
+      "gender": "लिंग",
+      "personal_email": "व्यक्तिगत ईमेल",
+      "emergency_contact_name": "आपातकालीन संपर्क",
+      "emergency_contact_phone": "आपातकालीन फ़ोन",
+      "blood_group": "रक्त समूह",
+      "marital_status": "वैवाहिक स्थिति",
+      "nationality": "राष्ट्रीयता",
+      "aadhar_number": "आधार नंबर",
+      "pan_number": "पैन नंबर"
+    }
   },
   "attendance": {
     "title": "उपस्थिति",
@@ -1032,6 +1070,10 @@
     "totalWorkedToday": "आज कुल काम",
     "notCheckedInYet": "आज अभी तक चेक-इन नहीं",
     "attendanceComplete": "आज की उपस्थिति पूर्ण",
+    "duration": {
+      "hoursMinutes": "{{hours}}घं {{minutes}}मि",
+      "minutes": "{{minutes}}मि"
+    },
     "dashboardTitle": "उपस्थिति डैशबोर्ड",
     "aiInsights": "AI अंतर्दृष्टि",
     "dashboardSubtitle": "आपके संगठन की आज की उपस्थिति का अवलोकन।",
@@ -1361,6 +1403,10 @@
       "employeeCount": "{{total}} में से {{shown}} कर्मचारी",
       "clearFilters": "फ़िल्टर साफ़ करें",
       "employee": "कर्मचारी",
+      "nightAllowance": "रात्रि भत्ता",
+      "nightAllowanceTitle": "रात्रि पाली में काम किए गए दिन",
+      "extraDay": "अतिरिक्त दिन",
+      "extraDayTitle": "साप्ताहिक अवकाश और अनिवार्य छुट्टियों पर काम किए गए दिन",
       "noEmployees": "इस संगठन में कोई कर्मचारी नहीं।",
       "noMatch": "वर्तमान फ़िल्टर से कोई कर्मचारी मेल नहीं खाता।",
       "totalRow": "कुल {{code}} — {{label}}",
@@ -1400,6 +1446,11 @@
       },
       "applyLeaveFailed": "अवकाश लागू करने में विफल"
     },
+    "updateCheckOut": "चेक-आउट अपडेट करें",
+    "checkedOutAt": "{{time}} पर चेक-आउट किया",
+    "updateCheckOutHint": "समय सुधारने के लिए फिर से चेक-आउट करें",
+    "checkInSuccess": "{{time}} पर सफलतापूर्वक चेक-इन किया",
+    "checkOutSuccess": "{{time}} पर सफलतापूर्वक चेक-आउट किया",
     "location": "स्थान",
     "monthlyLate": {
       "lateDaysOne": "{{count}} दिन देरी",
@@ -1559,6 +1610,7 @@
   "roles": {
     "employee": "कर्मचारी",
     "manager": "प्रबंधक",
+    "hr_manager": "एचआर प्रबंधक",
     "hr_admin": "HR एडमिन",
     "org_admin": "संगठन एडमिन",
     "super_admin": "सुपर एडमिन",
@@ -1620,6 +1672,8 @@
     "employeesCount": "{{count}} कर्मचारी",
     "seatsAssignedCount": "{{count}} सीटें असाइन",
     "searchPlaceholder": "नाम, ईमेल, पदनाम या कर्मचारी कोड से खोजें...",
+    "searchAriaLabel": "कर्मचारियों को खोजें",
+    "filterAriaLabel": "मॉड्यूल एक्सेस के अनुसार कर्मचारियों को फ़िल्टर करें",
     "allEmployees": "सभी कर्मचारी",
     "enabledFor": "इनके लिए सक्षम",
     "notEnabledFor": "इनके लिए असक्षम",
@@ -1629,6 +1683,23 @@
     "noEmployees": "कोई कर्मचारी नहीं मिला",
     "matchingSearch": "आपकी खोज से मेल खाता हुआ",
     "withFilter": "इस फ़िल्टर के साथ",
+    "enableAll": "सभी के लिए सक्षम करें",
+    "disableAll": "सभी के लिए अक्षम करें",
+    "dismissAlert": "सूचना बंद करें",
+    "filter": {
+      "clearAria": "{{module}} फ़िल्टर हटाएँ",
+      "showEnabledAria": "{{module}} सक्षम वाले कर्मचारी दिखाएँ"
+    },
+    "bulkAlerts": {
+      "enabled_one": "{{count}} कर्मचारी के लिए एक्सेस सक्षम किया गया।",
+      "enabled_other": "{{count}} कर्मचारियों के लिए एक्सेस सक्षम किया गया।",
+      "enabledWithSkipped": "{{enabled}} कर्मचारियों के लिए एक्सेस सक्षम किया गया ({{skipped}} के पास पहले से एक्सेस था)।",
+      "enableFailed": "सभी कर्मचारियों के लिए एक्सेस सक्षम नहीं हो सका",
+      "disabled_one": "{{count}} कर्मचारी का एक्सेस हटाया गया।",
+      "disabled_other": "{{count}} कर्मचारियों का एक्सेस हटाया गया।",
+      "disabledWithErrors": "{{disabled}} कर्मचारियों का एक्सेस हटाया गया ({{errors}} विफल)।",
+      "disableFailed": "सभी कर्मचारियों के लिए एक्सेस अक्षम नहीं हो सका"
+    },
     "table": {
       "employee": "कर्मचारी",
       "role": "भूमिका",
@@ -1643,6 +1714,28 @@
       "remove": "एक्सेस हटाएं",
       "removing": "हटाया जा रहा है..."
     },
+    "confirmAll": {
+      "enableTitle": "सभी कर्मचारियों के लिए सक्षम करें",
+      "disableTitle": "सभी कर्मचारियों के लिए अक्षम करें",
+      "enableSubtitle": "यह सभी कर्मचारियों के लिए एक्सेस सक्षम करेगा",
+      "disableSubtitle": "यह सभी कर्मचारियों का एक्सेस हटा देगा",
+      "enableMessage": "क्या आप सभी कर्मचारियों के लिए {{module}} सक्षम करना चाहते हैं?",
+      "disableMessage": "क्या आप सभी कर्मचारियों के लिए {{module}} अक्षम करना चाहते हैं?",
+      "cancel": "रद्द करें",
+      "enabling": "सक्षम किया जा रहा है...",
+      "disabling": "अक्षम किया जा रहा है...",
+      "enableAction": "सभी के लिए सक्षम करें",
+      "disableAction": "सभी के लिए अक्षम करें"
+    },
+    "lock": {
+      "monitorTooltip": "EMP Monitor संगठन एडमिन के लिए सक्षम रहता है। इसे हटाने के लिए सेटिंग्स → सदस्यताएँ में मॉड्यूल अक्षम करें।",
+      "payrollTooltip": "पेरोल डिफ़ॉल्ट रूप से हर कर्मचारी के लिए सक्षम है। इसे हटाने के लिए सेटिंग्स → सदस्यताएँ में सदस्यता रद्द करें।",
+      "lockedOn": "{{module}} सक्षम और लॉक है"
+    },
+    "toggle": {
+      "enableAria": "{{employee}} के लिए {{module}} सक्षम करें",
+      "disableAria": "{{employee}} के लिए {{module}} अक्षम करें"
+    },
     "pagination": {
       "showing": "{{total}} कर्मचारियों में से {{from}}–{{to}} दिखा रहे हैं",
       "previous": "पिछला",
@@ -1651,10 +1744,11 @@
     "syncAlerts": {
       "enabledSynced": "मॉड्यूल सक्षम और उपयोगकर्ता सफलतापूर्वक सिंक",
       "enabledSkipped": "सीट असाइन। मॉड्यूल में सिंक API कॉन्फ़िगर नहीं है।",
-      "enabledPartial": "सीट असाइन लेकिन मॉड्यूल सिंक विफल ({{status}})।",
+      "enabledPartial": "सीट असाइन हो गई, लेकिन मॉड्यूल सिंक अधूरा है।",
+      "assignmentConflict": "एक्सेस सक्षम नहीं किया जा सका। कर्मचारी के पास पहले से एक्सेस हो सकता है या सदस्यता की सीट सीमा पूरी हो चुकी हो सकती है।",
       "enableFailed": "मॉड्यूल सक्षम करने में विफल",
       "disabledSynced": "मॉड्यूल अक्षम और उपयोगकर्ता हटाया गया",
-      "disabledPartial": "सीट हटाई गई लेकिन मॉड्यूल सिंक विफल ({{status}})",
+      "disabledPartial": "सीट हटा दी गई, लेकिन मॉड्यूल सिंक अधूरा है।",
       "disableFailed": "मॉड्यूल अक्षम करने में विफल"
     }
   },
@@ -1678,7 +1772,38 @@
     "yesCancel": "हां, रद्द करें",
     "subscriptionCancelled": "सदस्यता सफलतापूर्वक रद्द हुई।",
     "cancelFailed": "सदस्यता रद्द करने में विफल।",
-    "subscriptionCreated": "सदस्यता बनाई गई। इनवॉइस जल्द ही तैयार होगा।"
+    "subscriptionCreated": "सदस्यता बनाई गई। इनवॉइस जल्द ही तैयार होगा।",
+    "subscribeModal": {
+      "title": "{{module}} की सदस्यता लें",
+      "subtitle": "अपनी सदस्यता कॉन्फ़िगर करें",
+      "closeAria": "सदस्यता संवाद बंद करें",
+      "selectPlan": "प्लान चुनें",
+      "loadingPlans": "प्लान लोड हो रहे हैं...",
+      "noPlans": "इस मुद्रा के लिए अभी कोई प्लान प्रकाशित नहीं है। अपने एडमिनिस्ट्रेटर से संपर्क करें।",
+      "pricePerSeatMonthly": "{{price}} प्रति सीट/माह",
+      "notAvailable": "उपलब्ध नहीं",
+      "seatsLabel": "सीटों की संख्या (लाइसेंस)",
+      "seatsSliderAria": "सीटों की संख्या चुनें",
+      "seatsInputAria": "सीटों की संख्या",
+      "seatsDescription": "प्रत्येक सीट एक कर्मचारी को इस मॉड्यूल का एक्सेस देती है",
+      "billingCycle": "बिलिंग चक्र",
+      "savePercent": "{{percent}}% बचाएँ",
+      "summaryPlan": "प्लान",
+      "summaryPricePerSeat": "प्रति सीट मूल्य",
+      "priceMonthly": "{{price}}/माह",
+      "summarySeats": "सीटें",
+      "users_one": "{{count}} उपयोगकर्ता",
+      "users_other": "{{count}} उपयोगकर्ता",
+      "summaryBillingCycle": "बिलिंग चक्र",
+      "summaryDiscount": "छूट",
+      "summaryTotal": "कुल",
+      "perMonth": "/माह",
+      "perQuarter": "/तिमाही",
+      "perYear": "/वर्ष",
+      "perMonths": "/{{months}} महीने",
+      "subscribing": "सदस्यता ली जा रही है...",
+      "subscribeWithTotal": "सदस्यता लें — {{total}}"
+    }
   },
   "helpdesk": {
     "list": {
@@ -1903,7 +2028,23 @@
       "allYears": "सभी वर्ष",
       "failedApprove": "योजना स्वीकृत करने में विफल",
       "failedReject": "योजना अस्वीकृत करने में विफल",
-      "failedSubmit": "योजना सबमिट करने में विफल"
+      "failedSubmit": "योजना सबमिट करने में विफल",
+      "totalPlans": "कुल योजनाएँ",
+      "approvedPlans": "स्वीकृत योजनाएँ",
+      "rejectedPlans": "अस्वीकृत योजनाएँ",
+      "draftInProgress": "ड्राफ्ट / प्रगति में",
+      "plansThisYear_one": "↑ इस वर्ष {{count}}",
+      "plansThisYear_other": "↑ इस वर्ष {{count}}",
+      "percentageOfTotal": "कुल का {{percentage}}%",
+      "viewGroup": "हेडकाउंट योजना दृश्य",
+      "gridView": "ग्रिड दृश्य",
+      "tableView": "तालिका दृश्य",
+      "createdRecently": "हाल ही में बनाया गया",
+      "createdOn": "{{date}} को बनाया गया",
+      "planActions": "{{title}} के लिए क्रियाएँ",
+      "viewDetails": "विवरण देखें",
+      "selectAllPlans": "सभी दिखाई देने वाली योजनाएँ चुनें",
+      "selectPlan": "{{title}} चुनें"
     },
     "vacancies": {
       "title": "खुली रिक्तियाँ",
@@ -1923,7 +2064,37 @@
       "markSuccessGeneric": "पद को भरा हुआ चिह्नित किया गया।",
       "markError": "पद को भरा हुआ चिह्नित करने में विफल",
       "confirmTitle": "\"{{title}}\" को भरा हुआ चिह्नित करें?",
-      "confirmDescription": "यह पद खुली रिक्तियों की सूची से हटा दिया जाएगा।"
+      "confirmDescription": "यह पद खुली रिक्तियों की सूची से हटा दिया जाएगा।",
+      "export": "निर्यात करें",
+      "exportFilename": "khuli-riktiyan.csv",
+      "openPositions": "खुले पद",
+      "totalBudget": "कुल स्वीकृत पदसंख्या (बजट)",
+      "inProgress": "प्रगति में पद",
+      "criticalPositions": "महत्वपूर्ण पद",
+      "searchPlaceholder": "पद नाम, कोड या विभाग से खोजें...",
+      "searchAriaLabel": "रिक्तियाँ खोजें",
+      "critical": "महत्वपूर्ण",
+      "statusFallback": "{{status}}",
+      "viewMode": "रिक्तियों का दृश्य",
+      "grid": "ग्रिड",
+      "list": "सूची",
+      "moreActions": "अधिक कार्रवाइयाँ",
+      "filled": "भरे गए",
+      "positionTitle": "पद का नाम",
+      "colOpenings": "रिक्तियाँ",
+      "filledTotal": "भरे गए / कुल",
+      "action": "कार्रवाई",
+      "viewDetails": "{{title}} का विवरण देखें",
+      "exportHeaders": {
+        "title": "पद नाम",
+        "code": "कोड",
+        "department": "विभाग",
+        "type": "प्रकार",
+        "openings": "रिक्तियाँ",
+        "filled": "भरे गए",
+        "budget": "बजट",
+        "status": "स्थिति"
+      }
     },
     "list": {
       "title": "सभी पद",
@@ -1966,7 +2137,15 @@
       "deleting": "हटा रहा है...",
       "failedDelete": "पद हटाने में विफल",
       "allTypes": "सभी प्रकार",
-      "criticalOnly": "केवल महत्वपूर्ण"
+      "criticalOnly": "केवल महत्वपूर्ण",
+      "viewMode": "दृश्य मोड",
+      "gridView": "ग्रिड दृश्य",
+      "listView": "सूची दृश्य",
+      "positionsCount_one": "{{count}} पद",
+      "positionsCount_other": "{{count}} पद",
+      "unassigned": "असाइन नहीं किया गया",
+      "yes": "हाँ",
+      "no": "नहीं"
     },
     "dashboard": {
       "title": "पद डैशबोर्ड",
@@ -2100,7 +2279,7 @@
       "viewMode": "निर्देशिका दृश्य",
       "tableView": "तालिका दृश्य",
       "gridView": "ग्रिड दृश्य",
-      "showingEmployees": "{{total}} में से {{from}}–{{to}} कर्मचारी",
+      "showingEmployees": "कुल {{total}} में से {{shown}} कर्मचारी दिखाए जा रहे हैं",
       "sortBy": "कर्मचारियों को क्रमबद्ध करें",
       "sortNameAsc": "क्रम: नाम (A–Z)",
       "sortNameDesc": "क्रम: नाम (Z–A)",
@@ -2170,6 +2349,68 @@
       "emptyAll": "यहां अभी कुछ नहीं — पोस्ट करने वाले पहले बनें।",
       "emptySearchHint": "कोई अन्य कीवर्ड आज़माएं।",
       "emptyHint": "कुछ साझा करने के लिए ऊपर दिए गए बॉक्स का उपयोग करें।"
+    },
+    "widget": {
+      "filterAria": "कंपनी फ़ीड फ़िल्टर करें",
+      "composerPlaceholder": "टीम के साथ कुछ साझा करें...",
+      "loading": "फ़ीड लोड हो रही है...",
+      "emptyFiltered": "अभी कोई {{filter}} पोस्ट नहीं है।",
+      "openFullFeed": "पूरी फ़ीड खोलें",
+      "filters": {
+        "all": "सभी पोस्ट",
+        "announcements": "घोषणाएँ",
+        "team": "टीम",
+        "recognition": "सराहना"
+      }
+    },
+    "composer": {
+      "submitFailed": "पोस्ट प्रकाशित नहीं हो सकी",
+      "placeholder": "टीम के साथ कुछ साझा करें...",
+      "characterCount_one": "{{count}} अक्षर",
+      "characterCount_other": "{{count}} अक्षर",
+      "posting": "पोस्ट किया जा रहा है...",
+      "post": "पोस्ट करें"
+    },
+    "post": {
+      "saveFailed": "पोस्ट सहेजी नहीं जा सकी",
+      "actions": "पोस्ट की कार्रवाइयाँ",
+      "saving": "सहेजा जा रहा है...",
+      "like": "पसंद करें",
+      "hideComments": "टिप्पणियाँ छिपाएँ",
+      "comments": "टिप्पणियाँ",
+      "deleteTitle": "पोस्ट हटाएँ?",
+      "deleteDescription": "इससे पोस्ट और उसकी सभी टिप्पणियाँ फ़ीड से हट जाएँगी। इसे पूर्ववत नहीं किया जा सकता।",
+      "deleting": "हटाया जा रहा है...",
+      "edited": "संपादित"
+    },
+    "comments": {
+      "submitFailed": "टिप्पणी नहीं की जा सकी",
+      "disabled": "इस पोस्ट पर टिप्पणियाँ बंद हैं।",
+      "viewMore_one": "{{count}} और टिप्पणी देखें",
+      "viewMore_other": "{{count}} और टिप्पणियाँ देखें",
+      "loading": "टिप्पणियाँ लोड हो रही हैं...",
+      "placeholder": "टिप्पणी लिखें...",
+      "send": "टिप्पणी भेजें",
+      "actions": "टिप्पणी की कार्रवाइयाँ"
+    },
+    "media": {
+      "attachment": "संलग्नक"
+    },
+    "categories": {
+      "deleteFailed": "श्रेणी हटाई नहीं जा सकी",
+      "title": "श्रेणियाँ",
+      "add": "जोड़ें",
+      "namePlaceholder": "श्रेणी का नाम",
+      "empty": "अभी कोई श्रेणी नहीं।",
+      "postCount_one": "{{count}} पोस्ट",
+      "postCount_other": "{{count}} पोस्ट",
+      "editAria": "{{name}} संपादित करें",
+      "deleteAria": "{{name}} हटाएँ",
+      "deleteTitle": "श्रेणी हटाएँ?",
+      "deleteWithPosts_one": "{{name}} हटाएँ? मौजूदा {{count}} पोस्ट का टैग बना रहेगा, लेकिन श्रेणी पुनर्स्थापित होने तक यहाँ नई पोस्ट नहीं जोड़ी जा सकेंगी।",
+      "deleteWithPosts_other": "{{name}} हटाएँ? मौजूदा {{count}} पोस्ट के टैग बने रहेंगे, लेकिन श्रेणी पुनर्स्थापित होने तक यहाँ नई पोस्ट नहीं जोड़ी जा सकेंगी।",
+      "deleteEmpty": "{{name}} हटाएँ? यह श्रेणी फ़ोरम से छिपा दी जाएगी।",
+      "deleting": "हटाया जा रहा है..."
     }
   },
   "wellness": {
@@ -2206,6 +2447,24 @@
     }
   },
   "forum": {
+    "defaultCategories": {
+      "general": {
+        "name": "सामान्य",
+        "description": "सामान्य चर्चाएँ और बातचीत"
+      },
+      "questions": {
+        "name": "प्रश्न",
+        "description": "प्रश्न पूछें और सहकर्मियों से उत्तर प्राप्त करें"
+      },
+      "ideas": {
+        "name": "विचार",
+        "description": "सुधार के लिए विचार और सुझाव साझा करें"
+      },
+      "announcements": {
+        "name": "घोषणाएँ",
+        "description": "महत्वपूर्ण घोषणाएँ और अपडेट"
+      }
+    },
     "page": {
       "title": "सामुदायिक फ़ोरम",
       "subtitle": "अपने सहकर्मियों से जुड़ें, चर्चा करें और विचार साझा करें।",
@@ -2220,6 +2479,8 @@
       "postsCount_one": "{{count}} पोस्ट",
       "postsCount_other": "{{count}} पोस्ट",
       "searchPlaceholder": "चर्चाएं खोजें...",
+      "searchAria": "फ़ोरम चर्चाएँ खोजें",
+      "sortAria": "फ़ोरम पोस्ट क्रमबद्ध करें",
       "sortRecent": "हाल की",
       "sortPopular": "लोकप्रिय",
       "sortTrending": "ट्रेंडिंग",
@@ -2243,6 +2504,7 @@
     },
     "create": {
       "title": "नई पोस्ट बनाएं",
+      "backAria": "वापस जाएँ",
       "category": "श्रेणी",
       "selectCategory": "श्रेणी चुनें...",
       "noCategories": "कोई श्रेणी नहीं — उन्हें फ़ोरम डैशबोर्ड में बनाएं",
@@ -2419,6 +2681,8 @@
     "geofencesDesc_one": "{{count}} सक्रिय स्थान। मोबाइल ऐप यह सूची <code>GET /me/policy</code> के माध्यम से प्राप्त करता है और उपयोगकर्ता के GPS को स्थानीय रूप से सत्यापित करता है।",
     "geofencesDesc_other": "{{count}} सक्रिय स्थान। मोबाइल ऐप यह सूची <code>GET /me/policy</code> के माध्यम से प्राप्त करता है और उपयोगकर्ता के GPS को स्थानीय रूप से सत्यापित करता है।",
     "noGeofences": "कोई जियोफेंस कॉन्फ़िगर नहीं है। एक बनाने के लिए <strong>जियोफेंस जोड़ें</strong> पर क्लिक करें।",
+    "noGeofencesHintLine1": "स्थान सीमाएँ बनाने के लिए “जियोफेंस जोड़ें” पर क्लिक करें",
+    "noGeofencesHintLine2": "मोबाइल चेक-इन के लिए।",
     "overrides": "प्रति-उपयोगकर्ता ओवरराइड",
     "overridesDesc": "किसी विशिष्ट कर्मचारी के लिए तिथि सीमा हेतु संगठन-व्यापी नियमों को ओवरराइड करें। समाप्ति तिथि बीतने पर कर्मचारी स्वतः संगठन डिफ़ॉल्ट पर लौट आता है।",
     "newOverride": "नया ओवरराइड",
@@ -2426,6 +2690,7 @@
     "loadingOverrides": "ओवरराइड लोड हो रहे हैं…",
     "noOverridesMatch": "आपकी खोज से कोई ओवरराइड मेल नहीं खाता।",
     "noOverrides": "कोई प्रति-उपयोगकर्ता ओवरराइड कॉन्फ़िगर नहीं है।",
+    "noOverridesHint": "किसी कर्मचारी के लिए कस्टम उपस्थिति सेटिंग्स तय करने हेतु “नया ओवरराइड” पर क्लिक करें।",
     "mRadius": "{{radius}} मी त्रिज्या",
     "editGeofence": "जियोफेंस संपादित करें",
     "deleteGeofence": "जियोफेंस हटाएं",
@@ -3172,10 +3437,14 @@
     "table": {
       "invoice": "इनवॉइस",
       "org": "संगठन",
+      "plan": "योजना और सदस्यता",
       "status": "स्थिति",
       "total": "कुल",
       "due": "देय",
       "issued": "जारी",
+      "internalComment": "आंतरिक टिप्पणी",
+      "noPlan": "कोई योजना नहीं",
+      "noInternalComment": "कोई आंतरिक टिप्पणी नहीं",
       "actions": "कार्रवाइयाँ",
       "dueDatePrefix": "देय"
     },
@@ -3473,6 +3742,55 @@
       "auditLog_other": "ऑडिट लॉग (अंतिम {{count}})"
     }
   },
+  "orgComments": {
+    "title": "आंतरिक नोट्स",
+    "description": "केवल सुपर एडमिन को दिखाई देते हैं। संगठन के किसी भी व्यक्ति को नहीं दिखाए जाते।",
+    "placeholder": "इस संगठन के बारे में एक नोट जोड़ें…",
+    "add": "नोट जोड़ें",
+    "save": "सहेजें",
+    "cancel": "रद्द करें",
+    "editAction": "संपादित करें",
+    "deleteAction": "हटाएँ",
+    "edited": "(संपादित)",
+    "confirmDelete": "यह नोट हटाएँ?",
+    "loading": "नोट्स लोड हो रहे हैं…",
+    "empty": "अभी कोई नोट नहीं।",
+    "unknownAuthor": "अज्ञात",
+    "toast": {
+      "added": "नोट जोड़ दिया गया",
+      "addFailed": "नोट नहीं जोड़ा जा सका",
+      "updated": "नोट अपडेट किया गया",
+      "updateFailed": "नोट अपडेट नहीं किया जा सका",
+      "deleted": "नोट हटा दिया गया",
+      "deleteFailed": "नोट हटाया नहीं जा सका"
+    }
+  },
+  "orgDelete": {
+    "title": "खतरे का क्षेत्र",
+    "description": "इस संगठन और इसके स्वामित्व वाले प्रत्येक रिकॉर्ड—उपयोगकर्ता, उपस्थिति, छुट्टी, पेरोल डेटा, सदस्यताएँ और दस्तावेज़—को स्थायी रूप से हटाएँ। इसे पूर्ववत नहीं किया जा सकता।",
+    "button": "संगठन हटाएँ",
+    "modal": {
+      "title": "संगठन हटाएँ",
+      "irreversibleTitle": "यह कार्रवाई स्थायी है और इसे पूर्ववत नहीं किया जा सकता।",
+      "irreversibleBody": "न तो पुनर्प्राप्ति संभव है, न पूर्ववत करना और न ही कोई ट्रैश है। केवल पूरी तरह निश्चित होने पर आगे बढ़ें।",
+      "platformOrg": "यह प्लेटफ़ॉर्म संगठन सुपर-एडमिन खातों का स्वामी है। इसे हटाया नहीं जा सकता।",
+      "warning": "यह स्थायी रूप से हटाएगा:",
+      "users_one": "{{count}} उपयोगकर्ता खाता",
+      "users_other": "{{count}} उपयोगकर्ता खाते",
+      "subscriptions_one": "{{count}} मॉड्यूल सदस्यता",
+      "subscriptions_other": "{{count}} मॉड्यूल सदस्यताएँ",
+      "allData": "सभी उपस्थिति, छुट्टी, पेरोल, दस्तावेज़, टिकट और संपत्तियाँ",
+      "confirmPrompt": "पुष्टि करने के लिए संगठन का नाम लिखें:",
+      "confirmPlaceholder": "संगठन का नाम",
+      "cancel": "रद्द करें",
+      "confirm": "स्थायी रूप से हटाएँ",
+      "deleting": "हटाया जा रहा है…"
+    },
+    "toast": {
+      "deleted": "संगठन हटा दिया गया",
+      "failed": "संगठन हटाया नहीं जा सका"
+    }
+  },
   "orgList": {
     "title": "सभी संगठन",
     "createButton": "संगठन बनाएँ",
@@ -3498,6 +3816,37 @@
     },
     "search": {
       "placeholder": "नाम या ईमेल से खोजें..."
+    },
+    "stats": {
+      "total": "कुल संगठन",
+      "today": "आज पंजीकृत",
+      "thisWeek": "इस सप्ताह पंजीकृत",
+      "thisMonth": "इस महीने पंजीकृत",
+      "active": "सक्रिय",
+      "inactive": "निष्क्रिय",
+      "totalEmployees": "कुल कर्मचारी",
+      "mrr": "मासिक आवर्ती राजस्व"
+    },
+    "filters": {
+      "search": "खोजें",
+      "registered": "पंजीकरण तिथि",
+      "from": "से",
+      "to": "तक",
+      "statusAll": "सभी स्थितियाँ",
+      "subscription": "सदस्यता",
+      "subAll": "सभी",
+      "subWith": "सदस्यता सहित",
+      "subWithout": "सदस्यता के बिना",
+      "country": "देश",
+      "clear": "साफ़ करें",
+      "period": {
+        "all": "सभी समय",
+        "today": "आज",
+        "week": "इस सप्ताह",
+        "month": "इस महीने",
+        "year": "इस वर्ष",
+        "custom": "कस्टम अवधि"
+      }
     },
     "table": {
       "headers": {
@@ -4874,9 +5223,11 @@
     },
     "header": {
       "defaultCategoryName": "श्रेणी",
-      "newPost": "नई पोस्ट"
+      "newPost": "नई पोस्ट",
+      "backAria": "सामुदायिक फ़ोरम पर वापस जाएँ"
     },
     "filters": {
+      "filterAria": "प्रकार के अनुसार पोस्ट फ़िल्टर करें",
       "allTypes": "सभी प्रकार",
       "discussions": "चर्चाएँ",
       "questions": "प्रश्न",
@@ -4884,6 +5235,7 @@
       "polls": "पोल"
     },
     "sort": {
+      "ariaLabel": "श्रेणी की पोस्ट क्रमबद्ध करें",
       "recent": "हाल की",
       "popular": "लोकप्रिय",
       "active": "सक्रिय",
@@ -4911,6 +5263,9 @@
     }
   },
   "postDetail": {
+    "navigation": {
+      "backAria": "वापस जाएँ"
+    },
     "postType": {
       "discussion": "चर्चा",
       "question": "प्रश्न",
@@ -4931,7 +5286,8 @@
     "reply": {
       "acceptedAnswer": "स्वीकृत उत्तर",
       "replyAction": "जवाब दें",
-      "acceptAnswer": "उत्तर स्वीकार करें"
+      "acceptAnswer": "उत्तर स्वीकार करें",
+      "deleteAria": "{{name}} का जवाब हटाएँ"
     },
     "badge": {
       "pinned": "पिन किया गया",
@@ -4976,7 +5332,8 @@
     "error": {
       "assignFailed": "कर्मचारी को इस पद पर असाइन करने में विफल।",
       "saveChangesFailed": "पद के बदलाव सहेजने में विफल।",
-      "deleteFailed": "पद हटाने में विफल"
+      "deleteFailed": "पद हटाने में विफल",
+      "statusUpdateFailed": "पद की स्थिति अपडेट करने में विफल।"
     },
     "loading": "लोड हो रहा है...",
     "notFound": "पद नहीं मिला",
@@ -4986,6 +5343,7 @@
       "delete": "हटाएँ",
       "assignEmployee": "कर्मचारी असाइन करें"
     },
+    "statusLabel": "पद की स्थिति",
     "status": {
       "active": "सक्रिय",
       "filled": "भरा हुआ",
@@ -6660,8 +7018,13 @@
     "myViewTitle": "व्यक्तिगत सेल्फ-सर्विस व्यू",
     "adminViewTitle": "एडमिन व्यू — केवल वे आइटम जो आपकी कस्टम-रोल अनुमतियाँ अनलॉक करती हैं"
   },
+  "languageSwitcher": {
+    "changeLanguage": "भाषा बदलें",
+    "languageMenu": "भाषा चुनें"
+  },
   "aiBadge": {
-    "label": "AI संचालित"
+    "label": "AI संचालित",
+    "new": "नया"
   },
   "celebrations": {
     "title": "उत्सव",

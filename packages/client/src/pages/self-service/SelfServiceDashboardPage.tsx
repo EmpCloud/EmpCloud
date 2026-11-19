@@ -112,6 +112,7 @@ function Panel({
 
 export default function SelfServiceDashboardPage() {
   const { t, i18n } = useTranslation();
+  const locale = i18n.resolvedLanguage || i18n.language || "en";
   const user = useAuthStore((s) => s.user);
   const qc = useQueryClient();
   const { dashboardAllowed } = useAttendancePolicy();
@@ -138,7 +139,7 @@ export default function SelfServiceDashboardPage() {
   const onAttendanceError = (err: any) =>
     showToast(
       "error",
-      err?.response?.data?.error?.message ?? "Could not record attendance. Please try again.",
+      err?.response?.data?.error?.message ?? t("attendance.my.errorRecord"),
     );
   // Shared success handler: refresh the attendance caches and confirm the
   // action with a success toast that includes the recorded time so the
@@ -151,9 +152,10 @@ export default function SelfServiceDashboardPage() {
   };
   const punchTime = (rec: any, field: "check_in" | "check_out") => {
     const iso = rec?.[field] ?? rec?.[`${field}_time`];
-    return iso
-      ? new Date(iso).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true })
-      : new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true });
+    return new Intl.DateTimeFormat(locale, {
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(iso ? new Date(iso) : new Date());
   };
   const checkIn = useMutation({
     mutationFn: () => api.post("/attendance/check-in", { source: "manual" }).then((r) => r.data.data),
@@ -162,7 +164,6 @@ export default function SelfServiceDashboardPage() {
       showToast(
         "success",
         t("attendance.checkInSuccess", {
-          defaultValue: "Successfully checked in at {{time}}",
           time: punchTime(rec, "check_in"),
         }),
       );
@@ -176,7 +177,6 @@ export default function SelfServiceDashboardPage() {
       showToast(
         "success",
         t("attendance.checkOutSuccess", {
-          defaultValue: "Successfully checked out at {{time}}",
           time: punchTime(rec, "check_out"),
         }),
       );
@@ -269,7 +269,6 @@ export default function SelfServiceDashboardPage() {
   const pendingDocs = Array.isArray(documentsData) ? documentsData : [];
   const announcementList = Array.isArray(announcements) ? announcements : [];
   const policyList = Array.isArray(policies) ? policies : [];
-  const locale = i18n.language === "de" ? "de-DE" : i18n.language === "es" ? "es-ES" : "en-IN";
   const formattedToday = new Intl.DateTimeFormat(locale, {
     weekday: "short",
     day: "numeric",
@@ -295,7 +294,7 @@ export default function SelfServiceDashboardPage() {
           <div className="text-right">
             <p className="text-xs font-semibold text-foreground">{formattedToday}</p>
             <p className="flex items-center justify-end gap-1 text-[10px] text-muted-foreground">
-              {t("selfService.greatDay", { defaultValue: "Have a great day!" })}
+              {t("selfService.greatDay")}
               <Sun aria-hidden="true" className="h-3 w-3 text-amber-500" />
             </p>
           </div>
@@ -304,13 +303,13 @@ export default function SelfServiceDashboardPage() {
 
       {/* Quick Links */}
       <nav
-        aria-label={t("selfService.quickActions", { defaultValue: "Quick actions" })}
+        aria-label={t("selfService.quickActions")}
         className="mb-4 grid grid-cols-1 gap-2.5 sm:grid-cols-2 xl:grid-cols-4"
       >
-        <QuickLink to="/my-profile" icon={UserRound} label={t('nav.myProfile')} description={t("selfService.profileDescription", { defaultValue: "View and update your details" })} tone="blue" />
-        <QuickLink to="/leave" icon={CalendarDays} label={t('leave.applyLeave')} description={t("selfService.leaveDescription", { defaultValue: "Request time off" })} tone="violet" />
-        <QuickLink to="/attendance/my" icon={Clock} label={t('nav.attendance')} description={t("selfService.attendanceDescription", { defaultValue: "View attendance and logs" })} tone="emerald" />
-        <QuickLink to="/helpdesk/my-tickets" icon={MessageSquareText} label={t('selfService.requestUpdate')} description={t("selfService.requestDescription", { defaultValue: "Raise a request" })} tone="orange" />
+        <QuickLink to="/my-profile" icon={UserRound} label={t('nav.myProfile')} description={t("selfService.profileDescription")} tone="blue" />
+        <QuickLink to="/leave" icon={CalendarDays} label={t('leave.applyLeave')} description={t("selfService.leaveDescription")} tone="violet" />
+        <QuickLink to="/attendance/my" icon={Clock} label={t('nav.attendance')} description={t("selfService.attendanceDescription")} tone="emerald" />
+        <QuickLink to="/helpdesk/my-tickets" icon={MessageSquareText} label={t('selfService.requestUpdate')} description={t("selfService.requestDescription")} tone="orange" />
       </nav>
 
       {/*
@@ -339,7 +338,7 @@ export default function SelfServiceDashboardPage() {
             page height is driven by the feed column only. Inner wrapper is
             sticky + internally scrollable so tall card stacks remain
             accessible. */}
-        <aside aria-label={t("selfService.summary", { defaultValue: "Employee summary" })} className="min-w-0">
+        <aside aria-label={t("selfService.summary")} className="min-w-0">
           <div className="space-y-3 xl:sticky xl:top-4">
         {/* Profile completion nudge — hides itself once the profile is done */}
         <ProfileCompletionCard userId={user?.id} />
@@ -353,11 +352,10 @@ export default function SelfServiceDashboardPage() {
             const co = todayAttendance.check_out || todayAttendance.check_out_time;
             const fmt = (v: string | null | undefined) =>
               v
-                ? new Date(v).toLocaleTimeString("en-IN", {
+                ? new Intl.DateTimeFormat(locale, {
                     hour: "2-digit",
                     minute: "2-digit",
-                    hour12: true,
-                  })
+                  }).format(new Date(v))
                 : null;
             const ciText = fmt(ci);
             const coText = fmt(co);
@@ -371,7 +369,9 @@ export default function SelfServiceDashboardPage() {
               );
               const h = Math.floor(mins / 60);
               const m = mins % 60;
-              workedText = h > 0 ? `${h}h ${m}m` : `${m}m`;
+              workedText = h > 0
+                ? t("attendance.duration.hoursMinutes", { hours: h, minutes: m })
+                : t("attendance.duration.minutes", { minutes: m });
             }
 
             return (
@@ -581,7 +581,8 @@ function AttendanceHeaderAction({
   checkOutPending: boolean;
   dashboardAllowed: boolean;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = i18n.resolvedLanguage || i18n.language || "en";
   // The attendance API returns check_in / check_out as ISO timestamps; older
   // code read *_time fallbacks (see #1383). Keep both for safety.
   const ci = todayRecord?.check_in || todayRecord?.check_in_time || null;
@@ -596,10 +597,10 @@ function AttendanceHeaderAction({
     return (
       <div
         className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-muted px-3 py-2 text-xs font-medium text-muted-foreground"
-        title="Use the EmpCloud mobile app or a biometric device to check in / out."
+        title={t("attendance.my.webDisabledTooltip")}
       >
         <Lock className="h-4 w-4" />
-        Web check-in disabled
+        {t("attendance.my.webDisabled")}
       </div>
     );
   }
@@ -632,21 +633,24 @@ function AttendanceHeaderAction({
   // recorded time so the second click clearly overwrites rather than looks
   // like a fresh action.
   const coText = co
-    ? new Date(co).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true })
+    ? new Intl.DateTimeFormat(locale, {
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(new Date(co))
     : null;
   return (
     <div className="flex items-center gap-2.5">
       {hasCheckedOut && coText && (
         <span className="hidden sm:inline-flex items-center gap-1.5 text-xs text-muted-foreground">
           <CheckCircle2 className="h-3.5 w-3.5 text-green-600 dark:text-green-400" />
-          {t('attendance.checkedOutAt', { defaultValue: 'Checked out {{time}}', time: coText })}
+          {t('attendance.checkedOutAt', { time: coText })}
         </span>
       )}
       <button
         type="button"
         onClick={onCheckOut}
         disabled={checkOutPending}
-        title={hasCheckedOut ? t('attendance.updateCheckOutHint', { defaultValue: 'Check out again to correct the time' }) : undefined}
+        title={hasCheckedOut ? t('attendance.updateCheckOutHint') : undefined}
         className="inline-flex items-center gap-1.5 rounded-lg bg-red-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition-all hover:bg-red-700 hover:shadow disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
       >
         {checkOutPending ? (
@@ -654,7 +658,7 @@ function AttendanceHeaderAction({
         ) : (
           <LogOut className="h-4 w-4" />
         )}
-        {t('attendance.checkOut')}
+        {t(hasCheckedOut ? 'attendance.updateCheckOut' : 'attendance.checkOut')}
       </button>
     </div>
   );

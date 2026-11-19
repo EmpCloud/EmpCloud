@@ -374,6 +374,7 @@
     "moduleAccess": "Accès aux modules",
     "wellnessCheckIn": "Check-in quotidien",
     "messages": "Messages",
+    "hrAssistant": "Assistant RH",
     "changePassword": "Changer le mot de passe",
     "viewAttendance": "Voir la présence",
     "attendanceGrid": "Grille de présence",
@@ -457,6 +458,14 @@
     "password": "Mot de passe",
     "forgotPassword": "Mot de passe oublié ?",
     "loginFailed": "E-mail ou mot de passe invalide",
+    "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter.",
+    "organizationLoginBlocked": "La connexion a été désactivée pour cette organisation. Contactez l’assistance.",
+    "networkError": "Impossible de joindre le serveur. Vérifiez votre connexion et réessayez.",
+    "tooManyAttempts": "Trop de tentatives de connexion. Veuillez patienter puis réessayer.",
+    "tooManyAttemptsRetry": "Trop de tentatives de connexion. Réessayez dans environ {{minutes}} min.",
+    "genericLoginError": "Échec de la connexion. Veuillez réessayer.",
+    "invalidEmail": "Saisissez une adresse e-mail valide.",
+    "passwordRequired": "Saisissez votre mot de passe.",
     "loginSuccess": "Connexion réussie",
     "noAccount": "Vous n'avez pas de compte ?",
     "registerOrg": "Enregistrez votre organisation",
@@ -1015,10 +1024,43 @@
     "welcomeBack": "Bon retour, {{name}} !",
     "overviewDesc": "Voici un aperçu de votre tableau de bord libre-service.",
     "editMyDetails": "Modifier mes informations",
-    "requestUpdate": "Demander une mise à jour"
+    "requestUpdate": "Demander une mise à jour",
+    "greatDay": "Passez une excellente journée !",
+    "quickActions": "Actions rapides",
+    "profileDescription": "Consultez et mettez à jour vos informations",
+    "leaveDescription": "Demandez un congé",
+    "attendanceDescription": "Consultez vos présences et vos relevés",
+    "requestDescription": "Effectuez une demande",
+    "summary": "Résumé de l’employé"
+  },
+  "profileCompletion": {
+    "title": "Complétude du profil",
+    "done": "Votre profil est complet. Beau travail !",
+    "subtitle": "Complétez votre profil afin que les RH disposent de toutes les informations nécessaires.",
+    "more": "+{{count}} autres",
+    "cta": "Compléter le profil",
+    "completeBadge": "Tous les champs sont renseignés",
+    "fields": {
+      "photo": "Photo de profil",
+      "contact_number": "Numéro de téléphone",
+      "date_of_birth": "Date de naissance",
+      "gender": "Genre",
+      "personal_email": "Adresse e-mail personnelle",
+      "emergency_contact_name": "Contact d’urgence",
+      "emergency_contact_phone": "Téléphone d’urgence",
+      "blood_group": "Groupe sanguin",
+      "marital_status": "Situation familiale",
+      "nationality": "Nationalité",
+      "aadhar_number": "Numéro Aadhaar",
+      "pan_number": "Numéro PAN"
+    }
   },
   "attendance": {
     "title": "Présence",
+    "duration": {
+      "hoursMinutes": "{{hours}} h {{minutes}} min",
+      "minutes": "{{minutes}} min"
+    },
     "checkIn": "Arrivée",
     "checkOut": "Départ",
     "present": "Présent",
@@ -1361,6 +1403,10 @@
       "employeeCount": "{{shown}} sur {{total}} employés",
       "clearFilters": "Effacer les filtres",
       "employee": "Employé",
+      "nightAllowance": "Prime de nuit",
+      "nightAllowanceTitle": "Jours travaillés en équipe de nuit",
+      "extraDay": "Jour supplémentaire",
+      "extraDayTitle": "Jours de repos hebdomadaire et jours fériés obligatoires travaillés",
       "noEmployees": "Aucun employé dans cette organisation.",
       "noMatch": "Aucun employé ne correspond aux filtres actuels.",
       "totalRow": "Total {{code}} — {{label}}",
@@ -1400,6 +1446,11 @@
       },
       "applyLeaveFailed": "Échec de l'application du congé"
     },
+    "updateCheckOut": "Modifier le pointage de sortie",
+    "checkedOutAt": "Sortie enregistrée à {{time}}",
+    "updateCheckOutHint": "Pointez de nouveau votre sortie pour corriger l’heure",
+    "checkInSuccess": "Entrée enregistrée avec succès à {{time}}",
+    "checkOutSuccess": "Sortie enregistrée avec succès à {{time}}",
     "location": "Emplacement",
     "monthlyLate": {
       "lateDaysOne": "{{count}} jour de retard",
@@ -1559,6 +1610,7 @@
   "roles": {
     "employee": "Employé",
     "manager": "Manager",
+    "hr_manager": "Responsable RH",
     "hr_admin": "Admin RH",
     "org_admin": "Admin. Org.",
     "super_admin": "Super Admin",
@@ -1620,6 +1672,8 @@
     "employeesCount": "{{count}} employés",
     "seatsAssignedCount": "{{count}} sièges attribués",
     "searchPlaceholder": "Rechercher par nom, e-mail, fonction ou code employé...",
+    "searchAriaLabel": "Rechercher des employés",
+    "filterAriaLabel": "Filtrer les employés par accès aux modules",
     "allEmployees": "Tous les employés",
     "enabledFor": "Activé pour",
     "notEnabledFor": "Non activé pour",
@@ -1629,6 +1683,23 @@
     "noEmployees": "Aucun employé trouvé",
     "matchingSearch": "correspondant à votre recherche",
     "withFilter": "avec ce filtre",
+    "enableAll": "Activer pour tous",
+    "disableAll": "Désactiver pour tous",
+    "dismissAlert": "Fermer la notification",
+    "filter": {
+      "clearAria": "Effacer le filtre {{module}}",
+      "showEnabledAria": "Afficher les employés ayant accès à {{module}}"
+    },
+    "bulkAlerts": {
+      "enabled_one": "Accès activé pour {{count}} employé.",
+      "enabled_other": "Accès activé pour {{count}} employés.",
+      "enabledWithSkipped": "Accès activé pour {{enabled}} employés ({{skipped}} y avaient déjà accès).",
+      "enableFailed": "Impossible d'activer l'accès pour tous les employés",
+      "disabled_one": "Accès retiré pour {{count}} employé.",
+      "disabled_other": "Accès retiré pour {{count}} employés.",
+      "disabledWithErrors": "Accès retiré pour {{disabled}} employés ({{errors}} échecs).",
+      "disableFailed": "Impossible de désactiver l'accès pour tous les employés"
+    },
     "table": {
       "employee": "Employé",
       "role": "Rôle",
@@ -1643,6 +1714,28 @@
       "remove": "Retirer l'accès",
       "removing": "Retrait en cours..."
     },
+    "confirmAll": {
+      "enableTitle": "Activer pour tous les employés",
+      "disableTitle": "Désactiver pour tous les employés",
+      "enableSubtitle": "Cette action activera l'accès pour tous les employés",
+      "disableSubtitle": "Cette action retirera l'accès à tous les employés",
+      "enableMessage": "Voulez-vous vraiment activer {{module}} pour tous les employés ?",
+      "disableMessage": "Voulez-vous vraiment désactiver {{module}} pour tous les employés ?",
+      "cancel": "Annuler",
+      "enabling": "Activation...",
+      "disabling": "Désactivation...",
+      "enableAction": "Activer pour tous",
+      "disableAction": "Désactiver pour tous"
+    },
+    "lock": {
+      "monitorTooltip": "EMP Monitor reste activé pour les administrateurs de l'organisation. Désactivez le module dans Paramètres → Abonnements si vous devez le supprimer.",
+      "payrollTooltip": "La paie est activée par défaut pour chaque employé. Pour la retirer, annulez l'abonnement dans Paramètres → Abonnements.",
+      "lockedOn": "{{module}} est activé et verrouillé"
+    },
+    "toggle": {
+      "enableAria": "Activer {{module}} pour {{employee}}",
+      "disableAria": "Désactiver {{module}} pour {{employee}}"
+    },
     "pagination": {
       "showing": "Affichage de {{from}}–{{to}} sur {{total}} employés",
       "previous": "Précédent",
@@ -1651,10 +1744,11 @@
     "syncAlerts": {
       "enabledSynced": "Module activé et utilisateur synchronisé avec succès",
       "enabledSkipped": "Siège attribué. Le module n'a pas d'API de synchronisation configurée.",
-      "enabledPartial": "Siège attribué mais la synchronisation du module a échoué ({{status}}).",
+      "enabledPartial": "Siège attribué, mais la synchronisation du module est incomplète.",
+      "assignmentConflict": "L’accès n’a pas pu être activé. L’employé dispose peut-être déjà d’un accès ou la limite de sièges de l’abonnement a été atteinte.",
       "enableFailed": "Échec de l'activation du module",
       "disabledSynced": "Module désactivé et utilisateur supprimé",
-      "disabledPartial": "Siège retiré mais la synchronisation du module a échoué ({{status}})",
+      "disabledPartial": "Siège retiré, mais la synchronisation du module est incomplète.",
       "disableFailed": "Échec de la désactivation du module"
     }
   },
@@ -1678,7 +1772,38 @@
     "yesCancel": "Oui, annuler",
     "subscriptionCancelled": "Abonnement annulé avec succès.",
     "cancelFailed": "Échec de l'annulation de l'abonnement.",
-    "subscriptionCreated": "Abonnement créé. La facture sera générée sous peu."
+    "subscriptionCreated": "Abonnement créé. La facture sera générée sous peu.",
+    "subscribeModal": {
+      "title": "S’abonner à {{module}}",
+      "subtitle": "Configurez votre abonnement",
+      "closeAria": "Fermer la boîte de dialogue d’abonnement",
+      "selectPlan": "Sélectionner un forfait",
+      "loadingPlans": "Chargement des forfaits...",
+      "noPlans": "Aucun forfait n’est actuellement publié pour cette devise. Contactez votre administrateur.",
+      "pricePerSeatMonthly": "{{price}} par siège/mois",
+      "notAvailable": "Non disponible",
+      "seatsLabel": "Nombre de sièges (licences)",
+      "seatsSliderAria": "Sélectionner le nombre de sièges",
+      "seatsInputAria": "Nombre de sièges",
+      "seatsDescription": "Chaque siège permet à un employé d’accéder à ce module",
+      "billingCycle": "Cycle de facturation",
+      "savePercent": "Économisez {{percent}} %",
+      "summaryPlan": "Forfait",
+      "summaryPricePerSeat": "Prix par siège",
+      "priceMonthly": "{{price}}/mois",
+      "summarySeats": "Sièges",
+      "users_one": "{{count}} utilisateur",
+      "users_other": "{{count}} utilisateurs",
+      "summaryBillingCycle": "Cycle de facturation",
+      "summaryDiscount": "Remise",
+      "summaryTotal": "Total",
+      "perMonth": "/mois",
+      "perQuarter": "/trimestre",
+      "perYear": "/an",
+      "perMonths": "/{{months}} mois",
+      "subscribing": "Abonnement en cours...",
+      "subscribeWithTotal": "S’abonner — {{total}}"
+    }
   },
   "helpdesk": {
     "list": {
@@ -1903,7 +2028,23 @@
       "allYears": "Toutes les années",
       "failedApprove": "Échec de l'approbation du plan",
       "failedReject": "Échec du rejet du plan",
-      "failedSubmit": "Échec de la soumission du plan"
+      "failedSubmit": "Échec de la soumission du plan",
+      "totalPlans": "Nombre total de plans",
+      "approvedPlans": "Plans approuvés",
+      "rejectedPlans": "Plans rejetés",
+      "draftInProgress": "Brouillon / En cours",
+      "plansThisYear_one": "↑ {{count}} cette année",
+      "plansThisYear_other": "↑ {{count}} cette année",
+      "percentageOfTotal": "{{percentage}} % du total",
+      "viewGroup": "Affichage des plans d'effectifs",
+      "gridView": "Vue en grille",
+      "tableView": "Vue en tableau",
+      "createdRecently": "Créé récemment",
+      "createdOn": "Créé le {{date}}",
+      "planActions": "Actions pour {{title}}",
+      "viewDetails": "Voir les détails",
+      "selectAllPlans": "Sélectionner tous les plans visibles",
+      "selectPlan": "Sélectionner {{title}}"
     },
     "vacancies": {
       "title": "Postes vacants",
@@ -1923,7 +2064,37 @@
       "markSuccessGeneric": "Poste marqué comme pourvu.",
       "markError": "Échec du marquage du poste comme pourvu",
       "confirmTitle": "Marquer « {{title}} » comme pourvu ?",
-      "confirmDescription": "Ce poste sera retiré de la liste des postes vacants."
+      "confirmDescription": "Ce poste sera retiré de la liste des postes vacants.",
+      "export": "Exporter",
+      "exportFilename": "postes-vacants.csv",
+      "openPositions": "Postes ouverts",
+      "totalBudget": "Effectif total (budget)",
+      "inProgress": "Postes en cours",
+      "criticalPositions": "Postes critiques",
+      "searchPlaceholder": "Rechercher par intitulé, code ou service...",
+      "searchAriaLabel": "Rechercher des postes vacants",
+      "critical": "Critique",
+      "statusFallback": "{{status}}",
+      "viewMode": "Vue des postes vacants",
+      "grid": "Grille",
+      "list": "Liste",
+      "moreActions": "Autres actions",
+      "filled": "Pourvu",
+      "positionTitle": "Intitulé du poste",
+      "colOpenings": "Postes ouverts",
+      "filledTotal": "Pourvus / Total",
+      "action": "Action",
+      "viewDetails": "Afficher les détails de {{title}}",
+      "exportHeaders": {
+        "title": "Intitulé",
+        "code": "Code",
+        "department": "Service",
+        "type": "Type",
+        "openings": "Postes ouverts",
+        "filled": "Pourvus",
+        "budget": "Budget",
+        "status": "Statut"
+      }
     },
     "list": {
       "title": "Tous les postes",
@@ -1966,7 +2137,15 @@
       "deleting": "Suppression...",
       "failedDelete": "Échec de la suppression du poste",
       "allTypes": "Tous les types",
-      "criticalOnly": "Critiques uniquement"
+      "criticalOnly": "Critiques uniquement",
+      "viewMode": "Mode d'affichage",
+      "gridView": "Vue en grille",
+      "listView": "Vue en liste",
+      "positionsCount_one": "{{count}} poste",
+      "positionsCount_other": "{{count}} postes",
+      "unassigned": "Non attribué",
+      "yes": "Oui",
+      "no": "Non"
     },
     "dashboard": {
       "title": "Tableau de bord des postes",
@@ -2100,7 +2279,7 @@
       "viewMode": "Vue de l’annuaire",
       "tableView": "Vue tableau",
       "gridView": "Vue grille",
-      "showingEmployees": "Affichage de {{from}} à {{to}} sur {{total}} employés",
+      "showingEmployees": "Affichage de {{shown}} employés sur {{total}}",
       "sortBy": "Trier les employés",
       "sortNameAsc": "Trier : Nom (A–Z)",
       "sortNameDesc": "Trier : Nom (Z–A)",
@@ -2170,6 +2349,68 @@
       "emptyAll": "Rien ici pour l'instant — soyez le premier à publier.",
       "emptySearchHint": "Essayez un autre mot-clé.",
       "emptyHint": "Utilisez la zone ci-dessus pour partager quelque chose."
+    },
+    "widget": {
+      "filterAria": "Filtrer le fil de l’entreprise",
+      "filters": {
+        "all": "Toutes",
+        "announcements": "Annonces",
+        "team": "Équipe",
+        "recognition": "Reconnaissances"
+      },
+      "composerPlaceholder": "Partagez quelque chose avec l’équipe...",
+      "loading": "Chargement du fil...",
+      "emptyFiltered": "Aucune publication « {{filter}} » pour le moment.",
+      "openFullFeed": "Ouvrir le fil complet"
+    },
+    "composer": {
+      "submitFailed": "Impossible de créer la publication",
+      "placeholder": "Qu’avez-vous en tête ?",
+      "characterCount_one": "{{count}} caractère",
+      "characterCount_other": "{{count}} caractères",
+      "posting": "Publication...",
+      "post": "Publier"
+    },
+    "post": {
+      "saveFailed": "Impossible d’enregistrer la publication",
+      "actions": "Actions de la publication",
+      "saving": "Enregistrement...",
+      "edited": "modifiée",
+      "like": "J’aime",
+      "hideComments": "Masquer les commentaires",
+      "comments": "Commentaires",
+      "deleteTitle": "Supprimer cette publication ?",
+      "deleteDescription": "Cette action est irréversible.",
+      "deleting": "Suppression..."
+    },
+    "comments": {
+      "submitFailed": "Impossible d’ajouter le commentaire",
+      "disabled": "Les commentaires sont désactivés pour cette publication.",
+      "viewMore_one": "Afficher {{count}} commentaire supplémentaire",
+      "viewMore_other": "Afficher {{count}} commentaires supplémentaires",
+      "loading": "Chargement des commentaires...",
+      "placeholder": "Écrire un commentaire...",
+      "send": "Envoyer le commentaire",
+      "actions": "Actions du commentaire"
+    },
+    "media": {
+      "attachment": "Pièce jointe"
+    },
+    "categories": {
+      "deleteFailed": "Impossible de supprimer la catégorie",
+      "title": "Catégories",
+      "add": "Ajouter",
+      "namePlaceholder": "Nom de la catégorie",
+      "empty": "Aucune catégorie pour le moment.",
+      "postCount_one": "{{count}} publication",
+      "postCount_other": "{{count}} publications",
+      "editAria": "Modifier {{name}}",
+      "deleteAria": "Supprimer {{name}}",
+      "deleteTitle": "Supprimer la catégorie ?",
+      "deleteWithPosts_one": "Supprimer « {{name}} » ? {{count}} publication existante conservera son étiquette, mais aucune nouvelle publication ne pourra être ajoutée ici tant que la catégorie ne sera pas restaurée.",
+      "deleteWithPosts_other": "Supprimer « {{name}} » ? Les {{count}} publications existantes conserveront leur étiquette, mais aucune nouvelle publication ne pourra être ajoutée ici tant que la catégorie ne sera pas restaurée.",
+      "deleteEmpty": "Supprimer « {{name}} » ? La catégorie sera masquée du forum.",
+      "deleting": "Suppression..."
     }
   },
   "wellness": {
@@ -2206,6 +2447,24 @@
     }
   },
   "forum": {
+    "defaultCategories": {
+      "general": {
+        "name": "Général",
+        "description": "Discussions et échanges généraux"
+      },
+      "questions": {
+        "name": "Questions",
+        "description": "Posez des questions et obtenez des réponses de vos collègues"
+      },
+      "ideas": {
+        "name": "Idées",
+        "description": "Partagez des idées et des suggestions d'amélioration"
+      },
+      "announcements": {
+        "name": "Annonces",
+        "description": "Annonces et mises à jour importantes"
+      }
+    },
     "page": {
       "title": "Forum de la communauté",
       "subtitle": "Connectez-vous, échangez et partagez des idées avec vos collègues.",
@@ -2220,6 +2479,8 @@
       "postsCount_one": "{{count}} publication",
       "postsCount_other": "{{count}} publications",
       "searchPlaceholder": "Rechercher des discussions...",
+      "searchAria": "Rechercher dans les discussions du forum",
+      "sortAria": "Trier les publications du forum",
       "sortRecent": "Récents",
       "sortPopular": "Populaires",
       "sortTrending": "Tendances",
@@ -2243,6 +2504,7 @@
     },
     "create": {
       "title": "Créer une publication",
+      "backAria": "Retour",
       "category": "Catégorie",
       "selectCategory": "Sélectionner une catégorie...",
       "noCategories": "Aucune catégorie — créez-les dans le tableau de bord du forum",
@@ -2419,6 +2681,8 @@
     "geofencesDesc_one": "{{count}} emplacement actif. L'application mobile reçoit cette liste via <code>GET /me/policy</code> et valide le GPS de l'utilisateur localement.",
     "geofencesDesc_other": "{{count}} emplacements actifs. L'application mobile reçoit cette liste via <code>GET /me/policy</code> et valide le GPS de l'utilisateur localement.",
     "noGeofences": "Aucun géorepère configuré. Cliquez sur <strong>Ajouter un géorepère</strong> pour en créer un.",
+    "noGeofencesHintLine1": "Cliquez sur « Ajouter un géorepère » pour créer des limites géographiques",
+    "noGeofencesHintLine2": "pour le pointage mobile.",
     "overrides": "Remplacements par utilisateur",
     "overridesDesc": "Remplacez les règles de toute l'organisation pour un employé spécifique sur une période. À l'expiration de la date de fin, l'employé revient automatiquement au paramètre par défaut de l'organisation.",
     "newOverride": "Nouveau remplacement",
@@ -2426,6 +2690,7 @@
     "loadingOverrides": "Chargement des remplacements…",
     "noOverridesMatch": "Aucun remplacement ne correspond à votre recherche.",
     "noOverrides": "Aucun remplacement par utilisateur configuré.",
+    "noOverridesHint": "Cliquez sur « Nouveau remplacement » pour définir des paramètres de présence personnalisés pour un employé.",
     "mRadius": "rayon de {{radius}} m",
     "editGeofence": "Modifier le géorepère",
     "deleteGeofence": "Supprimer le géorepère",
@@ -3172,10 +3437,14 @@
     "table": {
       "invoice": "Facture",
       "org": "Org.",
+      "plan": "Forfait et abonnement",
       "status": "Statut",
       "total": "Total",
       "due": "Dû",
       "issued": "Émise",
+      "internalComment": "Commentaire interne",
+      "noPlan": "Aucun forfait",
+      "noInternalComment": "Aucun commentaire interne",
       "actions": "Actions",
       "dueDatePrefix": "échéance"
     },
@@ -3473,6 +3742,55 @@
       "auditLog_other": "Journal d'audit ({{count}} derniers)"
     }
   },
+  "orgComments": {
+    "title": "Notes internes",
+    "description": "Visibles uniquement par les super-administrateurs. Elles ne sont montrées à personne dans l’organisation.",
+    "placeholder": "Ajouter une note sur cette organisation…",
+    "add": "Ajouter une note",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "editAction": "Modifier",
+    "deleteAction": "Supprimer",
+    "edited": "(modifiée)",
+    "confirmDelete": "Supprimer cette note ?",
+    "loading": "Chargement des notes…",
+    "empty": "Aucune note pour le moment.",
+    "unknownAuthor": "Inconnu",
+    "toast": {
+      "added": "Note ajoutée",
+      "addFailed": "Impossible d’ajouter la note",
+      "updated": "Note mise à jour",
+      "updateFailed": "Impossible de mettre à jour la note",
+      "deleted": "Note supprimée",
+      "deleteFailed": "Impossible de supprimer la note"
+    }
+  },
+  "orgDelete": {
+    "title": "Zone de danger",
+    "description": "Supprime définitivement cette organisation et toutes les données qui lui appartiennent : utilisateurs, présences, congés, paie, abonnements et documents. Cette action est irréversible.",
+    "button": "Supprimer l’organisation",
+    "modal": {
+      "title": "Supprimer l’organisation",
+      "irreversibleTitle": "Cette action est définitive et irréversible.",
+      "irreversibleBody": "Il n’existe ni récupération, ni annulation, ni corbeille. Continuez uniquement si vous en êtes absolument certain.",
+      "platformOrg": "Il s’agit de l’organisation de la plateforme à laquelle appartiennent les comptes de super-administrateur. Elle ne peut pas être supprimée.",
+      "warning": "Cette action supprimera définitivement :",
+      "users_one": "{{count}} compte utilisateur",
+      "users_other": "{{count}} comptes utilisateur",
+      "subscriptions_one": "{{count}} abonnement à un module",
+      "subscriptions_other": "{{count}} abonnements à des modules",
+      "allData": "Toutes les données de présence, congés, paie, documents, tickets et actifs",
+      "confirmPrompt": "Saisissez le nom de l’organisation pour confirmer :",
+      "confirmPlaceholder": "Nom de l’organisation",
+      "cancel": "Annuler",
+      "confirm": "Supprimer définitivement",
+      "deleting": "Suppression…"
+    },
+    "toast": {
+      "deleted": "Organisation supprimée",
+      "failed": "Impossible de supprimer l’organisation"
+    }
+  },
   "orgList": {
     "title": "Toutes les organisations",
     "createButton": "Créer une organisation",
@@ -3498,6 +3816,37 @@
     },
     "search": {
       "placeholder": "Rechercher par nom ou e-mail..."
+    },
+    "stats": {
+      "total": "Total des organisations",
+      "today": "Inscrites aujourd’hui",
+      "thisWeek": "Inscrites cette semaine",
+      "thisMonth": "Inscrites ce mois-ci",
+      "active": "Actives",
+      "inactive": "Inactives",
+      "totalEmployees": "Total des employés",
+      "mrr": "Revenus mensuels récurrents"
+    },
+    "filters": {
+      "search": "Rechercher",
+      "registered": "Inscription",
+      "from": "Du",
+      "to": "Au",
+      "statusAll": "Tous les statuts",
+      "subscription": "Abonnement",
+      "subAll": "Tous",
+      "subWith": "Avec abonnement",
+      "subWithout": "Sans abonnement",
+      "country": "Pays",
+      "clear": "Effacer",
+      "period": {
+        "all": "Toute la période",
+        "today": "Aujourd’hui",
+        "week": "Cette semaine",
+        "month": "Ce mois-ci",
+        "year": "Cette année",
+        "custom": "Période personnalisée"
+      }
     },
     "table": {
       "headers": {
@@ -4874,9 +5223,11 @@
     },
     "header": {
       "defaultCategoryName": "Catégorie",
-      "newPost": "Nouvelle publication"
+      "newPost": "Nouvelle publication",
+      "backAria": "Retour au forum de la communauté"
     },
     "filters": {
+      "filterAria": "Filtrer les publications par type",
       "allTypes": "Tous les types",
       "discussions": "Discussions",
       "questions": "Questions",
@@ -4884,6 +5235,7 @@
       "polls": "Sondages"
     },
     "sort": {
+      "ariaLabel": "Trier les publications de la catégorie",
       "recent": "Récent",
       "popular": "Populaire",
       "active": "Actif",
@@ -4911,6 +5263,9 @@
     }
   },
   "postDetail": {
+    "navigation": {
+      "backAria": "Retour"
+    },
     "postType": {
       "discussion": "Discussion",
       "question": "Question",
@@ -4931,7 +5286,8 @@
     "reply": {
       "acceptedAnswer": "Réponse acceptée",
       "replyAction": "Répondre",
-      "acceptAnswer": "Accepter la réponse"
+      "acceptAnswer": "Accepter la réponse",
+      "deleteAria": "Supprimer la réponse de {{name}}"
     },
     "badge": {
       "pinned": "Épinglé",
@@ -4976,7 +5332,8 @@
     "error": {
       "assignFailed": "Échec de l'affectation de l'employé à ce poste.",
       "saveChangesFailed": "Échec de l'enregistrement des modifications du poste.",
-      "deleteFailed": "Échec de la suppression du poste"
+      "deleteFailed": "Échec de la suppression du poste",
+      "statusUpdateFailed": "Échec de la mise à jour du statut du poste."
     },
     "loading": "Chargement...",
     "notFound": "Poste introuvable",
@@ -4986,6 +5343,7 @@
       "delete": "Supprimer",
       "assignEmployee": "Affecter un employé"
     },
+    "statusLabel": "Statut du poste",
     "status": {
       "active": "Actif",
       "filled": "Pourvu",
@@ -6660,8 +7018,13 @@
     "myViewTitle": "Vue libre-service personnelle",
     "adminViewTitle": "Vue administrateur — uniquement les éléments débloqués par les autorisations de votre rôle personnalisé"
   },
+  "languageSwitcher": {
+    "changeLanguage": "Changer de langue",
+    "languageMenu": "Sélectionner une langue"
+  },
   "aiBadge": {
-    "label": "Optimisé par l'IA"
+    "label": "Optimisé par l'IA",
+    "new": "NOUVEAU"
   },
   "celebrations": {
     "title": "Célébrations",

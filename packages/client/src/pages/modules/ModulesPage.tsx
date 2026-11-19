@@ -31,12 +31,17 @@ type PublicPricing = {
   cycles: PublicCycle[];
 };
 
-const CURRENCY_SYMBOL: Record<string, string> = { INR: "₹", USD: "$", GBP: "£", EUR: "€" };
-
-function formatMoney(amount: number, currency: string) {
-  const sym = CURRENCY_SYMBOL[currency] || currency;
+function formatMoney(amount: number, currency: string, locale: string) {
   const major = amount / 100;
-  return `${sym}${major.toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;
+  try {
+    return new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency,
+      maximumFractionDigits: 2,
+    }).format(major);
+  } catch {
+    return `${currency} ${major.toLocaleString(locale, { maximumFractionDigits: 2 })}`;
+  }
 }
 
 const ADMIN_ROLES = ["org_admin", "hr_admin"];
@@ -49,6 +54,8 @@ interface SubscribeModalProps {
 }
 
 function SubscribeModal({ module, onClose, onSubscribe, isLoading }: SubscribeModalProps) {
+  const { t, i18n } = useTranslation();
+  const locale = i18n.resolvedLanguage || i18n.language || "en";
   const [totalSeats, setTotalSeats] = useState(10);
 
   // Pull every plan / price / cycle from the DB. Currency comes from the
@@ -98,6 +105,22 @@ function SubscribeModal({ module, onClose, onSubscribe, isLoading }: SubscribeMo
           monthlyPerSeat * (1 - (Number(selectedCycle?.discount_pct) || 0) / 100) * monthsInCycle,
         );
   const totalAmount = perSeatPerCycle * totalSeats;
+  const moduleNameKey = `modules.${module.slug}.name`;
+  const translatedModuleName = t(moduleNameKey);
+  const moduleName = translatedModuleName === moduleNameKey ? module.name : translatedModuleName;
+  const cycleLabel = (cycle: PublicCycle | undefined) => {
+    if (!cycle) return "—";
+    const key = `subscriptionsPage.billingCycle.${cycle.cycle}`;
+    const translated = t(key);
+    return translated === key ? cycle.label : translated;
+  };
+  const totalPeriod = (() => {
+    const months = selectedCycle?.months_in_cycle ?? 1;
+    if (months === 1) return t("modulesPage.subscribeModal.perMonth");
+    if (months === 3) return t("modulesPage.subscribeModal.perQuarter");
+    if (months === 12) return t("modulesPage.subscribeModal.perYear");
+    return t("modulesPage.subscribeModal.perMonths", { months });
+  })();
 
   const handleSubmit = async () => {
     if (!selectedTier || !selectedCycle) return;
@@ -111,14 +134,22 @@ function SubscribeModal({ module, onClose, onSubscribe, isLoading }: SubscribeMo
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
-      <div className="bg-card rounded-2xl shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="subscribe-modal-title"
+        className="bg-card rounded-2xl shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto"
+        onClick={e => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-border">
           <div>
-            <h2 className="text-xl font-bold text-foreground">Subscribe to {module.name}</h2>
-            <p className="text-[13px] text-muted-foreground mt-1">Configure your subscription</p>
+            <h2 id="subscribe-modal-title" className="text-xl font-bold text-foreground">
+              {t("modulesPage.subscribeModal.title", { module: moduleName })}
+            </h2>
+            <p className="text-[13px] text-muted-foreground mt-1">{t("modulesPage.subscribeModal.subtitle")}</p>
           </div>
-          <button onClick={onClose} className="text-muted-foreground hover:text-muted-foreground">
+          <button type="button" onClick={onClose} aria-label={t("modulesPage.subscribeModal.closeAria")} className="text-muted-foreground hover:text-foreground">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -127,15 +158,15 @@ function SubscribeModal({ module, onClose, onSubscribe, isLoading }: SubscribeMo
           {/* Plan Tier Selection */}
           <div>
             <label className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground mb-3">
-              <CreditCard className="h-4 w-4" /> Select Plan
+              <CreditCard className="h-4 w-4" /> {t("modulesPage.subscribeModal.selectPlan")}
             </label>
             {pricingQ.isLoading ? (
               <div className="flex items-center justify-center py-6 text-[13px] text-muted-foreground">
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading plans...
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t("modulesPage.subscribeModal.loadingPlans")}
               </div>
             ) : tiers.length === 0 ? (
               <div className="rounded-xl border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/40 p-3 text-[13px] text-amber-800 dark:text-amber-200">
-                No plans are currently published for this currency. Contact your administrator.
+                {t("modulesPage.subscribeModal.noPlans")}
               </div>
             ) : (
               <div className={`grid gap-3`} style={{ gridTemplateColumns: `repeat(${Math.min(tiers.length, 3)}, minmax(0, 1fr))` }}>
@@ -155,8 +186,10 @@ function SubscribeModal({ module, onClose, onSubscribe, isLoading }: SubscribeMo
                       <div className="text-[11px] text-muted-foreground mt-1">{plan.description}</div>
                       <div className="text-[13px] font-bold text-brand-600 dark:text-brand-400 mt-2 tabular-nums">
                         {plan.price_per_seat != null
-                          ? `${formatMoney(plan.price_per_seat, currency)}/seat/mo`
-                          : "Not available"}
+                          ? t("modulesPage.subscribeModal.pricePerSeatMonthly", {
+                              price: formatMoney(plan.price_per_seat, currency, locale),
+                            })
+                          : t("modulesPage.subscribeModal.notAvailable")}
                       </div>
                     </button>
                   );
@@ -168,7 +201,7 @@ function SubscribeModal({ module, onClose, onSubscribe, isLoading }: SubscribeMo
           {/* Number of Seats */}
           <div>
             <label className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground mb-3">
-              <Users className="h-4 w-4" /> Number of Seats (Licenses)
+              <Users className="h-4 w-4" /> {t("modulesPage.subscribeModal.seatsLabel")}
             </label>
             <div className="flex items-center gap-4">
               <input
@@ -177,6 +210,7 @@ function SubscribeModal({ module, onClose, onSubscribe, isLoading }: SubscribeMo
                 max={500}
                 value={totalSeats}
                 onChange={e => setTotalSeats(Number(e.target.value))}
+                aria-label={t("modulesPage.subscribeModal.seatsSliderAria")}
                 className="flex-1 accent-brand-600"
               />
               <input
@@ -185,16 +219,17 @@ function SubscribeModal({ module, onClose, onSubscribe, isLoading }: SubscribeMo
                 max={10000}
                 value={totalSeats}
                 onChange={e => setTotalSeats(Math.max(1, Number(e.target.value)))}
+                aria-label={t("modulesPage.subscribeModal.seatsInputAria")}
                 className="bg-card text-foreground w-20 px-3 py-2 border border-border rounded-md text-center text-[13px] font-medium focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
               />
             </div>
-            <p className="text-[11px] text-muted-foreground mt-1">Each seat allows one employee to access this module</p>
+            <p className="text-[11px] text-muted-foreground mt-1">{t("modulesPage.subscribeModal.seatsDescription")}</p>
           </div>
 
           {/* Billing Cycle */}
           <div>
             <label className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground mb-3">
-              <Calendar className="h-4 w-4" /> Billing Cycle
+              <Calendar className="h-4 w-4" /> {t("modulesPage.subscribeModal.billingCycle")}
             </label>
             <div className={`grid gap-3`} style={{ gridTemplateColumns: `repeat(${Math.max(1, Math.min(cycles.length, 4))}, minmax(0, 1fr))` }}>
               {cycles.map((cycle) => {
@@ -209,10 +244,10 @@ function SubscribeModal({ module, onClose, onSubscribe, isLoading }: SubscribeMo
                         : "border-border hover:border-brand-300 dark:hover:border-brand-800"
                     }`}
                   >
-                    <div className="font-semibold text-[13px] text-foreground">{cycle.label}</div>
+                    <div className="font-semibold text-[13px] text-foreground">{cycleLabel(cycle)}</div>
                     {Number(cycle.discount_pct) > 0 && (
                       <div className="text-[11px] text-green-600 dark:text-green-400 font-medium mt-1">
-                        Save {Number(cycle.discount_pct)}%
+                        {t("modulesPage.subscribeModal.savePercent", { percent: Number(cycle.discount_pct) })}
                       </div>
                     )}
                   </button>
@@ -224,38 +259,33 @@ function SubscribeModal({ module, onClose, onSubscribe, isLoading }: SubscribeMo
           {/* Price Summary */}
           <div className="bg-muted rounded-xl p-4 space-y-2">
             <div className="flex justify-between text-[13px] text-muted-foreground">
-              <span>Plan</span>
+              <span>{t("modulesPage.subscribeModal.summaryPlan")}</span>
               <span className="font-medium">{selectedTier?.name || "—"}</span>
             </div>
             <div className="flex justify-between text-[13px] text-muted-foreground">
-              <span>Price per seat</span>
-              <span className="tabular-nums">{formatMoney(monthlyPerSeat, currency)}/mo</span>
+              <span>{t("modulesPage.subscribeModal.summaryPricePerSeat")}</span>
+              <span className="tabular-nums">
+                {t("modulesPage.subscribeModal.priceMonthly", { price: formatMoney(monthlyPerSeat, currency, locale) })}
+              </span>
             </div>
             <div className="flex justify-between text-[13px] text-muted-foreground">
-              <span>Seats</span>
-              <span className="tabular-nums">{totalSeats} users</span>
+              <span>{t("modulesPage.subscribeModal.summarySeats")}</span>
+              <span className="tabular-nums">{t("modulesPage.subscribeModal.users", { count: totalSeats })}</span>
             </div>
             <div className="flex justify-between text-[13px] text-muted-foreground">
-              <span>Billing cycle</span>
-              <span>{selectedCycle?.label || "—"}</span>
+              <span>{t("modulesPage.subscribeModal.summaryBillingCycle")}</span>
+              <span>{cycleLabel(selectedCycle)}</span>
             </div>
             {selectedCycle && Number(selectedCycle.discount_pct) > 0 && (
               <div className="flex justify-between text-[13px] text-green-600 dark:text-green-400">
-                <span>Discount</span>
+                <span>{t("modulesPage.subscribeModal.summaryDiscount")}</span>
                 <span className="tabular-nums">-{Number(selectedCycle.discount_pct)}%</span>
               </div>
             )}
             <div className="border-t border-border pt-2 mt-2 flex justify-between text-lg font-bold text-foreground tabular-nums">
-              <span>Total</span>
+              <span>{t("modulesPage.subscribeModal.summaryTotal")}</span>
               <span>
-                {formatMoney(totalAmount, currency)}
-                {(selectedCycle?.months_in_cycle ?? 1) === 1
-                  ? "/mo"
-                  : (selectedCycle?.months_in_cycle ?? 1) === 3
-                    ? "/qtr"
-                    : (selectedCycle?.months_in_cycle ?? 1) === 12
-                      ? "/yr"
-                      : `/${selectedCycle?.months_in_cycle}mo`}
+                {formatMoney(totalAmount, currency, locale)}{totalPeriod}
               </span>
             </div>
           </div>
@@ -264,7 +294,7 @@ function SubscribeModal({ module, onClose, onSubscribe, isLoading }: SubscribeMo
         {/* Footer */}
         <div className="flex items-center justify-between p-6 border-t border-border bg-muted rounded-b-2xl">
           <button onClick={onClose} className="text-[13px] text-muted-foreground hover:text-foreground">
-            Cancel
+            {t("common.cancel")}
           </button>
           <button
             onClick={handleSubmit}
@@ -272,8 +302,10 @@ function SubscribeModal({ module, onClose, onSubscribe, isLoading }: SubscribeMo
             className="flex items-center gap-2 bg-brand-600 text-white px-6 py-2.5 rounded-md text-[13px] font-medium hover:bg-brand-700 disabled:opacity-50 transition-colors"
           >
             {isLoading
-              ? "Subscribing..."
-              : `Subscribe — ${formatMoney(totalAmount, currency)}`}
+              ? t("modulesPage.subscribeModal.subscribing")
+              : t("modulesPage.subscribeModal.subscribeWithTotal", {
+                  total: formatMoney(totalAmount, currency, locale),
+                })}
           </button>
         </div>
       </div>

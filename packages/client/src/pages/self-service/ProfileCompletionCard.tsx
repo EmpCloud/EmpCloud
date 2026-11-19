@@ -15,7 +15,6 @@ import api from "@/api/client";
 
 type FieldCheck = {
   key: string;
-  label: string;
   filled: (p: Record<string, any>) => boolean;
 };
 
@@ -27,18 +26,18 @@ const nonEmpty = (v: unknown) => v !== null && v !== undefined && String(v).trim
 const FIELDS: FieldCheck[] = [
   // has_biometric_face comes back as a boolean from the API (a kiosk-enrolled
   // face counts as a profile photo), so test it truthily — not `=== 1`.
-  { key: "photo", label: "Profile photo", filled: (p) => nonEmpty(p.photo_path) || Boolean(p.has_biometric_face) },
-  { key: "contact_number", label: "Phone number", filled: (p) => nonEmpty(p.contact_number) },
-  { key: "date_of_birth", label: "Date of birth", filled: (p) => nonEmpty(p.date_of_birth) },
-  { key: "gender", label: "Gender", filled: (p) => nonEmpty(p.gender) },
-  { key: "personal_email", label: "Personal email", filled: (p) => nonEmpty(p.personal_email) },
-  { key: "emergency_contact_name", label: "Emergency contact", filled: (p) => nonEmpty(p.emergency_contact_name) },
-  { key: "emergency_contact_phone", label: "Emergency phone", filled: (p) => nonEmpty(p.emergency_contact_phone) },
-  { key: "blood_group", label: "Blood group", filled: (p) => nonEmpty(p.blood_group) },
-  { key: "marital_status", label: "Marital status", filled: (p) => nonEmpty(p.marital_status) },
-  { key: "nationality", label: "Nationality", filled: (p) => nonEmpty(p.nationality) },
-  { key: "aadhar_number", label: "Aadhaar number", filled: (p) => nonEmpty(p.aadhar_number) },
-  { key: "pan_number", label: "PAN number", filled: (p) => nonEmpty(p.pan_number) },
+  { key: "photo", filled: (p) => nonEmpty(p.photo_path) || Boolean(p.has_biometric_face) },
+  { key: "contact_number", filled: (p) => nonEmpty(p.contact_number) },
+  { key: "date_of_birth", filled: (p) => nonEmpty(p.date_of_birth) },
+  { key: "gender", filled: (p) => nonEmpty(p.gender) },
+  { key: "personal_email", filled: (p) => nonEmpty(p.personal_email) },
+  { key: "emergency_contact_name", filled: (p) => nonEmpty(p.emergency_contact_name) },
+  { key: "emergency_contact_phone", filled: (p) => nonEmpty(p.emergency_contact_phone) },
+  { key: "blood_group", filled: (p) => nonEmpty(p.blood_group) },
+  { key: "marital_status", filled: (p) => nonEmpty(p.marital_status) },
+  { key: "nationality", filled: (p) => nonEmpty(p.nationality) },
+  { key: "aadhar_number", filled: (p) => nonEmpty(p.aadhar_number) },
+  { key: "pan_number", filled: (p) => nonEmpty(p.pan_number) },
 ];
 
 function Ring({ pct }: { pct: number }) {
@@ -96,15 +95,13 @@ export function ProfileCompletionCard({ userId }: { userId: number | undefined }
           <div className="flex items-center gap-1.5">
             <UserCheck className="h-4 w-4 text-brand-600 dark:text-brand-400" />
             <h3 className="text-sm font-semibold text-foreground">
-              {t("profileCompletion.title", { defaultValue: "Profile completion" })}
+              {t("profileCompletion.title")}
             </h3>
           </div>
           <p className="mt-0.5 text-[12px] text-muted-foreground">
             {complete
-              ? t("profileCompletion.done", { defaultValue: "Your profile is all set — nice work!" })
-              : t("profileCompletion.subtitle", {
-                  defaultValue: "Complete your profile so HR has everything on file.",
-                })}
+              ? t("profileCompletion.done")
+              : t("profileCompletion.subtitle")}
           </p>
         </div>
       </div>
@@ -118,12 +115,12 @@ export function ProfileCompletionCard({ userId }: { userId: number | undefined }
                 key={f.key}
                 className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300"
               >
-                {t(`profileCompletion.fields.${f.key}`, { defaultValue: f.label })}
+                {t(`profileCompletion.fields.${f.key}`)}
               </span>
             ))}
             {missing.length > 4 && (
               <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
-                {t("profileCompletion.more", { defaultValue: "+{{count}} more", count: missing.length - 4 })}
+                {t("profileCompletion.more", { count: missing.length - 4 })}
               </span>
             )}
           </div>
@@ -131,7 +128,7 @@ export function ProfileCompletionCard({ userId }: { userId: number | undefined }
             to={`/employees/${userId}`}
             className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-3 py-1.5 text-[13px] font-medium text-white hover:bg-brand-700"
           >
-            {t("profileCompletion.cta", { defaultValue: "Complete profile" })}
+            {t("profileCompletion.cta")}
             <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </>
@@ -139,7 +136,7 @@ export function ProfileCompletionCard({ userId }: { userId: number | undefined }
 
       {complete && (
         <div className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-green-50 px-3 py-1.5 text-[13px] font-medium text-green-700 dark:bg-green-950/40 dark:text-green-300">
-          <Check className="h-3.5 w-3.5" /> {t("profileCompletion.completeBadge", { defaultValue: "All fields complete" })}
+          <Check className="h-3.5 w-3.5" /> {t("profileCompletion.completeBadge")}
         </div>
       )}
     </div>

@@ -1,5 +1,6 @@
 import type { MediaAttachment } from "@empcloud/shared";
 import { FileText } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   media: MediaAttachment[];
@@ -10,6 +11,8 @@ type Props = {
 // Phase 1 doesn't upload — this component only renders existing URLs, so we
 // can re-use it verbatim once the phase 2 upload endpoint lands.
 export function MediaGrid({ media }: Props) {
+  const { t } = useTranslation();
+
   if (!media || media.length === 0) return null;
 
   const images = media.filter((m) => m.kind === "image");
@@ -29,7 +32,7 @@ export function MediaGrid({ media }: Props) {
               className="inline-flex items-center gap-1.5 text-xs bg-muted text-muted-foreground px-3 py-1.5 rounded-full hover:bg-muted"
             >
               <FileText className="h-3.5 w-3.5" />
-              {f.name || "Attachment"}
+              {f.name || t("feed.media.attachment")}
             </a>
           ))}
         </div>

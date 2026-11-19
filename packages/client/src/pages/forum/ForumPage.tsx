@@ -5,6 +5,10 @@ import { Link } from "react-router-dom";
 import api from "@/api/client";
 import { useAuthStore } from "@/lib/auth-store";
 import {
+  localizeForumCategoryDescription,
+  localizeForumCategoryName,
+} from "./forum-category-i18n";
+import {
   MessageCircle,
   Plus,
   TrendingUp,
@@ -23,11 +27,11 @@ import {
 const HR_ROLES = ["hr_admin", "org_admin", "super_admin"];
 
 // Post type → colour + icon. Label text comes from i18n (forum.page.postType.*).
-const POST_TYPE_CONFIG: Record<string, { color: string; icon: typeof MessageCircle }> = {
-  discussion: { color: "bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300", icon: MessagesSquare },
-  question: { color: "bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300", icon: HelpCircle },
-  idea: { color: "bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300", icon: Lightbulb },
-  poll: { color: "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300", icon: BarChart3 },
+const POST_TYPE_CONFIG: Record<string, { labelKey: string; color: string; icon: typeof MessageCircle }> = {
+  discussion: { labelKey: "forum.page.postType.discussion", color: "bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300", icon: MessagesSquare },
+  question: { labelKey: "forum.page.postType.question", color: "bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300", icon: HelpCircle },
+  idea: { labelKey: "forum.page.postType.idea", color: "bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300", icon: Lightbulb },
+  poll: { labelKey: "forum.page.postType.poll", color: "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300", icon: BarChart3 },
 };
 
 function useCategories() {
@@ -60,7 +64,7 @@ function safeParseTags(tags: string | null | undefined): string[] {
 
 type TFn = (key: string, opts?: Record<string, unknown>) => string;
 
-function timeAgo(dateStr: string, t: TFn) {
+function timeAgo(dateStr: string, t: TFn, locale: string) {
   const now = new Date();
   const date = new Date(dateStr);
   const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
@@ -68,11 +72,12 @@ function timeAgo(dateStr: string, t: TFn) {
   if (diff < 3600) return t("forum.page.minutesAgo", { count: Math.floor(diff / 60) });
   if (diff < 86400) return t("forum.page.hoursAgo", { count: Math.floor(diff / 3600) });
   if (diff < 604800) return t("forum.page.daysAgo", { count: Math.floor(diff / 86400) });
-  return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  return date.toLocaleDateString(locale, { month: "short", day: "numeric" });
 }
 
 export default function ForumPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = i18n.resolvedLanguage || i18n.language || "en";
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("recent");
   const { data: categories, isLoading: loadingCats, isError: catsError } = useCategories();
@@ -133,12 +138,16 @@ export default function ForumPage() {
                     <span className="text-lg">{cat.icon || "#"}</span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-[13px] font-semibold text-foreground truncate">{cat.name}</h3>
+                    <h3 className="text-[13px] font-semibold text-foreground truncate">
+                      {localizeForumCategoryName(cat.name, t)}
+                    </h3>
                     <p className="text-xs text-muted-foreground">{t("forum.page.postsCount", { count: cat.post_count || 0 })}</p>
                   </div>
                 </div>
                 {cat.description && (
-                  <p className="text-xs text-muted-foreground line-clamp-2">{cat.description}</p>
+                  <p className="text-xs text-muted-foreground line-clamp-2">
+                    {localizeForumCategoryDescription(cat.description, t)}
+                  </p>
                 )}
               </Link>
             ))}
@@ -155,10 +164,11 @@ export default function ForumPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t("forum.page.searchPlaceholder")}
+            aria-label={t("forum.page.searchAria")}
             className="bg-card text-foreground w-full pl-10 pr-4 py-2 border border-border rounded-md text-[13px] focus:ring-2 focus:ring-brand-500 focus:border-transparent"
           />
         </div>
-        <div className="flex gap-1 bg-muted rounded-md p-1">
+        <div className="flex gap-1 bg-muted rounded-md p-1" role="group" aria-label={t("forum.page.sortAria")}>
           {[
             { key: "recent", label: t("forum.page.sortRecent") },
             { key: "popular", label: t("forum.page.sortPopular") },
@@ -167,6 +177,7 @@ export default function ForumPage() {
             <button
               key={s.key}
               onClick={() => setSortBy(s.key)}
+              aria-pressed={sortBy === s.key}
               className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                 sortBy === s.key
                   ? "bg-card text-foreground shadow-sm"
@@ -240,7 +251,7 @@ export default function ForumPage() {
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
                       <span className={`inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-md ${typeConfig.color}`}>
                         <TypeIcon className="h-3 w-3" />
-                        {t(`forum.page.postType.${post.post_type}`, { defaultValue: post.post_type })}
+                        {t(typeConfig.labelKey)}
                       </span>
                       {Boolean(post.is_pinned) && (
                         <span className="inline-flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
@@ -252,7 +263,9 @@ export default function ForumPage() {
                           <Lock className="h-3 w-3" /> {t("forum.page.locked")}
                         </span>
                       )}
-                      <span className="text-xs text-muted-foreground">{post.category_name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {localizeForumCategoryName(post.category_name, t)}
+                      </span>
                     </div>
 
                     <h3 className="text-[13px] font-semibold text-foreground mb-1">{post.title}</h3>
@@ -265,7 +278,7 @@ export default function ForumPage() {
                       <span>
                         {post.author_first_name} {post.author_last_name}
                       </span>
-                      <span>{timeAgo(post.created_at, t)}</span>
+                      <span>{timeAgo(post.created_at, t, locale)}</span>
                       {post.view_count > 0 && (
                         <span className="flex items-center gap-1">
                           <Eye className="h-3 w-3" /> {post.view_count}

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuthStore } from "@/lib/auth-store";
 import { useDeletePost, useEditPost, useTogglePostLike } from "../api";
 import type { FeedPost } from "../types";
@@ -18,6 +19,7 @@ type Props = {
 };
 
 export function PostCard({ post, compactComments, dashboardCompact = false }: Props) {
+  const { t, i18n } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const isOwner = user?.id === post.author_id;
   const isHR = !!user && HR_ROLES.includes(user.role);
@@ -43,7 +45,7 @@ export function PostCard({ post, compactComments, dashboardCompact = false }: Pr
       await editPost.mutateAsync({ id: post.id, content: draft.trim() });
       setEditing(false);
     } catch (err: any) {
-      setEditError(err?.response?.data?.error?.message || "Failed to save");
+      setEditError(err?.response?.data?.error?.message || t("feed.post.saveFailed"));
     }
   };
 
@@ -56,7 +58,7 @@ export function PostCard({ post, compactComments, dashboardCompact = false }: Pr
           firstName={post.author_first_name}
           lastName={post.author_last_name}
           title={post.author_title}
-          timestamp={formatTimestamp(post.created_at)}
+          timestamp={formatTimestamp(post.created_at, i18n.resolvedLanguage)}
           edited={!!post.edited_at}
         />
         {canManage && (
@@ -65,7 +67,7 @@ export function PostCard({ post, compactComments, dashboardCompact = false }: Pr
               type="button"
               onClick={() => setMenuOpen((o) => !o)}
               className="p-1.5 rounded-lg text-muted-foreground hover:bg-muted"
-              aria-label="Post actions"
+              aria-label={t("feed.post.actions")}
             >
               <MoreHorizontal className="h-4 w-4" />
             </button>
@@ -77,7 +79,7 @@ export function PostCard({ post, compactComments, dashboardCompact = false }: Pr
                     onClick={() => { setEditing(true); setDraft(post.content); setMenuOpen(false); }}
                     className="flex w-full items-center gap-2 px-3 py-1.5 text-sm text-muted-foreground hover:bg-muted"
                   >
-                    <Pencil className="h-3.5 w-3.5" /> Edit
+                    <Pencil className="h-3.5 w-3.5" /> {t("common.edit")}
                   </button>
                 )}
                 <button
@@ -85,7 +87,7 @@ export function PostCard({ post, compactComments, dashboardCompact = false }: Pr
                   onClick={() => { setConfirmDelete(true); setMenuOpen(false); }}
                   className="flex w-full items-center gap-2 px-3 py-1.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40"
                 >
-                  <Trash2 className="h-3.5 w-3.5" /> Delete
+                  <Trash2 className="h-3.5 w-3.5" /> {t("common.delete")}
                 </button>
               </div>
             )}
@@ -110,14 +112,14 @@ export function PostCard({ post, compactComments, dashboardCompact = false }: Pr
                 onClick={() => { setEditing(false); setDraft(post.content); setEditError(null); }}
                 className="rounded border border-border px-3 py-1 text-xs text-muted-foreground hover:bg-muted"
               >
-                Cancel
+                {t("common.cancel")}
               </button>
               <button
                 type="submit"
                 disabled={!draft.trim() || editPost.isPending}
                 className="rounded bg-brand-600 px-3 py-1 text-xs font-medium text-white hover:bg-brand-700 disabled:opacity-50"
               >
-                {editPost.isPending ? "Saving..." : "Save"}
+                {editPost.isPending ? t("feed.post.saving") : t("common.save")}
               </button>
             </div>
           </form>
@@ -156,7 +158,7 @@ export function PostCard({ post, compactComments, dashboardCompact = false }: Pr
         >
           <Heart className={`h-4 w-4 ${post.my_liked ? "fill-red-600" : ""}`} />
           {post.like_count > 0 && <span>{post.like_count}</span>}
-          <span className="sr-only">Like</span>
+          <span className="sr-only">{t("feed.post.like")}</span>
         </button>
         <button
           type="button"
@@ -170,7 +172,7 @@ export function PostCard({ post, compactComments, dashboardCompact = false }: Pr
         >
           <MessageCircle className="h-4 w-4" />
           {post.reply_count > 0 && <span>{post.reply_count}</span>}
-          <span className="text-xs">{showComments ? "Hide" : "Comments"}</span>
+          <span className="text-xs">{showComments ? t("feed.post.hideComments") : t("feed.post.comments")}</span>
         </button>
       </footer>
 
@@ -199,9 +201,9 @@ export function PostCard({ post, compactComments, dashboardCompact = false }: Pr
                   <Trash2 className="h-5 w-5 text-red-600 dark:text-red-400" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-foreground">Delete post?</h3>
+                  <h3 className="text-lg font-semibold text-foreground">{t("feed.post.deleteTitle")}</h3>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    This removes the post and all its comments from the feed. This cannot be undone.
+                    {t("feed.post.deleteDescription")}
                   </p>
                 </div>
               </div>
@@ -213,7 +215,7 @@ export function PostCard({ post, compactComments, dashboardCompact = false }: Pr
                 disabled={deletePost.isPending}
                 className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-card disabled:opacity-50"
               >
-                Cancel
+                {t("common.cancel")}
               </button>
               <button
                 type="button"
@@ -223,10 +225,10 @@ export function PostCard({ post, compactComments, dashboardCompact = false }: Pr
               >
                 {deletePost.isPending ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin" /> Deleting...
+                    <Loader2 className="h-4 w-4 animate-spin" /> {t("feed.post.deleting")}
                   </>
                 ) : (
-                  "Delete"
+                  t("common.delete")
                 )}
               </button>
             </div>

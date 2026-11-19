@@ -9,6 +9,7 @@ import { useLogin } from "@/api/hooks";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { setAuthPersistence, useAuthStore } from "@/lib/auth-store";
 import { getPaymentRestrictionDestination } from "@/lib/organization-access";
+import { getLocalizedLoginError } from "./login-error-i18n";
 
 export default function LoginPage() {
   const { t } = useTranslation();
@@ -63,27 +64,7 @@ export default function LoginPage() {
           : "/",
       );
     } catch (err: any) {
-      // Surface rate-limit 429s explicitly. express-rate-limit sets
-      // Retry-After (in seconds) and the middleware returns a message.
-      if (err.response?.status === 429) {
-        const retryAfterSec = Number(err.response.headers?.["retry-after"]);
-        const baseMsg =
-          err.response?.data?.error?.message ||
-          "Too many login attempts. Please wait and try again.";
-        if (retryAfterSec > 0) {
-          const mins = Math.ceil(retryAfterSec / 60);
-          setError(baseMsg + " (Retry in ~" + mins + " min)");
-        } else {
-          setError(baseMsg);
-        }
-        return;
-      }
-
-      const apiMsg = err.response?.data?.error?.message;
-      const networkMsg = !err.response
-        ? "Can't reach the server. Check your connection and try again."
-        : null;
-      setError(apiMsg || networkMsg || "Login failed. Please try again.");
+      setError(getLocalizedLoginError(err, t));
     }
   };
 
@@ -151,7 +132,7 @@ export default function LoginPage() {
                 role="status"
                 className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800"
               >
-                Your session has expired. Please sign in again.
+                {t("auth.sessionExpired")}
               </div>
             )}
             {sessionState === "blocked" && !error && (
@@ -159,7 +140,7 @@ export default function LoginPage() {
                 role="alert"
                 className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
               >
-                Login has been disabled for this organization. Contact support.
+                {t("auth.organizationLoginBlocked")}
               </div>
             )}
             {justReset && !error && (
@@ -167,7 +148,7 @@ export default function LoginPage() {
                 role="status"
                 className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
               >
-                Password updated. Sign in with your new password.
+                {t("auth.passwordResetSuccess")}
               </div>
             )}
             {error && (
@@ -204,7 +185,7 @@ export default function LoginPage() {
               </div>
               {errors.email && (
                 <p id="login-email-error" className="mt-1.5 text-xs text-red-600">
-                  {errors.email.message}
+                  {t("auth.invalidEmail")}
                 </p>
               )}
             </div>
@@ -234,7 +215,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword((visible) => !visible)}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  aria-label={showPassword ? t("accountSecurity.hidePassword") : t("accountSecurity.showPassword")}
                   aria-pressed={showPassword}
                   className="absolute right-1.5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg text-[#8ca0ba] outline-none transition hover:bg-slate-100 hover:text-[#4e6483] focus-visible:ring-2 focus-visible:ring-[#3972f6]"
                 >
@@ -247,7 +228,7 @@ export default function LoginPage() {
               </div>
               {errors.password && (
                 <p id="login-password-error" className="mt-1.5 text-xs text-red-600">
-                  {errors.password.message}
+                  {t("auth.passwordRequired")}
                 </p>
               )}
             </div>
