@@ -384,15 +384,15 @@ export default function PositionListPage() {
       </div>
 
       <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-        <div className="inline-flex rounded-lg border border-border bg-card p-0.5 shadow-sm" role="group" aria-label={tx("viewMode", { defaultValue: "View mode" }) as string}>
+        <div className="inline-flex rounded-lg border border-border bg-card p-0.5 shadow-sm" role="group" aria-label={tx("viewMode") as string}>
           <button type="button" onClick={() => setViewMode("grid")} aria-pressed={viewMode === "grid"} className={`inline-flex min-h-8 items-center gap-2 rounded-md px-3 text-xs font-medium transition-colors ${viewMode === "grid" ? "bg-brand-50 text-brand-700 dark:bg-brand-950/40 dark:text-brand-300" : "text-muted-foreground hover:bg-muted"}`}>
-            <LayoutGrid aria-hidden="true" className="h-4 w-4" />{tx("gridView", { defaultValue: "Grid View" })}
+            <LayoutGrid aria-hidden="true" className="h-4 w-4" />{tx("gridView")}
           </button>
           <button type="button" onClick={() => setViewMode("list")} aria-pressed={viewMode === "list"} className={`inline-flex min-h-8 items-center gap-2 rounded-md px-3 text-xs font-medium transition-colors ${viewMode === "list" ? "bg-brand-50 text-brand-700 dark:bg-brand-950/40 dark:text-brand-300" : "text-muted-foreground hover:bg-muted"}`}>
-            <List aria-hidden="true" className="h-4 w-4" />{tx("listView", { defaultValue: "List View" })}
+            <List aria-hidden="true" className="h-4 w-4" />{tx("listView")}
           </button>
         </div>
-        <p role="status" className="text-xs font-medium text-muted-foreground">{tx("positionsCount", { count: meta?.total ?? positions.length, defaultValue: (meta?.total ?? positions.length) === 1 ? "{{count}} position" : "{{count}} positions" })}</p>
+        <p role="status" className="text-xs font-medium text-muted-foreground">{tx("positionsCount", { count: meta?.total ?? positions.length })}</p>
       </div>
 
       {isLoading ? (
@@ -418,12 +418,12 @@ export default function PositionListPage() {
                 </div>
               </div>
               <Link to={`/positions/${pos.id}`} className="mt-3 block text-base font-bold leading-snug text-foreground hover:text-brand-600">{pos.title}</Link>
-              <p className="mt-1.5 flex items-center gap-1.5 text-xs text-muted-foreground"><Building2 aria-hidden="true" className="h-4 w-4" />{pos.department_name || tx("unassigned", { defaultValue: "Unassigned" })}</p>
+              <p className="mt-1.5 flex items-center gap-1.5 text-xs text-muted-foreground"><Building2 aria-hidden="true" className="h-4 w-4" />{pos.department_name || tx("unassigned")}</p>
               <div className="mt-auto grid grid-cols-[1.2fr_.95fr_.9fr_.75fr] gap-2 border-t border-border pt-3">
                 <div className="min-w-0"><p className="truncate text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">{tx("colType")}</p><span className="mt-1 inline-flex max-w-full truncate rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">{positionTypeLabel(pos.employment_type)}</span></div>
                 <div className="min-w-0"><p className="truncate text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">{tx("colHeadcount")}</p><p className="mt-1 text-xs font-bold tabular-nums text-orange-600">{pos.headcount_filled ?? 0}/{pos.headcount_budget ?? 0}</p></div>
                 <div className="min-w-0"><p className="truncate text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">{t("common.status")}</p><span className={`mt-1 inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold ${statusClasses(pos.status)}`}>{positionStatusLabel(pos.status)}</span></div>
-                <div className="min-w-0"><p className="truncate text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">{tx("colCritical")}</p><p className={`mt-1 text-[11px] font-semibold ${pos.is_critical ? "text-red-600" : "text-muted-foreground"}`}>{pos.is_critical ? tx("yes", { defaultValue: "Yes" }) : tx("no", { defaultValue: "No" })}</p></div>
+                <div className="min-w-0"><p className="truncate text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">{tx("colCritical")}</p><p className={`mt-1 text-[11px] font-semibold ${pos.is_critical ? "text-red-600" : "text-muted-foreground"}`}>{pos.is_critical ? tx("yes") : tx("no")}</p></div>
               </div>
             </article>
           ))}

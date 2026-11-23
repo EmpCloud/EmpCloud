@@ -15,7 +15,7 @@ const LANGUAGES = [
 ];
 
 export default function LanguageSwitcher() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -39,20 +39,32 @@ export default function LanguageSwitcher() {
   return (
     <div className="relative" ref={dropdownRef}>
       <button
+        type="button"
         onClick={() => setOpen(!open)}
         className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors text-sm"
-        title="Change language"
+        title={t('languageSwitcher.changeLanguage')}
+        aria-label={t('languageSwitcher.changeLanguage')}
+        aria-expanded={open}
+        aria-haspopup="menu"
       >
         <Globe className="h-4 w-4" />
         <span className="hidden sm:inline text-xs font-medium">{currentLang.flag}</span>
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-1 w-44 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden py-1">
+        <div
+          className="absolute right-0 top-full mt-1 w-44 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden py-1"
+          role="menu"
+          aria-label={t('languageSwitcher.languageMenu')}
+        >
           {LANGUAGES.map((lang) => (
             <button
+              type="button"
               key={lang.code}
               onClick={() => handleChange(lang.code)}
+              role="menuitemradio"
+              aria-checked={i18n.language === lang.code}
+              lang={lang.code}
               className={`w-full text-left px-3 py-2 text-sm flex items-center gap-2 hover:bg-gray-50 transition-colors ${
                 i18n.language === lang.code
                   ? 'bg-brand-50 text-brand-700 font-medium'

@@ -43,7 +43,8 @@ const getFilledCount = (position: any) => Number(
 );
 
 export default function VacanciesPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = i18n.resolvedLanguage || i18n.language || "en";
   const tx = (key: string, options?: Record<string, unknown>) =>
     t(`positions.vacancies.${key}`, options ?? {});
   const listTx = (key: string, options?: Record<string, unknown>) =>
@@ -148,9 +149,13 @@ export default function VacanciesPage() {
   };
 
   const statusLabel = (position: any) => {
-    if (position.is_critical) return tx("critical", { defaultValue: "Critical" }) as string;
+    if (position.is_critical) return tx("critical") as string;
     const value = position.status || "active";
-    return listTx(`status${value.charAt(0).toUpperCase()}${value.slice(1)}`, { defaultValue: value }) as string;
+    const key = `status${value.charAt(0).toUpperCase()}${value.slice(1)}`;
+    const translatedStatus = listTx(key) as string;
+    return translatedStatus === `positions.list.${key}`
+      ? tx("statusFallback", { status: value }) as string
+      : translatedStatus;
   };
 
   const statusClass = (position: any) => position.is_critical
@@ -167,7 +172,7 @@ export default function VacanciesPage() {
   const salaryLabel = (position: any) => {
     if (!position.min_salary && !position.max_salary) return "";
     const currency = position.currency || "INR";
-    const formatter = new Intl.NumberFormat("en-IN", {
+    const formatter = new Intl.NumberFormat(locale, {
       notation: "compact",
       maximumFractionDigits: 1,
     });
@@ -178,7 +183,16 @@ export default function VacanciesPage() {
   };
 
   const exportVacancies = () => {
-    const headers = ["Title", "Code", "Department", "Type", "Openings", "Filled", "Budget", "Status"];
+    const headers = [
+      tx("exportHeaders.title"),
+      tx("exportHeaders.code"),
+      tx("exportHeaders.department"),
+      tx("exportHeaders.type"),
+      tx("exportHeaders.openings"),
+      tx("exportHeaders.filled"),
+      tx("exportHeaders.budget"),
+      tx("exportHeaders.status"),
+    ];
     const rows = filteredVacancies.map((position) => [
       position.title,
       position.code || "",
@@ -194,7 +208,7 @@ export default function VacanciesPage() {
     const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
     const anchor = document.createElement("a");
     anchor.href = url;
-    anchor.download = "open-vacancies.csv";
+    anchor.download = tx("exportFilename") as string;
     anchor.click();
     URL.revokeObjectURL(url);
   };
@@ -216,7 +230,7 @@ export default function VacanciesPage() {
         <div className="flex items-center gap-2">
           <button type="button" onClick={exportVacancies} className="inline-flex h-11 items-center gap-2 rounded-lg border border-border bg-card px-4 text-[13px] font-semibold text-foreground shadow-sm transition hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40">
             <Download aria-hidden="true" className="h-4 w-4" />
-            {tx("export", { defaultValue: "Export" })}
+            {tx("export")}
             <ChevronDown aria-hidden="true" className="h-3.5 w-3.5 text-muted-foreground" />
           </button>
           <Link to="/positions/list?create=1" className="inline-flex h-11 items-center gap-2 rounded-lg bg-brand-600 px-5 text-[13px] font-semibold text-white shadow-sm transition hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 focus-visible:ring-offset-2">
@@ -228,10 +242,10 @@ export default function VacanciesPage() {
 
       <div className="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {[
-          { label: tx("openPositions", { defaultValue: "Open Positions" }), value: stats.openPositions, icon: UserRound, colors: "bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-300" },
-          { label: tx("totalBudget", { defaultValue: "Total Headcount (Budget)" }), value: stats.totalBudget, icon: Users, colors: "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-300" },
-          { label: tx("inProgress", { defaultValue: "Positions in Progress" }), value: stats.inProgress, icon: Clock3, colors: "bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-300" },
-          { label: tx("criticalPositions", { defaultValue: "Critical Positions" }), value: stats.criticalPositions, icon: AlertTriangle, colors: "bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-300" },
+          { label: tx("openPositions"), value: stats.openPositions, icon: UserRound, colors: "bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-300" },
+          { label: tx("totalBudget"), value: stats.totalBudget, icon: Users, colors: "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-300" },
+          { label: tx("inProgress"), value: stats.inProgress, icon: Clock3, colors: "bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-300" },
+          { label: tx("criticalPositions"), value: stats.criticalPositions, icon: AlertTriangle, colors: "bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-300" },
         ].map(({ label, value, icon: Icon, colors }) => (
           <div key={String(label)} className="flex min-h-[76px] items-center gap-3.5 rounded-xl border border-border bg-card p-3.5 shadow-sm">
             <span className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${colors}`}><Icon aria-hidden="true" className="h-5 w-5" /></span>
@@ -243,7 +257,7 @@ export default function VacanciesPage() {
       <div className="mb-3 grid grid-cols-1 gap-2.5 sm:grid-cols-2 xl:grid-cols-[minmax(360px,1fr)_140px_120px_120px_auto]">
         <div className="relative sm:col-span-2 xl:col-span-1">
           <Search aria-hidden="true" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <input aria-label={tx("searchPlaceholder", { defaultValue: "Search vacancies" }) as string} name="vacancy-search" autoComplete="off" type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder={tx("searchPlaceholder", { defaultValue: "Search by title, code, or department…" }) as string} className="h-10 w-full rounded-lg border border-border bg-card pl-10 pr-3.5 text-[13px] text-foreground shadow-sm outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-100" />
+          <input aria-label={tx("searchAriaLabel") as string} name="vacancy-search" autoComplete="off" type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder={tx("searchPlaceholder") as string} className="h-10 w-full rounded-lg border border-border bg-card pl-10 pr-3.5 text-[13px] text-foreground shadow-sm outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-100" />
         </div>
         <div className="relative">
           <select aria-label={listTx("allDepartments") as string} value={department} onChange={(event) => setDepartment(event.target.value)} className="h-10 w-full appearance-none rounded-lg border border-border bg-card px-3.5 pr-9 text-[13px] text-foreground shadow-sm outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100">
@@ -260,13 +274,13 @@ export default function VacanciesPage() {
         </div>
         <div className="relative">
           <select aria-label={listTx("allStatuses") as string} value={status} onChange={(event) => setStatus(event.target.value)} className="h-10 w-full appearance-none rounded-lg border border-border bg-card px-3.5 pr-9 text-[13px] text-foreground shadow-sm outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100">
-            <option value="">{listTx("allStatuses")}</option><option value="active">{listTx("statusActive")}</option><option value="frozen">{listTx("statusFrozen")}</option><option value="critical">{tx("critical", { defaultValue: "Critical" })}</option>
+            <option value="">{listTx("allStatuses")}</option><option value="active">{listTx("statusActive")}</option><option value="frozen">{listTx("statusFrozen")}</option><option value="critical">{tx("critical")}</option>
           </select>
           <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
         </div>
-        <div className="inline-flex h-10 rounded-lg border border-border bg-card p-1 shadow-sm" role="group" aria-label={tx("viewMode", { defaultValue: "View mode" }) as string}>
-          <button type="button" onClick={() => setViewMode("grid")} aria-pressed={viewMode === "grid"} className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-md px-2.5 text-[12px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 ${viewMode === "grid" ? "bg-brand-50 text-brand-700 dark:bg-brand-950/40 dark:text-brand-300" : "text-muted-foreground hover:bg-muted"}`}><LayoutGrid aria-hidden="true" className="h-3.5 w-3.5" />{tx("grid", { defaultValue: "Grid" })}</button>
-          <button type="button" onClick={() => setViewMode("list")} aria-pressed={viewMode === "list"} className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-md px-2.5 text-[12px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 ${viewMode === "list" ? "bg-brand-50 text-brand-700 dark:bg-brand-950/40 dark:text-brand-300" : "text-muted-foreground hover:bg-muted"}`}><List aria-hidden="true" className="h-3.5 w-3.5" />{tx("list", { defaultValue: "List" })}</button>
+        <div className="inline-flex h-10 rounded-lg border border-border bg-card p-1 shadow-sm" role="group" aria-label={tx("viewMode") as string}>
+          <button type="button" onClick={() => setViewMode("grid")} aria-pressed={viewMode === "grid"} className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-md px-2.5 text-[12px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 ${viewMode === "grid" ? "bg-brand-50 text-brand-700 dark:bg-brand-950/40 dark:text-brand-300" : "text-muted-foreground hover:bg-muted"}`}><LayoutGrid aria-hidden="true" className="h-3.5 w-3.5" />{tx("grid")}</button>
+          <button type="button" onClick={() => setViewMode("list")} aria-pressed={viewMode === "list"} className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-md px-2.5 text-[12px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 ${viewMode === "list" ? "bg-brand-50 text-brand-700 dark:bg-brand-950/40 dark:text-brand-300" : "text-muted-foreground hover:bg-muted"}`}><List aria-hidden="true" className="h-3.5 w-3.5" />{tx("list")}</button>
         </div>
       </div>
 
@@ -292,7 +306,7 @@ export default function VacanciesPage() {
                     {position.is_critical ? <AlertTriangle aria-hidden="true" className="h-3 w-3" /> : <CheckCircle2 aria-hidden="true" className="h-3 w-3" />}
                     {statusLabel(position)}
                   </span>
-                  <button type="button" aria-label={tx("moreActions", { defaultValue: "More actions" }) as string} className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40"><MoreVertical aria-hidden="true" className="h-4 w-4" /></button>
+                  <button type="button" aria-label={tx("moreActions") as string} className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40"><MoreVertical aria-hidden="true" className="h-4 w-4" /></button>
                 </div>
               </div>
               <div className="mt-2.5 flex items-center gap-4 text-xs text-muted-foreground">
@@ -301,10 +315,10 @@ export default function VacanciesPage() {
               </div>
               <div className="mt-3 grid grid-cols-2 gap-3">
                 <div><p className="text-xl font-bold leading-none tabular-nums text-orange-600">{position.open_count || 0}</p><p className="mt-1 text-[11px] text-muted-foreground">{tx("openings", { count: position.open_count || 0 })}</p></div>
-                <div className="text-right"><p className="text-sm font-bold leading-none tabular-nums text-foreground">{getFilledCount(position)}/{position.headcount_budget || 0}</p><p className="mt-1 text-[11px] text-muted-foreground">{tx("filled", { defaultValue: "Filled" })}</p></div>
+                <div className="text-right"><p className="text-sm font-bold leading-none tabular-nums text-foreground">{getFilledCount(position)}/{position.headcount_budget || 0}</p><p className="mt-1 text-[11px] text-muted-foreground">{tx("filled")}</p></div>
               </div>
               <div className="mt-1.5">
-                <div role="progressbar" aria-label={`${position.title} ${tx("filled", { defaultValue: "Filled" })}`} aria-valuenow={fillPercentage(position)} aria-valuemin={0} aria-valuemax={100} className="h-1.5 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-brand-500" style={{ width: `${fillPercentage(position)}%` }} /></div>
+                <div role="progressbar" aria-label={`${position.title} ${tx("filled")}`} aria-valuenow={fillPercentage(position)} aria-valuemin={0} aria-valuemax={100} className="h-1.5 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-brand-500" style={{ width: `${fillPercentage(position)}%` }} /></div>
                 <p className="mt-1 text-right text-[10px] font-medium tabular-nums text-muted-foreground">{fillPercentage(position)}%</p>
               </div>
               <div className="mt-auto flex items-end justify-between gap-3 border-t border-border pt-2">
@@ -321,12 +335,12 @@ export default function VacanciesPage() {
             <thead className="border-b border-border bg-muted/45">
               <tr>
                 {[
-                  { key: "title" as const, label: tx("positionTitle", { defaultValue: "Position Title" }) },
+                  { key: "title" as const, label: tx("positionTitle") },
                   { key: "code" as const, label: listTx("colCode") },
                   { key: "department" as const, label: t("common.department") },
                   { key: "type" as const, label: listTx("colType") },
-                  { key: "openings" as const, label: tx("openPositions", { defaultValue: "Openings" }) },
-                  { key: "filled" as const, label: tx("filledTotal", { defaultValue: "Filled / Total" }) },
+                  { key: "openings" as const, label: tx("colOpenings") },
+                  { key: "filled" as const, label: tx("filledTotal") },
                   { key: "status" as const, label: t("common.status") },
                 ].map(({ key, label }) => (
                   <th
@@ -344,7 +358,7 @@ export default function VacanciesPage() {
                   </th>
                 ))}
                 <th scope="col" className="w-[190px] px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-                  {tx("action", { defaultValue: "Action" })}
+                  {tx("action")}
                 </th>
               </tr>
             </thead>
@@ -356,9 +370,9 @@ export default function VacanciesPage() {
                   <td className="px-4 py-3.5 text-xs text-muted-foreground"><span className="inline-flex items-center gap-1.5"><Building2 aria-hidden="true" className="h-3.5 w-3.5" />{position.department_name || tx("unassigned")}</span></td>
                   <td className="px-4 py-3.5 text-xs text-muted-foreground">{typeLabel(position.employment_type)}</td>
                   <td className="px-4 py-3.5"><p className="text-[13px] font-semibold leading-none tabular-nums text-orange-600">{position.open_count || 0}</p><p className="mt-1 text-[10px] text-muted-foreground">{tx("openings", { count: position.open_count || 0 })}</p></td>
-                  <td className="px-4 py-3.5"><div className="min-w-[130px]"><div className="flex items-center justify-between gap-2"><span className="text-xs font-semibold tabular-nums text-foreground">{getFilledCount(position)}/{position.headcount_budget || 0}</span><span className="text-[10px] tabular-nums text-muted-foreground">{fillPercentage(position)}%</span></div><div role="progressbar" aria-label={`${position.title} ${tx("filled", { defaultValue: "Filled" })}`} aria-valuenow={fillPercentage(position)} aria-valuemin={0} aria-valuemax={100} className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-brand-500" style={{ width: `${fillPercentage(position)}%` }} /></div></div></td>
+                  <td className="px-4 py-3.5"><div className="min-w-[130px]"><div className="flex items-center justify-between gap-2"><span className="text-xs font-semibold tabular-nums text-foreground">{getFilledCount(position)}/{position.headcount_budget || 0}</span><span className="text-[10px] tabular-nums text-muted-foreground">{fillPercentage(position)}%</span></div><div role="progressbar" aria-label={`${position.title} ${tx("filled")}`} aria-valuenow={fillPercentage(position)} aria-valuemin={0} aria-valuemax={100} className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-brand-500" style={{ width: `${fillPercentage(position)}%` }} /></div></div></td>
                   <td className="px-4 py-3.5"><span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold ${statusClass(position)}`}>{position.is_critical ? <AlertTriangle aria-hidden="true" className="h-3 w-3" /> : <CheckCircle2 aria-hidden="true" className="h-3 w-3" />}{statusLabel(position)}</span></td>
-                  <td className="px-4 py-3.5"><div className="flex items-center gap-2"><button type="button" onClick={() => setPending({ id: position.id, title: position.title })} disabled={markFilledMutation.isPending} className="inline-flex h-9 items-center gap-1.5 rounded-full bg-emerald-50 px-3 text-[11px] font-semibold text-emerald-700 transition-colors hover:bg-emerald-100 hover:text-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 disabled:opacity-50"><CheckCircle2 aria-hidden="true" className="h-3.5 w-3.5" />{tx("mark")}</button><Link to={`/positions/${position.id}`} aria-label={tx("viewDetails", { defaultValue: `View ${position.title} details` }) as string} className="inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40"><MoreVertical aria-hidden="true" className="h-4 w-4" /></Link></div></td>
+                  <td className="px-4 py-3.5"><div className="flex items-center gap-2"><button type="button" onClick={() => setPending({ id: position.id, title: position.title })} disabled={markFilledMutation.isPending} className="inline-flex h-9 items-center gap-1.5 rounded-full bg-emerald-50 px-3 text-[11px] font-semibold text-emerald-700 transition-colors hover:bg-emerald-100 hover:text-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 disabled:opacity-50"><CheckCircle2 aria-hidden="true" className="h-3.5 w-3.5" />{tx("mark")}</button><Link to={`/positions/${position.id}`} aria-label={tx("viewDetails", { title: position.title }) as string} className="inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40"><MoreVertical aria-hidden="true" className="h-4 w-4" /></Link></div></td>
                 </tr>
               ))}
             </tbody>

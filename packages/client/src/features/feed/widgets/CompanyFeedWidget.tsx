@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { ArrowRight, MessageSquareText } from "lucide-react";
 import { useFeed } from "../api";
@@ -9,14 +10,15 @@ const PREVIEW_LIMIT = 3;
 const filters = ["all", "announcements", "team", "recognition"] as const;
 type FeedFilter = (typeof filters)[number];
 
-const labels: Record<FeedFilter, string> = {
-  all: "All Posts",
-  announcements: "Announcements",
-  team: "Team",
-  recognition: "Recognition",
+const labelKeys: Record<FeedFilter, string> = {
+  all: "feed.widget.filters.all",
+  announcements: "feed.widget.filters.announcements",
+  team: "feed.widget.filters.team",
+  recognition: "feed.widget.filters.recognition",
 };
 
 export function CompanyFeedWidget() {
+  const { t } = useTranslation();
   const { data, isLoading } = useFeed();
   const [filter, setFilter] = useState<FeedFilter>("all");
   const firstPagePosts = data?.pages[0]?.items ?? [];
@@ -36,9 +38,9 @@ export function CompanyFeedWidget() {
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3">
         <div className="flex items-center gap-2">
           <MessageSquareText aria-hidden="true" className="h-5 w-5 text-brand-600 dark:text-brand-400" />
-          <h2 className="text-base font-semibold text-foreground">Company Feed</h2>
+          <h2 className="text-base font-semibold text-foreground">{t("feed.page.title")}</h2>
         </div>
-        <div aria-label="Filter company feed" className="flex flex-wrap gap-1 rounded-lg bg-muted p-1">
+        <div aria-label={t("feed.widget.filterAria")} className="flex flex-wrap gap-1 rounded-lg bg-muted p-1">
           {filters.map((item) => (
             <button
               key={item}
@@ -49,22 +51,24 @@ export function CompanyFeedWidget() {
                 filter === item ? "bg-brand-600 text-white shadow-sm" : "text-muted-foreground hover:bg-card hover:text-foreground"
               }`}
             >
-              {labels[item]}
+              {t(labelKeys[item])}
             </button>
           ))}
         </div>
       </header>
 
       <div className="space-y-3 p-3.5">
-        <PostComposer compact placeholder="Share something with the team..." />
+        <PostComposer compact placeholder={t("feed.widget.composerPlaceholder")} />
 
         {isLoading ? (
           <div className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-            Loading feed...
+            {t("feed.widget.loading")}
           </div>
         ) : posts.length === 0 ? (
           <div className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-            {filter === "all" ? "Nothing here yet — be the first to post." : `No ${labels[filter].toLowerCase()} posts yet.`}
+            {filter === "all"
+              ? t("feed.page.emptyAll")
+              : t("feed.widget.emptyFiltered", { filter: t(labelKeys[filter]) })}
           </div>
         ) : (
           <div className="divide-y divide-border overflow-hidden rounded-lg border border-border">
@@ -79,7 +83,7 @@ export function CompanyFeedWidget() {
             to="/feed"
             className="flex items-center justify-center gap-1 rounded-lg py-1.5 text-xs font-medium text-brand-600 hover:bg-brand-50 hover:text-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:hover:bg-brand-950/40"
           >
-            Open full feed <ArrowRight aria-hidden="true" className="h-3 w-3" />
+            {t("feed.widget.openFullFeed")} <ArrowRight aria-hidden="true" className="h-3 w-3" />
           </Link>
         )}
       </div>

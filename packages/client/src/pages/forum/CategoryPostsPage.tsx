@@ -4,6 +4,10 @@ import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
 import api from "@/api/client";
 import {
+  localizeForumCategoryDescription,
+  localizeForumCategoryName,
+} from "./forum-category-i18n";
+import {
   MessageCircle,
   Plus,
   Eye,
@@ -25,7 +29,7 @@ const POST_TYPE_CONFIG: Record<string, { labelKey: string; color: string; icon: 
   poll: { labelKey: "categoryPosts.postType.poll", color: "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300", icon: BarChart3 },
 };
 
-function timeAgo(dateStr: string, t: (key: string, opts?: Record<string, unknown>) => string) {
+function timeAgo(dateStr: string, t: (key: string, opts?: Record<string, unknown>) => string, locale: string) {
   const now = new Date();
   const date = new Date(dateStr);
   const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
@@ -33,11 +37,12 @@ function timeAgo(dateStr: string, t: (key: string, opts?: Record<string, unknown
   if (diff < 3600) return t("categoryPosts.time.minutesAgo", { count: Math.floor(diff / 60) });
   if (diff < 86400) return t("categoryPosts.time.hoursAgo", { count: Math.floor(diff / 3600) });
   if (diff < 604800) return t("categoryPosts.time.daysAgo", { count: Math.floor(diff / 86400) });
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  return date.toLocaleDateString(locale, { month: "short", day: "numeric" });
 }
 
 export default function CategoryPostsPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = i18n.resolvedLanguage || i18n.language || "en";
   const { id } = useParams<{ id: string }>();
   const [page, setPage] = useState(1);
   const [postType, setPostType] = useState("");
@@ -75,6 +80,7 @@ export default function CategoryPostsPage() {
       <div className="flex items-center gap-3 mb-6">
         <Link
           to="/forum"
+          aria-label={t("categoryPosts.header.backAria")}
           className="p-2 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="h-5 w-5" />
@@ -86,10 +92,14 @@ export default function CategoryPostsPage() {
             )}
             <div>
               <h1 className="text-xl font-semibold tracking-tight text-foreground">
-                {category?.name || t("categoryPosts.header.defaultCategoryName")}
+                {category?.name
+                  ? localizeForumCategoryName(category.name, t)
+                  : t("categoryPosts.header.defaultCategoryName")}
               </h1>
               {category?.description && (
-                <p className="text-muted-foreground text-sm mt-0.5">{category.description}</p>
+                <p className="text-muted-foreground text-sm mt-0.5">
+                  {localizeForumCategoryDescription(category.description, t)}
+                </p>
               )}
             </div>
           </div>
@@ -109,6 +119,7 @@ export default function CategoryPostsPage() {
           <select
             value={postType}
             onChange={(e) => { setPostType(e.target.value); setPage(1); }}
+            aria-label={t("categoryPosts.filters.filterAria")}
             className="bg-card text-foreground px-3 py-1.5 border border-border rounded-md text-[13px]"
           >
             <option value="">{t("categoryPosts.filters.allTypes")}</option>
@@ -119,7 +130,7 @@ export default function CategoryPostsPage() {
           </select>
         </div>
 
-        <div className="flex gap-1 bg-muted rounded-md p-1">
+        <div className="flex gap-1 bg-muted rounded-md p-1" role="group" aria-label={t("categoryPosts.sort.ariaLabel")}>
           {[
             { key: "recent", labelKey: "categoryPosts.sort.recent" },
             { key: "popular", labelKey: "categoryPosts.sort.popular" },
@@ -129,6 +140,7 @@ export default function CategoryPostsPage() {
             <button
               key={s.key}
               onClick={() => { setSortBy(s.key); setPage(1); }}
+              aria-pressed={sortBy === s.key}
               className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                 sortBy === s.key
                   ? "bg-card text-foreground shadow-sm"
@@ -194,7 +206,7 @@ export default function CategoryPostsPage() {
 
                     <div className="flex items-center gap-4 text-[11px] tabular-nums text-muted-foreground">
                       <span>{post.author_first_name} {post.author_last_name}</span>
-                      <span>{timeAgo(post.created_at, t)}</span>
+                      <span>{timeAgo(post.created_at, t, locale)}</span>
                       <span className="flex items-center gap-1"><Eye className="h-3 w-3" /> {post.view_count}</span>
                       <span className="flex items-center gap-1"><Heart className="h-3 w-3" /> {post.like_count}</span>
                       <span className="flex items-center gap-1"><MessageCircle className="h-3 w-3" /> {post.reply_count}</span>

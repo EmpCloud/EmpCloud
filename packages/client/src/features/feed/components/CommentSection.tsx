@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuthStore } from "@/lib/auth-store";
 import {
   useAddComment,
@@ -33,6 +34,7 @@ export function CommentSection({
   commentsDisabled,
   totalCount,
 }: Props) {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const isHR = !!user && HR_ROLES.includes(user.role);
   const [draft, setDraft] = useState("");
@@ -56,7 +58,7 @@ export function CommentSection({
       await addComment.mutateAsync({ postId, content: draft.trim() });
       setDraft("");
     } catch (err: any) {
-      setError(err?.response?.data?.error?.message || "Failed to comment");
+      setError(err?.response?.data?.error?.message || t("feed.comments.submitFailed"));
     }
   };
 
@@ -68,7 +70,7 @@ export function CommentSection({
       {commentsDisabled && replies.length === 0 ? (
         <div className="flex items-center gap-2 text-xs text-muted-foreground italic">
           <MessageSquare className="h-3.5 w-3.5" />
-          Comments are disabled on this post.
+          {t("feed.comments.disabled")}
         </div>
       ) : (
         <div className="space-y-3">
@@ -79,13 +81,13 @@ export function CommentSection({
               onClick={() => setExpanded(true)}
               className="text-xs font-semibold text-brand-600 dark:text-brand-400 hover:text-brand-700"
             >
-              View {hidden} more {hidden === 1 ? "comment" : "comments"}
+              {t("feed.comments.viewMore", { count: hidden })}
             </button>
           )}
 
           {!previewOnly && expanded && detail.isLoading && (
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Loader2 className="h-3 w-3 animate-spin" /> Loading comments...
+              <Loader2 className="h-3 w-3 animate-spin" /> {t("feed.comments.loading")}
             </div>
           )}
 
@@ -111,13 +113,13 @@ export function CommentSection({
               type="text"
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
-              placeholder="Write a comment..."
+              placeholder={t("feed.comments.placeholder")}
               className="w-full rounded-full border border-border bg-muted px-4 py-2 pr-11 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent focus:bg-card transition-all"
             />
             <button
               type="submit"
               disabled={!draft.trim() || addComment.isPending}
-              aria-label="Send comment"
+              aria-label={t("feed.comments.send")}
               className="absolute right-1 top-1/2 -translate-y-1/2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               {addComment.isPending ? (
@@ -149,6 +151,7 @@ function CommentRow({
   postId: number;
   onDelete: () => void;
 }) {
+  const { t, i18n } = useTranslation();
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(reply.content);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -187,14 +190,14 @@ function CommentRow({
                 disabled={!draft.trim() || editComment.isPending}
                 className="rounded-full bg-brand-600 px-3 py-1 font-medium text-white hover:bg-brand-700 disabled:opacity-50"
               >
-                {editComment.isPending ? "Saving..." : "Save"}
+                {editComment.isPending ? t("feed.post.saving") : t("common.save")}
               </button>
               <button
                 type="button"
                 onClick={() => { setEditing(false); setDraft(reply.content); }}
                 className="text-muted-foreground hover:text-muted-foreground"
               >
-                Cancel
+                {t("common.cancel")}
               </button>
             </div>
           </form>
@@ -215,7 +218,7 @@ function CommentRow({
                   <button
                     type="button"
                     onClick={() => setMenuOpen((o) => !o)}
-                    aria-label="Comment actions"
+                    aria-label={t("feed.comments.actions")}
                     className="opacity-0 group-hover:opacity-100 focus:opacity-100 inline-flex h-6 w-6 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-muted-foreground transition"
                   >
                     <MoreHorizontal className="h-3.5 w-3.5" />
@@ -230,14 +233,14 @@ function CommentRow({
                         onClick={() => { setEditing(true); setMenuOpen(false); }}
                         className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-muted-foreground hover:bg-muted"
                       >
-                        <Pencil className="h-3.5 w-3.5" /> Edit
+                        <Pencil className="h-3.5 w-3.5" /> {t("common.edit")}
                       </button>
                       <button
                         type="button"
                         onClick={() => { onDelete(); setMenuOpen(false); }}
                         className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40"
                       >
-                        <Trash2 className="h-3.5 w-3.5" /> Delete
+                        <Trash2 className="h-3.5 w-3.5" /> {t("common.delete")}
                       </button>
                     </div>
                   )}
@@ -247,11 +250,11 @@ function CommentRow({
 
             {/* Quiet meta row under the bubble */}
             <div className="mt-1 ml-3 flex items-center gap-2 text-[11px] text-muted-foreground">
-              <span>{formatTimestamp(reply.created_at)}</span>
+              <span>{formatTimestamp(reply.created_at, i18n.resolvedLanguage)}</span>
               {reply.edited_at && (
                 <>
                   <span className="text-muted-foreground/50">·</span>
-                  <span className="italic">edited</span>
+                  <span className="italic">{t("feed.post.edited")}</span>
                 </>
               )}
             </div>

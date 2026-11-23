@@ -1,4 +1,5 @@
 import { EmployeeAvatar } from "@/components/EmployeeAvatar";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   // #1650 — Photo loading is delegated to <EmployeeAvatar /> via the
@@ -30,6 +31,8 @@ export function AuthorChip({
   edited,
   compact,
 }: Props) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex items-center gap-3 min-w-0">
       <EmployeeAvatar
@@ -47,24 +50,26 @@ export function AuthorChip({
           {title && <span>{title}</span>}
           {title && timestamp && <span className="mx-1.5 text-muted-foreground/50">·</span>}
           {timestamp && <span>{timestamp}</span>}
-          {edited && <span className="ml-1.5 text-muted-foreground italic">(edited)</span>}
+          {edited && <span className="ml-1.5 text-muted-foreground italic">({t("feed.post.edited")})</span>}
         </p>
       </div>
     </div>
   );
 }
 
-// Format a timestamp for the feed — "2m", "1h", "Yesterday", etc.
-export function formatTimestamp(iso: string): string {
+// Format a feed timestamp using the active UI locale.
+export function formatTimestamp(iso: string, locale = "en"): string {
   const d = new Date(iso);
-  const diffMs = Date.now() - d.getTime();
+  if (Number.isNaN(d.getTime())) return "";
+
+  const diffMs = Math.max(0, Date.now() - d.getTime());
   const diffMin = Math.floor(diffMs / 60_000);
-  if (diffMin < 1) return "just now";
-  if (diffMin < 60) return `${diffMin}m`;
+  const relative = new Intl.RelativeTimeFormat(locale, { numeric: "auto", style: "narrow" });
+  if (diffMin < 1) return relative.format(0, "second");
+  if (diffMin < 60) return relative.format(-diffMin, "minute");
   const diffHr = Math.floor(diffMin / 60);
-  if (diffHr < 24) return `${diffHr}h`;
+  if (diffHr < 24) return relative.format(-diffHr, "hour");
   const diffDay = Math.floor(diffHr / 24);
-  if (diffDay === 1) return "Yesterday";
-  if (diffDay < 7) return `${diffDay}d`;
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  if (diffDay < 7) return relative.format(-diffDay, "day");
+  return new Intl.DateTimeFormat(locale, { month: "short", day: "numeric", year: "numeric" }).format(d);
 }
